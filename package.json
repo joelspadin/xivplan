@@ -1,0 +1,32 @@
+{
+  "name": "xivplan",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@fluentui/react": "^8.29.2",
+    "@fluentui/react-hooks": "^8.3.1",
+    "konva": "^8.1.3",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-konva": "^17.0.2-5",
+    "react-router-dom": "^5.2.1",
+    "react-use": "^17.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.8",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "@vitejs/plugin-react-refresh": "^1.3.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "^7.25.0",
+    "typescript": "^4.4.2",
+    "vite": "^2.5.1"
+  }
+}

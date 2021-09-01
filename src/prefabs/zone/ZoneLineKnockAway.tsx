@@ -1,0 +1,7 @@
+import React from 'react';
+import icon from '../../assets/zone/line_knock_away.png';
+import { PrefabIcon } from '../PrefabIcon';
+
+export const ZoneLineKnockAway: React.FunctionComponent = () => {
+    return <PrefabIcon name="Line knock away" icon={icon} />;
+};

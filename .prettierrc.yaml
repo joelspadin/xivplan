@@ -1,0 +1,12 @@
+endOfLine: auto
+printWidth: 120
+singleQuote: true
+trailingComma: all
+overrides:
+  - files:
+      - '*.js'
+      - '*.jsx'
+      - '*.ts'
+      - '*.tsx'
+    options:
+      tabWidth: 4
