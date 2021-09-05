@@ -5,8 +5,9 @@ export enum ArenaShape {
 
 export enum GridType {
     None = 'none',
-    RectangularGrid = 'rectangle',
-    RadialGrid = 'radial',
+    Rectangular = 'rectangle',
+    Radial = 'radial',
+    Custom = 'custom',
 }
 
 export interface NoGrid {
@@ -14,19 +15,25 @@ export interface NoGrid {
 }
 
 export interface RectangularGrid {
-    type: GridType.RectangularGrid;
+    type: GridType.Rectangular;
     rows: number;
     columns: number;
 }
 
 export interface RadialGrid {
-    type: GridType.RadialGrid;
+    type: GridType.Radial;
     angularDivs: number;
     radialDivs: number;
     startAngle?: number;
 }
 
-export type Grid = NoGrid | RectangularGrid | RadialGrid;
+export interface CustomGrid {
+    type: GridType.Custom;
+    rows: number[];
+    columns: number[];
+}
+
+export type Grid = NoGrid | RectangularGrid | RadialGrid | CustomGrid;
 
 export interface Arena {
     shape: ArenaShape;
@@ -141,21 +148,27 @@ export const NO_GRID: NoGrid = {
 };
 
 export const DEFAULT_RECT_GRID: RectangularGrid = {
-    type: GridType.RectangularGrid,
+    type: GridType.Rectangular,
     rows: 4,
     columns: 4,
 };
 
 export const DEFAULT_RADIAL_GRID: RadialGrid = {
-    type: GridType.RadialGrid,
+    type: GridType.Radial,
     angularDivs: 8,
-    radialDivs: 4,
+    radialDivs: 2,
+};
+
+export const DEFAULT_CUSTOM_GRID: CustomGrid = {
+    type: GridType.Custom,
+    rows: [-150, 0, 150],
+    columns: [-150, 0, 150],
 };
 
 export const DEFAULT_ARENA: Arena = {
     shape: ArenaShape.Rectangle,
-    width: 60,
-    height: 60,
+    width: 600,
+    height: 600,
     grid: DEFAULT_RECT_GRID,
 };
 

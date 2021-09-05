@@ -74,6 +74,7 @@ export const SceneContext = createContext<SceneState>([DEFAULT_SCENE, () => unde
 
 export const SceneProvider: React.FunctionComponent = ({ children }) => {
     const reducer = useReducer(sceneReducer, DEFAULT_SCENE);
+    console.log(reducer[0]);
 
     return <SceneContext.Provider value={reducer}>{children}</SceneContext.Provider>;
 };

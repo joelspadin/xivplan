@@ -1,4 +1,4 @@
-import { IStyle, mergeStyleSets } from '@fluentui/react';
+import { Image, IStyle, mergeStyleSets } from '@fluentui/react';
 import React from 'react';
 
 export const PREFAB_ICON_SIZE = 32;
@@ -16,5 +16,5 @@ export interface PrefabIconProps {
 }
 
 export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name }) => {
-    return <img src={icon} className={classNames.icon} title={name} />;
+    return <Image src={icon} className={classNames.icon} title={name} />;
 };

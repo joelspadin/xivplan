@@ -1,7 +1,8 @@
-import { DefaultButton, IStackTokens, IStyle, mergeStyleSets, Stack, TextField } from '@fluentui/react';
+import { DefaultButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
 import React from 'react';
 import { ArenaPreset } from '../scene';
 import { useScene } from '../SceneProvider';
+import { ArenaBackgroundEdit } from './ArenaackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ARENA_PRESETS } from './ArenaPresets';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
@@ -19,19 +20,11 @@ const classNames = mergeStyleSets({
 });
 
 export const ArenaPanel: React.FunctionComponent = () => {
-    const [scene, dispatch] = useScene();
-
     return (
         <Stack className={classNames.panel} tokens={stackTokens}>
             <ArenaShapeEdit />
             <ArenaGridEdit />
-            <TextField
-                label="Background image URL"
-                value={scene.arena.backgroundImage}
-                onChange={(ev, newValue) => {
-                    dispatch({ type: 'arenaBackground', value: newValue });
-                }}
-            />
+            <ArenaBackgroundEdit />
             <Section title="Presets">
                 {ARENA_PRESETS.map((preset, i) => (
                     <PresetButton preset={preset} key={i} />

@@ -8,7 +8,7 @@ const stackTokens: IStackTokens = {
 };
 
 const arenaShapes: IDropdownOption[] = [
-    { key: ArenaShape.Circle, text: 'Circle' },
+    { key: ArenaShape.Circle, text: 'Ellipse' },
     { key: ArenaShape.Rectangle, text: 'Rectangle' },
 ];
 
@@ -30,8 +30,8 @@ export const ArenaShapeEdit: React.FunctionComponent = () => {
                 <SpinButton
                     label="Arena width"
                     labelPosition={Position.top}
-                    min={5}
-                    step={5}
+                    min={50}
+                    step={50}
                     value={width.toString()}
                     onChange={(ev, newValue) => {
                         newValue && dispatch({ type: 'arenaWidth', value: parseInt(newValue) });
@@ -40,8 +40,8 @@ export const ArenaShapeEdit: React.FunctionComponent = () => {
                 <SpinButton
                     label="Arena height"
                     labelPosition={Position.top}
-                    min={5}
-                    step={5}
+                    min={50}
+                    step={50}
                     value={height.toString()}
                     onChange={(ev, newValue) => {
                         newValue && dispatch({ type: 'arenaHeight', value: parseInt(newValue) });

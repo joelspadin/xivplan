@@ -1,6 +1,7 @@
 import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
 import React from 'react';
 import { MainPanel } from './panel/MainPanel';
+import { SceneRenderer } from './render/SceneRenderer';
 import { SceneProvider } from './SceneProvider';
 
 interface IContentStyles {
@@ -22,7 +23,8 @@ export const MainPage: React.FunctionComponent = () => {
                 right: 0,
             },
             stage: {
-                backgroundColor: theme.palette.neutralLighterAlt,
+                backgroundColor: theme.palette.neutralLighter,
+                overflow: 'auto',
             },
         };
     }, theme);
@@ -32,7 +34,7 @@ export const MainPage: React.FunctionComponent = () => {
             <Stack horizontal className={classNames.root}>
                 <MainPanel />
                 <Stack.Item grow className={classNames.stage}>
-                    Content goes here
+                    <SceneRenderer />
                 </Stack.Item>
             </Stack>
         </SceneProvider>
