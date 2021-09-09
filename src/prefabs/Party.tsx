@@ -89,24 +89,24 @@ export const PartyRanged = makeIcon('Ranged DPS', 'ranged.png');
 export const PartyMagicRanged = makeIcon('Magic ranged DPS', 'magic_ranged.png');
 export const PartyPhysicalRanged = makeIcon('Physical ranged DPS', 'physical_ranged.png');
 
-export const PartyPaladin = makeIcon('Paladin', 'pld.png');
-export const PartyWarrior = makeIcon('Warrior', 'war.png');
-export const PartyDarkKnight = makeIcon('Dark Knight', 'drk.png');
-export const PartyGunbreaker = makeIcon('Gunbreaker', 'gnb.png');
+export const PartyPaladin = makeIcon('Paladin', 'PLD.png');
+export const PartyWarrior = makeIcon('Warrior', 'WAR.png');
+export const PartyDarkKnight = makeIcon('Dark Knight', 'DRK.png');
+export const PartyGunbreaker = makeIcon('Gunbreaker', 'GNB.png');
 
-export const PartyWhiteMage = makeIcon('White Mage', 'whm.png');
-export const PartyScholar = makeIcon('Scholar', 'sch.png');
-export const PartyAstrologian = makeIcon('Astrologian', 'ast.png');
+export const PartyWhiteMage = makeIcon('White Mage', 'WHM.png');
+export const PartyScholar = makeIcon('Scholar', 'SCH.png');
+export const PartyAstrologian = makeIcon('Astrologian', 'AST.png');
 
-export const PartyMonk = makeIcon('Monk', 'mnk.png');
-export const PartyDragoon = makeIcon('Dragoon', 'drg.png');
-export const PartyNinja = makeIcon('Ninja', 'nin.png');
-export const PartySamurai = makeIcon('Samurai', 'sam.png');
+export const PartyMonk = makeIcon('Monk', 'MNK.png');
+export const PartyDragoon = makeIcon('Dragoon', 'DRG.png');
+export const PartyNinja = makeIcon('Ninja', 'NIN.png');
+export const PartySamurai = makeIcon('Samurai', 'SAM.png');
 
-export const PartyBard = makeIcon('Bard', 'brd.png');
-export const PartyMachinist = makeIcon('Machinist', 'mch.png');
-export const PartyDancer = makeIcon('Dancer', 'dnc.png');
+export const PartyBard = makeIcon('Bard', 'BRD.png');
+export const PartyMachinist = makeIcon('Machinist', 'MCH.png');
+export const PartyDancer = makeIcon('Dancer', 'DNC.png');
 
-export const PartyBlackMage = makeIcon('Black Mage', 'blm.png');
-export const PartySummoner = makeIcon('Summoner', 'smn.png');
-export const PartyRedMage = makeIcon('Red Mage', 'rdm.png');
+export const PartyBlackMage = makeIcon('Black Mage', 'BLM.png');
+export const PartySummoner = makeIcon('Summoner', 'SMN.png');
+export const PartyRedMage = makeIcon('Red Mage', 'RDM.png');
