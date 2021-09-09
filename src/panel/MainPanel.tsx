@@ -9,6 +9,7 @@ const enum Tabs {
     Arena = 'arena',
     Objects = 'objects',
     Status = 'status',
+    Draw = 'draw',
 }
 
 const classNames = mergeStyleSets({
@@ -30,11 +31,14 @@ export const MainPanel: React.FunctionComponent = () => {
             <PivotItem headerText="Arena" itemKey={Tabs.Arena}>
                 <ArenaPanel />
             </PivotItem>
-            <PivotItem headerText="Objects" itemKey={Tabs.Objects}>
+            <PivotItem headerText="Object" itemKey={Tabs.Objects}>
                 <ObjectsPanel />
             </PivotItem>
-            <PivotItem headerText="Statuses" itemKey={Tabs.Status}>
+            <PivotItem headerText="Status" itemKey={Tabs.Status}>
                 <StatusPanel />
+            </PivotItem>
+            <PivotItem headerText="Draw" itemKey={Tabs.Draw}>
+                <p>TODO</p>
             </PivotItem>
         </Pivot>
     );

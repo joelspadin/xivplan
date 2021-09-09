@@ -55,13 +55,18 @@ export interface Point {
 export interface ResizeableObject extends Point {
     width: number;
     height: number;
-    angle: number;
+    rotation: number;
 }
 
 export interface ImageObject extends ResizeableObject {
-    type: 'img';
-    name: string;
     image: string;
+}
+
+export interface MarkerObject extends ImageObject {
+    type: 'marker';
+    shape: 'circle' | 'square';
+    name: string;
+    color: string;
 }
 
 export interface ArrowObject extends ResizeableObject {
@@ -69,17 +74,29 @@ export interface ArrowObject extends ResizeableObject {
     color: string;
 }
 
-export type Marker = ImageObject | ArrowObject;
+export type Marker = MarkerObject | ArrowObject;
 
 export interface ActorStatus {
     icon: string;
     name: string;
 }
 
-export interface Actor extends ImageObject {
+export interface PartyObject extends ImageObject {
+    type: 'party';
     name: string;
-    statuses: ActorStatus[];
+    status: ActorStatus[];
 }
+
+export interface EnemyObject extends Point {
+    type: 'enemy';
+    icon: string;
+    name: string;
+    radius: number;
+    status: ActorStatus[];
+    rotation?: number;
+}
+
+export type Actor = PartyObject | EnemyObject;
 
 export interface CircleZone extends Point {
     type: 'circle' | 'stack' | 'flare' | 'knockback' | 'cw' | 'ccw' | 'eye';
@@ -98,8 +115,8 @@ export interface ConeZone extends Point {
     type: 'cone';
     color: number;
     radius: number;
-    width: number;
-    angle: number;
+    rotation: number;
+    coneAngle: number;
 }
 
 export interface RectangleZone extends ResizeableObject {
@@ -113,10 +130,13 @@ export interface ExaflareZone extends ResizeableObject {
     length: number;
 }
 
-export interface StarburstZone extends ResizeableObject {
+export interface StarburstZone extends Point {
     type: 'starburst';
     color: number;
+    radius: number;
+    rotation: number;
     spokes: number;
+    spokeWidth: number;
 }
 
 export interface TowerZone extends Point {

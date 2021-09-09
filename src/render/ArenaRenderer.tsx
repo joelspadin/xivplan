@@ -6,13 +6,13 @@ import { ArenaShape, CustomGrid, GridType, RadialGrid, RectangularGrid, Scene } 
 import { useScene } from '../SceneProvider';
 import {
     ALIGN_TO_PIXEL,
-    getArenaEllipse,
-    getArenaRect,
-    getCoord,
-    getCoordX,
-    getCoordY,
-    useArenaEllipse,
-    useArenaRect,
+    getCanvasArenaEllipse,
+    getCanvasArenaRect,
+    getCanvasCoord,
+    getCanvasX,
+    getCanvasY,
+    useCanvasArenaEllipse,
+    useCanvasArenaRect,
 } from './coord';
 import { useSceneTheme } from './SceneTheme';
 
@@ -31,8 +31,8 @@ export const ArenaRenderer: React.FunctionComponent = () => {
 };
 
 function getArenaClip(scene: Scene): (context: KonvaContext) => void {
-    const rect = getArenaRect(scene);
-    const center = getCoord(scene, { x: 0, y: 0 });
+    const rect = getCanvasArenaRect(scene);
+    const center = getCanvasCoord(scene, { x: 0, y: 0 });
 
     switch (scene.arena.shape) {
         case ArenaShape.Circle:
@@ -68,7 +68,7 @@ const BackgroundImage: React.FunctionComponent = () => {
         return null;
     }
 
-    const position = getArenaRect(scene);
+    const position = getCanvasArenaRect(scene);
 
     return <Image image={image} {...position} />;
 };
@@ -86,14 +86,14 @@ const BackgroundRenderer: React.FunctionComponent = () => {
 };
 
 const CircularBackground: React.FunctionComponent = () => {
-    const position = useArenaEllipse();
+    const position = useCanvasArenaEllipse();
     const theme = useSceneTheme();
 
     return <Ellipse {...position} {...theme.arena} {...ALIGN_TO_PIXEL} />;
 };
 
 const RectangularBackground: React.FunctionComponent = () => {
-    const position = useArenaRect();
+    const position = useCanvasArenaRect();
     const theme = useSceneTheme();
 
     return <Rect {...position} {...theme.arena} {...ALIGN_TO_PIXEL} />;
@@ -162,7 +162,7 @@ const RadialGridRenderer: React.FunctionComponent<GridProps<RadialGrid>> = ({ gr
     const theme = useSceneTheme();
     const [scene] = useScene();
     const clip = getArenaClip(scene);
-    const position = getArenaEllipse(scene);
+    const position = getCanvasArenaEllipse(scene);
 
     const rings = getRingGridDivs(grid.radialDivs, position.radiusX, position.radiusY);
     const spokes = getSpokeGridDivs(grid.angularDivs, grid.startAngle, position.radiusX, position.radiusY);
@@ -205,7 +205,7 @@ const RectangularGridRenderer: React.FunctionComponent<GridProps<RectangularGrid
     const theme = useSceneTheme();
     const [scene] = useScene();
 
-    const position = getArenaRect(scene);
+    const position = getCanvasArenaRect(scene);
 
     const rows = getLinearGridDivs(grid.rows, position.y, position.height);
     const cols = getLinearGridDivs(grid.columns, position.x, position.width);
@@ -238,7 +238,7 @@ const CustomGridRenderer: React.FunctionComponent<GridProps<CustomGrid>> = ({ gr
     const theme = useSceneTheme();
     const [scene] = useScene();
     const clip = getArenaClip(scene);
-    const position = getArenaRect(scene);
+    const position = getCanvasArenaRect(scene);
 
     return (
         <Shape
@@ -248,13 +248,13 @@ const CustomGridRenderer: React.FunctionComponent<GridProps<CustomGrid>> = ({ gr
                 context.beginPath();
 
                 for (const column of grid.columns) {
-                    const x = getCoordX(scene, column);
+                    const x = getCanvasX(scene, column);
                     context.moveTo(x, position.y);
                     context.lineTo(x, position.y + position.height);
                 }
 
                 for (const row of grid.rows) {
-                    const y = getCoordY(scene, row);
+                    const y = getCanvasY(scene, row);
                     context.moveTo(position.x, y);
                     context.lineTo(position.x + position.width, y);
                 }

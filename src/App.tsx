@@ -2,7 +2,6 @@ import { classNamesFunction, Theme, useTheme } from '@fluentui/react';
 import { IStyle } from '@fluentui/style-utilities';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import './App.css';
 import { Routes } from './Routes';
 import { SiteHeader, SiteHeaderHeight } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';

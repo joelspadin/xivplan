@@ -1,6 +1,8 @@
 import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
 import React from 'react';
+import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
+import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
 import { SceneProvider } from './SceneProvider';
 
@@ -17,10 +19,7 @@ export const MainPage: React.FunctionComponent = () => {
         return {
             root: {
                 position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+                inset: 0,
             },
             stage: {
                 backgroundColor: theme.palette.neutralLighter,
@@ -31,12 +30,15 @@ export const MainPage: React.FunctionComponent = () => {
 
     return (
         <SceneProvider>
-            <Stack horizontal className={classNames.root}>
-                <MainPanel />
-                <Stack.Item grow className={classNames.stage}>
-                    <SceneRenderer />
-                </Stack.Item>
-            </Stack>
+            <PanelDragProvider>
+                <Stack horizontal className={classNames.root}>
+                    <MainPanel />
+                    <Stack.Item className={classNames.stage}>
+                        <SceneRenderer />
+                    </Stack.Item>
+                    <DetailsPanel />
+                </Stack>
+            </PanelDragProvider>
         </SceneProvider>
     );
 };

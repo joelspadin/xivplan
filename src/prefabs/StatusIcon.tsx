@@ -7,6 +7,7 @@ const classNames = mergeStyleSets({
     row: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        cursor: 'grab',
     } as IStyle,
     icon: {
         width: 32,

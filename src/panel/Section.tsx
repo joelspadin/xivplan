@@ -14,16 +14,16 @@ const classNames = mergeStyleSets({
     group: {} as IStyle,
 });
 
-export interface SectionProps {
+export interface SectionProps extends HTMLAttributes<HTMLElement> {
     title: string;
 }
 
-export const Section: React.FunctionComponent<SectionProps> = ({ title, children }) => {
+export const Section: React.FunctionComponent<SectionProps> = ({ title, children, ...props }) => {
     return (
-        <>
+        <section {...props}>
             <Separator className={classNames.separator}>{title}</Separator>
             <Stack tokens={stackTokens}>{children}</Stack>
-        </>
+        </section>
     );
 };
 

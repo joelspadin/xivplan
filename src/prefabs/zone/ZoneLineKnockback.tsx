@@ -3,5 +3,5 @@ import icon from '../../assets/zone/line_knockback.png';
 import { PrefabIcon } from '../PrefabIcon';
 
 export const ZoneLineKnockback: React.FunctionComponent = () => {
-    return <PrefabIcon name="Line knockback" icon={icon} />;
+    return <PrefabIcon draggable name="Line knockback" icon={icon} />;
 };

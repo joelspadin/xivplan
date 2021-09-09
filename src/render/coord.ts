@@ -4,22 +4,22 @@ import { useScene } from '../SceneProvider';
 export const SCENE_PADDING = 120;
 
 export const ALIGN_TO_PIXEL = {
-    offsetX: 0.5,
-    offsetY: 0.5,
+    offsetX: -0.5,
+    offsetY: -0.5,
 };
 
-export function getCoordX(scene: Scene, x: number): number {
+export function getCanvasX(scene: Scene, x: number): number {
     const center = scene.arena.width / 2 + SCENE_PADDING;
     return center + x;
 }
 
-export function getCoordY(scene: Scene, y: number): number {
+export function getCanvasY(scene: Scene, y: number): number {
     const center = scene.arena.height / 2 + SCENE_PADDING;
     return center + y;
 }
 
-export function getCoord(scene: Scene, p: Point): Point {
-    return { x: getCoordX(scene, p.x), y: getCoordY(scene, p.y) };
+export function getCanvasCoord(scene: Scene, p: Point): Point {
+    return { x: getCanvasX(scene, p.x), y: getCanvasY(scene, p.y) };
 }
 
 export function getCanvasSize(scene: Scene): { width: number; height: number } {
@@ -29,33 +29,47 @@ export function getCanvasSize(scene: Scene): { width: number; height: number } {
     };
 }
 
-export function getArenaRect(scene: Scene): { x: number; y: number; width: number; height: number } {
-    const { x, y } = getCoord(scene, { x: -scene.arena.width / 2, y: -scene.arena.height / 2 });
+export function getCanvasArenaRect(scene: Scene): { x: number; y: number; width: number; height: number } {
+    const { x, y } = getCanvasCoord(scene, { x: -scene.arena.width / 2, y: -scene.arena.height / 2 });
     const width = scene.arena.width;
     const height = scene.arena.height;
 
     return { x, y, width, height };
 }
 
-export function getArenaEllipse(scene: Scene): { x: number; y: number; radiusX: number; radiusY: number } {
-    const { x, y } = getCoord(scene, { x: 0, y: 0 });
+export function getCanvasArenaEllipse(scene: Scene): { x: number; y: number; radiusX: number; radiusY: number } {
+    const { x, y } = getCanvasCoord(scene, { x: 0, y: 0 });
     const radiusX = scene.arena.width / 2;
     const radiusY = scene.arena.height / 2;
 
     return { x, y, radiusX, radiusY };
 }
 
-export function useCoord(p: Point): Point {
+export function useCanvasCoord(p: Point): Point {
     const [scene] = useScene();
-    return getCoord(scene, p);
+    return getCanvasCoord(scene, p);
 }
 
-export function useArenaRect(): { x: number; y: number; width: number; height: number } {
+export function useCanvasArenaRect(): { x: number; y: number; width: number; height: number } {
     const [scene] = useScene();
-    return getArenaRect(scene);
+    return getCanvasArenaRect(scene);
 }
 
-export function useArenaEllipse(): { x: number; y: number; radiusX: number; radiusY: number } {
+export function useCanvasArenaEllipse(): { x: number; y: number; radiusX: number; radiusY: number } {
     const [scene] = useScene();
-    return getArenaEllipse(scene);
+    return getCanvasArenaEllipse(scene);
+}
+
+export function getSceneX(scene: Scene, x: number): number {
+    const center = scene.arena.width / 2 + SCENE_PADDING;
+    return x - center;
+}
+
+export function getSceneY(scene: Scene, y: number): number {
+    const center = scene.arena.height / 2 + SCENE_PADDING;
+    return y - center;
+}
+
+export function getSceneCoord(scene: Scene, p: Point): Point {
+    return { x: getSceneX(scene, p.x), y: getSceneY(scene, p.y) };
 }

@@ -2,7 +2,7 @@ import { DefaultButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@flu
 import React from 'react';
 import { ArenaPreset } from '../scene';
 import { useScene } from '../SceneProvider';
-import { ArenaBackgroundEdit } from './ArenaackgroundEdit';
+import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ARENA_PRESETS } from './ArenaPresets';
 import { ArenaShapeEdit } from './ArenaShapeEdit';

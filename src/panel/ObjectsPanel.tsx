@@ -1,10 +1,9 @@
-import { IStyle, mergeStyleSets, useTheme } from '@fluentui/react';
+import { IStyle, mergeStyleSets, Text, useTheme } from '@fluentui/react';
 import React from 'react';
+import { DrawArrow } from '../prefabs/Arrow';
+import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
+import { Waymark1, Waymark2, Waymark3, Waymark4, WaymarkA, WaymarkB, WaymarkC, WaymarkD } from '../prefabs/Markers';
 import {
-    EnemyHuge,
-    EnemyLarge,
-    EnemyMedium,
-    EnemySmall,
     PartyAny,
     PartyAstrologian,
     PartyBard,
@@ -30,19 +29,7 @@ import {
     PartyTank,
     PartyWarrior,
     PartyWhiteMage,
-} from '../prefabs/Actors';
-import {
-    DrawArrow,
-    DrawPath,
-    Waymark1,
-    Waymark2,
-    Waymark3,
-    Waymark4,
-    WaymarkA,
-    WaymarkB,
-    WaymarkC,
-    WaymarkD,
-} from '../prefabs/Markers';
+} from '../prefabs/Party';
 import {
     TetherClose,
     TetherDefault,
@@ -77,6 +64,11 @@ const classNames = mergeStyleSets({
     darken: {
         filter: 'brightness(0.85)',
     } as IStyle,
+    usage: {
+        marginTop: -8,
+        marginBottom: 8,
+        opacity: 0.7,
+    } as IStyle,
 });
 
 export const ObjectsPanel: React.FunctionComponent = () => {
@@ -110,20 +102,9 @@ export const ObjectsPanel: React.FunctionComponent = () => {
                     <ZoneEye />
                 </ObjectGroup>
             </Section>
-            <Section title="Tethers">
-                <ObjectGroup>
-                    <TetherPlusMinus />
-                    <TetherPlusPlus />
-                    <TetherMinusMinus />
 
-                    <TetherClose />
-                    <TetherFar />
-                    <TetherDefault />
-                </ObjectGroup>
-            </Section>
             <Section title="Waymarks">
                 <ObjectGroup>
-                    <DrawPath />
                     <DrawArrow />
                     <WaymarkA />
                     <WaymarkB />
@@ -177,10 +158,25 @@ export const ObjectsPanel: React.FunctionComponent = () => {
             </Section>
             <Section title="Enemies">
                 <ObjectGroup>
+                    <EnemyCircle />
                     <EnemySmall />
                     <EnemyMedium />
                     <EnemyLarge />
                     <EnemyHuge />
+                </ObjectGroup>
+            </Section>
+            <Section title="Tethers">
+                <Text block variant="small" className={classNames.usage}>
+                    Select a tether type, then click two objects to tether them together.
+                </Text>
+                <ObjectGroup>
+                    <TetherPlusMinus />
+                    <TetherPlusPlus />
+                    <TetherMinusMinus />
+
+                    <TetherClose />
+                    <TetherFar />
+                    <TetherDefault />
                 </ObjectGroup>
             </Section>
         </div>
