@@ -8,7 +8,6 @@ import { useCanvasCoord } from '../render/coord';
 import { registerRenderer } from '../render/ObjectRenderer';
 import { PartyObject } from '../scene';
 import { SceneAction } from '../SceneProvider';
-import { getUrl } from '../util';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 32;
@@ -18,7 +17,7 @@ function makeIcon(name: string, icon: string) {
     // eslint-disable-next-line react/display-name
     return () => {
         const [, setDragObject] = usePanelDrag();
-        const iconUrl = getUrl(`../assets/actor/${icon}`, import.meta.url);
+        const iconUrl = new URL(`../assets/actor/${icon}`, import.meta.url).toString();
 
         return (
             <PrefabIcon

@@ -8,7 +8,6 @@ import { ALIGN_TO_PIXEL, useCanvasCoord } from '../render/coord';
 import { registerRenderer } from '../render/ObjectRenderer';
 import { MarkerObject } from '../scene';
 import { SceneAction } from '../SceneProvider';
-import { getUrl } from '../util';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 42;
@@ -24,7 +23,7 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
     // eslint-disable-next-line react/display-name
     return () => {
         const [, setDragObject] = usePanelDrag();
-        const iconUrl = getUrl(`../assets/marker/${icon}`, import.meta.url);
+        const iconUrl = new URL(`../assets/marker/${icon}`, import.meta.url).toString();
 
         return (
             <PrefabIcon

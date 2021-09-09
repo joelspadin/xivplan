@@ -11,7 +11,6 @@ import { registerRenderer } from '../render/ObjectRenderer';
 import { EnemyTheme, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject } from '../scene';
 import { SceneAction } from '../SceneProvider';
-import { getUrl } from '../util';
 import { PrefabIcon } from './PrefabIcon';
 
 const ENEMY_TYPE = 'enemy';
@@ -36,7 +35,7 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
     // eslint-disable-next-line react/display-name
     return () => {
         const [, setDragObject] = usePanelDrag();
-        const iconUrl = getUrl(`../assets/actor/${icon}`, import.meta.url);
+        const iconUrl = new URL(`../assets/actor/${icon}`, import.meta.url).toString();
 
         return (
             <PrefabIcon
