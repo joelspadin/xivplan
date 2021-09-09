@@ -3,7 +3,7 @@
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
-    "skipLibCheck": false,
+    "skipLibCheck": true, // https://github.com/microsoft/fluentui/issues/7110
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
