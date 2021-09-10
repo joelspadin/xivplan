@@ -1,4 +1,3 @@
-import { useTheme } from '@fluentui/react';
 import Konva from 'konva';
 
 export interface ArenaTheme {
@@ -25,26 +24,29 @@ export interface SceneTheme {
     enemy: EnemyTheme;
 }
 
-export function useSceneTheme(): SceneTheme {
-    const theme = useTheme();
+const BACKGROUND = '#141414';
+const FOREGROUND = '#ffffff';
+const GRID = '#005799';
+const ENEMY = '#ff0000';
 
+export function useSceneTheme(): SceneTheme {
     return {
         arena: {
-            fill: theme.palette.white,
-            stroke: theme.palette.themeTertiary,
+            fill: BACKGROUND,
+            stroke: GRID,
             strokeWidth: 1,
         },
         grid: {
-            stroke: theme.palette.themeTertiary,
+            stroke: GRID,
             strokeWidth: 1,
         },
         enemy: {
             opacity: 0.75,
-            ringColor: theme.palette.red,
+            ringColor: ENEMY,
             ringShadowOpacity: 0.5,
             text: {
-                fill: theme.palette.black,
-                stroke: theme.palette.white,
+                fill: FOREGROUND,
+                stroke: BACKGROUND,
             },
         },
     };

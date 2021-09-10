@@ -62,12 +62,11 @@ const classNames = mergeStyleSets({
         padding: PANEL_PADDING,
     } as IStyle,
     darken: {
-        filter: 'brightness(0.85)',
+        filter: 'brightness(0.75) saturate(1.8)',
     } as IStyle,
     usage: {
         marginTop: -8,
         marginBottom: 8,
-        opacity: 0.7,
     } as IStyle,
 });
 
@@ -169,7 +168,7 @@ export const ObjectsPanel: React.FunctionComponent = () => {
                 <Text block variant="small" className={classNames.usage}>
                     Select a tether type, then click two objects to tether them together.
                 </Text>
-                <ObjectGroup>
+                <ObjectGroup className={zonesClass}>
                     <TetherPlusMinus />
                     <TetherPlusPlus />
                     <TetherMinusMinus />

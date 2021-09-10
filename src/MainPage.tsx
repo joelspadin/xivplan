@@ -22,7 +22,7 @@ export const MainPage: React.FunctionComponent = () => {
                 inset: 0,
             },
             stage: {
-                backgroundColor: theme.palette.neutralLighter,
+                backgroundColor: theme.palette.neutralLight,
                 overflow: 'auto',
             },
         };
