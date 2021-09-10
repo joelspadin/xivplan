@@ -1,4 +1,5 @@
 import { Context as KonvaContext } from 'konva/lib/Context';
+import { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
 import { Ellipse, Group, Image, Layer, Rect, Shape } from 'react-konva';
 import useImage from 'use-image';
@@ -85,18 +86,25 @@ const BackgroundRenderer: React.FunctionComponent = () => {
     }
 };
 
+const SHADOW: ShapeConfig = {
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    shadowOffsetY: 4,
+    shadowBlur: 6,
+};
+
 const CircularBackground: React.FunctionComponent = () => {
     const position = useCanvasArenaEllipse();
     const theme = useSceneTheme();
 
-    return <Ellipse {...position} {...theme.arena} {...ALIGN_TO_PIXEL} />;
+    return <Ellipse {...position} {...theme.arena} {...SHADOW} />;
 };
 
 const RectangularBackground: React.FunctionComponent = () => {
     const position = useCanvasArenaRect();
     const theme = useSceneTheme();
 
-    return <Rect {...position} {...theme.arena} {...ALIGN_TO_PIXEL} />;
+    return <Rect {...position} {...theme.arena} {...SHADOW} {...ALIGN_TO_PIXEL} />;
 };
 
 const GridRenderer: React.FunctionComponent = () => {
