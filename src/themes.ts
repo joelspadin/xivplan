@@ -55,5 +55,8 @@ export const darkTheme = createTheme({
         blackTranslucent40: DefaultPalette.whiteTranslucent40,
         whiteTranslucent40: DefaultPalette.blackTranslucent40,
     },
+    semanticColors: {
+        inputBorder: '#8a8886',
+    },
     isInverted: true,
 });
