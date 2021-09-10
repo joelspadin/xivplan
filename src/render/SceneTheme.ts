@@ -24,9 +24,9 @@ export interface SceneTheme {
     enemy: EnemyTheme;
 }
 
-const BACKGROUND = '#141414';
+const BACKGROUND = '#40352c';
 const FOREGROUND = '#ffffff';
-const GRID = '#005799';
+const GRID = '#6F5A48';
 const ENEMY = '#ff0000';
 
 export function useSceneTheme(): SceneTheme {
