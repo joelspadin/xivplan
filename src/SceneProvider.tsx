@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { createContext, Dispatch, useContext, useReducer } from 'react';
 import { Actor, Arena, ArenaShape, DEFAULT_SCENE, Grid, Marker, Scene, Tether, Zone } from './scene';
+import { createUndoContext } from './undo/undoContext';
 
 export interface SetArenaAction {
     type: 'arena';
@@ -75,19 +75,18 @@ export type SceneAction =
     | ActorListAction
     | TetherListAction;
 
-export type SceneState = [Scene, Dispatch<SceneAction>];
+const HISTORY_SIZE = 1000;
 
-export const SceneContext = createContext<SceneState>([DEFAULT_SCENE, () => undefined]);
+const { UndoProvider, Context, usePresent, useUndoRedo } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
 export const SceneProvider: React.FunctionComponent = ({ children }) => {
-    const reducer = useReducer(sceneReducer, DEFAULT_SCENE);
-
-    return <SceneContext.Provider value={reducer}>{children}</SceneContext.Provider>;
+    return <UndoProvider initialState={DEFAULT_SCENE}>{children}</UndoProvider>;
 };
 
-export function useScene(): SceneState {
-    return useContext(SceneContext);
-}
+export const SceneContext = Context;
+
+export const useScene = usePresent;
+export const useSceneUndoRedo = useUndoRedo;
 
 function listActionReducer<T>(state: T[], action: ListAction<T>): T[] {
     switch (action.op) {

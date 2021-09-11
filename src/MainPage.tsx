@@ -1,10 +1,11 @@
 import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
 import React from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
-import { SceneProvider } from './SceneProvider';
+import { SceneProvider, useSceneUndoRedo } from './SceneProvider';
 
 interface IContentStyles {
     root: IStyle;
@@ -31,6 +32,8 @@ export const MainPage: React.FunctionComponent = () => {
     return (
         <SceneProvider>
             <PanelDragProvider>
+                <HotkeyHandler />
+
                 <Stack horizontal className={classNames.root}>
                     <MainPanel />
                     <Stack.Item className={classNames.stage}>
@@ -41,4 +44,12 @@ export const MainPage: React.FunctionComponent = () => {
             </PanelDragProvider>
         </SceneProvider>
     );
+};
+
+const HotkeyHandler: React.FC = () => {
+    const [undo, redo] = useSceneUndoRedo();
+    useHotkeys('ctrl+z', undo);
+    useHotkeys('ctrl+y', redo);
+
+    return null;
 };

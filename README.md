@@ -28,4 +28,6 @@ progression, so it will always be simpler and less powerful.
 | Save scenes                   |        |
 | Share scenes                  |        |
 | Context menus                 |        |
-| Keyboard shortcuts            |        |
+| Keyboard shortcut help        |        |
+| Undo/redo                     | ✅     |
+| Copy/paste/duplicate          |        |

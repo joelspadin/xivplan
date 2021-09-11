@@ -1,6 +1,6 @@
 import { ThemeContext, useTheme } from '@fluentui/react';
 import Konva from 'konva';
-import React, { RefObject, useRef } from 'react';
+import React, { RefObject, useContext, useRef } from 'react';
 import { Stage } from 'react-konva';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useScene } from '../SceneProvider';
@@ -10,7 +10,8 @@ import { ObjectRenderer } from './ObjectRenderer';
 
 export const SceneRenderer: React.FunctionComponent = () => {
     const theme = useTheme();
-    const [scene, dispatch] = useScene();
+    const sceneBridge = useContext(SceneContext);
+    const [scene] = useScene();
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
 
@@ -20,7 +21,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
         <DropTarget stageRef={stageRef}>
             <Stage {...size} ref={stageRef}>
                 <ThemeContext.Provider value={theme}>
-                    <SceneContext.Provider value={[scene, dispatch]}>
+                    <SceneContext.Provider value={sceneBridge}>
                         <ArenaRenderer />
                         <ObjectRenderer objects={scene.zones} />
                         <ObjectRenderer objects={scene.markers} />
