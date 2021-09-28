@@ -8,6 +8,7 @@ import { PANEL_PADDING } from './PanelStyles';
 const classNames = mergeStyleSets({
     root: {
         padding: PANEL_PADDING,
+        userSelect: 'none',
     } as IStyle,
 });
 

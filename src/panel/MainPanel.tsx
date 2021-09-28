@@ -15,6 +15,7 @@ const enum Tabs {
 const classNames = mergeStyleSets({
     wrapper: {
         width: PANEL_WIDTH,
+        userSelect: 'none',
     } as IStyle,
 });
 
