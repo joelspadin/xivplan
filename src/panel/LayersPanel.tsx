@@ -1,6 +1,7 @@
 import { IStyle, mergeStyleSets } from '@fluentui/react';
 import React, { useCallback } from 'react';
-import { useScene } from '../SceneProvider';
+import { EditList, useScene } from '../SceneProvider';
+import { SceneSelection, useSelection } from '../SelectionProvider';
 import { LayerList } from './LayerList';
 import { PANEL_PADDING } from './PanelStyles';
 
@@ -10,28 +11,44 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
+function updateSelection(selection: SceneSelection, from: number, to: number): SceneSelection {
+    if (selection.index === from) {
+        return { ...selection, index: to };
+    }
+    if (from < to) {
+        if (selection.index > from && selection.index <= to) {
+            return { ...selection, index: selection.index - 1 };
+        }
+    } else {
+        if (selection.index >= to && selection.index < from) {
+            return { ...selection, index: selection.index + 1 };
+        }
+    }
+
+    return selection;
+}
+
 export const LayersPanel: React.FunctionComponent = () => {
     const [scene, dispatch] = useScene();
+    const [selection, setSelection] = useSelection();
 
-    const moveTether = useCallback(
-        (from: number, to: number) => dispatch({ type: 'tethers', op: 'move', from, to }),
-        [dispatch],
+    const moveObject = useCallback(
+        (type: EditList, from: number, to: number) => {
+            dispatch({ type, op: 'move', from, to });
+
+            // If an object in the reordered list is selected, the selection
+            // index needs to be updated to maintain the selection.
+            if (selection?.layer === type) {
+                setSelection(updateSelection(selection, from, to));
+            }
+        },
+        [dispatch, selection, setSelection],
     );
 
-    const moveActor = useCallback(
-        (from: number, to: number) => dispatch({ type: 'actors', op: 'move', from, to }),
-        [dispatch],
-    );
-
-    const moveMarker = useCallback(
-        (from: number, to: number) => dispatch({ type: 'markers', op: 'move', from, to }),
-        [dispatch],
-    );
-
-    const moveZone = useCallback(
-        (from: number, to: number) => dispatch({ type: 'zones', op: 'move', from, to }),
-        [dispatch],
-    );
+    const moveTether = useCallback((from: number, to: number) => moveObject('tethers', from, to), [moveObject]);
+    const moveActor = useCallback((from: number, to: number) => moveObject('actors', from, to), [moveObject]);
+    const moveMarker = useCallback((from: number, to: number) => moveObject('markers', from, to), [moveObject]);
+    const moveZone = useCallback((from: number, to: number) => moveObject('zones', from, to), [moveObject]);
 
     return (
         <div className={classNames.root}>
