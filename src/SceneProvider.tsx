@@ -1,5 +1,20 @@
 import * as React from 'react';
-import { Actor, Arena, ArenaShape, DEFAULT_SCENE, Grid, Marker, Scene, Tether, Zone } from './scene';
+import {
+    Actor,
+    Arena,
+    ArenaShape,
+    DEFAULT_SCENE,
+    Grid,
+    isActor,
+    isMarker,
+    isTether,
+    isZone,
+    Marker,
+    Scene,
+    Tether,
+    UnknownObject,
+    Zone,
+} from './scene';
 import { createUndoContext } from './undo/undoContext';
 
 export interface SetArenaAction {
@@ -87,6 +102,47 @@ export const SceneContext = Context;
 
 export const useScene = usePresent;
 export const useSceneUndoRedo = useUndoRedo;
+
+export function updateListObject<T extends UnknownObject>(
+    dispatch: React.Dispatch<SceneAction>,
+    layer: EditList,
+    index: number,
+    value: T,
+): void {
+    switch (layer) {
+        case 'actors':
+            if (isActor(value)) {
+                dispatch({ type: 'actors', op: 'update', index, value });
+            } else {
+                throw Error(`Invalid object type ${value.type}`);
+            }
+            break;
+
+        case 'markers':
+            if (isMarker(value)) {
+                dispatch({ type: 'markers', op: 'update', index, value });
+            } else {
+                throw Error(`Invalid object type ${value.type}`);
+            }
+            break;
+
+        case 'tethers':
+            if (isTether(value)) {
+                dispatch({ type: 'tethers', op: 'update', index, value });
+            } else {
+                throw Error(`Invalid object type ${value.type}`);
+            }
+            break;
+
+        case 'zones':
+            if (isZone(value)) {
+                dispatch({ type: 'zones', op: 'update', index, value });
+            } else {
+                throw Error(`Invalid object type ${value.type}`);
+            }
+            break;
+    }
+}
 
 function listActionReducer<T>(state: T[], action: ListAction<T>): T[] {
     switch (action.op) {

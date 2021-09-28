@@ -1,14 +1,6 @@
-import {
-    DefaultButton,
-    Dropdown,
-    IDropdownOption,
-    IStackTokens,
-    Position,
-    SpinButton,
-    Stack,
-    TextField,
-} from '@fluentui/react';
+import { DefaultButton, Dropdown, IDropdownOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { FormEvent, useCallback, useEffect, useState } from 'react';
+import { DeferredTextField } from '../DeferredTextField';
 import {
     CustomGrid,
     DEFAULT_CUSTOM_GRID,
@@ -172,18 +164,18 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
             )}
             {grid.type === GridType.Custom && (
                 <>
-                    <TextField
+                    <DeferredTextField
                         label="Grid row stops"
                         value={customRows}
-                        onChange={(ev, newValue) => {
+                        onChange={(newValue) => {
                             setCustomRows(newValue ?? '');
                             setGrid({ ...grid, rows: parseCustomGrid(newValue) });
                         }}
                     />
-                    <TextField
+                    <DeferredTextField
                         label="Grid column stops"
                         value={customCols}
-                        onChange={(ev, newValue) => {
+                        onChange={(newValue) => {
                             setCustomRows(newValue ?? '');
                             setGrid({ ...grid, columns: parseCustomGrid(newValue) });
                         }}

@@ -1,18 +1,23 @@
+import { Dropdown, IDropdownOption, Stack } from '@fluentui/react';
 import * as React from 'react';
+import { useCallback } from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
+import { CompactColorPicker } from '../CompactColorPicker';
+import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
 import { registerListComponent } from '../panel/LayerList';
+import { registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { ALIGN_TO_PIXEL, useCanvasCoord } from '../render/coord';
 import { registerRenderer } from '../render/ObjectRenderer';
-import { MarkerObject } from '../scene';
-import { SceneAction } from '../SceneProvider';
+import { MarkerObject, ObjectType } from '../scene';
+import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 42;
 const ICON_RATIO = 32 / DEFAULT_SIZE;
-const MARKER_TYPE = 'marker';
 
 const COLOR_RED = '#f13b66';
 const COLOR_YELLOW = '#e1dc5d';
@@ -32,9 +37,8 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
-                        type: MARKER_TYPE,
                         object: {
-                            type: 'marker',
+                            type: ObjectType.Marker,
                             image: iconUrl,
                             name,
                             color,
@@ -48,12 +52,11 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
     };
 }
 
-registerDropHandler<MarkerObject>(MARKER_TYPE, (object, position) => {
+registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
     return {
         type: 'markers',
         op: 'add',
         value: {
-            type: 'marker',
             image: '',
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
@@ -78,7 +81,7 @@ function getDashSize(object: MarkerObject) {
     }
 }
 
-registerRenderer<MarkerObject>(MARKER_TYPE, ({ object }) => {
+registerRenderer<MarkerObject>(ObjectType.Marker, ({ object }) => {
     const [image] = useImage(object.image);
     const center = useCanvasCoord(object);
 
@@ -121,8 +124,57 @@ registerRenderer<MarkerObject>(MARKER_TYPE, ({ object }) => {
     );
 });
 
-registerListComponent<MarkerObject>(MARKER_TYPE, ({ object }) => {
+registerListComponent<MarkerObject>(ObjectType.Marker, ({ object }) => {
     return <DetailsItem icon={object.image} name={object.name} />;
+});
+
+const shapeOptions: IDropdownOption[] = [
+    {
+        key: 'square',
+        text: 'Square',
+    },
+    {
+        key: 'circle',
+        text: 'Circle',
+    },
+];
+
+const swatches = [COLOR_RED, COLOR_YELLOW, COLOR_BLUE, COLOR_PURPLE];
+
+registerPropertiesControl<MarkerObject>(ObjectType.Marker, ({ object, layer, index }) => {
+    const [, dispatch] = useScene();
+
+    const onNameChanged = useCallback(
+        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
+        [dispatch, object, layer, index],
+    );
+
+    const onShapeChanged = useCallback(
+        (option?: IDropdownOption) => {
+            const shape = (option?.key as 'circle' | 'square') ?? 'square';
+            updateListObject(dispatch, layer, index, { ...object, shape });
+        },
+        [dispatch, object, layer, index],
+    );
+
+    const onColorChanged = useCallback(
+        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
+        [dispatch, object, layer, index],
+    );
+
+    return (
+        <Stack>
+            <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
+            <Dropdown
+                label="Shape"
+                options={shapeOptions}
+                selectedKey={object.shape}
+                onChange={(ev, option) => onShapeChanged(option)}
+            />
+            <CompactColorPicker label="Color" color={object.color} swatches={swatches} onChange={onColorChanged} />
+            <ImageObjectProperties object={object} layer={layer} index={index} />
+        </Stack>
+    );
 });
 
 export const WaymarkA = makeIcon('Waymark A', 'waymark_a.png', 'circle', COLOR_RED);

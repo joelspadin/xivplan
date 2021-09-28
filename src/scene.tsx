@@ -10,6 +10,43 @@ export enum GridType {
     Custom = 'custom',
 }
 
+export enum ObjectType {
+    Arrow = 'arrow',
+    Enemy = 'enemy',
+    Marker = 'marker',
+    Party = 'party',
+    Circle = 'circle',
+    Stack = 'stack',
+    Proximity = 'proximity',
+    Knockback = 'knockback',
+    RotateCW = 'rotateCW',
+    RotateCCW = 'rotateCCW',
+    Eye = 'eye',
+    Donut = 'donut',
+    Cone = 'cone',
+    Rect = 'rect',
+    LineStack = 'lineStack',
+    LineKnocbkack = 'lineKnockback',
+    LineKnockAway = 'lineKnockAway',
+    Exaflare = 'exaflare',
+    Starburst = 'starburst',
+    Tower = 'tower',
+    Tether = 'tether',
+    TetherClose = 'tetherClose',
+    TetherFar = 'tetherFar',
+    TetherPlusMinus = 'tetherPlusMinus',
+    TetherTetherPlusPlus = 'tetherPlusPlus',
+    TetherMinusMinus = 'tetherMinusMinus',
+}
+
+export interface UnknownObject {
+    type: ObjectType;
+}
+
+function makeObjectTest<T extends UnknownObject>(...types: ObjectType[]): (object: UnknownObject) => object is T {
+    return (object): object is T => types.includes(object.type);
+}
+
 export interface NoGrid {
     type: GridType.None;
 }
@@ -63,16 +100,18 @@ export interface ImageObject extends ResizeableObject {
 }
 
 export interface MarkerObject extends ImageObject {
-    type: 'marker';
+    type: ObjectType.Marker;
     shape: 'circle' | 'square';
     name: string;
     color: string;
 }
+export const isMarker = makeObjectTest<MarkerObject>(ObjectType.Marker);
 
 export interface ArrowObject extends ResizeableObject {
-    type: 'arrow';
+    type: ObjectType.Arrow;
     color: string;
 }
+export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
 export type Marker = MarkerObject | ArrowObject;
 
@@ -82,76 +121,134 @@ export interface ActorStatus {
 }
 
 export interface PartyObject extends ImageObject {
-    type: 'party';
+    type: ObjectType.Party;
     name: string;
     status: ActorStatus[];
 }
+export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
 export interface EnemyObject extends Point {
-    type: 'enemy';
+    type: ObjectType.Enemy;
     icon: string;
     name: string;
     radius: number;
     status: ActorStatus[];
     rotation?: number;
 }
+export const isEnemy = makeObjectTest<EnemyObject>(ObjectType.Enemy);
 
 export type Actor = PartyObject | EnemyObject;
+export function isActor(object: UnknownObject): object is Actor {
+    return isParty(object) || isEnemy(object);
+}
 
 export interface CircleZone extends Point {
-    type: 'circle' | 'stack' | 'flare' | 'knockback' | 'cw' | 'ccw' | 'eye';
+    type:
+        | ObjectType.Circle
+        | ObjectType.Stack
+        | ObjectType.Proximity
+        | ObjectType.Knockback
+        | ObjectType.RotateCW
+        | ObjectType.RotateCCW
+        | ObjectType.Eye;
+
     color: string;
     radius: number;
 }
+export const isCircleZone = makeObjectTest<CircleZone>(
+    ObjectType.Circle,
+    ObjectType.Stack,
+    ObjectType.Proximity,
+    ObjectType.Knockback,
+    ObjectType.RotateCW,
+    ObjectType.RotateCCW,
+    ObjectType.Eye,
+);
 
 export interface DonutZone extends Point {
-    type: 'donut';
+    type: ObjectType.Donut;
     color: number;
     radius: number;
     innerRadius: number;
 }
+export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
 export interface ConeZone extends Point {
-    type: 'cone';
+    type: ObjectType.Cone;
     color: number;
     radius: number;
     rotation: number;
     coneAngle: number;
 }
+export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
 
 export interface RectangleZone extends ResizeableObject {
-    type: 'rect' | 'lineStack' | 'lineKnockback' | 'lineKnockAway';
+    type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnocbkack | ObjectType.LineKnockAway;
     color: number;
 }
+export const isRectangleZone = makeObjectTest<RectangleZone>(
+    ObjectType.Rect,
+    ObjectType.LineStack,
+    ObjectType.LineKnocbkack,
+    ObjectType.LineKnockAway,
+);
 
 export interface ExaflareZone extends ResizeableObject {
-    type: 'exaflare';
+    type: ObjectType.Exaflare;
     color: number;
     length: number;
 }
+export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
 export interface StarburstZone extends Point {
-    type: 'starburst';
+    type: ObjectType.Starburst;
     color: number;
     radius: number;
     rotation: number;
     spokes: number;
     spokeWidth: number;
 }
+export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburst);
 
 export interface TowerZone extends Point {
-    type: 'circle' | 'stack' | 'flare' | 'knockback' | 'rotateCW' | 'rotateCCW';
+    type: ObjectType.Tower;
     color: string;
     radius: number;
 }
+export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
 export type Zone = CircleZone | DonutZone | ConeZone | RectangleZone | ExaflareZone | StarburstZone | TowerZone;
+export function isZone(object: UnknownObject): object is Zone {
+    return (
+        isCircleZone(object) ||
+        isDonutZone(object) ||
+        isConeZone(object) ||
+        isRectangleZone(object) ||
+        isExaflareZone(object) ||
+        isStarburstZone(object) ||
+        isTowerZone(object)
+    );
+}
 
 export interface Tether {
-    type: 'tether' | 'tetherClose' | 'tetherFar' | 'tetherPlusMinus' | 'tetherPlusPlus' | 'tetherMinusMinus';
+    type:
+        | ObjectType.Tether
+        | ObjectType.TetherClose
+        | ObjectType.TetherFar
+        | ObjectType.TetherPlusMinus
+        | ObjectType.TetherTetherPlusPlus
+        | ObjectType.TetherMinusMinus;
     start: number;
     end: number;
 }
+export const isTether = makeObjectTest<Tether>(
+    ObjectType.Tether,
+    ObjectType.TetherClose,
+    ObjectType.TetherFar,
+    ObjectType.TetherPlusMinus,
+    ObjectType.TetherTetherPlusPlus,
+    ObjectType.TetherMinusMinus,
+);
 
 export type SceneObject = Zone | Marker | Actor | Tether;
 

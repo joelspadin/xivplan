@@ -4,7 +4,6 @@ import { SceneObject } from './scene';
 import { SceneAction } from './SceneProvider';
 
 export interface PanelDragObject {
-    type: string;
     object: Partial<SceneObject>;
     offset: Vector2d;
 }
@@ -36,9 +35,13 @@ export function registerDropHandler<T extends SceneObject>(types: string | strin
 }
 
 export function getDropAction(object: PanelDragObject, position: Vector2d): SceneAction | undefined {
-    const handler = dropHandlers[object.type];
+    if (!object.object.type) {
+        throw new Error('Drag object is missing type');
+    }
+
+    const handler = dropHandlers[object.object.type];
     if (handler) {
-        return handler(object.object, position);
+        return handler(object.object as SceneObject, position);
     }
     return undefined;
 }

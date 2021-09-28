@@ -6,6 +6,7 @@ import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
 import { SceneProvider, useSceneUndoRedo } from './SceneProvider';
+import { SelectionProvider } from './SelectionProvider';
 
 interface IContentStyles {
     root: IStyle;
@@ -31,17 +32,19 @@ export const MainPage: React.FunctionComponent = () => {
 
     return (
         <SceneProvider>
-            <PanelDragProvider>
-                <HotkeyHandler />
+            <SelectionProvider>
+                <PanelDragProvider>
+                    <HotkeyHandler />
 
-                <Stack horizontal className={classNames.root}>
-                    <MainPanel />
-                    <Stack.Item className={classNames.stage}>
-                        <SceneRenderer />
-                    </Stack.Item>
-                    <DetailsPanel />
-                </Stack>
-            </PanelDragProvider>
+                    <Stack horizontal className={classNames.root}>
+                        <MainPanel />
+                        <Stack.Item className={classNames.stage}>
+                            <SceneRenderer />
+                        </Stack.Item>
+                        <DetailsPanel />
+                    </Stack>
+                </PanelDragProvider>
+            </SelectionProvider>
         </SceneProvider>
     );
 };

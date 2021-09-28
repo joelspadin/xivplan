@@ -3,3 +3,10 @@ export function* reversed<T>(items: T[]): Generator<T> {
         yield items[i] as T;
     }
 }
+
+export function makeClassName(classes: Record<string, boolean>): string {
+    return Object.entries(classes)
+        .filter(([, value]) => value)
+        .map(([key]) => key)
+        .join(' ');
+}

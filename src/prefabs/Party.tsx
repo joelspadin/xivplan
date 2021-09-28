@@ -1,17 +1,21 @@
+import { Stack } from '@fluentui/react';
 import * as React from 'react';
+import { useCallback } from 'react';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
+import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
 import { registerListComponent } from '../panel/LayerList';
+import { registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
 import { registerRenderer } from '../render/ObjectRenderer';
-import { PartyObject } from '../scene';
-import { SceneAction } from '../SceneProvider';
+import { ObjectType, PartyObject } from '../scene';
+import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 32;
-const PARTY_TYPE = 'party';
 
 function makeIcon(name: string, icon: string) {
     // eslint-disable-next-line react/display-name
@@ -26,9 +30,8 @@ function makeIcon(name: string, icon: string) {
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
-                        type: PARTY_TYPE,
                         object: {
-                            type: 'party',
+                            type: ObjectType.Party,
                             image: iconUrl,
                             name,
                         },
@@ -40,12 +43,11 @@ function makeIcon(name: string, icon: string) {
     };
 }
 
-registerDropHandler<PartyObject>(PARTY_TYPE, (object, position) => {
+registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
     return {
         type: 'actors',
         op: 'add',
         value: {
-            type: 'party',
             image: '',
             status: [],
             width: DEFAULT_SIZE,
@@ -57,7 +59,7 @@ registerDropHandler<PartyObject>(PARTY_TYPE, (object, position) => {
     } as SceneAction;
 });
 
-registerRenderer<PartyObject>(PARTY_TYPE, ({ object }) => {
+registerRenderer<PartyObject>(ObjectType.Party, ({ object }) => {
     const [image] = useImage(object.image);
     const center = useCanvasCoord(object);
 
@@ -75,8 +77,24 @@ registerRenderer<PartyObject>(PARTY_TYPE, ({ object }) => {
     );
 });
 
-registerListComponent<PartyObject>(PARTY_TYPE, ({ object }) => {
+registerListComponent<PartyObject>(ObjectType.Party, ({ object }) => {
     return <DetailsItem icon={object.image} name={object.name} />;
+});
+
+registerPropertiesControl<PartyObject>(ObjectType.Party, ({ object, layer, index }) => {
+    const [, dispatch] = useScene();
+
+    const onNameChanged = useCallback(
+        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
+        [dispatch, object, layer, index],
+    );
+
+    return (
+        <Stack>
+            <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
+            <ImageObjectProperties object={object} layer={layer} index={index} />
+        </Stack>
+    );
 });
 
 export const PartyTank = makeIcon('Tank', 'tank.png');

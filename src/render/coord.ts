@@ -15,7 +15,7 @@ export function getCanvasX(scene: Scene, x: number): number {
 
 export function getCanvasY(scene: Scene, y: number): number {
     const center = scene.arena.height / 2 + SCENE_PADDING;
-    return center + y;
+    return center - y;
 }
 
 export function getCanvasCoord(scene: Scene, p: Point): Point {
@@ -30,7 +30,7 @@ export function getCanvasSize(scene: Scene): { width: number; height: number } {
 }
 
 export function getCanvasArenaRect(scene: Scene): { x: number; y: number; width: number; height: number } {
-    const { x, y } = getCanvasCoord(scene, { x: -scene.arena.width / 2, y: -scene.arena.height / 2 });
+    const { x, y } = getCanvasCoord(scene, { x: -scene.arena.width / 2, y: scene.arena.height / 2 });
     const width = scene.arena.width;
     const height = scene.arena.height;
 
@@ -67,7 +67,7 @@ export function getSceneX(scene: Scene, x: number): number {
 
 export function getSceneY(scene: Scene, y: number): number {
     const center = scene.arena.height / 2 + SCENE_PADDING;
-    return y - center;
+    return center - y;
 }
 
 export function getSceneCoord(scene: Scene, p: Point): Point {

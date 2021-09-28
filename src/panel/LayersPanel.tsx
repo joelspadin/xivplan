@@ -35,10 +35,10 @@ export const LayersPanel: React.FunctionComponent = () => {
 
     return (
         <div className={classNames.root}>
-            <LayerList objects={scene.tethers} onMove={moveTether} layer="layer-tether" headerText="Tethers" />
-            <LayerList objects={scene.actors} onMove={moveActor} layer="layer-actor" headerText="Party &amp; enemies" />
-            <LayerList objects={scene.markers} onMove={moveMarker} layer="layer-waymark" headerText="Waymarks" />
-            <LayerList objects={scene.zones} onMove={moveZone} layer="layer-zone" headerText="Zones" />
+            <LayerList objects={scene.tethers} onMove={moveTether} layer="tethers" headerText="Tethers" />
+            <LayerList objects={scene.actors} onMove={moveActor} layer="actors" headerText="Party &amp; enemies" />
+            <LayerList objects={scene.markers} onMove={moveMarker} layer="markers" headerText="Waymarks" />
+            <LayerList objects={scene.zones} onMove={moveZone} layer="zones" headerText="Zones" />
         </div>
     );
 };

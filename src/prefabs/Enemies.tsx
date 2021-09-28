@@ -1,19 +1,22 @@
+import { IStackTokens, Position, SpinButton, Stack, Toggle } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
+import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
 import { registerListComponent } from '../panel/LayerList';
+import { registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
 import { registerRenderer } from '../render/ObjectRenderer';
 import { EnemyTheme, useSceneTheme } from '../render/SceneTheme';
-import { EnemyObject } from '../scene';
-import { SceneAction } from '../SceneProvider';
+import { EnemyObject, ObjectType } from '../scene';
+import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
-const ENEMY_TYPE = 'enemy';
 const DEFAULT_SIZE = 32;
 
 const SIZE_SMALL = 16;
@@ -44,9 +47,8 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
-                        type: ENEMY_TYPE,
                         object: {
-                            type: 'enemy',
+                            type: ObjectType.Enemy,
                             icon: iconUrl,
                             name,
                             radius,
@@ -60,12 +62,11 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
     };
 }
 
-registerDropHandler<EnemyObject>(ENEMY_TYPE, (object, position) => {
+registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
     return {
         type: 'actors',
         op: 'add',
         value: {
-            type: 'enemy',
             status: [],
             radius: DEFAULT_SIZE,
             ...object,
@@ -160,7 +161,7 @@ const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ name, 
     const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [groupRef]);
+    }, [radius, theme, groupRef]);
 
     return (
         <>
@@ -192,7 +193,7 @@ const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ name, 
     );
 };
 
-registerRenderer<EnemyObject>(ENEMY_TYPE, ({ object }) => {
+registerRenderer<EnemyObject>(ObjectType.Enemy, ({ object }) => {
     const theme = useSceneTheme();
     const center = useCanvasCoord(object);
 
@@ -211,8 +212,64 @@ registerRenderer<EnemyObject>(ENEMY_TYPE, ({ object }) => {
     }
 });
 
-registerListComponent<EnemyObject>(ENEMY_TYPE, ({ object }) => {
+registerListComponent<EnemyObject>(ObjectType.Enemy, ({ object }) => {
     return <DetailsItem icon={object.icon} name={object.name} />;
+});
+
+const stackTokens: IStackTokens = {
+    childrenGap: 10,
+};
+
+registerPropertiesControl<EnemyObject>(ObjectType.Enemy, ({ object, layer, index }) => {
+    const [, dispatch] = useScene();
+
+    const onNameChanged = React.useCallback(
+        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
+        [dispatch, object, layer, index],
+    );
+    const onRadiusChanged = useSpinChanged(
+        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
+        [dispatch, object, layer, index],
+    );
+    const onDirectionalChanged = useCallback(
+        (checked: boolean | undefined) => {
+            const rotation = checked ? object.rotation ?? 0 : undefined;
+            updateListObject(dispatch, layer, index, { ...object, rotation });
+        },
+        [dispatch, object, layer, index],
+    );
+    const onRotationChanged = useSpinChanged(
+        (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
+        [dispatch, object, layer, index],
+    );
+
+    const isDirectional = object.rotation !== undefined;
+
+    return (
+        <Stack>
+            <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
+            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <SpinButton
+                label="Radius"
+                labelPosition={Position.top}
+                value={object.radius.toString()}
+                onChange={onRadiusChanged}
+                min={10}
+                step={5}
+            />
+            <Stack horizontal verticalAlign="end" tokens={stackTokens}>
+                <Toggle checked={isDirectional} onChange={(ev, checked) => onDirectionalChanged(checked)} />
+                <SpinButton
+                    label="Rotation (degrees)"
+                    disabled={!isDirectional}
+                    labelPosition={Position.top}
+                    value={object.rotation?.toString()}
+                    onChange={onRotationChanged}
+                    step={15}
+                />
+            </Stack>
+        </Stack>
+    );
 });
 
 export const EnemyCircle = makeIcon('Generic enemy', 'enemy_circle.png', SIZE_SMALL, false);
