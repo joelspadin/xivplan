@@ -5,13 +5,13 @@ import { Image } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
-import { registerListComponent } from '../panel/LayerList';
-import { registerPropertiesControl } from '../panel/PropertiesPanel';
+import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
-import { registerRenderer } from '../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { ObjectType, PartyObject } from '../scene';
-import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { updateListObject, useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
@@ -48,18 +48,20 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
         type: 'actors',
         op: 'add',
         value: {
+            type: ObjectType.Party,
             image: '',
+            name: '',
             status: [],
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
             ...object,
             ...position,
-        } as PartyObject,
-    } as SceneAction;
+        },
+    };
 });
 
-registerRenderer<PartyObject>(ObjectType.Party, ({ object }) => {
+const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
     const [image] = useImage(object.image);
     const center = useCanvasCoord(object);
 
@@ -75,13 +77,17 @@ registerRenderer<PartyObject>(ObjectType.Party, ({ object }) => {
             rotation={object.rotation}
         />
     );
-});
+};
 
-registerListComponent<PartyObject>(ObjectType.Party, ({ object }) => {
+registerRenderer<PartyObject>(ObjectType.Party, PartyRenderer);
+
+const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object }) => {
     return <DetailsItem icon={object.image} name={object.name} />;
-});
+};
 
-registerPropertiesControl<PartyObject>(ObjectType.Party, ({ object, layer, index }) => {
+registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
+
+const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object, layer, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
@@ -95,7 +101,9 @@ registerPropertiesControl<PartyObject>(ObjectType.Party, ({ object, layer, index
             <ImageObjectProperties object={object} layer={layer} index={index} />
         </Stack>
     );
-});
+};
+
+registerPropertiesControl<PartyObject>(ObjectType.Party, PartyEditControl);
 
 export const PartyTank = makeIcon('Tank', 'tank.png');
 export const PartyHealer = makeIcon('Healer', 'healer.png');

@@ -4,23 +4,26 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
+import { Portal } from 'react-konva-utils';
+import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
-import { registerListComponent } from '../panel/LayerList';
-import { registerPropertiesControl } from '../panel/PropertiesPanel';
+import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
-import { registerRenderer } from '../render/ObjectRenderer';
-import { EnemyTheme, useSceneTheme } from '../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
-import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { updateListObject, useScene } from '../SceneProvider';
+import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 32;
 
-const SIZE_SMALL = 16;
-const SIZE_MEDIUM = 32;
+const SIZE_SMALL = 20;
+const SIZE_MEDIUM = 50;
 const SIZE_LARGE = 80;
 const SIZE_HUGE = 300;
 
@@ -67,12 +70,16 @@ registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
         type: 'actors',
         op: 'add',
         value: {
-            status: [],
+            type: ObjectType.Enemy,
+            icon: '',
+            name: '',
+            color: DEFAULT_ENEMY_COLOR,
             radius: DEFAULT_SIZE,
+            status: [],
             ...object,
             ...position,
-        } as EnemyObject,
-    } as SceneAction;
+        },
+    };
 });
 
 interface RingProps {
@@ -80,6 +87,7 @@ interface RingProps {
     x: number;
     y: number;
     radius: number;
+    color: string;
     theme: EnemyTheme;
 }
 
@@ -91,26 +99,22 @@ const EnemyLabel: React.FunctionComponent<RingProps> = ({ name, x, y, radius, th
     const fontSize = Math.max(10, Math.min(24, radius / 6));
     const strokeWidth = Math.max(1, fontSize / 8);
 
-    const textProps: Partial<Konva.TextConfig> = {
-        ...theme.text,
-        x,
-        y,
-        text: name,
-        width: radius * 2,
-        height: radius * 2,
-        offsetX: radius,
-        offsetY: radius,
-        fontSize,
-        strokeWidth,
-        align: 'center',
-        verticalAlign: 'middle',
-    };
-
     return (
-        <>
-            <Text {...textProps} />
-            <Text {...textProps} strokeEnabled={false} />
-        </>
+        <Text
+            {...theme.text}
+            x={x}
+            y={y}
+            text={name}
+            width={radius * 2}
+            height={radius * 2}
+            offsetX={radius}
+            offsetY={radius}
+            fontSize={fontSize}
+            strokeWidth={strokeWidth}
+            align="center"
+            verticalAlign="middle"
+            fillAfterStrokeEnabled
+        />
     );
 };
 
@@ -118,23 +122,29 @@ function getInnerRadius(radius: number) {
     return Math.min(radius - 4, radius * INNER_RADIUS_RATIO);
 }
 
-function getShapeProps(theme: EnemyTheme, radius: number, strokeRatio: number, minStroke: number): ShapeConfig {
+function getShapeProps(
+    theme: EnemyTheme,
+    color: string,
+    radius: number,
+    strokeRatio: number,
+    minStroke: number,
+): ShapeConfig {
     const strokeWidth = Math.max(minStroke, radius * strokeRatio);
     const shadowBlur = Math.max(SHADOW_BLUR_MIN, radius * SHADOW_BLUR_RATIO);
 
     return {
-        stroke: theme.ringColor,
+        stroke: color,
         strokeWidth: strokeWidth,
-        shadowColor: theme.ringColor,
+        shadowColor: color,
         shadowBlur: shadowBlur,
         shadowOpacity: theme.ringShadowOpacity,
     };
 }
 
-const CircleRing: React.FunctionComponent<RingProps> = ({ name, x, y, radius, theme }) => {
+const CircleRing: React.FunctionComponent<RingProps> = ({ x, y, radius, theme, color }) => {
     const innerRadius = getInnerRadius(radius);
-    const outerProps = getShapeProps(theme, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
-    const innerProps = getShapeProps(theme, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
+    const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
 
     return (
         <>
@@ -142,7 +152,6 @@ const CircleRing: React.FunctionComponent<RingProps> = ({ name, x, y, radius, th
                 <Circle {...outerProps} radius={radius} />
                 <Circle {...innerProps} radius={innerRadius} />
             </Group>
-            <EnemyLabel x={x} y={y} name={name} radius={radius} theme={theme} />
         </>
     );
 };
@@ -151,10 +160,10 @@ interface DirectionalRingProps extends RingProps {
     rotation: number;
 }
 
-const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ name, x, y, radius, theme, rotation }) => {
+const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ x, y, radius, theme, color, rotation }) => {
     const innerRadius = getInnerRadius(radius);
-    const outerProps = getShapeProps(theme, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
-    const innerProps = getShapeProps(theme, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
+    const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const arrowScale = radius / 32;
 
     // Cache so overlapping shapes with opacity appear as one object.
@@ -185,52 +194,81 @@ const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ name, 
                     scaleX={arrowScale}
                     scaleY={arrowScale}
                     strokeEnabled={false}
-                    fill={theme.ringColor}
+                    fill={color}
                 />
             </Group>
-            <EnemyLabel x={x} y={y} name={name} radius={radius} theme={theme} />
         </>
     );
 };
 
-registerRenderer<EnemyObject>(ObjectType.Enemy, ({ object }) => {
+const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
     const theme = useSceneTheme();
     const center = useCanvasCoord(object);
 
-    if (object.rotation === undefined) {
-        return <CircleRing {...center} name={object.name} radius={object.radius} theme={theme.enemy} />;
-    } else {
-        return (
-            <DirectionalRing
+    return (
+        <>
+            <EnemyLabel
                 {...center}
                 name={object.name}
                 radius={object.radius}
                 theme={theme.enemy}
-                rotation={object.rotation}
+                color={object.color}
             />
-        );
-    }
-});
+            {/* Hitbox rings are uninteresting and should show behind everything else. */}
+            <Portal selector=".background" enabled>
+                {object.rotation === undefined ? (
+                    <CircleRing
+                        {...center}
+                        name={object.name}
+                        radius={object.radius}
+                        theme={theme.enemy}
+                        color={object.color}
+                    />
+                ) : (
+                    <DirectionalRing
+                        {...center}
+                        name={object.name}
+                        radius={object.radius}
+                        theme={theme.enemy}
+                        color={object.color}
+                        rotation={object.rotation}
+                    />
+                )}
+            </Portal>
+        </>
+    );
+};
 
-registerListComponent<EnemyObject>(ObjectType.Enemy, ({ object }) => {
+registerRenderer<EnemyObject>(ObjectType.Enemy, EnemyRenderer);
+
+const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object }) => {
     return <DetailsItem icon={object.icon} name={object.name} />;
-});
+};
+
+registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-registerPropertiesControl<EnemyObject>(ObjectType.Enemy, ({ object, layer, index }) => {
+const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, layer, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = React.useCallback(
         (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
         [dispatch, object, layer, index],
     );
+
+    const onColorChanged = useCallback(
+        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
+        [dispatch, object, layer, index],
+    );
+
     const onRadiusChanged = useSpinChanged(
         (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
         [dispatch, object, layer, index],
     );
+
     const onDirectionalChanged = useCallback(
         (checked: boolean | undefined) => {
             const rotation = checked ? object.rotation ?? 0 : undefined;
@@ -238,6 +276,7 @@ registerPropertiesControl<EnemyObject>(ObjectType.Enemy, ({ object, layer, index
         },
         [dispatch, object, layer, index],
     );
+
     const onRotationChanged = useSpinChanged(
         (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
         [dispatch, object, layer, index],
@@ -248,6 +287,7 @@ registerPropertiesControl<EnemyObject>(ObjectType.Enemy, ({ object, layer, index
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
+            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
             <MoveableObjectProperties object={object} layer={layer} index={index} />
             <SpinButton
                 label="Radius"
@@ -259,18 +299,21 @@ registerPropertiesControl<EnemyObject>(ObjectType.Enemy, ({ object, layer, index
             />
             <Stack horizontal verticalAlign="end" tokens={stackTokens}>
                 <Toggle checked={isDirectional} onChange={(ev, checked) => onDirectionalChanged(checked)} />
-                <SpinButton
-                    label="Rotation (degrees)"
+                <SpinButtonUnits
+                    label="Rotation"
                     disabled={!isDirectional}
                     labelPosition={Position.top}
                     value={object.rotation?.toString()}
                     onChange={onRotationChanged}
                     step={15}
+                    suffix="°"
                 />
             </Stack>
         </Stack>
     );
-});
+};
+
+registerPropertiesControl<EnemyObject>(ObjectType.Enemy, EnemyEditControl);
 
 export const EnemyCircle = makeIcon('Generic enemy', 'enemy_circle.png', SIZE_SMALL, false);
 export const EnemySmall = makeIcon('Small enemy', 'enemy_small.png', SIZE_SMALL);

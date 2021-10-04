@@ -16,8 +16,14 @@ export type PropertiesControl<T extends SceneObject> = React.FC<PropertiesContro
 
 const registry = new Registry<PropertiesControlProps>();
 
-export function registerPropertiesControl<T extends SceneObject>(id: string, component: PropertiesControl<T>): void {
-    registry.register(id, component);
+export function registerPropertiesControl<T extends SceneObject>(
+    ids: string | string[],
+    component: PropertiesControl<T>,
+): void {
+    ids = Array.isArray(ids) ? ids : [ids];
+    for (const id of ids) {
+        registry.register(id, component);
+    }
 }
 
 const classNames = mergeStyleSets({

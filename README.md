@@ -15,15 +15,15 @@ progression, so it will always be simpler and less powerful.
 | Create party objects          | ✅     |
 | Create enemy objects          | ✅     |
 | Create waymarks               | ✅     |
-| Create zones                  |        |
+| Create zones                  | ✅     |
 | Create tethers                |        |
 | Create text notes             |        |
 | Move objects                  |        |
 | Resize objects                |        |
 | Reorder objects               | ✅     |
 | Delete objects                |        |
-| Edit object properties        |        |
-| Add statuses to patry/enemies |        |
+| Edit object properties        | ✅     |
+| Add statuses to party/enemies |        |
 | Draw on scene                 |        |
 | Save scenes                   |        |
 | Share scenes                  |        |

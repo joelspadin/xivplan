@@ -3,6 +3,7 @@ import React, { DependencyList, useCallback } from 'react';
 import { DeferredTextField } from '../DeferredTextField';
 import { ImageObject, Point, ResizeableObject, UnknownObject } from '../scene';
 import { EditList, updateListObject, useScene } from '../SceneProvider';
+import { SpinButtonUnits } from '../SpinButtonUnits';
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
@@ -107,12 +108,13 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
                     step={10}
                 />
             </Stack>
-            <SpinButton
-                label="Rotation (degrees)"
+            <SpinButtonUnits
+                label="Rotation"
                 labelPosition={Position.top}
                 value={object.rotation.toString()}
                 onChange={onRotationChanged}
                 step={15}
+                suffix="°"
             />
         </>
     );

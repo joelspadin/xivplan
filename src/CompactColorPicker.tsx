@@ -61,7 +61,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
             label: [
                 theme.fonts.medium,
                 {
-                    padding: '10px 0',
+                    padding: '5px 0',
                     fontWeight: FontWeights.semibold,
                     display: 'inline-block',
                 },
@@ -90,7 +90,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
             if (text && onChange) {
                 const color = getColorFromString(text);
                 if (color) {
-                    onChange('#' + color.hex);
+                    onChange(color.str);
                 }
             }
         },
@@ -141,11 +141,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                             styles={swatchStyles}
                         />
                     )}
-                    <ColorPicker
-                        color={color}
-                        onChange={(ev, color) => setPickerColor('#' + color.hex)}
-                        alphaType="none"
-                    />
+                    <ColorPicker color={color} onChange={(ev, color) => setPickerColor(color.str)} alphaType="none" />
                 </Callout>
             )}
         </div>

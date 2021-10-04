@@ -6,13 +6,13 @@ import useImage from 'use-image';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/LayerItem';
-import { registerListComponent } from '../panel/LayerList';
-import { registerPropertiesControl } from '../panel/PropertiesPanel';
+import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { ALIGN_TO_PIXEL, useCanvasCoord } from '../render/coord';
-import { registerRenderer } from '../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { MarkerObject, ObjectType } from '../scene';
-import { SceneAction, updateListObject, useScene } from '../SceneProvider';
+import { updateListObject, useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
@@ -57,14 +57,18 @@ registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
         type: 'markers',
         op: 'add',
         value: {
+            type: ObjectType.Marker,
+            name: '',
             image: '',
+            shape: 'square',
+            color: COLOR_RED,
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
             ...object,
             ...position,
-        } as MarkerObject,
-    } as SceneAction;
+        },
+    };
 });
 
 function getDashSize(object: MarkerObject) {
@@ -81,7 +85,7 @@ function getDashSize(object: MarkerObject) {
     }
 }
 
-registerRenderer<MarkerObject>(ObjectType.Marker, ({ object }) => {
+const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const [image] = useImage(object.image);
     const center = useCanvasCoord(object);
 
@@ -122,11 +126,15 @@ registerRenderer<MarkerObject>(ObjectType.Marker, ({ object }) => {
             />
         </Group>
     );
-});
+};
 
-registerListComponent<MarkerObject>(ObjectType.Marker, ({ object }) => {
+registerRenderer<MarkerObject>(ObjectType.Marker, MarkerRenderer);
+
+const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object }) => {
     return <DetailsItem icon={object.image} name={object.name} />;
-});
+};
+
+registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
 
 const shapeOptions: IDropdownOption[] = [
     {
@@ -141,7 +149,7 @@ const shapeOptions: IDropdownOption[] = [
 
 const swatches = [COLOR_RED, COLOR_YELLOW, COLOR_BLUE, COLOR_PURPLE];
 
-registerPropertiesControl<MarkerObject>(ObjectType.Marker, ({ object, layer, index }) => {
+const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object, layer, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
@@ -175,7 +183,9 @@ registerPropertiesControl<MarkerObject>(ObjectType.Marker, ({ object, layer, ind
             <ImageObjectProperties object={object} layer={layer} index={index} />
         </Stack>
     );
-});
+};
+
+registerPropertiesControl<MarkerObject>(ObjectType.Marker, MarkerEditControl);
 
 export const WaymarkA = makeIcon('Waymark A', 'waymark_a.png', 'circle', COLOR_RED);
 export const WaymarkB = makeIcon('Waymark B', 'waymark_b.png', 'circle', COLOR_YELLOW);

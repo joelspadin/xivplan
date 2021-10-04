@@ -11,6 +11,7 @@ import {
     NO_GRID,
 } from '../scene';
 import { useScene } from '../SceneProvider';
+import { SpinButtonUnits } from '../SpinButtonUnits';
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
@@ -147,12 +148,13 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                         />
                     </Stack>
                     <Stack horizontal verticalAlign="end" tokens={stackTokens}>
-                        <SpinButton
-                            label="Rotation (degrees)"
+                        <SpinButtonUnits
+                            label="Rotation"
                             labelPosition={Position.top}
                             min={-180}
                             max={180}
                             step={5}
+                            suffix="°"
                             value={grid.startAngle?.toString() ?? '0'}
                             onChange={(ev, newValue) => {
                                 setGrid({ ...grid, startAngle: parseInt(newValue ?? '0') });

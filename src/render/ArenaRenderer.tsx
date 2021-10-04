@@ -1,7 +1,7 @@
 import { Context as KonvaContext } from 'konva/lib/Context';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
-import { Ellipse, Group, Image, Layer, Rect, Shape } from 'react-konva';
+import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
 import useImage from 'use-image';
 import { ArenaShape, CustomGrid, GridType, RadialGrid, RectangularGrid, Scene } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -20,13 +20,11 @@ import { useSceneTheme } from './SceneTheme';
 export const ArenaRenderer: React.FunctionComponent = () => {
     return (
         <>
-            <Layer listening={false}>
-                <BackgroundRenderer />
-                <ArenaClip>
-                    <BackgroundImage />
-                    <GridRenderer />
-                </ArenaClip>
-            </Layer>
+            <BackgroundRenderer />
+            <ArenaClip>
+                <BackgroundImage />
+                <GridRenderer />
+            </ArenaClip>
         </>
     );
 };

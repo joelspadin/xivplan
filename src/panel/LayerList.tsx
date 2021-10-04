@@ -24,8 +24,14 @@ export type ListComponent<T extends SceneObject> = React.FunctionComponent<ListC
 
 const registry = new Registry<ListComponentProps>();
 
-export function registerListComponent<T extends SceneObject>(id: string, component: ListComponent<T>): void {
-    registry.register(id, component);
+export function registerListComponent<T extends SceneObject>(
+    ids: string | string[],
+    component: ListComponent<T>,
+): void {
+    ids = Array.isArray(ids) ? ids : [ids];
+    for (const id of ids) {
+        registry.register(id, component);
+    }
 }
 
 export type MoveCallback = (from: number, to: number) => void;

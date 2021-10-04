@@ -51,8 +51,15 @@ export const MainPage: React.FunctionComponent = () => {
 
 const HotkeyHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
-    useHotkeys('ctrl+z', undo);
-    useHotkeys('ctrl+y', redo);
+
+    useHotkeys('ctrl+z', (e) => {
+        undo();
+        e.preventDefault();
+    });
+    useHotkeys('ctrl+y', (e) => {
+        redo();
+        e.preventDefault();
+    });
 
     return null;
 };

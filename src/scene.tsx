@@ -26,7 +26,7 @@ export enum ObjectType {
     Cone = 'cone',
     Rect = 'rect',
     LineStack = 'lineStack',
-    LineKnocbkack = 'lineKnockback',
+    LineKnockback = 'lineKnockback',
     LineKnockAway = 'lineKnockAway',
     Exaflare = 'exaflare',
     Starburst = 'starburst',
@@ -131,6 +131,7 @@ export interface EnemyObject extends Point {
     type: ObjectType.Enemy;
     icon: string;
     name: string;
+    color: string;
     radius: number;
     status: ActorStatus[];
     rotation?: number;
@@ -153,6 +154,7 @@ export interface CircleZone extends Point {
         | ObjectType.Eye;
 
     color: string;
+    opacity: number;
     radius: number;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
@@ -167,7 +169,8 @@ export const isCircleZone = makeObjectTest<CircleZone>(
 
 export interface DonutZone extends Point {
     type: ObjectType.Donut;
-    color: number;
+    color: string;
+    opacity: number;
     radius: number;
     innerRadius: number;
 }
@@ -175,7 +178,8 @@ export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
 export interface ConeZone extends Point {
     type: ObjectType.Cone;
-    color: number;
+    color: string;
+    opacity: number;
     radius: number;
     rotation: number;
     coneAngle: number;
@@ -183,26 +187,31 @@ export interface ConeZone extends Point {
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
 
 export interface RectangleZone extends ResizeableObject {
-    type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnocbkack | ObjectType.LineKnockAway;
-    color: number;
+    type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnockback | ObjectType.LineKnockAway;
+    color: string;
+    opacity: number;
 }
 export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.Rect,
     ObjectType.LineStack,
-    ObjectType.LineKnocbkack,
+    ObjectType.LineKnockback,
     ObjectType.LineKnockAway,
 );
 
-export interface ExaflareZone extends ResizeableObject {
+export interface ExaflareZone extends Point {
     type: ObjectType.Exaflare;
-    color: number;
+    color: string;
+    opacity: number;
+    radius: number;
     length: number;
+    rotation: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
 export interface StarburstZone extends Point {
     type: ObjectType.Starburst;
-    color: number;
+    color: string;
+    opacity: number;
     radius: number;
     rotation: number;
     spokes: number;
@@ -213,7 +222,9 @@ export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburs
 export interface TowerZone extends Point {
     type: ObjectType.Tower;
     color: string;
+    opacity: number;
     radius: number;
+    count: number;
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
