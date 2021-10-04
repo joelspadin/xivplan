@@ -5,7 +5,7 @@ import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
 import { EditList } from '../SceneProvider';
 import { useSelection } from '../SelectionProvider';
-import { makeClassName } from '../util';
+import { makeClassName, reversed } from '../util';
 
 const listClassNames = mergeStyleSets({
     list: {
@@ -47,6 +47,10 @@ function dropId(layer: EditList) {
     return `drop-layer-${layer}`;
 }
 
+function reversedIndex(i: number, length: number) {
+    return length - 1 - i;
+}
+
 export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText, layer, objects, onMove }) => {
     const onDragEnd = useCallback(
         (result: DropResult) => {
@@ -54,12 +58,18 @@ export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText,
                 return;
             }
 
-            onMove(result.source.index, result.destination.index);
+            onMove(
+                reversedIndex(result.source.index, objects.length),
+                reversedIndex(result.destination.index, objects.length),
+            );
         },
-        [layer, onMove],
+        [layer, objects.length, onMove],
     );
 
-    // TODO: reversed order would make more sense
+    // Objects are rendered with later objects on top, but it is more natural
+    // to have the objects rendered on top be at the top of the list in the UI.
+    const reversedObjects = [...reversed(objects)];
+
     return (
         <div>
             <Separator>{headerText}</Separator>
@@ -67,8 +77,14 @@ export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText,
                 <Droppable droppableId={dropId(layer)}>
                     {(provided) => (
                         <ul className={listClassNames.list} {...provided.droppableProps} ref={provided.innerRef}>
-                            {objects.map((object, key) => (
-                                <ListItem object={object} key={key} index={key} layer={layer} />
+                            {reversedObjects.map((object, key) => (
+                                <ListItem
+                                    object={object}
+                                    key={key}
+                                    index={key}
+                                    sceneIndex={reversedIndex(key, objects.length)}
+                                    layer={layer}
+                                />
                             ))}
                             {provided.placeholder}
                         </ul>
@@ -89,17 +105,18 @@ const getListItemClassNames = classNamesFunction<Theme, IListItemStyles>();
 
 export interface ListItemProps {
     index: number;
+    sceneIndex: number;
     object: SceneObject;
     layer: EditList;
 }
 
-const ListItem: React.FunctionComponent<ListItemProps> = ({ index, object, layer }) => {
+const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, object, layer }) => {
     const [selection, setSelection] = useSelection();
-    const isSelected = layer === selection?.layer && index === selection.index;
+    const isSelected = layer === selection?.layer && sceneIndex === selection.index;
 
     const onClick = useCallback(() => {
-        setSelection({ layer, index });
-    }, [index, layer, setSelection]);
+        setSelection({ layer, index: sceneIndex });
+    }, [sceneIndex, layer, setSelection]);
 
     const theme = useTheme();
     const classNames = getListItemClassNames(
@@ -129,7 +146,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, object, layer
     const Component = registry.get(object.type);
 
     return (
-        <Draggable draggableId={index.toString()} index={index}>
+        <Draggable draggableId={sceneIndex.toString()} index={index}>
             {(provided, snapshot) => {
                 const className = makeClassName({
                     [classNames.root]: true,
