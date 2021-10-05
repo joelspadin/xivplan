@@ -17,6 +17,8 @@ const listClassNames = mergeStyleSets({
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
+    layer: EditList;
+    index: number;
     isSelected: boolean;
 }
 
@@ -125,8 +127,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, o
                 minHeight: 32,
                 margin: '0 -2px',
                 padding: 2,
-                display: 'flex',
-                flexFlow: 'row',
+                display: 'block',
                 borderRadius: theme.effects.roundedCorner2,
                 ':hover': {
                     backgroundColor: theme.semanticColors.listItemBackgroundHovered,
@@ -162,7 +163,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, o
                         className={className}
                         onClick={onClick}
                     >
-                        <Component object={object} isSelected={isSelected} />
+                        <Component object={object} layer={layer} index={sceneIndex} isSelected={isSelected} />
                     </li>
                 );
             }}

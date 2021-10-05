@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/knockback.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -92,9 +92,9 @@ const KnockbackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Knockback, KnockbackRenderer);
 
-const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = () => {
+const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Knockback" />;
+    return <DetailsItem icon={icon} name="Knockback" layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

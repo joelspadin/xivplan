@@ -4,7 +4,7 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import icon from '../../assets/zone/eye.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -148,9 +148,9 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Eye, EyeRenderer);
 
-const EyeDetails: React.FC<ListComponentProps<CircleZone>> = () => {
+const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Look away" />;
+    return <DetailsItem icon={icon} name="Look away" layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

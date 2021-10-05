@@ -2,7 +2,7 @@ import Konva from 'konva';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/line_stack.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -130,9 +130,9 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 
 registerRenderer<RectangleZone>(ObjectType.LineStack, LineStackRenderer);
 
-const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = () => {
+const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line stack" />;
+    return <DetailsItem icon={icon} name="Line stack" layer={layer} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);

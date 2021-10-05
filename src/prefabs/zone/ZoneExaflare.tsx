@@ -4,7 +4,7 @@ import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/exaflare.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -113,9 +113,9 @@ const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object }) => 
 
 registerRenderer<ExaflareZone>(ObjectType.Exaflare, ExaflareRenderer);
 
-const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = () => {
+const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Exaflare" />;
+    return <DetailsItem icon={icon} name="Exaflare" layer={layer} index={index} />;
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);

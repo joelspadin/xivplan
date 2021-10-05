@@ -5,7 +5,7 @@ import lineIcon from '../../assets/zone/line.png';
 import squareIcon from '../../assets/zone/square.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -105,9 +105,9 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 
 registerRenderer<RectangleZone>(ObjectType.Rect, RectangleRenderer);
 
-const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = () => {
+const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={squareIcon} name="Rectangle" />;
+    return <DetailsItem icon={squareIcon} name="Rectangle" layer={layer} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);

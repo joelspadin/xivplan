@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/stack.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -82,9 +82,9 @@ const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Stack, StackRenderer);
 
-const StackDetails: React.FC<ListComponentProps<CircleZone>> = () => {
+const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Stack" />;
+    return <DetailsItem icon={icon} name="Stack" layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

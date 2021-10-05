@@ -5,7 +5,7 @@ import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/meteor.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -138,9 +138,9 @@ const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
 
 registerRenderer<TowerZone>(ObjectType.Tower, TowerRenderer);
 
-const TowerDetails: React.FC<ListComponentProps<TowerZone>> = () => {
+const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Meteor/tower" />;
+    return <DetailsItem icon={icon} name="Meteor/tower" layer={layer} index={index} />;
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { getDragOffset, usePanelDrag } from '../PanelDragProvider';
+import { ObjectType } from '../scene';
 import { PrefabIcon } from './PrefabIcon';
-
-const ARROW_TYPE = 'arrow';
 
 function makeIcon(name: string, icon: string) {
     // eslint-disable-next-line react/display-name
@@ -17,9 +16,8 @@ function makeIcon(name: string, icon: string) {
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
-                        type: ARROW_TYPE,
                         object: {
-                            type: 'arrow',
+                            type: ObjectType.Arrow,
                         },
                         offset: getDragOffset(e),
                     });

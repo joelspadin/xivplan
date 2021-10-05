@@ -2,7 +2,7 @@ import Konva from 'konva';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/line_knockback.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -121,9 +121,9 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LineKnockbackRenderer);
 
-const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = () => {
+const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knockback" />;
+    return <DetailsItem icon={icon} name="Line knockback" layer={layer} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockback, LineKnockbackDetails);

@@ -4,7 +4,7 @@ import { Circle } from 'react-konva';
 import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -67,9 +67,9 @@ const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Circle, CircleRenderer);
 
-const CircleDetails: React.FC<ListComponentProps<CircleZone>> = () => {
+const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Circle" />;
+    return <DetailsItem icon={icon} name="Circle" layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);

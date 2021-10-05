@@ -3,7 +3,7 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import icon from '../../assets/zone/falloff.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -167,9 +167,9 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Proximity, ProximityRenderer);
 
-const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = () => {
+const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Proximity AOE" />;
+    return <DetailsItem icon={icon} name="Proximity AOE" layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

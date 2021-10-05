@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
-import { DetailsItem } from '../panel/LayerItem';
+import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
@@ -81,8 +81,8 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
 
 registerRenderer<PartyObject>(ObjectType.Party, PartyRenderer);
 
-const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object }) => {
-    return <DetailsItem icon={object.image} name={object.name} />;
+const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, layer, index }) => {
+    return <DetailsItem icon={object.image} name={object.name} layer={layer} index={index} />;
 };
 
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);

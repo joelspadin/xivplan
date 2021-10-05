@@ -7,7 +7,7 @@ import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { Portal } from 'react-konva-utils';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
-import { DetailsItem } from '../panel/LayerItem';
+import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
@@ -241,8 +241,8 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
 
 registerRenderer<EnemyObject>(ObjectType.Enemy, EnemyRenderer);
 
-const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object }) => {
-    return <DetailsItem icon={object.icon} name={object.name} />;
+const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, layer, index }) => {
+    return <DetailsItem icon={object.icon} name={object.name} layer={layer} index={index} />;
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);

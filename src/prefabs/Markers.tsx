@@ -5,7 +5,7 @@ import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
-import { DetailsItem } from '../panel/LayerItem';
+import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
@@ -130,8 +130,8 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
 
 registerRenderer<MarkerObject>(ObjectType.Marker, MarkerRenderer);
 
-const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object }) => {
-    return <DetailsItem icon={object.image} name={object.name} />;
+const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, layer, index }) => {
+    return <DetailsItem icon={object.image} name={object.name} layer={layer} index={index} />;
 };
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);

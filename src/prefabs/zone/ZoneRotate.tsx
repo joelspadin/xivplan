@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Path } from 'react-konva';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
@@ -118,11 +118,11 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateRenderer);
 
-const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
+const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, layer, index }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
     const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
 
-    return <DetailsItem icon={icon} name={name} />;
+    return <DetailsItem icon={icon} name={name} layer={layer} index={index} />;
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

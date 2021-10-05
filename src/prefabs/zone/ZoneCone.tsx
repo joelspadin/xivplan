@@ -4,7 +4,7 @@ import { Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -88,9 +88,9 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 
 registerRenderer<ConeZone>(ObjectType.Cone, ConeRenderer);
 
-const ConeDetails: React.FC<ListComponentProps<ConeZone>> = () => {
+const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Cone" />;
+    return <DetailsItem icon={icon} name="Cone" layer={layer} index={index} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);

@@ -6,7 +6,7 @@ import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -144,9 +144,9 @@ const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object }) =
 
 registerRenderer<StarburstZone>(ObjectType.Starburst, StarburstRenderer);
 
-const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = () => {
+const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Starburst" />;
+    return <DetailsItem icon={icon} name="Starburst" layer={layer} index={index} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);

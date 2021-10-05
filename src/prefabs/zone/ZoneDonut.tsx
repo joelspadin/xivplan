@@ -4,7 +4,7 @@ import { Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/LayerItem';
+import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
@@ -70,9 +70,9 @@ const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
 
 registerRenderer<DonutZone>(ObjectType.Donut, DonutRenderer);
 
-const DonutDetails: React.FC<ListComponentProps<DonutZone>> = () => {
+const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ layer, index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Donut" />;
+    return <DetailsItem icon={icon} name="Donut" layer={layer} index={index} />;
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);
