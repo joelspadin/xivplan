@@ -72,8 +72,17 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
         };
     }, theme);
 
+    const notifyChanged = useCallback(
+        (newColor: string) => {
+            if (newColor !== color) {
+                onChange?.(newColor);
+            }
+        },
+        [color, onChange],
+    );
+
     const [pickerColor, setPickerColor] = useState(color);
-    useDebounce(() => onChange?.(pickerColor), DEBOUNCE_TIME, [pickerColor]);
+    useDebounce(() => notifyChanged(pickerColor), DEBOUNCE_TIME, [pickerColor]);
 
     const [isCalloutVisible, { setTrue: showCallout, setFalse: hideCallout }] = useBoolean(false);
     const buttonId = useId('color-box');
@@ -87,23 +96,23 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
 
     const onColorTextChanged = useCallback(
         (text: string | undefined) => {
-            if (text && onChange) {
+            if (text) {
                 const color = getColorFromString(text);
                 if (color) {
-                    onChange(color.str);
+                    notifyChanged(color.str);
                 }
             }
         },
-        [onChange],
+        [notifyChanged],
     );
 
     const onColorSwatchChanged = useCallback(
         (color: string | undefined) => {
-            if (color && onChange) {
-                onChange(color);
+            if (color) {
+                notifyChanged(color);
             }
         },
-        [onChange],
+        [notifyChanged],
     );
 
     return (
