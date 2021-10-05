@@ -1,13 +1,12 @@
 import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
 import React from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { getDeleteSelectionAction } from './actions';
+import { HotkeyHandler } from './HotkeyHandler';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
-import { SceneProvider, useScene, useSceneUndoRedo } from './SceneProvider';
-import { SelectionProvider, useSelection } from './SelectionProvider';
+import { SceneProvider } from './SceneProvider';
+import { SelectionProvider } from './SelectionProvider';
 
 interface IContentStyles {
     root: IStyle;
@@ -47,48 +46,5 @@ export const MainPage: React.FunctionComponent = () => {
                 </PanelDragProvider>
             </SelectionProvider>
         </SceneProvider>
-    );
-};
-
-const UndoRedoHandler: React.FC = () => {
-    const [undo, redo] = useSceneUndoRedo();
-
-    useHotkeys('ctrl+z', (e) => {
-        undo();
-        e.preventDefault();
-    });
-    useHotkeys('ctrl+y', (e) => {
-        redo();
-        e.preventDefault();
-    });
-
-    return null;
-};
-
-const SelectionActionHandler: React.FC = () => {
-    const [, dispatch] = useScene();
-    const [selection, setSelection] = useSelection();
-
-    useHotkeys(
-        'delete',
-        (e) => {
-            if (selection) {
-                dispatch(getDeleteSelectionAction(selection));
-                setSelection(undefined);
-                e.preventDefault();
-            }
-        },
-        [selection, setSelection, dispatch],
-    );
-
-    return null;
-};
-
-const HotkeyHandler: React.FC = () => {
-    return (
-        <>
-            <UndoRedoHandler />
-            <SelectionActionHandler />
-        </>
     );
 };
