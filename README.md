@@ -31,3 +31,7 @@ progression, so it will always be simpler and less powerful.
 | Keyboard shortcut help        |        |
 | Undo/redo                     | ✅     |
 | Copy/paste/duplicate          |        |
+
+## Credits
+
+Job, role, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
