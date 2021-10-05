@@ -168,6 +168,8 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
         [dispatch, object, layer, index],
     );
 
+    const soakSuffix = object.count === 1 ? ' player' : ' players';
+
     return (
         <Stack>
             <CompactColorPicker
@@ -194,7 +196,7 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
                 min={MIN_COUNT}
                 max={MAX_COUNT}
                 step={1}
-                suffix=" player(s)"
+                suffix={soakSuffix}
             />
         </Stack>
     );
