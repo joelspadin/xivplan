@@ -34,4 +34,4 @@ progression, so it will always be simpler and less powerful.
 
 ## Credits
 
-Job, role, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
+Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
