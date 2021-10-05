@@ -2,7 +2,7 @@ import { Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useCallback, useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
-import icon from '../../assets/zone/meteor.png';
+import icon from '../../assets/zone/meteor_tower.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -20,13 +20,13 @@ import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
 const DEFAULT_COLOR = '#bae3ff';
-const DEFAULT_RADIUS = 30;
+const DEFAULT_RADIUS = 40;
 const DEFAULT_COUNT = 1;
 const MIN_RADIUS = 10;
 const MIN_COUNT = 1;
 const MAX_COUNT = 4;
 
-export const ZoneMeteor: React.FunctionComponent = () => {
+export const ZoneTower: React.FunctionComponent = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

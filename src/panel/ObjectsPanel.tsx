@@ -47,12 +47,12 @@ import { ZoneKnockback } from '../prefabs/zone/ZoneKnockback';
 import { ZoneLineKnockAway } from '../prefabs/zone/ZoneLineKnockAway';
 import { ZoneLineKnockback } from '../prefabs/zone/ZoneLineKnockback';
 import { ZoneLineStack } from '../prefabs/zone/ZoneLineStack';
-import { ZoneMeteor } from '../prefabs/zone/ZoneMeteor';
 import { ZoneProximity } from '../prefabs/zone/ZoneProximity';
 import { ZoneLine, ZoneSquare } from '../prefabs/zone/ZoneRectangle';
 import { ZoneRotateClockwise, ZoneRotateCounterClockwise } from '../prefabs/zone/ZoneRotate';
 import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
+import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { PANEL_PADDING } from './PanelStyles';
 import { ObjectGroup, Section } from './Section';
 
@@ -96,7 +96,7 @@ export const ObjectsPanel: React.FunctionComponent = () => {
                     <ZoneStarburst />
                     <ZoneRotateClockwise />
                     <ZoneRotateCounterClockwise />
-                    <ZoneMeteor />
+                    <ZoneTower />
                     <ZoneEye />
                 </ObjectGroup>
             </Section>
