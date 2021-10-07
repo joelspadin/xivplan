@@ -13,7 +13,7 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragPr
 import { useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { ArenaPortal } from '../render/Portals';
-import { DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
@@ -286,7 +286,12 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+            <CompactColorPicker
+                label="Color"
+                color={object.color}
+                onChange={onColorChanged}
+                swatches={COLOR_SWATCHES}
+            />
             <MoveableObjectProperties object={object} index={index} />
             <SpinButton
                 label="Radius"

@@ -11,7 +11,7 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDra
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -134,7 +134,7 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
             <CompactColorPicker
                 label="Color"
                 color={object.color}
-                swatches={AOE_COLOR_SWATCHES}
+                swatches={COLOR_SWATCHES}
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />

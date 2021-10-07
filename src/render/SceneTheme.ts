@@ -2,15 +2,18 @@ import Konva from 'konva';
 
 export const DEFAULT_AOE_COLOR = '#fc972b';
 export const DEFAULT_AOE_OPACITY = 35;
-export const AOE_COLOR_SWATCHES = [
-    DEFAULT_AOE_COLOR,
-    '#ff0000',
-    '#00e622',
-    '#00d5e8',
-    '#0066ff',
-    '#f269ff',
-    '#bae3ff',
-    '#20052e',
+export const COLOR_SWATCHES = [
+    '#ff0000', // red
+    DEFAULT_AOE_COLOR, // orange
+    '#ffc800', // yellow
+    '#00e622', // green
+    '#00d5e8', // cyan
+    '#0066ff', // blue
+    '#8b57fa', // purple
+    '#f269ff', // pink
+    '#bae3ff', // blue-white
+    '#20052e', // dark purple
+    '#6f5a48', // grid
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';

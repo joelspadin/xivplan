@@ -12,7 +12,7 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDra
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { AOE_COLOR_SWATCHES, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -147,27 +147,27 @@ const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ index }) => {
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);
 
-const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object, layer, index }) => {
+const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onCountChanged = useSpinChanged(
         (count: number) => dispatch({ type: 'update', index, value: { ...object, count } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const soakSuffix = object.count === 1 ? ' player' : ' players';
@@ -177,7 +177,7 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
             <CompactColorPicker
                 label="Color"
                 color={object.color}
-                swatches={AOE_COLOR_SWATCHES}
+                swatches={COLOR_SWATCHES}
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />

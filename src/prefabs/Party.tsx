@@ -106,6 +106,7 @@ registerPropertiesControl<PartyObject>(ObjectType.Party, PartyEditControl);
 
 export const PartyTank = makeIcon('Tank', 'tank.png');
 export const PartyHealer = makeIcon('Healer', 'healer.png');
+export const PartyTankOrHealer = makeIcon('Tank/healer', 'tank_or_healer.png');
 export const PartyDps = makeIcon('DPS', 'dps.png');
 export const PartyAny = makeIcon('Any player', 'any.png');
 

@@ -13,7 +13,7 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDra
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -159,37 +159,37 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object, layer, index }) => {
+const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onRotationChanged = useSpinChanged(
         (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onSpokesChanged = useSpinChanged(
         (spokes: number) => dispatch({ type: 'update', index, value: { ...object, spokes } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onSpokeWidthChanged = useSpinChanged(
         (spokeWidth: number) => dispatch({ type: 'update', index, value: { ...object, spokeWidth } }),
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     return (
@@ -197,7 +197,7 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
             <CompactColorPicker
                 label="Color"
                 color={object.color}
-                swatches={AOE_COLOR_SWATCHES}
+                swatches={COLOR_SWATCHES}
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />

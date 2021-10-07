@@ -116,6 +116,7 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
     );
 };
 
+// TODO: allow list of preset images
 export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
