@@ -15,7 +15,7 @@ const classNames = mergeStyleSets({
 });
 
 export interface SectionProps extends HTMLAttributes<HTMLElement> {
-    title: string;
+    title?: string;
 }
 
 export const Section: React.FunctionComponent<SectionProps> = ({ title, children, ...props }) => {

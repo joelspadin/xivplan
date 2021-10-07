@@ -118,25 +118,29 @@ export const PrefabsPanel: React.FunctionComponent = () => {
             </Section>
             <Section title="Party">
                 <ObjectGroup>
+                    <PartyAny />
+                    <PartyTank />
+                    <PartyHealer />
+                    <PartyDps />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <PartyMagicRanged />
+                    <PartyPhysicalRanged />
+                    <PartyMelee />
+                    <PartyRanged />
+                </ObjectGroup>
+            </Section>
+            <Section>
+                <ObjectGroup>
                     <PartyPaladin />
                     <PartyWarrior />
                     <PartyDarkKnight />
                     <PartyGunbreaker />
-                    <PartyTank />
                 </ObjectGroup>
                 <ObjectGroup>
                     <PartyWhiteMage />
                     <PartyScholar />
                     <PartyAstrologian />
-                    <PartyHealer />
-                </ObjectGroup>
-                <ObjectGroup>
-                    <PartyAny />
-                    <PartyMagicRanged />
-                    <PartyPhysicalRanged />
-                    <PartyRanged />
-                    <PartyMelee />
-                    <PartyDps />
                 </ObjectGroup>
                 <ObjectGroup>
                     <PartyMonk />
