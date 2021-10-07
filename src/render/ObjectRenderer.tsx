@@ -1,6 +1,7 @@
 import React from 'react';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
+import { asArray } from '../util';
 
 export interface RendererProps<T extends SceneObject = SceneObject> {
     object: T;
@@ -11,14 +12,13 @@ export type Renderer<T extends SceneObject> = React.FunctionComponent<RendererPr
 const registry = new Registry<RendererProps>();
 
 export function registerRenderer<T extends SceneObject>(ids: string | string[], component: Renderer<T>): void {
-    ids = Array.isArray(ids) ? ids : [ids];
-    for (const id of ids) {
+    for (const id of asArray(ids)) {
         registry.register(id, component);
     }
 }
 
 export interface ObjectRendererProps {
-    objects: SceneObject[];
+    objects: readonly SceneObject[];
 }
 
 export const ObjectRenderer: React.FunctionComponent<ObjectRendererProps> = ({ objects }) => {

@@ -4,18 +4,18 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
-import { Portal } from 'react-konva-utils';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { ArenaPortal } from '../render/Portals';
 import { DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
-import { updateListObject, useScene } from '../SceneProvider';
+import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
@@ -67,9 +67,8 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
 
 registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
     return {
-        type: 'actors',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Enemy,
             icon: '',
             name: '',
@@ -215,7 +214,7 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
                 color={object.color}
             />
             {/* Hitbox rings are uninteresting and should show behind everything else. */}
-            <Portal selector=".background" enabled>
+            <ArenaPortal>
                 {object.rotation === undefined ? (
                     <CircleRing
                         {...center}
@@ -234,15 +233,15 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
                         rotation={object.rotation}
                     />
                 )}
-            </Portal>
+            </ArenaPortal>
         </>
     );
 };
 
 registerRenderer<EnemyObject>(ObjectType.Enemy, EnemyRenderer);
 
-const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, layer, index }) => {
-    return <DetailsItem icon={object.icon} name={object.name} layer={layer} index={index} />;
+const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
+    return <DetailsItem icon={object.icon} name={object.name} index={index} />;
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
@@ -251,35 +250,35 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, layer, index }) => {
+const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = React.useCallback(
-        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
-        [dispatch, object, layer, index],
+        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
-        [dispatch, object, layer, index],
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
     );
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
-        [dispatch, object, layer, index],
+        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
+        [dispatch, object, index],
     );
 
     const onDirectionalChanged = useCallback(
         (checked: boolean | undefined) => {
             const rotation = checked ? object.rotation ?? 0 : undefined;
-            updateListObject(dispatch, layer, index, { ...object, rotation });
+            dispatch({ type: 'update', index, value: { ...object, rotation } });
         },
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
-        [dispatch, object, layer, index],
+        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
+        [dispatch, object, index],
     );
 
     const isDirectional = object.rotation !== undefined;
@@ -288,7 +287,7 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
             <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

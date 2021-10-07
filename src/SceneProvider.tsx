@@ -1,21 +1,7 @@
 import * as React from 'react';
-import {
-    Actor,
-    Arena,
-    ArenaShape,
-    DEFAULT_SCENE,
-    Grid,
-    isActor,
-    isMarker,
-    isTether,
-    isZone,
-    Marker,
-    Scene,
-    Tether,
-    UnknownObject,
-    Zone,
-} from './scene';
+import { Arena, ArenaShape, DEFAULT_SCENE, Grid, Scene, SceneObject, SceneObjectWithoutId } from './scene';
 import { createUndoContext } from './undo/undoContext';
+import { asArray } from './util';
 
 export interface SetArenaAction {
     type: 'arena';
@@ -47,36 +33,42 @@ export interface SetArenaBackgroundAction {
     value: string | undefined;
 }
 
-export interface ListUpdateAction<T> {
-    op: 'update';
+interface ObjectUpdate {
     index: number;
-    value: T;
+    value: SceneObject;
 }
 
-export interface ListAddAction<T> {
-    op: 'add';
-    value: T;
+export interface ObjectUpdateAction extends ObjectUpdate {
+    type: 'update';
 }
 
-export interface ListRemoveAction {
-    op: 'remove';
-    index: number;
+export interface ObjectUpdateManyAction {
+    type: 'updateMany';
+    updates: readonly ObjectUpdate[];
 }
 
-export interface ListMoveAction {
-    op: 'move';
+export interface ObjectAddAction {
+    type: 'add';
+    object: SceneObjectWithoutId | readonly SceneObjectWithoutId[];
+}
+
+export interface ObjectRemoveAction {
+    type: 'remove';
+    index: number | readonly number[];
+}
+
+export interface ObjectMoveAction {
+    type: 'move';
     from: number;
     to: number;
 }
 
-export type ListAction<T> = ListAddAction<T> | ListUpdateAction<T> | ListRemoveAction | ListMoveAction;
-
-export type EditList = 'zones' | 'markers' | 'actors' | 'tethers';
-
-export type ZoneListAction = ListAction<Zone> & { type: 'zones' };
-export type MarkerListAction = ListAction<Marker> & { type: 'markers' };
-export type ActorListAction = ListAction<Actor> & { type: 'actors' };
-export type TetherListAction = ListAction<Tether> & { type: 'tethers' };
+export type ObjectAction =
+    | ObjectAddAction
+    | ObjectRemoveAction
+    | ObjectMoveAction
+    | ObjectUpdateAction
+    | ObjectUpdateManyAction;
 
 export type SceneAction =
     | SetArenaAction
@@ -85,10 +77,7 @@ export type SceneAction =
     | SetArenaHeightAction
     | SetArenaGridAction
     | SetArenaBackgroundAction
-    | ZoneListAction
-    | MarkerListAction
-    | ActorListAction
-    | TetherListAction;
+    | ObjectAction;
 
 const HISTORY_SIZE = 1000;
 
@@ -103,123 +92,48 @@ export const SceneContext = Context;
 export const useScene = usePresent;
 export const useSceneUndoRedo = useUndoRedo;
 
-export function updateListObject<T extends UnknownObject>(
-    dispatch: React.Dispatch<SceneAction>,
-    layer: EditList,
-    index: number,
-    value: T,
-): void {
-    switch (layer) {
-        case 'actors':
-            if (isActor(value)) {
-                dispatch({ type: 'actors', op: 'update', index, value });
-            } else {
-                throw Error(`Invalid object type ${value.type}`);
-            }
-            break;
+function addObjects(
+    state: Readonly<Scene>,
+    objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
+): Partial<Scene> {
+    let nextId = state.nextId;
+    const newObjects = asArray(objects).map((obj) => ({ id: nextId++, ...obj }));
 
-        case 'markers':
-            if (isMarker(value)) {
-                dispatch({ type: 'markers', op: 'update', index, value });
-            } else {
-                throw Error(`Invalid object type ${value.type}`);
-            }
-            break;
-
-        case 'tethers':
-            if (isTether(value)) {
-                dispatch({ type: 'tethers', op: 'update', index, value });
-            } else {
-                throw Error(`Invalid object type ${value.type}`);
-            }
-            break;
-
-        case 'zones':
-            if (isZone(value)) {
-                dispatch({ type: 'zones', op: 'update', index, value });
-            } else {
-                throw Error(`Invalid object type ${value.type}`);
-            }
-            break;
-    }
+    return {
+        objects: [...state.objects, ...newObjects],
+        nextId,
+    };
 }
 
-function listActionReducer<T>(state: T[], action: ListAction<T>): T[] {
-    switch (action.op) {
-        case 'add':
-            return [...state, action.value];
-
-        case 'remove':
-            return [...state.slice(0, action.index), ...state.slice(action.index + 1)];
-
-        case 'move': {
-            if (action.from === action.to) {
-                return state;
-            }
-
-            const newState = state.slice();
-            const items = newState.splice(action.from, 1);
-            newState.splice(action.to, 0, ...items);
-            return newState;
-        }
-
-        case 'update': {
-            const newState = state.slice();
-            newState[action.index] = action.value;
-            return newState;
-        }
-    }
+function removeObjects(state: Readonly<Scene>, indices: readonly number[]): Partial<Scene> {
+    return {
+        objects: state.objects.filter((_, i) => !indices.includes(i)),
+    };
 }
 
-function adjustTetherIndex(index: number, action: ListMoveAction): number {
-    if (index === action.from) {
-        return action.to;
+function moveObject(state: Readonly<Scene>, from: number, to: number): Partial<Scene> {
+    if (from === to) {
+        return state;
     }
 
-    if (index >= action.to && index < action.from) {
-        return index + 1;
-    }
+    const objects = state.objects.slice();
+    const items = objects.splice(from, 1);
+    objects.splice(to, 0, ...items);
 
-    return index;
+    return { objects };
 }
 
-function adjustTetherList(state: Tether[], action: ActorListAction): Tether[] {
-    switch (action.op) {
-        case 'add':
-        case 'update':
-            return state;
+function updateObjects(state: Readonly<Scene>, updates: ObjectUpdate | readonly ObjectUpdate[]): Partial<Scene> {
+    const objects = state.objects.slice();
 
-        case 'remove':
-            // Actor was removed. Need to remove tethers that referenced it and
-            // update indices since actors after it are shifted down by one.
-            return state
-                .filter((tether) => tether.start !== action.index && tether.end !== action.index)
-                .map((tether) => {
-                    if (tether.start > action.index) {
-                        tether.start--;
-                    }
-                    if (tether.end > action.index) {
-                        tether.end--;
-                    }
-                    return tether;
-                });
-
-        case 'move':
-            if (action.from === action.to) {
-                return state;
-            }
-
-            return state.map((tether) => {
-                return {
-                    ...tether,
-                    start: adjustTetherIndex(tether.start, action),
-                    end: adjustTetherIndex(tether.end, action),
-                };
-            });
+    for (const update of asArray(updates)) {
+        objects[update.index] = update.value;
     }
+
+    return { objects };
 }
 
-function sceneReducer(state: Scene, action: SceneAction): Scene {
+function sceneReducer(state: Readonly<Scene>, action: SceneAction): Scene {
     switch (action.type) {
         case 'arena':
             return { ...state, arena: action.value };
@@ -239,20 +153,19 @@ function sceneReducer(state: Scene, action: SceneAction): Scene {
         case 'arenaBackground':
             return { ...state, arena: { ...state.arena, backgroundImage: action.value } };
 
-        case 'zones':
-            return { ...state, zones: listActionReducer(state.zones, action) };
+        case 'add':
+            return { ...state, ...addObjects(state, action.object) };
 
-        case 'markers':
-            return { ...state, markers: listActionReducer(state.markers, action) };
+        case 'remove':
+            return { ...state, ...removeObjects(state, asArray(action.index)) };
 
-        case 'actors':
-            return {
-                ...state,
-                actors: listActionReducer(state.actors, action),
-                tethers: adjustTetherList(state.tethers, action),
-            };
+        case 'move':
+            return { ...state, ...moveObject(state, action.from, action.to) };
 
-        case 'tethers':
-            return { ...state, tethers: listActionReducer(state.tethers, action) };
+        case 'update':
+            return { ...state, ...updateObjects(state, action) };
+
+        case 'updateMany':
+            return { ...state, ...updateObjects(state, action.updates) };
     }
 }

@@ -3,10 +3,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/line_knockback.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { PrefabIcon } from '../PrefabIcon';
@@ -39,9 +40,8 @@ export const ZoneLineKnockback: React.FunctionComponent = () => {
 
 registerDropHandler<RectangleZone>(ObjectType.LineKnockback, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Rect,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -85,7 +85,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
     }, [fill, arrow, object.opacity, arrowRef]);
 
     return (
-        <>
+        <GroundPortal>
             <Rect
                 x={center.x}
                 y={center.y}
@@ -115,15 +115,15 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
                     {...arrow}
                 />
             </Group>
-        </>
+        </GroundPortal>
     );
 };
 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LineKnockbackRenderer);
 
-const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ layer, index }) => {
+const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knockback" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Line knockback" index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockback, LineKnockbackDetails);

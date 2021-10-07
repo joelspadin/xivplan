@@ -1,8 +1,8 @@
 import { IPivotStyles, IStyle, mergeStyleSets, Pivot, PivotItem } from '@fluentui/react';
 import React from 'react';
 import { ArenaPanel } from './ArenaPanel';
-import { ObjectsPanel } from './ObjectsPanel';
 import { PANEL_WIDTH } from './PanelStyles';
+import { PrefabsPanel } from './PrefabsPanel';
 import { StatusPanel } from './StatusPanel';
 
 const enum Tabs {
@@ -33,7 +33,7 @@ export const MainPanel: React.FunctionComponent = () => {
                 <ArenaPanel />
             </PivotItem>
             <PivotItem headerText="Object" itemKey={Tabs.Objects}>
-                <ObjectsPanel />
+                <PrefabsPanel />
             </PivotItem>
             <PivotItem headerText="Status" itemKey={Tabs.Status}>
                 <StatusPanel />

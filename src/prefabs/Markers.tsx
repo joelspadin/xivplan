@@ -6,13 +6,14 @@ import useImage from 'use-image';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { ALIGN_TO_PIXEL, useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { GroundPortal } from '../render/Portals';
 import { MarkerObject, ObjectType } from '../scene';
-import { updateListObject, useScene } from '../SceneProvider';
+import { useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
@@ -54,9 +55,8 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
 
 registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
     return {
-        type: 'markers',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Marker,
             name: '',
             image: '',
@@ -102,36 +102,38 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     };
 
     return (
-        <Group x={center.x} y={center.y} rotation={object.rotation}>
-            {object.shape === 'circle' && (
-                <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
-            )}
-            {object.shape === 'square' && (
-                <Rect
-                    x={-object.width / 2}
-                    y={-object.height / 2}
-                    width={object.width}
-                    height={object.height}
-                    dashOffset={dashSize / 2}
-                    {...strokeProps}
-                    {...ALIGN_TO_PIXEL}
+        <GroundPortal>
+            <Group x={center.x} y={center.y} rotation={object.rotation}>
+                {object.shape === 'circle' && (
+                    <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
+                )}
+                {object.shape === 'square' && (
+                    <Rect
+                        x={-object.width / 2}
+                        y={-object.height / 2}
+                        width={object.width}
+                        height={object.height}
+                        dashOffset={dashSize / 2}
+                        {...strokeProps}
+                        {...ALIGN_TO_PIXEL}
+                    />
+                )}
+                <Image
+                    image={image}
+                    width={iconWidth}
+                    height={iconHeight}
+                    offsetX={iconWidth / 2}
+                    offsetY={iconHeight / 2}
                 />
-            )}
-            <Image
-                image={image}
-                width={iconWidth}
-                height={iconHeight}
-                offsetX={iconWidth / 2}
-                offsetY={iconHeight / 2}
-            />
-        </Group>
+            </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<MarkerObject>(ObjectType.Marker, MarkerRenderer);
 
-const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, layer, index }) => {
-    return <DetailsItem icon={object.image} name={object.name} layer={layer} index={index} />;
+const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, index }) => {
+    return <DetailsItem icon={object.image} name={object.name} index={index} />;
 };
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
@@ -149,25 +151,25 @@ const shapeOptions: IDropdownOption[] = [
 
 const swatches = [COLOR_RED, COLOR_YELLOW, COLOR_BLUE, COLOR_PURPLE];
 
-const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object, layer, index }) => {
+const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
-        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
-        [dispatch, object, layer, index],
+        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
+        [dispatch, object, index],
     );
 
     const onShapeChanged = useCallback(
         (option?: IDropdownOption) => {
             const shape = (option?.key as 'circle' | 'square') ?? 'square';
-            updateListObject(dispatch, layer, index, { ...object, shape });
+            dispatch({ type: 'update', index, value: { ...object, shape } });
         },
-        [dispatch, object, layer, index],
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
-        [dispatch, object, layer, index],
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
     );
 
     return (
@@ -180,7 +182,7 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
                 onChange={(ev, option) => onShapeChanged(option)}
             />
             <CompactColorPicker label="Color" color={object.color} swatches={swatches} onChange={onColorChanged} />
-            <ImageObjectProperties object={object} layer={layer} index={index} />
+            <ImageObjectProperties object={object} index={index} />
         </Stack>
     );
 };

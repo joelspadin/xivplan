@@ -1,4 +1,5 @@
-import { Point, Scene } from '../scene';
+import { Vector2d } from 'konva/lib/types';
+import { Scene } from '../scene';
 import { useScene } from '../SceneProvider';
 
 export const SCENE_PADDING = 120;
@@ -18,7 +19,7 @@ export function getCanvasY(scene: Scene, y: number): number {
     return center - y;
 }
 
-export function getCanvasCoord(scene: Scene, p: Point): Point {
+export function getCanvasCoord(scene: Scene, p: Vector2d): Vector2d {
     return { x: getCanvasX(scene, p.x), y: getCanvasY(scene, p.y) };
 }
 
@@ -45,7 +46,7 @@ export function getCanvasArenaEllipse(scene: Scene): { x: number; y: number; rad
     return { x, y, radiusX, radiusY };
 }
 
-export function useCanvasCoord(p: Point): Point {
+export function useCanvasCoord(p: Vector2d): Vector2d {
     const [scene] = useScene();
     return getCanvasCoord(scene, p);
 }
@@ -70,6 +71,6 @@ export function getSceneY(scene: Scene, y: number): number {
     return center - y;
 }
 
-export function getSceneCoord(scene: Scene, p: Point): Point {
+export function getSceneCoord(scene: Scene, p: Vector2d): Vector2d {
     return { x: getSceneX(scene, p.x), y: getSceneY(scene, p.y) };
 }

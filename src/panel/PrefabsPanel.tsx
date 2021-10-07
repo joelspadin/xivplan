@@ -69,7 +69,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const ObjectsPanel: React.FunctionComponent = () => {
+export const PrefabsPanel: React.FunctionComponent = () => {
     // AOE zone icons don't have much contrast with light theme background.
     // Darken them a bit.
     const theme = useTheme();

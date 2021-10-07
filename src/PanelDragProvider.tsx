@@ -2,6 +2,7 @@ import { Vector2d } from 'konva/lib/types';
 import React, { createContext, Dispatch, useContext, useState } from 'react';
 import { SceneObject } from './scene';
 import { SceneAction } from './SceneProvider';
+import { asArray } from './util';
 
 export interface PanelDragObject {
     object: Partial<SceneObject>;
@@ -27,9 +28,7 @@ export type DropHandler<T extends SceneObject> = (object: Partial<T>, position: 
 const dropHandlers: Record<string, DropHandler<SceneObject>> = {};
 
 export function registerDropHandler<T extends SceneObject>(types: string | string[], handler: DropHandler<T>): void {
-    types = Array.isArray(types) ? types : [types];
-
-    for (const type of types) {
+    for (const type of asArray(types)) {
         dropHandlers[type] = handler as DropHandler<SceneObject>;
     }
 }

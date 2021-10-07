@@ -5,14 +5,15 @@ import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
-import { updateListObject, useScene } from '../../SceneProvider';
+import { useScene } from '../../SceneProvider';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
@@ -42,9 +43,8 @@ export const ZoneCircle: React.FC = () => {
 
 registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Circle,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -62,34 +62,38 @@ const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
         [object.color, object.opacity, object.radius],
     );
 
-    return <Circle x={center.x} y={center.y} radius={object.radius} {...style} />;
+    return (
+        <GroundPortal>
+            <Circle x={center.x} y={center.y} radius={object.radius} {...style} />
+        </GroundPortal>
+    );
 };
 
 registerRenderer<CircleZone>(ObjectType.Circle, CircleRenderer);
 
-const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
+const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Circle" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Circle" index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);
 
-const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object, layer, index }) => {
+const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
-        [dispatch, object, layer, index],
+        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
-        [dispatch, object, layer, index],
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => updateListObject(dispatch, layer, index, { ...object, opacity }),
-        [dispatch, object, layer, index],
+        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        [dispatch, object, index],
     );
 
     return (
@@ -101,7 +105,7 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

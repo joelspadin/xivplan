@@ -4,10 +4,11 @@ import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import icon from '../../assets/zone/falloff.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { degtorad } from '../../util';
@@ -37,9 +38,8 @@ export const ZoneProximity: React.FunctionComponent = () => {
 
 registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Proximity,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -83,17 +83,19 @@ const FlareArrow: React.FC<ShapeConfig> = ({ ...props }) => {
     const points = useMemo(() => getArrowPoints(), []);
 
     return (
-        <Group x={x} y={y} offsetX={offsetX} offsetY={offsetY} rotation={rotation}>
-            <Line points={points} closed={true} {...arrowProps} fill={shadowColor} offsetY={-4} />
-            <Line points={points} closed={true} {...arrowProps} />
-            <Wedge
-                rotation={-90 - SPOKE_A / 2}
-                angle={SPOKE_A}
-                radius={SPOKE_H}
-                y={SPOKE_H + ARROW_H * 2}
-                fill={shadowColor}
-            />
-        </Group>
+        <GroundPortal>
+            <Group x={x} y={y} offsetX={offsetX} offsetY={offsetY} rotation={rotation}>
+                <Line points={points} closed={true} {...arrowProps} fill={shadowColor} offsetY={-4} />
+                <Line points={points} closed={true} {...arrowProps} />
+                <Wedge
+                    rotation={-90 - SPOKE_A / 2}
+                    angle={SPOKE_A}
+                    radius={SPOKE_H}
+                    y={SPOKE_H + ARROW_H * 2}
+                    fill={shadowColor}
+                />
+            </Group>
+        </GroundPortal>
     );
 };
 
@@ -167,9 +169,9 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Proximity, ProximityRenderer);
 
-const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
+const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Proximity AOE" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Proximity AOE" index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

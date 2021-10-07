@@ -6,14 +6,15 @@ import icon from '../../assets/zone/meteor_tower.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { AOE_COLOR_SWATCHES, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
-import { updateListObject, useScene } from '../../SceneProvider';
+import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
@@ -48,9 +49,8 @@ export const ZoneTower: React.FunctionComponent = () => {
 
 registerDropHandler<TowerZone>(ObjectType.Tower, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Tower,
             color: DEFAULT_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -127,20 +127,22 @@ const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
     const zones = useMemo(() => getCountZones(object.radius, object.count), [object.radius, object.count]);
 
     return (
-        <Group x={center.x} y={center.y}>
-            <Circle radius={object.radius} {...style} opacity={0.75} />
-            {zones.map((props, i) => (
-                <CountZone key={i} {...props} {...style} />
-            ))}
-        </Group>
+        <GroundPortal>
+            <Group x={center.x} y={center.y}>
+                <Circle radius={object.radius} {...style} opacity={0.75} />
+                {zones.map((props, i) => (
+                    <CountZone key={i} {...props} {...style} />
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<TowerZone>(ObjectType.Tower, TowerRenderer);
 
-const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ layer, index }) => {
+const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Meteor/tower" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Meteor/tower" index={index} />;
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);
@@ -149,22 +151,22 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
+        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
         [dispatch, object, layer, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
         [dispatch, object, layer, index],
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => updateListObject(dispatch, layer, index, { ...object, opacity }),
+        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
         [dispatch, object, layer, index],
     );
 
     const onCountChanged = useSpinChanged(
-        (count: number) => updateListObject(dispatch, layer, index, { ...object, count }),
+        (count: number) => dispatch({ type: 'update', index, value: { ...object, count } }),
         [dispatch, object, layer, index],
     );
 
@@ -179,7 +181,7 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

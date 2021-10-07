@@ -5,13 +5,13 @@ import { Image } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { ObjectType, PartyObject } from '../scene';
-import { updateListObject, useScene } from '../SceneProvider';
+import { useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 
@@ -45,9 +45,8 @@ function makeIcon(name: string, icon: string) {
 
 registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
     return {
-        type: 'actors',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Party,
             image: '',
             name: '',
@@ -81,24 +80,24 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
 
 registerRenderer<PartyObject>(ObjectType.Party, PartyRenderer);
 
-const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, layer, index }) => {
-    return <DetailsItem icon={object.image} name={object.name} layer={layer} index={index} />;
+const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, index }) => {
+    return <DetailsItem icon={object.image} name={object.name} index={index} />;
 };
 
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
 
-const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object, layer, index }) => {
+const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
-        (newName?: string) => updateListObject(dispatch, layer, index, { ...object, name: newName ?? '' }),
-        [dispatch, object, layer, index],
+        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
+        [dispatch, object, index],
     );
 
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <ImageObjectProperties object={object} layer={layer} index={index} />
+            <ImageObjectProperties object={object} index={index} />
         </Stack>
     );
 };

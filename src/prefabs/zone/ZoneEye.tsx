@@ -5,10 +5,11 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import icon from '../../assets/zone/eye.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { CircleZone, ObjectType } from '../../scene';
 import { PrefabIcon } from '../PrefabIcon';
 
@@ -37,9 +38,8 @@ export const ZoneEye: React.FunctionComponent = () => {
 
 registerDropHandler<CircleZone>(ObjectType.Eye, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Eye,
             color: DEFAULT_COLOR,
             opacity: DEFAULT_OPACITY,
@@ -123,34 +123,36 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.color, object.opacity, object.radius, groupRef]);
 
     return (
-        <Group x={center.x} y={center.y} opacity={object.opacity / 100} ref={groupRef}>
-            <Group scaleX={scale} scaleY={scale}>
-                <Path
-                    data="M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z"
-                    fill={highlightColor}
-                    stroke={strokeColor}
-                    strokeWidth={3}
-                    fillAfterStrokeEnabled
-                />
-                <Path data="M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z" {...eyeStyle} />
-                <Line
-                    points={[-19, 0, 19, 0]}
-                    stroke={highlightColor}
-                    strokeWidth={0.25}
-                    opacity={0.7}
-                    lineCap="round"
-                />
-                <Circle radius={10} {...irisStyle} />
+        <GroundPortal>
+            <Group x={center.x} y={center.y} opacity={object.opacity / 100} ref={groupRef}>
+                <Group scaleX={scale} scaleY={scale}>
+                    <Path
+                        data="M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z"
+                        fill={highlightColor}
+                        stroke={strokeColor}
+                        strokeWidth={3}
+                        fillAfterStrokeEnabled
+                    />
+                    <Path data="M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z" {...eyeStyle} />
+                    <Line
+                        points={[-19, 0, 19, 0]}
+                        stroke={highlightColor}
+                        strokeWidth={0.25}
+                        opacity={0.7}
+                        lineCap="round"
+                    />
+                    <Circle radius={10} {...irisStyle} />
+                </Group>
             </Group>
-        </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Eye, EyeRenderer);
 
-const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
+const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Look away" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Look away" index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

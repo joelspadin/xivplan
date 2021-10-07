@@ -39,102 +39,108 @@ export enum ObjectType {
     TetherMinusMinus = 'tetherMinusMinus',
 }
 
-export interface UnknownObject {
-    type: ObjectType;
+export interface SceneId {
+    readonly id: number;
 }
 
-function makeObjectTest<T extends UnknownObject>(...types: ObjectType[]): (object: UnknownObject) => object is T {
+export interface UnknownObject extends SceneId {
+    readonly type: ObjectType;
+}
+
+function makeObjectTest<T extends UnknownObject>(
+    ...types: readonly ObjectType[]
+): (object: UnknownObject) => object is T {
     return (object): object is T => types.includes(object.type);
 }
 
 export interface NoGrid {
-    type: GridType.None;
+    readonly type: GridType.None;
 }
 
 export interface RectangularGrid {
-    type: GridType.Rectangular;
-    rows: number;
-    columns: number;
+    readonly type: GridType.Rectangular;
+    readonly rows: number;
+    readonly columns: number;
 }
 
 export interface RadialGrid {
-    type: GridType.Radial;
-    angularDivs: number;
-    radialDivs: number;
-    startAngle?: number;
+    readonly type: GridType.Radial;
+    readonly angularDivs: number;
+    readonly radialDivs: number;
+    readonly startAngle?: number;
 }
 
 export interface CustomGrid {
-    type: GridType.Custom;
-    rows: number[];
-    columns: number[];
+    readonly type: GridType.Custom;
+    readonly rows: number[];
+    readonly columns: number[];
 }
 
 export type Grid = NoGrid | RectangularGrid | RadialGrid | CustomGrid;
 
 export interface Arena {
-    shape: ArenaShape;
-    width: number;
-    height: number;
-    grid: Grid;
-    backgroundImage?: string;
+    readonly shape: ArenaShape;
+    readonly width: number;
+    readonly height: number;
+    readonly grid: Grid;
+    readonly backgroundImage?: string;
 }
 
 export interface ArenaPreset extends Arena {
     name: string;
 }
 
-export interface Point {
-    x: number;
-    y: number;
+export interface MoveableObject {
+    readonly x: number;
+    readonly y: number;
 }
 
-export interface ResizeableObject extends Point {
-    width: number;
-    height: number;
-    rotation: number;
+export interface ResizeableObject extends MoveableObject {
+    readonly width: number;
+    readonly height: number;
+    readonly rotation: number;
 }
 
 export interface ImageObject extends ResizeableObject {
-    image: string;
+    readonly image: string;
 }
 
-export interface MarkerObject extends ImageObject {
-    type: ObjectType.Marker;
-    shape: 'circle' | 'square';
-    name: string;
-    color: string;
+export interface MarkerObject extends ImageObject, SceneId {
+    readonly type: ObjectType.Marker;
+    readonly shape: 'circle' | 'square';
+    readonly name: string;
+    readonly color: string;
 }
 export const isMarker = makeObjectTest<MarkerObject>(ObjectType.Marker);
 
-export interface ArrowObject extends ResizeableObject {
-    type: ObjectType.Arrow;
-    color: string;
+export interface ArrowObject extends ResizeableObject, SceneId {
+    readonly type: ObjectType.Arrow;
+    readonly color: string;
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
 export type Marker = MarkerObject | ArrowObject;
 
 export interface ActorStatus {
-    icon: string;
-    name: string;
+    readonly icon: string;
+    readonly name: string;
 }
 
-export interface PartyObject extends ImageObject {
-    type: ObjectType.Party;
-    name: string;
-    status: ActorStatus[];
+export interface PartyObject extends ImageObject, SceneId {
+    readonly type: ObjectType.Party;
+    readonly name: string;
+    readonly status: ActorStatus[];
 }
 export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
-export interface EnemyObject extends Point {
-    type: ObjectType.Enemy;
-    icon: string;
-    name: string;
-    color: string;
-    radius: number;
-    status: ActorStatus[];
-    rotation?: number;
+export interface EnemyObject extends MoveableObject, SceneId {
+    readonly type: ObjectType.Enemy;
+    readonly icon: string;
+    readonly name: string;
+    readonly color: string;
+    readonly radius: number;
+    readonly status: ActorStatus[];
+    readonly rotation?: number;
 }
 export const isEnemy = makeObjectTest<EnemyObject>(ObjectType.Enemy);
 
@@ -143,8 +149,8 @@ export function isActor(object: UnknownObject): object is Actor {
     return isParty(object) || isEnemy(object);
 }
 
-export interface CircleZone extends Point {
-    type:
+export interface CircleZone extends MoveableObject, SceneId {
+    readonly type:
         | ObjectType.Circle
         | ObjectType.Stack
         | ObjectType.Proximity
@@ -153,9 +159,9 @@ export interface CircleZone extends Point {
         | ObjectType.RotateCCW
         | ObjectType.Eye;
 
-    color: string;
-    opacity: number;
-    radius: number;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
@@ -167,29 +173,29 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Eye,
 );
 
-export interface DonutZone extends Point {
-    type: ObjectType.Donut;
-    color: string;
-    opacity: number;
-    radius: number;
-    innerRadius: number;
+export interface DonutZone extends MoveableObject, SceneId {
+    readonly type: ObjectType.Donut;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
+    readonly innerRadius: number;
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
-export interface ConeZone extends Point {
-    type: ObjectType.Cone;
-    color: string;
-    opacity: number;
-    radius: number;
-    rotation: number;
-    coneAngle: number;
+export interface ConeZone extends MoveableObject, SceneId {
+    readonly type: ObjectType.Cone;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
+    readonly rotation: number;
+    readonly coneAngle: number;
 }
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
 
-export interface RectangleZone extends ResizeableObject {
-    type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnockback | ObjectType.LineKnockAway;
-    color: string;
-    opacity: number;
+export interface RectangleZone extends ResizeableObject, SceneId {
+    readonly type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnockback | ObjectType.LineKnockAway;
+    readonly color: string;
+    readonly opacity: number;
 }
 export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.Rect,
@@ -198,33 +204,33 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.LineKnockAway,
 );
 
-export interface ExaflareZone extends Point {
-    type: ObjectType.Exaflare;
-    color: string;
-    opacity: number;
-    radius: number;
-    length: number;
-    rotation: number;
+export interface ExaflareZone extends MoveableObject, SceneId {
+    readonly type: ObjectType.Exaflare;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
+    readonly length: number;
+    readonly rotation: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
-export interface StarburstZone extends Point {
-    type: ObjectType.Starburst;
-    color: string;
-    opacity: number;
-    radius: number;
-    rotation: number;
-    spokes: number;
-    spokeWidth: number;
+export interface StarburstZone extends MoveableObject, SceneId {
+    readonly type: ObjectType.Starburst;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
+    readonly rotation: number;
+    readonly spokes: number;
+    readonly spokeWidth: number;
 }
 export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburst);
 
-export interface TowerZone extends Point {
-    type: ObjectType.Tower;
-    color: string;
-    opacity: number;
-    radius: number;
-    count: number;
+export interface TowerZone extends MoveableObject, SceneId {
+    readonly type: ObjectType.Tower;
+    readonly color: string;
+    readonly opacity: number;
+    readonly radius: number;
+    readonly count: number;
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
@@ -241,16 +247,16 @@ export function isZone(object: UnknownObject): object is Zone {
     );
 }
 
-export interface Tether {
-    type:
+export interface Tether extends SceneId {
+    readonly type:
         | ObjectType.Tether
         | ObjectType.TetherClose
         | ObjectType.TetherFar
         | ObjectType.TetherPlusMinus
         | ObjectType.TetherTetherPlusPlus
         | ObjectType.TetherMinusMinus;
-    start: number;
-    end: number;
+    readonly startId: number;
+    readonly endId: number;
 }
 export const isTether = makeObjectTest<Tether>(
     ObjectType.Tether,
@@ -261,14 +267,19 @@ export const isTether = makeObjectTest<Tether>(
     ObjectType.TetherMinusMinus,
 );
 
-export type SceneObject = Zone | Marker | Actor | Tether;
+export function isMoveable<T>(object: T): object is MoveableObject & T {
+    const moveable = object as MoveableObject & T;
+    return moveable && typeof moveable.x === 'number' && typeof moveable.y === 'number';
+}
+
+export type SceneObject = UnknownObject | Zone | Marker | Actor | Tether;
+
+export type SceneObjectWithoutId = Omit<SceneObject, 'id'>;
 
 export interface Scene {
-    arena: Arena;
-    zones: Zone[];
-    markers: Marker[];
-    actors: Actor[];
-    tethers: Tether[];
+    readonly nextId: number;
+    readonly arena: Arena;
+    readonly objects: readonly SceneObject[];
 }
 
 export const NO_GRID: NoGrid = {
@@ -301,9 +312,7 @@ export const DEFAULT_ARENA: Arena = {
 };
 
 export const DEFAULT_SCENE: Scene = {
+    nextId: 1,
     arena: DEFAULT_ARENA,
-    zones: [],
-    markers: [],
-    actors: [],
-    tethers: [],
+    objects: [],
 };

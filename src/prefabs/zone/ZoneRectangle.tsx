@@ -6,14 +6,15 @@ import squareIcon from '../../assets/zone/square.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { updateListObject, useScene } from '../../SceneProvider';
+import { useScene } from '../../SceneProvider';
 import { ResizeableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
@@ -67,9 +68,8 @@ export const ZoneLine: React.FunctionComponent = () => {
 
 registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Rect,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -90,39 +90,41 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
     );
 
     return (
-        <Rect
-            x={center.x}
-            y={center.y}
-            offsetX={object.width / 2}
-            offsetY={object.height / 2}
-            width={object.width}
-            height={object.height}
-            rotation={object.rotation}
-            {...style}
-        />
+        <GroundPortal>
+            <Rect
+                x={center.x}
+                y={center.y}
+                offsetX={object.width / 2}
+                offsetY={object.height / 2}
+                width={object.width}
+                height={object.height}
+                rotation={object.rotation}
+                {...style}
+            />
+        </GroundPortal>
     );
 };
 
 registerRenderer<RectangleZone>(ObjectType.Rect, RectangleRenderer);
 
-const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ layer, index }) => {
+const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={squareIcon} name="Rectangle" layer={layer} index={index} />;
+    return <DetailsItem icon={squareIcon} name="Rectangle" index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
 
-const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object, layer, index }) => {
+const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
-        [dispatch, object, layer, index],
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => updateListObject(dispatch, layer, index, { ...object, opacity }),
-        [dispatch, object, layer, index],
+        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        [dispatch, object, index],
     );
 
     return (
@@ -134,7 +136,7 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <ResizeableObjectProperties object={object} layer={layer} index={index} />
+            <ResizeableObjectProperties object={object} index={index} />
         </Stack>
     );
 };

@@ -1,8 +1,8 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { DependencyList, useCallback } from 'react';
 import { DeferredTextField } from '../DeferredTextField';
-import { ImageObject, Point, ResizeableObject, UnknownObject } from '../scene';
-import { EditList, updateListObject, useScene } from '../SceneProvider';
+import { ImageObject, MoveableObject, ResizeableObject, SceneObject, UnknownObject } from '../scene';
+import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 
 const stackTokens: IStackTokens = {
@@ -11,7 +11,6 @@ const stackTokens: IStackTokens = {
 
 export interface ObjectPropertiesProps<T> {
     object: T & UnknownObject;
-    layer: EditList;
     index: number;
 }
 
@@ -33,16 +32,16 @@ export function useSpinChanged(
     }, deps);
 }
 
-export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<Point>> = ({ object, layer, index }) => {
+export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onXChanged = useSpinChanged(
-        (x: number) => updateListObject(dispatch, layer, index, { ...object, x }),
-        [dispatch, object, layer, index],
+        (x: number) => dispatch({ type: 'update', index, value: { ...object, x } as SceneObject }),
+        [dispatch, object, index],
     );
     const onYChanged = useSpinChanged(
-        (y: number) => updateListObject(dispatch, layer, index, { ...object, y }),
-        [dispatch, object, layer, index],
+        (y: number) => dispatch({ type: 'update', index, value: { ...object, y } as SceneObject }),
+        [dispatch, object, index],
     );
 
     return (
@@ -67,29 +66,26 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<Point>> = 
     );
 };
 
-export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({
-    object,
-    layer,
-    index,
-}) => {
+export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onWidthChanged = useSpinChanged(
-        (width: number) => updateListObject(dispatch, layer, index, { ...object, width }),
-        [dispatch, object, layer, index],
+        (width: number) => dispatch({ type: 'update', index, value: { ...object, width } as SceneObject }),
+        [dispatch, object, index],
     );
     const onHeightChanged = useSpinChanged(
-        (height: number) => updateListObject(dispatch, layer, index, { ...object, height }),
-        [dispatch, object, layer, index],
+        (height: number) => dispatch({ type: 'update', index, value: { ...object, height } as SceneObject }),
+        [dispatch, object, index],
     );
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
-        [dispatch, object, layer, index],
+        (rotation: number) =>
+            dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } as SceneObject }),
+        [dispatch, object, index],
     );
 
     return (
         <>
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens}>
                 <SpinButton
                     label="Width"
@@ -120,18 +116,19 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
     );
 };
 
-export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object, layer, index }) => {
+export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onImageChanged = useCallback(
-        (image?: string) => updateListObject(dispatch, layer, index, { ...object, image: image ?? '' }),
-        [dispatch, object, layer, index],
+        (image?: string) =>
+            dispatch({ type: 'update', index, value: { ...object, image: image ?? '' } as SceneObject }),
+        [dispatch, object, index],
     );
 
     return (
         <>
             <DeferredTextField label="Image URL" value={object.image} onChange={onImageChanged} />
-            <ResizeableObjectProperties object={object} layer={layer} index={index} />
+            <ResizeableObjectProperties object={object} index={index} />
         </>
     );
 };

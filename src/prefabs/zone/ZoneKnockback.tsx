@@ -2,10 +2,11 @@ import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/knockback.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { PrefabIcon } from '../PrefabIcon';
@@ -35,9 +36,8 @@ export const ZoneKnockback: React.FunctionComponent = () => {
 
 registerDropHandler<CircleZone>(ObjectType.Knockback, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Knockback,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -68,33 +68,35 @@ const KnockbackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.radius]);
 
     return (
-        <Group x={center.x} y={center.y}>
-            <Circle radius={object.radius} {...ring} strokeEnabled={false} opacity={0.5} />
+        <GroundPortal>
+            <Group x={center.x} y={center.y}>
+                <Circle radius={object.radius} {...ring} strokeEnabled={false} opacity={0.5} />
 
-            {CHEVRON_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r}>
-                    {[0.25, 0.52, 0.85].map((s, j) => (
-                        <ChevronTail
-                            key={j}
-                            offsetY={cx * s}
-                            chevronAngle={ca}
-                            width={cw * s}
-                            height={ch * s}
-                            opacity={object.opacity / 100}
-                            {...arrow}
-                        />
-                    ))}
-                </Group>
-            ))}
-        </Group>
+                {CHEVRON_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r}>
+                        {[0.25, 0.52, 0.85].map((s, j) => (
+                            <ChevronTail
+                                key={j}
+                                offsetY={cx * s}
+                                chevronAngle={ca}
+                                width={cw * s}
+                                height={ch * s}
+                                opacity={object.opacity / 100}
+                                {...arrow}
+                            />
+                        ))}
+                    </Group>
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Knockback, KnockbackRenderer);
 
-const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
+const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Knockback" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Knockback" index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

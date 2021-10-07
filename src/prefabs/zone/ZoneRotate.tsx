@@ -5,10 +5,11 @@ import { Circle, Group, Path } from 'react-konva';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { CircleZone, ObjectType } from '../../scene';
 import { PrefabIcon } from '../PrefabIcon';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
@@ -60,9 +61,8 @@ export const ZoneRotateCounterClockwise: React.FunctionComponent = () => {
 
 registerDropHandler<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.RotateCW,
             color: CLOCKWISE_COLOR,
             opacity: DEFAULT_OPACITY,
@@ -107,22 +107,24 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.color, object.opacity, object.radius, groupRef]);
 
     return (
-        <Group x={center.x} y={center.y} opacity={(object.opacity * 2) / 100} ref={groupRef}>
-            <Circle radius={object.radius} {...style} />
-            {ARROW_ANGLES.map((r, i) => (
-                <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
-            ))}
-        </Group>
+        <GroundPortal>
+            <Group x={center.x} y={center.y} opacity={(object.opacity * 2) / 100} ref={groupRef}>
+                <Circle radius={object.radius} {...style} />
+                {ARROW_ANGLES.map((r, i) => (
+                    <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateRenderer);
 
-const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, layer, index }) => {
+const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, index }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
     const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
 
-    return <DetailsItem icon={icon} name={name} layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name={name} index={index} />;
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

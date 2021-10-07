@@ -2,13 +2,13 @@ import { IStyle, mergeStyleSets } from '@fluentui/react';
 import React from 'react';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
-import { EditList } from '../SceneProvider';
-import { useSelectedObject } from '../SelectionProvider';
+import { useScene } from '../SceneProvider';
+import { useSelection } from '../SelectionProvider';
+import { asArray } from '../util';
 import { PANEL_PADDING } from './PanelStyles';
 
 export interface PropertiesControlProps<T extends SceneObject = SceneObject> {
     object: T;
-    layer: EditList;
     index: number;
 }
 
@@ -20,8 +20,7 @@ export function registerPropertiesControl<T extends SceneObject>(
     ids: string | string[],
     component: PropertiesControl<T>,
 ): void {
-    ids = Array.isArray(ids) ? ids : [ids];
-    for (const id of ids) {
+    for (const id of asArray(ids)) {
         registry.register(id, component);
     }
 }
@@ -33,16 +32,31 @@ const classNames = mergeStyleSets({
 });
 
 export const PropertiesPanel: React.FC = () => {
-    const selectedObject = useSelectedObject();
-
     return (
         <div className={classNames.root}>
-            {selectedObject ? <Controls {...selectedObject} /> : <p>No object selected.</p>}
+            <Controls />
         </div>
     );
 };
 
-export const Controls: React.FC<PropertiesControlProps> = ({ object, layer, index }) => {
+const Controls: React.FC = () => {
+    const [selection] = useSelection();
+    const [scene] = useScene();
+
+    if (selection.length === 0) {
+        return <p>No object selected.</p>;
+    }
+    if (selection.length > 1) {
+        return <p>Multiple objects selected.</p>;
+    }
+
+    const index = selection[0] as number;
+    const object = scene.objects[index];
+
+    if (!object) {
+        return <p>Envalid selection.</p>;
+    }
+
     const Component = registry.get(object.type);
-    return <Component object={object} layer={layer} index={index} />;
+    return <Component object={object} index={index} />;
 };

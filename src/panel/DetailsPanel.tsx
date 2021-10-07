@@ -11,14 +11,17 @@ import {
 } from '@fluentui/react';
 import React from 'react';
 import { useMedia } from 'react-use';
-import { LayersPanel } from './LayersPanel';
 import { PANEL_PADDING, PANEL_WIDTH } from './PanelStyles';
 import { PropertiesPanel } from './PropertiesPanel';
+import { SceneObjectsPanel } from './SceneObjectsPanel';
 
 const enum Tabs {
     Properties = 'props',
     Layers = 'layers',
 }
+
+const PROPERTIES_TITLE = 'Properties';
+const OBJECTS_TITLE = 'Objects';
 
 const headerStyle: IStyle[] = [
     DefaultFontStyles.mediumPlus,
@@ -81,16 +84,16 @@ const WideDetailsPanel: React.FC = () => {
     return (
         <Stack horizontal className={classNames.widePanel}>
             <section>
-                <header>Properties</header>
+                <header>{PROPERTIES_TITLE}</header>
                 <div className={classNames.scrollable}>
                     <PropertiesPanel />
                 </div>
             </section>
             <Separator vertical />
             <section>
-                <header>Layers</header>
+                <header>{OBJECTS_TITLE}</header>
                 <div className={classNames.scrollable}>
-                    <LayersPanel />
+                    <SceneObjectsPanel />
                 </div>
             </section>
         </Stack>
@@ -100,12 +103,12 @@ const WideDetailsPanel: React.FC = () => {
 const TallDetailsPanel: React.FC = () => {
     return (
         <Stack className={classNames.tallPanel}>
-            <header>Properties</header>
+            <header>{PROPERTIES_TITLE}</header>
             <PropertiesPanel />
             <Separator />
-            <header>Layers</header>
+            <header>{OBJECTS_TITLE}</header>
             <div className={classNames.scrollable}>
-                <LayersPanel />
+                <SceneObjectsPanel />
             </div>
         </Stack>
     );
@@ -114,11 +117,11 @@ const TallDetailsPanel: React.FC = () => {
 const ShortDetailsPanel: React.FC = () => {
     return (
         <Pivot className={classNames.wrapper} styles={pivotStyles}>
-            <PivotItem headerText="Properties" itemKey={Tabs.Properties}>
+            <PivotItem headerText={PROPERTIES_TITLE} itemKey={Tabs.Properties}>
                 <PropertiesPanel />
             </PivotItem>
-            <PivotItem headerText="Layers" itemKey={Tabs.Layers}>
-                <LayersPanel />
+            <PivotItem headerText={OBJECTS_TITLE} itemKey={Tabs.Layers}>
+                <SceneObjectsPanel />
             </PivotItem>
         </Pivot>
     );

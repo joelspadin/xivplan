@@ -5,14 +5,15 @@ import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
-import { updateListObject, useScene } from '../../SceneProvider';
+import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
@@ -52,9 +53,8 @@ export const ZoneCone: React.FunctionComponent = () => {
 
 registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Cone,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -75,22 +75,24 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
     );
 
     return (
-        <Wedge
-            x={center.x}
-            y={center.y}
-            radius={object.radius}
-            angle={object.coneAngle}
-            rotation={object.rotation - 90 - object.coneAngle / 2}
-            {...style}
-        />
+        <GroundPortal>
+            <Wedge
+                x={center.x}
+                y={center.y}
+                radius={object.radius}
+                angle={object.coneAngle}
+                rotation={object.rotation - 90 - object.coneAngle / 2}
+                {...style}
+            />
+        </GroundPortal>
     );
 };
 
 registerRenderer<ConeZone>(ObjectType.Cone, ConeRenderer);
 
-const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ layer, index }) => {
+const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Cone" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Cone" index={index} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);
@@ -99,32 +101,32 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, layer, index }) => {
+const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
-        [dispatch, object, layer, index],
+        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
+        [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
-        [dispatch, object, layer, index],
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => updateListObject(dispatch, layer, index, { ...object, opacity }),
-        [dispatch, object, layer, index],
+        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        [dispatch, object, index],
     );
 
     const onAngleChanged = useSpinChanged(
-        (coneAngle: number) => updateListObject(dispatch, layer, index, { ...object, coneAngle }),
-        [dispatch, object, layer, index],
+        (coneAngle: number) => dispatch({ type: 'update', index, value: { ...object, coneAngle } }),
+        [dispatch, object, index],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
-        [dispatch, object, layer, index],
+        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
+        [dispatch, object, index],
     );
 
     return (
@@ -136,7 +138,7 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, l
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens}>
                 <SpinButton
                     label="Radius"

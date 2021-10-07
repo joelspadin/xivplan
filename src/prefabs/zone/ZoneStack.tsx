@@ -2,10 +2,11 @@ import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/stack.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { PrefabIcon } from '../PrefabIcon';
@@ -36,9 +37,8 @@ export const ZoneStack: React.FC = () => {
 
 registerDropHandler<CircleZone>(ObjectType.Stack, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Stack,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -69,22 +69,32 @@ const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.radius]);
 
     return (
-        <Group x={center.x} y={center.y}>
-            <Circle radius={object.radius} {...ring} fillEnabled={false} opacity={0.75} />
-            <ChevronTail rotation={180} chevronAngle={ca} width={cw * 0.6} height={ch * 0.6} {...arrow} />
+        <GroundPortal>
+            <Group x={center.x} y={center.y}>
+                <Circle radius={object.radius} {...ring} fillEnabled={false} opacity={0.75} />
+                <ChevronTail rotation={180} chevronAngle={ca} width={cw * 0.6} height={ch * 0.6} {...arrow} />
 
-            {CHEVRON_ANGLES.map((r, i) => (
-                <ChevronTail key={i} offsetY={-cx} rotation={r} chevronAngle={ca} width={cw} height={ch} {...arrow} />
-            ))}
-        </Group>
+                {CHEVRON_ANGLES.map((r, i) => (
+                    <ChevronTail
+                        key={i}
+                        offsetY={-cx}
+                        rotation={r}
+                        chevronAngle={ca}
+                        width={cw}
+                        height={ch}
+                        {...arrow}
+                    />
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Stack, StackRenderer);
 
-const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ layer, index }) => {
+const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Stack" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Stack" index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

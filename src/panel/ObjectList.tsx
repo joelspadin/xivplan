@@ -1,11 +1,10 @@
-import { classNamesFunction, IStyle, mergeStyleSets, Separator, Theme, useTheme } from '@fluentui/react';
+import { classNamesFunction, IStyle, mergeStyleSets, Theme, useTheme } from '@fluentui/react';
 import React, { useCallback } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
-import { EditList } from '../SceneProvider';
 import { useSelection } from '../SelectionProvider';
-import { makeClassName, reversed } from '../util';
+import { asArray, makeClassName, reversed } from '../util';
 
 const listClassNames = mergeStyleSets({
     list: {
@@ -17,7 +16,6 @@ const listClassNames = mergeStyleSets({
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
-    layer: EditList;
     index: number;
     isSelected: boolean;
 }
@@ -30,33 +28,28 @@ export function registerListComponent<T extends SceneObject>(
     ids: string | string[],
     component: ListComponent<T>,
 ): void {
-    ids = Array.isArray(ids) ? ids : [ids];
-    for (const id of ids) {
+    for (const id of asArray(ids)) {
         registry.register(id, component);
     }
 }
 
 export type MoveCallback = (from: number, to: number) => void;
 
-export interface LayerListProps {
-    headerText: string;
-    layer: EditList;
-    objects: SceneObject[];
+export interface ObjectListProps {
+    objects: readonly SceneObject[];
     onMove: MoveCallback;
 }
 
-function dropId(layer: EditList) {
-    return `drop-layer-${layer}`;
-}
+const DROP_ID = 'drop-id-objects';
 
 function reversedIndex(i: number, length: number) {
     return length - 1 - i;
 }
 
-export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText, layer, objects, onMove }) => {
+export const ObjectList: React.FunctionComponent<ObjectListProps> = ({ objects, onMove }) => {
     const onDragEnd = useCallback(
         (result: DropResult) => {
-            if (result.destination?.droppableId !== dropId(layer)) {
+            if (result.destination?.droppableId !== DROP_ID) {
                 return;
             }
 
@@ -65,7 +58,7 @@ export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText,
                 reversedIndex(result.destination.index, objects.length),
             );
         },
-        [layer, objects.length, onMove],
+        [objects.length, onMove],
     );
 
     // Objects are rendered with later objects on top, but it is more natural
@@ -74,18 +67,16 @@ export const LayerList: React.FunctionComponent<LayerListProps> = ({ headerText,
 
     return (
         <div>
-            <Separator>{headerText}</Separator>
             <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId={dropId(layer)}>
+                <Droppable droppableId={DROP_ID}>
                     {(provided) => (
                         <ul className={listClassNames.list} {...provided.droppableProps} ref={provided.innerRef}>
-                            {reversedObjects.map((object, key) => (
+                            {reversedObjects.map((object, index) => (
                                 <ListItem
                                     object={object}
-                                    key={key}
-                                    index={key}
-                                    sceneIndex={reversedIndex(key, objects.length)}
-                                    layer={layer}
+                                    key={object.id}
+                                    index={index}
+                                    sceneIndex={reversedIndex(index, objects.length)}
                                 />
                             ))}
                             {provided.placeholder}
@@ -109,16 +100,15 @@ export interface ListItemProps {
     index: number;
     sceneIndex: number;
     object: SceneObject;
-    layer: EditList;
 }
 
-const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, object, layer }) => {
+const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, object }) => {
     const [selection, setSelection] = useSelection();
-    const isSelected = layer === selection?.layer && sceneIndex === selection.index;
+    const isSelected = selection.includes(sceneIndex) ?? false;
 
     const onClick = useCallback(() => {
-        setSelection({ layer, index: sceneIndex });
-    }, [sceneIndex, layer, setSelection]);
+        setSelection([sceneIndex]);
+    }, [sceneIndex, setSelection]);
 
     const theme = useTheme();
     const classNames = getListItemClassNames(
@@ -147,7 +137,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, o
     const Component = registry.get(object.type);
 
     return (
-        <Draggable draggableId={sceneIndex.toString()} index={index}>
+        <Draggable draggableId={object.id.toString()} index={index}>
             {(provided, snapshot) => {
                 const className = makeClassName({
                     [classNames.root]: true,
@@ -163,7 +153,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, o
                         className={className}
                         onClick={onClick}
                     >
-                        <Component object={object} layer={layer} index={sceneIndex} isSelected={isSelected} />
+                        <Component object={object} index={sceneIndex} isSelected={isSelected} />
                     </li>
                 );
             }}

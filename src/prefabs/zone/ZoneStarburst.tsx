@@ -7,14 +7,15 @@ import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/LayerList';
+import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { GroundPortal } from '../../render/Portals';
 import { AOE_COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
-import { updateListObject, useScene } from '../../SceneProvider';
+import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
@@ -49,9 +50,8 @@ export const ZoneStarburst: React.FunctionComponent = () => {
 
 registerDropHandler<StarburstZone>(ObjectType.Starburst, (object, position) => {
     return {
-        type: 'zones',
-        op: 'add',
-        value: {
+        type: 'add',
+        object: {
             type: ObjectType.Starburst,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
@@ -86,11 +86,13 @@ const StarburstOdd: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spoke
     };
 
     return (
-        <Group x={x} y={y} rotation={rotation}>
-            {items.map((r, i) => (
-                <Rect key={i} rotation={r} {...rect} />
-            ))}
-        </Group>
+        <GroundPortal>
+            <Group x={x} y={y} rotation={rotation}>
+                {items.map((r, i) => (
+                    <Rect key={i} rotation={r} {...rect} />
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
@@ -111,11 +113,13 @@ const StarburstEven: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spok
     };
 
     return (
-        <Group x={x} y={y} rotation={rotation}>
-            {items.map((r, i) => (
-                <Rect key={i} rotation={r} {...rect} />
-            ))}
-        </Group>
+        <GroundPortal>
+            <Group x={x} y={y} rotation={rotation}>
+                {items.map((r, i) => (
+                    <Rect key={i} rotation={r} {...rect} />
+                ))}
+            </Group>
+        </GroundPortal>
     );
 };
 
@@ -144,9 +148,9 @@ const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object }) =
 
 registerRenderer<StarburstZone>(ObjectType.Starburst, StarburstRenderer);
 
-const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ layer, index }) => {
+const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Starburst" layer={layer} index={index} />;
+    return <DetailsItem icon={icon} name="Starburst" index={index} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);
@@ -159,32 +163,32 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => updateListObject(dispatch, layer, index, { ...object, radius }),
+        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
         [dispatch, object, layer, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => updateListObject(dispatch, layer, index, { ...object, color }),
+        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
         [dispatch, object, layer, index],
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => updateListObject(dispatch, layer, index, { ...object, opacity }),
+        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
         [dispatch, object, layer, index],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => updateListObject(dispatch, layer, index, { ...object, rotation: rotation % 360 }),
+        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
         [dispatch, object, layer, index],
     );
 
     const onSpokesChanged = useSpinChanged(
-        (spokes: number) => updateListObject(dispatch, layer, index, { ...object, spokes }),
+        (spokes: number) => dispatch({ type: 'update', index, value: { ...object, spokes } }),
         [dispatch, object, layer, index],
     );
 
     const onSpokeWidthChanged = useSpinChanged(
-        (spokeWidth: number) => updateListObject(dispatch, layer, index, { ...object, spokeWidth }),
+        (spokeWidth: number) => dispatch({ type: 'update', index, value: { ...object, spokeWidth } }),
         [dispatch, object, layer, index],
     );
 
@@ -197,7 +201,7 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
                 onChange={onColorChanged}
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} layer={layer} index={index} />
+            <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens}>
                 <SpinButton
                     label="Radius"

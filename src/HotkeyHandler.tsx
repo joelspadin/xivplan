@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { getDeleteSelectionAction } from './actions';
 import { useScene, useSceneUndoRedo } from './SceneProvider';
 import { useSelection } from './SelectionProvider';
 
@@ -26,9 +25,9 @@ const SelectionActionHandler: React.FC = () => {
     useHotkeys(
         'delete',
         (e) => {
-            if (selection) {
-                dispatch(getDeleteSelectionAction(selection));
-                setSelection(undefined);
+            if (selection.length) {
+                dispatch({ type: 'remove', index: selection });
+                setSelection([]);
                 e.preventDefault();
             }
         },

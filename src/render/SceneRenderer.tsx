@@ -3,11 +3,11 @@ import Konva from 'konva';
 import React, { RefObject, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
-import { Scene } from '../scene';
-import { SceneAction, SceneContext, useScene } from '../SceneProvider';
-import { SceneSelection, useSelection } from '../SelectionProvider';
+import { SceneContext, useScene } from '../SceneProvider';
+import { useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
 import { getCanvasSize, getSceneCoord } from './coord';
+import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
 
 export const SceneRenderer: React.FunctionComponent = () => {
@@ -24,15 +24,15 @@ export const SceneRenderer: React.FunctionComponent = () => {
             <Stage {...size} ref={stageRef}>
                 <ThemeContext.Provider value={theme}>
                     <SceneContext.Provider value={sceneBridge}>
-                        <Layer listening={false} name="background">
+                        <Layer listening={false} name={LayerName.Arena}>
                             <ArenaRenderer />
                         </Layer>
-                        <Layer>
-                            <ObjectRenderer objects={scene.zones} />
-                            <ObjectRenderer objects={scene.markers} />
-                            <ObjectRenderer objects={scene.actors} />
-                            <ObjectRenderer objects={scene.tethers} />
+                        <Layer listening={false} name={LayerName.Ground} />
+                        <Layer name={LayerName.Default}>
+                            <ObjectRenderer objects={scene.objects} />
                         </Layer>
+                        <Layer listening={false} name={LayerName.Tether} />
+                        <Layer listening={false} name={LayerName.Active} />
                     </SceneContext.Provider>
                 </ThemeContext.Provider>
             </Stage>
@@ -42,36 +42,6 @@ export const SceneRenderer: React.FunctionComponent = () => {
 
 interface DropTargetProps {
     stageRef: RefObject<Konva.Stage>;
-}
-
-function getNewSelection(scene: Scene, action: SceneAction): SceneSelection | undefined {
-    switch (action.type) {
-        case 'actors':
-            if (action.op === 'add') {
-                return { layer: 'actors', index: scene.actors.length };
-            }
-            break;
-
-        case 'markers':
-            if (action.op === 'add') {
-                return { layer: 'markers', index: scene.markers.length };
-            }
-            break;
-
-        case 'tethers':
-            if (action.op === 'add') {
-                return { layer: 'tethers', index: scene.tethers.length };
-            }
-            break;
-
-        case 'zones':
-            if (action.op === 'add') {
-                return { layer: 'zones', index: scene.zones.length };
-            }
-            break;
-    }
-
-    return undefined;
 }
 
 const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, children }) => {
@@ -102,7 +72,7 @@ const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, childr
                 const action = getDropAction(dragObject, getSceneCoord(scene, position));
                 if (action) {
                     dispatch(action);
-                    setSelection(getNewSelection(scene, action));
+                    setSelection([scene.objects.length]);
                 }
             }}
             onDragOver={(e) => e.preventDefault()}
