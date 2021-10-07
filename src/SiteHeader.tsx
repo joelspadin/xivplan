@@ -1,5 +1,17 @@
-import { IStackTokens, IStyle, IToggleStyles, mergeStyleSets, Stack, Text, Toggle } from '@fluentui/react';
+import {
+    classNamesFunction,
+    IStackTokens,
+    IStyle,
+    IToggleStyles,
+    mergeStyleSets,
+    Stack,
+    Text,
+    Theme,
+    Toggle,
+    useTheme,
+} from '@fluentui/react';
 import React, { HTMLAttributes, useContext } from 'react';
+import { ExternalLink } from './ExternalLink';
 import logoUrl from './logo.svg';
 import { DarkModeContext } from './ThemeProvider';
 
@@ -8,6 +20,17 @@ export const SiteHeaderHeight = 48;
 const classNames = mergeStyleSets({
     root: {
         height: SiteHeaderHeight,
+
+        a: {
+            textDecoration: 'none',
+            display: 'inline-block',
+            boxSizing: 'border-box',
+            height: SiteHeaderHeight,
+            padding: '15px 8px 11px',
+            ':hover, :focus': {
+                textDecoration: 'underline',
+            },
+        },
     } as IStyle,
     brand: {
         textDecoration: 'none',
@@ -38,8 +61,26 @@ const toggleStyles: Partial<IToggleStyles> = {
     },
 };
 
+interface IHeaderStyles {
+    links: IStyle;
+}
+
+const getClassNames = classNamesFunction<Theme, IHeaderStyles>();
+
 export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
+    const theme = useTheme();
+
+    const themeClasses = getClassNames(() => {
+        return {
+            links: {
+                marginRight: 20,
+                'a, a:visited': {
+                    color: theme.semanticColors.bodyText,
+                },
+            },
+        };
+    }, theme);
 
     return (
         <header className={`${classNames.root} ${className ?? ''}`} {...props}>
@@ -49,6 +90,11 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
                     <Text variant="large" className={classNames.title}>
                         FFXIV Raid Planner
                     </Text>
+                </Stack.Item>
+                <Stack.Item className={themeClasses.links}>
+                    <ExternalLink href="https://github.com/joelspadin/xivplan" noIcon>
+                        GitHub
+                    </ExternalLink>
                 </Stack.Item>
                 <Stack.Item>
                     <Toggle
