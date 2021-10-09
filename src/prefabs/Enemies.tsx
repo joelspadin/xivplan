@@ -1,9 +1,10 @@
-import { IconButton, IIconProps, IIconStyles, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IChoiceGroupOption, IIconStyles, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
+import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -258,6 +259,20 @@ const rotateIconStyle: IIconStyles = {
     },
 };
 
+enum RingStyle {
+    Directional = 'directional',
+    Omnidirectional = 'omnidirectional',
+}
+
+const directionalOptions: IChoiceGroupOption[] = [
+    { key: RingStyle.Omnidirectional, text: 'Omnidirectional', iconProps: { iconName: 'CircleRing' } },
+    {
+        key: RingStyle.Directional,
+        text: 'Directional',
+        iconProps: { iconName: 'ThreeQuarterCircle', styles: rotateIconStyle },
+    },
+];
+
 const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
@@ -277,8 +292,8 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
     );
 
     const onDirectionalChanged = useCallback(
-        (checked: boolean | undefined) => {
-            const rotation = checked ? object.rotation ?? 0 : undefined;
+        (option: RingStyle) => {
+            const rotation = option === RingStyle.Directional ? 0 : undefined;
             dispatch({ type: 'update', index, value: { ...object, rotation } });
         },
         [dispatch, object, index],
@@ -290,14 +305,7 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
     );
 
     const isDirectional = object.rotation !== undefined;
-
-    const iconProps = useMemo<IIconProps>(() => {
-        if (isDirectional) {
-            return { iconName: 'ThreeQuarterCircle', styles: rotateIconStyle };
-        } else {
-            return { iconName: 'CircleRing' };
-        }
-    }, [isDirectional]);
+    const directionalKey = isDirectional ? RingStyle.Directional : RingStyle.Omnidirectional;
 
     return (
         <Stack>
@@ -318,6 +326,12 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
                 step={5}
             />
             <Stack horizontal verticalAlign="end" tokens={stackTokens}>
+                <CompactChoiceGroup
+                    label="Style"
+                    options={directionalOptions}
+                    selectedKey={directionalKey}
+                    onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
+                />
                 <SpinButtonUnits
                     label="Rotation"
                     disabled={!isDirectional}
@@ -326,11 +340,6 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
                     onChange={onRotationChanged}
                     step={15}
                     suffix="°"
-                />
-                <IconButton
-                    iconProps={iconProps}
-                    checked={isDirectional}
-                    onClick={() => onDirectionalChanged(!isDirectional)}
                 />
             </Stack>
         </Stack>
