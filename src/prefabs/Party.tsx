@@ -78,7 +78,7 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) 
                         offsetX={object.width / 2}
                         offsetY={object.height / 2}
                         rotation={object.rotation}
-                        cornerRadius={(object.width + object.height) / 2 / 4}
+                        cornerRadius={(object.width + object.height) / 2 / 5}
                         {...SELECTED_PROPS}
                     />
                 )}
