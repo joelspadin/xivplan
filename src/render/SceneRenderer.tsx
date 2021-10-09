@@ -4,7 +4,7 @@ import React, { RefObject, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useScene } from '../SceneProvider';
-import { useSelection } from '../SelectionProvider';
+import { SelectionContext, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
 import { getCanvasSize, getSceneCoord } from './coord';
 import { LayerName } from './layers';
@@ -13,6 +13,7 @@ import { ObjectRenderer } from './ObjectRenderer';
 export const SceneRenderer: React.FunctionComponent = () => {
     const theme = useTheme();
     const sceneBridge = useContext(SceneContext);
+    const selectionBridge = useContext(SelectionContext);
     const [scene] = useScene();
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
@@ -24,15 +25,17 @@ export const SceneRenderer: React.FunctionComponent = () => {
             <Stage {...size} ref={stageRef}>
                 <ThemeContext.Provider value={theme}>
                     <SceneContext.Provider value={sceneBridge}>
-                        <Layer listening={false} name={LayerName.Arena}>
-                            <ArenaRenderer />
-                        </Layer>
-                        <Layer listening={false} name={LayerName.Ground} />
-                        <Layer name={LayerName.Default}>
-                            <ObjectRenderer objects={scene.objects} />
-                        </Layer>
-                        <Layer listening={false} name={LayerName.Tether} />
-                        <Layer listening={false} name={LayerName.Active} />
+                        <SelectionContext.Provider value={selectionBridge}>
+                            <Layer name={LayerName.Arena}>
+                                <ArenaRenderer />
+                            </Layer>
+                            <Layer name={LayerName.Ground} />
+                            <Layer name={LayerName.Default}>
+                                <ObjectRenderer objects={scene.objects} />
+                            </Layer>
+                            <Layer name={LayerName.Tether} />
+                            <Layer listening={false} name={LayerName.Active} />
+                        </SelectionContext.Provider>
                     </SceneContext.Provider>
                 </ThemeContext.Provider>
             </Stage>

@@ -1,6 +1,6 @@
 import { Stack } from '@fluentui/react';
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Image } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
@@ -8,11 +8,12 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
-import { useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { DefaultPortal } from '../render/Portals';
 import { ObjectType, PartyObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
+import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 32;
@@ -60,21 +61,23 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
     };
 });
 
-const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
+const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const [image] = useImage(object.image);
-    const center = useCanvasCoord(object);
 
     return (
-        <Image
-            image={image}
-            x={center.x}
-            y={center.y}
-            width={object.width}
-            height={object.height}
-            offsetX={object.width / 2}
-            offsetY={object.height / 2}
-            rotation={object.rotation}
-        />
+        <DefaultPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Image
+                    image={image}
+                    width={object.width}
+                    height={object.height}
+                    offsetX={object.width / 2}
+                    offsetY={object.height / 2}
+                    rotation={object.rotation}
+                />
+            </DraggableObject>
+        </DefaultPortal>
     );
 };
 

@@ -5,11 +5,11 @@ import icon from '../../assets/zone/line_knockback.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
@@ -62,9 +62,9 @@ const PATTERN_H = 50;
 const ARROW_W = 25;
 const ARROW_H = 15;
 
-const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const [pattern, setPattern] = useState<HTMLImageElement>();
-    const center = useCanvasCoord(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
         [object.color, object.opacity, object.width, object.height],
@@ -85,23 +85,25 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
     }, [fill, arrow, object.opacity, arrowRef]);
 
     return (
-        <GroundPortal>
-            <Rect
-                x={center.x}
-                y={center.y}
-                offsetX={object.width / 2}
-                offsetY={object.height / 2}
-                width={object.width}
-                height={object.height}
-                rotation={object.rotation}
-                fillPatternImage={pattern}
-                fillPatternOffsetX={PATTERN_W / 2}
-                fillPatternOffsetY={PATTERN_H / 2}
-                fillPatternX={object.width / 2}
-                fillPatternY={object.height / 2}
-                fillPatternRepeat="repeat"
-                {...stroke}
-            />
+        <>
+            <GroundPortal isActive={active}>
+                <DraggableObject object={object} index={index} onActive={setActive}>
+                    <Rect
+                        offsetX={object.width / 2}
+                        offsetY={object.height / 2}
+                        width={object.width}
+                        height={object.height}
+                        rotation={object.rotation}
+                        fillPatternImage={pattern}
+                        fillPatternOffsetX={PATTERN_W / 2}
+                        fillPatternOffsetY={PATTERN_H / 2}
+                        fillPatternX={object.width / 2}
+                        fillPatternY={object.height / 2}
+                        fillPatternRepeat="repeat"
+                        {...stroke}
+                    />
+                </DraggableObject>
+            </GroundPortal>
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={PATTERN_W} height={PATTERN_H} fill={fill} />
                 <ChevronTail
@@ -115,7 +117,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
                     {...arrow}
                 />
             </Group>
-        </GroundPortal>
+        </>
     );
 };
 

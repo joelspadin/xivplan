@@ -1,16 +1,16 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Circle, Group, Path } from 'react-konva';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { CircleZone, ObjectType } from '../../scene';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
@@ -80,9 +80,10 @@ const Arrow: React.FC<ShapeConfig> = (props) => {
 const ARROW_SCALE = 1 / 24;
 const ARROW_ANGLES = [45, 90, 135, 225, 270, 315];
 
-const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
+const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const isClockwise = object.type === ObjectType.RotateCW;
-    const center = useCanvasCoord(object);
+
     const style = useMemo(
         () => getZoneStyle(object.color, Math.max(50, object.opacity), object.radius * 2),
         [object.color, object.opacity, object.radius],
@@ -107,13 +108,15 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.color, object.opacity, object.radius, groupRef]);
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y} opacity={(object.opacity * 2) / 100} ref={groupRef}>
-                <Circle radius={object.radius} {...style} />
-                {ARROW_ANGLES.map((r, i) => (
-                    <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
-                ))}
-            </Group>
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
+                    <Circle radius={object.radius} {...style} />
+                    {ARROW_ANGLES.map((r, i) => (
+                        <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
+                    ))}
+                </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

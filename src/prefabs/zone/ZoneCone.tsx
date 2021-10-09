@@ -1,5 +1,5 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -8,7 +8,6 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
@@ -16,6 +15,7 @@ import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -67,23 +67,23 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
     };
 });
 
-const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
     );
 
     return (
-        <GroundPortal>
-            <Wedge
-                x={center.x}
-                y={center.y}
-                radius={object.radius}
-                angle={object.coneAngle}
-                rotation={object.rotation - 90 - object.coneAngle / 2}
-                {...style}
-            />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Wedge
+                    radius={object.radius}
+                    angle={object.coneAngle}
+                    rotation={object.rotation - 90 - object.coneAngle / 2}
+                    {...style}
+                />
+            </DraggableObject>
         </GroundPortal>
     );
 };

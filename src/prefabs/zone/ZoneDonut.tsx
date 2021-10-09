@@ -1,5 +1,5 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -8,13 +8,13 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -58,16 +58,18 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
     };
 });
 
-const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
     );
 
     return (
-        <GroundPortal>
-            <Ring x={center.x} y={center.y} innerRadius={object.innerRadius} outerRadius={object.radius} {...style} />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Ring innerRadius={object.innerRadius} outerRadius={object.radius} {...style} />
+            </DraggableObject>
         </GroundPortal>
     );
 };

@@ -5,11 +5,11 @@ import icon from '../../assets/zone/line_knock_away.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
@@ -62,9 +62,9 @@ const ARROW_SIZE_FRAC = 0.3;
 const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.08;
 
-const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const [pattern, setPattern] = useState<HTMLImageElement>();
-    const center = useCanvasCoord(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
         [object.color, object.opacity, object.width, object.height],
@@ -101,29 +101,31 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
     }, [patternWidth, patternHeight, object.color, object.opacity, arrowRef]);
 
     return (
-        <GroundPortal>
-            <Rect
-                x={center.x}
-                y={center.y}
-                offsetX={object.width / 2}
-                offsetY={object.height / 2}
-                width={object.width}
-                height={object.height}
-                rotation={object.rotation}
-                fillPatternImage={pattern}
-                fillPatternOffsetX={patternWidth / 2}
-                fillPatternOffsetY={patternHeight / 2}
-                fillPatternX={object.width / 2}
-                fillPatternY={object.height / 2}
-                fillPatternRepeat="repeat-y"
-                {...stroke}
-            />
+        <>
+            <GroundPortal isActive={active}>
+                <DraggableObject object={object} index={index} onActive={setActive}>
+                    <Rect
+                        offsetX={object.width / 2}
+                        offsetY={object.height / 2}
+                        width={object.width}
+                        height={object.height}
+                        rotation={object.rotation}
+                        fillPatternImage={pattern}
+                        fillPatternOffsetX={patternWidth / 2}
+                        fillPatternOffsetY={patternHeight / 2}
+                        fillPatternX={object.width / 2}
+                        fillPatternY={object.height / 2}
+                        fillPatternRepeat="repeat-y"
+                        {...stroke}
+                    />
+                </DraggableObject>
+            </GroundPortal>
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={patternWidth} height={patternHeight} fill={fill} />
                 <ChevronTail x={patternWidth * ARROW_PAD} rotation={-90} {...arrow} />
                 <ChevronTail x={patternWidth * (1 - ARROW_PAD)} rotation={90} {...arrow} />
             </Group>
-        </GroundPortal>
+        </>
     );
 };
 

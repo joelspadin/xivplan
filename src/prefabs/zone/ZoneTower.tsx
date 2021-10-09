@@ -1,7 +1,7 @@
 import { Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useCallback, useMemo } from 'react';
-import { Circle, Group } from 'react-konva';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Circle } from 'react-konva';
 import icon from '../../assets/zone/meteor_tower.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
@@ -9,7 +9,6 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
@@ -17,6 +16,7 @@ import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -117,8 +117,8 @@ function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
     return [];
 }
 
-const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
@@ -127,13 +127,13 @@ const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
     const zones = useMemo(() => getCountZones(object.radius, object.count), [object.radius, object.count]);
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y}>
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
                 <Circle radius={object.radius} {...style} opacity={0.75} />
                 {zones.map((props, i) => (
-                    <CountZone key={i} {...props} {...style} />
+                    <CountZone key={i} {...props} {...style} listening={false} />
                 ))}
-            </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

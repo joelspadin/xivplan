@@ -5,6 +5,7 @@ import { asArray } from '../util';
 
 export interface RendererProps<T extends SceneObject = SceneObject> {
     object: T;
+    index: number;
 }
 
 export type Renderer<T extends SceneObject> = React.FunctionComponent<RendererProps<T>>;
@@ -24,9 +25,9 @@ export interface ObjectRendererProps {
 export const ObjectRenderer: React.FunctionComponent<ObjectRendererProps> = ({ objects }) => {
     return (
         <>
-            {objects.map((object, key) => {
+            {objects.map((object, index) => {
                 const Component = registry.get(object.type);
-                return <Component object={object} key={key} />;
+                return <Component key={object.id} object={object} index={index} />;
             })}
         </>
     );

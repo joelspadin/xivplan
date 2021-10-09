@@ -1,5 +1,5 @@
 import { Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Rect } from 'react-konva';
 import lineIcon from '../../assets/zone/line.png';
 import squareIcon from '../../assets/zone/square.png';
@@ -9,13 +9,13 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { ResizeableObjectProperties } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -82,25 +82,25 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
     };
 });
 
-const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
         [object.color, object.opacity, object.width, object.height],
     );
 
     return (
-        <GroundPortal>
-            <Rect
-                x={center.x}
-                y={center.y}
-                offsetX={object.width / 2}
-                offsetY={object.height / 2}
-                width={object.width}
-                height={object.height}
-                rotation={object.rotation}
-                {...style}
-            />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Rect
+                    offsetX={object.width / 2}
+                    offsetY={object.height / 2}
+                    width={object.width}
+                    height={object.height}
+                    rotation={object.rotation}
+                    {...style}
+                />
+            </DraggableObject>
         </GroundPortal>
     );
 };

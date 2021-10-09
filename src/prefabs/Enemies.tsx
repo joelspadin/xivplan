@@ -2,7 +2,7 @@ import { IStackTokens, Position, SpinButton, Stack, Toggle } from '@fluentui/rea
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
@@ -10,14 +10,14 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
-import { useCanvasCoord } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ArenaPortal } from '../render/Portals';
+import { ArenaPortal, DefaultPortal } from '../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
+import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 32;
@@ -81,16 +81,14 @@ registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
     };
 });
 
-interface RingProps {
+interface RingProps extends ShapeConfig {
     name: string;
-    x: number;
-    y: number;
     radius: number;
     color: string;
     theme: EnemyTheme;
 }
 
-const EnemyLabel: React.FunctionComponent<RingProps> = ({ name, x, y, radius, theme }) => {
+const EnemyLabel: React.FC<RingProps> = ({ name, radius, theme, ...props }) => {
     if (radius < 32) {
         return null;
     }
@@ -101,8 +99,6 @@ const EnemyLabel: React.FunctionComponent<RingProps> = ({ name, x, y, radius, th
     return (
         <Text
             {...theme.text}
-            x={x}
-            y={y}
             text={name}
             width={radius * 2}
             height={radius * 2}
@@ -113,6 +109,7 @@ const EnemyLabel: React.FunctionComponent<RingProps> = ({ name, x, y, radius, th
             align="center"
             verticalAlign="middle"
             fillAfterStrokeEnabled
+            {...props}
         />
     );
 };
@@ -140,14 +137,14 @@ function getShapeProps(
     };
 }
 
-const CircleRing: React.FunctionComponent<RingProps> = ({ x, y, radius, theme, color }) => {
+const CircleRing: React.FC<RingProps> = ({ radius, theme, color, ...props }) => {
     const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
 
     return (
         <>
-            <Group opacity={theme.opacity} x={x} y={y}>
+            <Group opacity={theme.opacity} {...props}>
                 <Circle {...outerProps} radius={radius} />
                 <Circle {...innerProps} radius={innerRadius} />
             </Group>
@@ -159,7 +156,7 @@ interface DirectionalRingProps extends RingProps {
     rotation: number;
 }
 
-const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ x, y, radius, theme, color, rotation }) => {
+const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color, rotation, ...props }) => {
     const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
@@ -173,7 +170,7 @@ const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ x, y, 
 
     return (
         <>
-            <Group opacity={theme.opacity} ref={groupRef} x={x} y={y} rotation={rotation}>
+            <Group opacity={theme.opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Arc
                     {...outerProps}
                     rotation={RING_ROTATION}
@@ -200,41 +197,46 @@ const DirectionalRing: React.FunctionComponent<DirectionalRingProps> = ({ x, y, 
     );
 };
 
-const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
+const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const theme = useSceneTheme();
-    const center = useCanvasCoord(object);
 
     return (
-        <>
-            <EnemyLabel
-                {...center}
-                name={object.name}
-                radius={object.radius}
-                theme={theme.enemy}
-                color={object.color}
-            />
-            {/* Hitbox rings are uninteresting and should show behind everything else. */}
-            <ArenaPortal>
-                {object.rotation === undefined ? (
-                    <CircleRing
-                        {...center}
-                        name={object.name}
-                        radius={object.radius}
-                        theme={theme.enemy}
-                        color={object.color}
-                    />
-                ) : (
-                    <DirectionalRing
-                        {...center}
-                        name={object.name}
-                        radius={object.radius}
-                        theme={theme.enemy}
-                        color={object.color}
-                        rotation={object.rotation}
-                    />
+        <ArenaPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                {(center) => (
+                    <>
+                        <DefaultPortal isActive={active}>
+                            <EnemyLabel
+                                x={active ? center.x : 0}
+                                y={active ? center.y : 0}
+                                name={object.name}
+                                radius={object.radius}
+                                theme={theme.enemy}
+                                color={object.color}
+                            />
+                        </DefaultPortal>
+
+                        {object.rotation === undefined ? (
+                            <CircleRing
+                                name={object.name}
+                                radius={object.radius}
+                                theme={theme.enemy}
+                                color={object.color}
+                            />
+                        ) : (
+                            <DirectionalRing
+                                name={object.name}
+                                radius={object.radius}
+                                theme={theme.enemy}
+                                color={object.color}
+                                rotation={object.rotation}
+                            />
+                        )}
+                    </>
                 )}
-            </ArenaPortal>
-        </>
+            </DraggableObject>
+        </ArenaPortal>
     );
 };
 

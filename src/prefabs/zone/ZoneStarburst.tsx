@@ -1,7 +1,7 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import { RectConfig } from 'konva/lib/shapes/Rect';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -10,7 +10,6 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
@@ -18,6 +17,7 @@ import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -75,7 +75,7 @@ function getOddRotations(spokes: number) {
     return Array.from({ length: spokes }).map((_, i) => (i / spokes) * 360);
 }
 
-const StarburstOdd: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spokes, spokeWidth, ...props }) => {
+const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, ...props }) => {
     const items = useMemo(() => getOddRotations(spokes), [spokes]);
 
     const rect: RectConfig = {
@@ -86,13 +86,11 @@ const StarburstOdd: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spoke
     };
 
     return (
-        <GroundPortal>
-            <Group x={x} y={y} rotation={rotation}>
-                {items.map((r, i) => (
-                    <Rect key={i} rotation={r} {...rect} />
-                ))}
-            </Group>
-        </GroundPortal>
+        <Group rotation={rotation}>
+            {items.map((r, i) => (
+                <Rect key={i} rotation={r} {...rect} />
+            ))}
+        </Group>
     );
 };
 
@@ -101,7 +99,7 @@ function getEvenRotations(spokes: number) {
     return Array.from({ length: items }).map((_, i) => (i / items) * 180);
 }
 
-const StarburstEven: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spokes, spokeWidth, ...props }) => {
+const StarburstEven: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, ...props }) => {
     const items = useMemo(() => getEvenRotations(spokes), [spokes]);
 
     const rect: RectConfig = {
@@ -113,25 +111,22 @@ const StarburstEven: React.FC<StarburstConfig> = ({ x, y, rotation, radius, spok
     };
 
     return (
-        <GroundPortal>
-            <Group x={x} y={y} rotation={rotation}>
-                {items.map((r, i) => (
-                    <Rect key={i} rotation={r} {...rect} />
-                ))}
-            </Group>
-        </GroundPortal>
+        <Group rotation={rotation}>
+            {items.map((r, i) => (
+                <Rect key={i} rotation={r} {...rect} />
+            ))}
+        </Group>
     );
 };
 
-const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
         [object.color, object.opacity, object.spokeWidth],
     );
 
     const config: StarburstConfig = {
-        ...center,
         ...style,
         radius: object.radius,
         spokes: object.spokes,
@@ -139,11 +134,13 @@ const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object }) =
         rotation: object.rotation,
     };
 
-    if (object.spokes % 2 === 0) {
-        return <StarburstEven {...config} />;
-    } else {
-        return <StarburstOdd {...config} />;
-    }
+    return (
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                {object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />}
+            </DraggableObject>
+        </GroundPortal>
+    );
 };
 
 registerRenderer<StarburstZone>(ObjectType.Starburst, StarburstRenderer);

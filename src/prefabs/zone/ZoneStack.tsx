@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { Circle, Group } from 'react-konva';
+import React, { useMemo, useState } from 'react';
+import { Circle } from 'react-konva';
 import icon from '../../assets/zone/stack.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
@@ -51,8 +51,8 @@ registerDropHandler<CircleZone>(ObjectType.Stack, (object, position) => {
 
 const CHEVRON_ANGLES = [45, 135, 225, 315];
 
-const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const ring = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
@@ -69,10 +69,17 @@ const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.radius]);
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y}>
-                <Circle radius={object.radius} {...ring} fillEnabled={false} opacity={0.75} />
-                <ChevronTail rotation={180} chevronAngle={ca} width={cw * 0.6} height={ch * 0.6} {...arrow} />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Circle radius={object.radius} {...ring} opacity={0.75} fill="transparent" />
+                <ChevronTail
+                    rotation={180}
+                    chevronAngle={ca}
+                    width={cw * 0.6}
+                    height={ch * 0.6}
+                    {...arrow}
+                    listening={false}
+                />
 
                 {CHEVRON_ANGLES.map((r, i) => (
                     <ChevronTail
@@ -85,7 +92,7 @@ const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
                         {...arrow}
                     />
                 ))}
-            </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

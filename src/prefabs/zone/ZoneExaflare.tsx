@@ -1,6 +1,6 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/exaflare.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -9,7 +9,6 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
@@ -17,6 +16,7 @@ import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
@@ -76,8 +76,8 @@ function getDashSize(radius: number) {
     return (2 * Math.PI * radius) / 32;
 }
 
-const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
@@ -87,29 +87,32 @@ const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object }) => 
     const dashSize = getDashSize(object.radius);
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y} rotation={object.rotation}>
-                {trail.map((point, i) => (
-                    <Circle
-                        key={i}
-                        radius={object.radius}
-                        {...point}
-                        {...style}
-                        fillEnabled={false}
-                        dash={[dashSize, dashSize]}
-                        dashOffset={dashSize / 2}
-                        opacity={0.5}
-                    />
-                ))}
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Group rotation={object.rotation}>
+                    {trail.map((point, i) => (
+                        <Circle
+                            key={i}
+                            listening={false}
+                            radius={object.radius}
+                            {...point}
+                            {...style}
+                            fillEnabled={false}
+                            dash={[dashSize, dashSize]}
+                            dashOffset={dashSize / 2}
+                            opacity={0.5}
+                        />
+                    ))}
 
-                <Circle radius={object.radius} {...style} />
-                <ChevronTail
-                    y={-object.radius * ARROW_H_FRAC * 0.9}
-                    width={object.radius * ARROW_W_FRAC}
-                    height={object.radius * ARROW_H_FRAC}
-                    {...arrow}
-                />
-            </Group>
+                    <Circle radius={object.radius} {...style} />
+                    <ChevronTail
+                        y={-object.radius * ARROW_H_FRAC * 0.9}
+                        width={object.radius * ARROW_W_FRAC}
+                        height={object.radius * ARROW_H_FRAC}
+                        {...arrow}
+                    />
+                </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

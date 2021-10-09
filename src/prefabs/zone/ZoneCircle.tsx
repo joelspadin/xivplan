@@ -1,5 +1,5 @@
 import { Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Circle } from 'react-konva';
 import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -8,13 +8,13 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -55,16 +55,18 @@ registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
     };
 });
 
-const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
         [object.color, object.opacity, object.radius],
     );
 
     return (
-        <GroundPortal>
-            <Circle x={center.x} y={center.y} radius={object.radius} {...style} />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Circle radius={object.radius} {...style} />
+            </DraggableObject>
         </GroundPortal>
     );
 };

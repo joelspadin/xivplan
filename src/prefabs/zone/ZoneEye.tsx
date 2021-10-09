@@ -1,16 +1,16 @@
 import { getColorFromString, updateA, updateSV } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import icon from '../../assets/zone/eye.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { CircleZone, ObjectType } from '../../scene';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 
 const DEFAULT_RADIUS = 25;
@@ -95,9 +95,9 @@ function getStrokeColor(color: string) {
     return updateA(updateSV(c, c.s, c.v - 80), 50).str;
 }
 
-const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
+const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const scale = object.radius / 20;
-    const center = useCanvasCoord(object);
     const eyeStyle = useMemo(() => {
         return {
             fillRadialGradientColorStops: getEyeGradient(object.color),
@@ -123,27 +123,29 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     }, [object.color, object.opacity, object.radius, groupRef]);
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y} opacity={object.opacity / 100} ref={groupRef}>
-                <Group scaleX={scale} scaleY={scale}>
-                    <Path
-                        data="M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z"
-                        fill={highlightColor}
-                        stroke={strokeColor}
-                        strokeWidth={3}
-                        fillAfterStrokeEnabled
-                    />
-                    <Path data="M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z" {...eyeStyle} />
-                    <Line
-                        points={[-19, 0, 19, 0]}
-                        stroke={highlightColor}
-                        strokeWidth={0.25}
-                        opacity={0.7}
-                        lineCap="round"
-                    />
-                    <Circle radius={10} {...irisStyle} />
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Group opacity={object.opacity / 100} ref={groupRef}>
+                    <Group scaleX={scale} scaleY={scale}>
+                        <Path
+                            data="M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z"
+                            fill={highlightColor}
+                            stroke={strokeColor}
+                            strokeWidth={3}
+                            fillAfterStrokeEnabled
+                        />
+                        <Path data="M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z" {...eyeStyle} />
+                        <Line
+                            points={[-19, 0, 19, 0]}
+                            stroke={highlightColor}
+                            strokeWidth={0.25}
+                            opacity={0.7}
+                            lineCap="round"
+                        />
+                        <Circle radius={10} {...irisStyle} />
+                    </Group>
                 </Group>
-            </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

@@ -1,6 +1,6 @@
 import { Dropdown, IDropdownOption, Stack } from '@fluentui/react';
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -9,12 +9,13 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
-import { ALIGN_TO_PIXEL, useCanvasCoord } from '../render/coord';
+import { ALIGN_TO_PIXEL } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { GroundPortal } from '../render/Portals';
 import { MarkerObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { ImageObjectProperties } from './CommonProperties';
+import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 
 const DEFAULT_SIZE = 42;
@@ -85,9 +86,9 @@ function getDashSize(object: MarkerObject) {
     }
 }
 
-const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
+const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const [image] = useImage(object.image);
-    const center = useCanvasCoord(object);
 
     const iconWidth = object.width * ICON_RATIO;
     const iconHeight = object.height * ICON_RATIO;
@@ -102,30 +103,32 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     };
 
     return (
-        <GroundPortal>
-            <Group x={center.x} y={center.y} rotation={object.rotation}>
-                {object.shape === 'circle' && (
-                    <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
-                )}
-                {object.shape === 'square' && (
-                    <Rect
-                        x={-object.width / 2}
-                        y={-object.height / 2}
-                        width={object.width}
-                        height={object.height}
-                        dashOffset={dashSize / 2}
-                        {...strokeProps}
-                        {...ALIGN_TO_PIXEL}
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Group rotation={object.rotation}>
+                    {object.shape === 'circle' && (
+                        <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
+                    )}
+                    {object.shape === 'square' && (
+                        <Rect
+                            x={-object.width / 2}
+                            y={-object.height / 2}
+                            width={object.width}
+                            height={object.height}
+                            dashOffset={dashSize / 2}
+                            {...strokeProps}
+                            {...ALIGN_TO_PIXEL}
+                        />
+                    )}
+                    <Image
+                        image={image}
+                        width={iconWidth}
+                        height={iconHeight}
+                        offsetX={iconWidth / 2}
+                        offsetY={iconHeight / 2}
                     />
-                )}
-                <Image
-                    image={image}
-                    width={iconWidth}
-                    height={iconHeight}
-                    offsetX={iconWidth / 2}
-                    offsetY={iconHeight / 2}
-                />
-            </Group>
+                </Group>
+            </DraggableObject>
         </GroundPortal>
     );
 };

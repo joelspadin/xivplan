@@ -1,17 +1,17 @@
 import { getColorFromString, updateA } from '@fluentui/react';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import icon from '../../assets/zone/falloff.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { useCanvasCoord } from '../../render/coord';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { degtorad } from '../../util';
+import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getArrowStyle, getShadowColor } from './style';
 
@@ -51,7 +51,7 @@ registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
 });
 
 const FlareCorner: React.FC<ShapeConfig> = ({ ...props }) => {
-    return <Path data="M4-6H6V-4H7V-7H4" {...props} />;
+    return <Path data="M4-6H6V-4H7V-7H4" {...props} listening={false} />;
 };
 
 const ARROW_A = 50;
@@ -79,23 +79,21 @@ function getArrowPoints() {
 }
 
 const FlareArrow: React.FC<ShapeConfig> = ({ ...props }) => {
-    const { x, y, offsetX, offsetY, rotation, shadowColor, ...arrowProps } = props;
+    const { offsetX, offsetY, rotation, shadowColor, ...arrowProps } = props;
     const points = useMemo(() => getArrowPoints(), []);
 
     return (
-        <GroundPortal>
-            <Group x={x} y={y} offsetX={offsetX} offsetY={offsetY} rotation={rotation}>
-                <Line points={points} closed={true} {...arrowProps} fill={shadowColor} offsetY={-4} />
-                <Line points={points} closed={true} {...arrowProps} />
-                <Wedge
-                    rotation={-90 - SPOKE_A / 2}
-                    angle={SPOKE_A}
-                    radius={SPOKE_H}
-                    y={SPOKE_H + ARROW_H * 2}
-                    fill={shadowColor}
-                />
-            </Group>
-        </GroundPortal>
+        <Group offsetX={offsetX} offsetY={offsetY} rotation={rotation} listening={false}>
+            <Line points={points} closed={true} {...arrowProps} fill={shadowColor} offsetY={-4} />
+            <Line points={points} closed={true} {...arrowProps} />
+            <Wedge
+                rotation={-90 - SPOKE_A / 2}
+                angle={SPOKE_A}
+                radius={SPOKE_H}
+                y={SPOKE_H + ARROW_H * 2}
+                fill={shadowColor}
+            />
+        </Group>
     );
 };
 
@@ -129,8 +127,8 @@ function getShadowOffset(i: number): ShapeConfig {
     }
 }
 
-const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
-    const center = useCanvasCoord(object);
+const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const [active, setActive] = useState(false);
     const gradient = useMemo(
         () =>
             ({
@@ -144,26 +142,28 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
 
     return (
-        <Group x={center.x} y={center.y}>
-            <Circle radius={object.radius} {...gradient} />
-            {CORNER_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r}>
-                    <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
-                    <FlareCorner
-                        scaleX={SCALE2}
-                        scaleY={SCALE2}
-                        {...arrow}
-                        shadowColor={shadowColor}
-                        {...getShadowOffset(i)}
-                    />
-                </Group>
-            ))}
-            {ARROW_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r}>
-                    <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
-                </Group>
-            ))}
-        </Group>
+        <GroundPortal isActive={active}>
+            <DraggableObject object={object} index={index} onActive={setActive}>
+                <Circle radius={object.radius} {...gradient} />
+                {CORNER_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r}>
+                        <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
+                        <FlareCorner
+                            scaleX={SCALE2}
+                            scaleY={SCALE2}
+                            {...arrow}
+                            shadowColor={shadowColor}
+                            {...getShadowOffset(i)}
+                        />
+                    </Group>
+                ))}
+                {ARROW_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r}>
+                        <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
+                    </Group>
+                ))}
+            </DraggableObject>
+        </GroundPortal>
     );
 };
 
