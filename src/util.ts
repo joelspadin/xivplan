@@ -18,3 +18,16 @@ export function makeClassName(classes: Record<string, boolean>): string {
         .map(([key]) => key)
         .join(' ');
 }
+
+export function omit<T, K extends keyof T>(obj: T, omitKey: K): Omit<T, K> {
+    return Object.fromEntries(Object.entries(obj).filter(([key]) => key !== omitKey)) as Omit<T, K>;
+}
+
+type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | undefined ? T : never;
+
+export function setOrOmit<T, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
+    if (value) {
+        return { ...obj, [key]: value };
+    }
+    return omit(obj, key) as HasOptionalBool<T, K>;
+}

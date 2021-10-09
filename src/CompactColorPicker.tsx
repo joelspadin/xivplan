@@ -50,6 +50,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                 height: 20,
                 marginLeft: 5,
                 marginRight: 10,
+                flexShrink: 0,
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: theme.semanticColors.inputBorder,
@@ -126,7 +127,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                     onClick={showCallout}
                 />
                 <Stack.Item grow>
-                    <DeferredTextField value={color} onChange={onColorTextChanged} />
+                    <DeferredTextField title="Color" value={color} onChange={onColorTextChanged} />
                 </Stack.Item>
             </Stack>
             {isCalloutVisible && (

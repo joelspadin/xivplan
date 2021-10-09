@@ -1,4 +1,4 @@
-import { Stack } from '@fluentui/react';
+import { IStackTokens, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Rect } from 'react-konva';
 import lineIcon from '../../assets/zone/line.png';
@@ -14,9 +14,11 @@ import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { setOrOmit } from '../../util';
 import { ResizeableObjectProperties } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
+import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const DEFAULT_SQUARE_SIZE = 150;
@@ -85,8 +87,8 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
     const [active, setActive] = useState(false);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
-        [object.color, object.opacity, object.width, object.height],
+        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
+        [object.color, object.opacity, object.width, object.height, object.hollow],
     );
 
     return (
@@ -114,11 +116,24 @@ const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
 
+function supportsHollow(object: RectangleZone) {
+    return [ObjectType.Rect].includes(object.type);
+}
+
+const stackTokens: IStackTokens = {
+    childrenGap: 10,
+};
+
 const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
+    );
+
+    const onHollowChanged = useCallback(
+        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
         [dispatch, object, index],
     );
 
@@ -129,12 +144,19 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
 
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <Stack horizontal tokens={stackTokens}>
+                <Stack.Item grow>
+                    <CompactColorPicker
+                        label="Color"
+                        color={object.color}
+                        swatches={COLOR_SWATCHES}
+                        onChange={onColorChanged}
+                    />
+                </Stack.Item>
+                {supportsHollow(object) && (
+                    <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
+                )}
+            </Stack>
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <ResizeableObjectProperties object={object} index={index} />
         </Stack>

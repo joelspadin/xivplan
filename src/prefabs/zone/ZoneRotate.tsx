@@ -85,8 +85,8 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
     const isClockwise = object.type === ObjectType.RotateCW;
 
     const style = useMemo(
-        () => getZoneStyle(object.color, Math.max(50, object.opacity), object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, Math.max(50, object.opacity), object.radius * 2, object.hollow),
+        [object.color, object.opacity, object.radius, object.hollow],
     );
     const arrow = useMemo(() => {
         const scale = object.radius * ARROW_SCALE;
@@ -105,7 +105,7 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
     const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [object.color, object.opacity, object.radius, groupRef]);
+    }, [object.color, object.opacity, object.radius, object.hollow, groupRef]);
 
     return (
         <GroundPortal isActive={active}>

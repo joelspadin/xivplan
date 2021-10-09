@@ -93,7 +93,7 @@ export interface ArenaPreset extends Arena {
 export interface MoveableObject {
     readonly x: number;
     readonly y: number;
-    readonly pinned?: number;
+    readonly pinned?: boolean;
 }
 
 export interface ResizeableObject extends MoveableObject {
@@ -162,6 +162,7 @@ export interface CircleZone extends MoveableObject, SceneId {
 
     readonly color: string;
     readonly opacity: number;
+    readonly hollow?: boolean;
     readonly radius: number;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
@@ -187,6 +188,7 @@ export interface ConeZone extends MoveableObject, SceneId {
     readonly type: ObjectType.Cone;
     readonly color: string;
     readonly opacity: number;
+    readonly hollow?: boolean;
     readonly radius: number;
     readonly rotation: number;
     readonly coneAngle: number;
@@ -197,6 +199,7 @@ export interface RectangleZone extends ResizeableObject, SceneId {
     readonly type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnockback | ObjectType.LineKnockAway;
     readonly color: string;
     readonly opacity: number;
+    readonly hollow?: boolean;
 }
 export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.Rect,

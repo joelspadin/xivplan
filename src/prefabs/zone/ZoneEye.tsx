@@ -158,5 +158,3 @@ const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);
-
-// Properties control registered in ZoneCircle.tsx

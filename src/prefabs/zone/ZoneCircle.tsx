@@ -1,4 +1,4 @@
-import { Position, SpinButton, Stack } from '@fluentui/react';
+import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Circle } from 'react-konva';
 import icon from '../../assets/zone/circle.png';
@@ -13,9 +13,11 @@ import { GroundPortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { setOrOmit } from '../../util';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
+import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 50;
@@ -58,8 +60,8 @@ registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
 const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
     const [active, setActive] = useState(false);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
+        [object.color, object.opacity, object.radius, object.hollow],
     );
 
     return (
@@ -80,6 +82,14 @@ const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);
 
+function supportsHollow(object: CircleZone) {
+    return [ObjectType.Circle, ObjectType.RotateCW, ObjectType.RotateCCW].includes(object.type);
+}
+
+const stackTokens: IStackTokens = {
+    childrenGap: 10,
+};
+
 const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
@@ -93,6 +103,11 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
         [dispatch, object, index],
     );
 
+    const onHollowChanged = useCallback(
+        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
+        [dispatch, object, index],
+    );
+
     const onOpacityChanged = useCallback(
         (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
         [dispatch, object, index],
@@ -100,12 +115,19 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
 
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <Stack horizontal tokens={stackTokens}>
+                <Stack.Item grow>
+                    <CompactColorPicker
+                        label="Color"
+                        color={object.color}
+                        swatches={COLOR_SWATCHES}
+                        onChange={onColorChanged}
+                    />
+                </Stack.Item>
+                {supportsHollow(object) && (
+                    <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
+                )}
+            </Stack>
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <SpinButton

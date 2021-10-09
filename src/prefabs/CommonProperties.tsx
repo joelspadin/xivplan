@@ -4,6 +4,7 @@ import { DeferredTextField } from '../DeferredTextField';
 import { ImageObject, MoveableObject, ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
+import { setOrOmit } from '../util';
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
@@ -41,15 +42,10 @@ export function useSpinChanged(
 export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
-    const onTogglePinned = useCallback(() => {
-        if (object.pinned) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { pinned, ...newObject } = object;
-            dispatch({ type: 'update', index, value: newObject as SceneObject });
-        } else {
-            dispatch({ type: 'update', index, value: { ...object, pinned: true } as SceneObject });
-        }
-    }, [dispatch, object, index]);
+    const onTogglePinned = useCallback(
+        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'pinned', !object.pinned) as SceneObject }),
+        [dispatch, object, index],
+    );
 
     const onXChanged = useSpinChanged(
         (x: number) => dispatch({ type: 'update', index, value: { ...object, x } as SceneObject }),

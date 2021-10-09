@@ -14,9 +14,11 @@ import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../re
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { setOrOmit } from '../../util';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
+import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 150;
@@ -70,8 +72,8 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
 const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
     const [active, setActive] = useState(false);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
+        [object.color, object.opacity, object.radius, object.hollow],
     );
 
     return (
@@ -114,6 +116,11 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
         [dispatch, object, index],
     );
 
+    const onHollowChanged = useCallback(
+        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
+        [dispatch, object, index],
+    );
+
     const onOpacityChanged = useCallback(
         (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
         [dispatch, object, index],
@@ -131,12 +138,15 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
 
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <Stack horizontal tokens={stackTokens}>
+                <CompactColorPicker
+                    label="Color"
+                    color={object.color}
+                    swatches={COLOR_SWATCHES}
+                    onChange={onColorChanged}
+                />
+                <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
+            </Stack>
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens}>
