@@ -126,8 +126,8 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                 <ObjectGroup>
                     <PartyMagicRanged />
                     <PartyPhysicalRanged />
-                    <PartyMelee />
                     <PartyRanged />
+                    <PartyMelee />
                 </ObjectGroup>
             </Section>
             <Section>
