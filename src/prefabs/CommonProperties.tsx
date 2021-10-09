@@ -1,4 +1,4 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IconButton, IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { DependencyList, useCallback } from 'react';
 import { DeferredTextField } from '../DeferredTextField';
 import { ImageObject, MoveableObject, ResizeableObject, SceneObject, UnknownObject } from '../scene';
@@ -8,6 +8,12 @@ import { SpinButtonUnits } from '../SpinButtonUnits';
 const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
+
+const classNames = mergeStyleSets({
+    sizeRow: {
+        marginRight: 32 + 10,
+    } as IStyle,
+});
 
 export interface ObjectPropertiesProps<T> {
     object: T & UnknownObject;
@@ -35,6 +41,16 @@ export function useSpinChanged(
 export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
+    const onTogglePinned = useCallback(() => {
+        if (object.pinned) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { pinned, ...newObject } = object;
+            dispatch({ type: 'update', index, value: newObject as SceneObject });
+        } else {
+            dispatch({ type: 'update', index, value: { ...object, pinned: true } as SceneObject });
+        }
+    }, [dispatch, object, index]);
+
     const onXChanged = useSpinChanged(
         (x: number) => dispatch({ type: 'update', index, value: { ...object, x } as SceneObject }),
         [dispatch, object, index],
@@ -44,15 +60,18 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
         [dispatch, object, index],
     );
 
+    const iconName = object.pinned ? 'LockSolid' : 'UnlockSolid';
+
     return (
         <>
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} verticalAlign="end">
                 <SpinButton
                     label="X"
                     labelPosition={Position.top}
                     value={object.x.toString()}
                     onChange={onXChanged}
                     step={10}
+                    disabled={!!object.pinned}
                 />
                 <SpinButton
                     label="Y"
@@ -60,7 +79,9 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
                     value={object.y.toString()}
                     onChange={onYChanged}
                     step={10}
+                    disabled={!!object.pinned}
                 />
+                <IconButton iconProps={{ iconName }} checked={!!object.pinned} onClick={onTogglePinned} />
             </Stack>
         </>
     );
@@ -86,7 +107,7 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
     return (
         <>
             <MoveableObjectProperties object={object} index={index} />
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} className={classNames.sizeRow}>
                 <SpinButton
                     label="Width"
                     labelPosition={Position.top}

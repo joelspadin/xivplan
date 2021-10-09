@@ -93,6 +93,7 @@ export interface ArenaPreset extends Arena {
 export interface MoveableObject {
     readonly x: number;
     readonly y: number;
+    readonly pinned?: number;
 }
 
 export interface ResizeableObject extends MoveableObject {

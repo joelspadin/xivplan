@@ -23,7 +23,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
         <SelectableObject index={index}>
             <Group
                 {...center}
-                draggable
+                draggable={!object.pinned}
                 onDragStart={(e) => {
                     setDragging(true);
                     onActive?.(true);
