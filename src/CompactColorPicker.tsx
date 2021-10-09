@@ -13,7 +13,7 @@ import {
     useTheme,
 } from '@fluentui/react';
 import { useBoolean, useId } from '@fluentui/react-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { DeferredTextField } from './DeferredTextField';
 
@@ -50,7 +50,6 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                 height: 20,
                 marginLeft: 5,
                 marginRight: 10,
-                flexShrink: 0,
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: theme.semanticColors.inputBorder,
@@ -83,7 +82,11 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
     );
 
     const [pickerColor, setPickerColor] = useState(color);
-    useDebounce(() => notifyChanged(pickerColor), DEBOUNCE_TIME, [pickerColor]);
+    const [, cancel] = useDebounce(() => notifyChanged(pickerColor), DEBOUNCE_TIME, [pickerColor]);
+
+    useEffect(() => {
+        return cancel;
+    });
 
     const [isCalloutVisible, { setTrue: showCallout, setFalse: hideCallout }] = useBoolean(false);
     const buttonId = useId('color-box');
@@ -120,12 +123,14 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
         <div>
             {label && <label className={classNames.label}>{label}</label>}
             <Stack horizontal verticalAlign="center">
-                <div
-                    id={buttonId}
-                    className={classNames.colorBox}
-                    style={{ backgroundColor: color }}
-                    onClick={showCallout}
-                />
+                <Stack.Item>
+                    <div
+                        id={buttonId}
+                        className={classNames.colorBox}
+                        style={{ backgroundColor: color }}
+                        onClick={showCallout}
+                    />
+                </Stack.Item>
                 <Stack.Item grow>
                     <DeferredTextField title="Color" value={color} onChange={onColorTextChanged} />
                 </Stack.Item>
