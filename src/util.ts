@@ -19,6 +19,16 @@ export function makeClassName(classes: Record<string, boolean>): string {
         .join(' ');
 }
 
+export function* mapIter<T, U>(iter: Iterable<T>, func: (item: T) => U): Generator<U> {
+    for (const item of iter) {
+        yield func(item);
+    }
+}
+
+export function mapSet<T, U>(set: ReadonlySet<T>, func: (item: T) => U): Set<U> {
+    return new Set(mapIter(set, func));
+}
+
 export function omit<T, K extends keyof T>(obj: T, omitKey: K): Omit<T, K> {
     return Object.fromEntries(Object.entries(obj).filter(([key]) => key !== omitKey)) as Omit<T, K>;
 }

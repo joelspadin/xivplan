@@ -2,6 +2,7 @@ import { IStyle, mergeStyleSets } from '@fluentui/react';
 import React, { useCallback } from 'react';
 import { useScene } from '../SceneProvider';
 import { SceneSelection, useSelection } from '../SelectionProvider';
+import { mapSet } from '../util';
 import { ObjectList } from './ObjectList';
 import { PANEL_PADDING } from './PanelStyles';
 
@@ -13,7 +14,7 @@ const classNames = mergeStyleSets({
 });
 
 function updateSelection(selection: SceneSelection, from: number, to: number): SceneSelection {
-    return selection.map((i) => {
+    return mapSet(selection, (i) => {
         if (i === from) {
             return to;
         }

@@ -43,14 +43,14 @@ const Controls: React.FC = () => {
     const [selection] = useSelection();
     const [scene] = useScene();
 
-    if (selection.length === 0) {
+    if (selection.size === 0) {
         return <p>No object selected.</p>;
     }
-    if (selection.length > 1) {
+    if (selection.size > 1) {
         return <p>Multiple objects selected.</p>;
     }
 
-    const index = selection[0] as number;
+    const index = selection.values().next().value;
     const object = scene.objects[index];
 
     if (!object) {

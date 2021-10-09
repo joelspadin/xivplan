@@ -1,10 +1,11 @@
 import { ThemeContext, useTheme } from '@fluentui/react';
 import Konva from 'konva';
-import React, { RefObject, useContext, useRef } from 'react';
+import { KonvaEventObject } from 'konva/lib/Node';
+import React, { RefObject, useCallback, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useScene } from '../SceneProvider';
-import { SelectionContext, useSelection } from '../SelectionProvider';
+import { SelectionContext, selectNone, selectSingle, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
 import { getCanvasSize, getSceneCoord } from './coord';
 import { LayerName } from './layers';
@@ -15,14 +16,25 @@ export const SceneRenderer: React.FunctionComponent = () => {
     const sceneBridge = useContext(SceneContext);
     const selectionBridge = useContext(SelectionContext);
     const [scene] = useScene();
+    const [, setSelection] = selectionBridge;
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
 
     console.log(scene);
 
+    const onClickStage = useCallback(
+        (e: KonvaEventObject<MouseEvent>) => {
+            // Clicking on nothing (with no modifier keys held) should cancel selection.
+            if (!e.evt.ctrlKey && !e.evt.shiftKey) {
+                setSelection(selectNone());
+            }
+        },
+        [setSelection],
+    );
+
     return (
         <DropTarget stageRef={stageRef}>
-            <Stage {...size} ref={stageRef}>
+            <Stage {...size} ref={stageRef} onClick={onClickStage}>
                 <ThemeContext.Provider value={theme}>
                     <SceneContext.Provider value={sceneBridge}>
                         <SelectionContext.Provider value={selectionBridge}>
@@ -52,34 +64,36 @@ const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, childr
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
 
+    const onDrop = useCallback(
+        (e: React.DragEvent) => {
+            e.preventDefault();
+
+            if (!dragObject || !stageRef.current) {
+                return;
+            }
+
+            setDragObject(null);
+            stageRef.current.setPointersPositions(e);
+
+            const position = stageRef.current.getPointerPosition();
+            if (!position) {
+                return;
+            }
+
+            position.x -= dragObject.offset.x;
+            position.y -= dragObject.offset.y;
+
+            const action = getDropAction(dragObject, getSceneCoord(scene, position));
+            if (action) {
+                dispatch(action);
+                setSelection(selectSingle(scene.objects.length));
+            }
+        },
+        [scene, dispatch, setSelection, dragObject, setDragObject],
+    );
+
     return (
-        <div
-            onDrop={(e) => {
-                e.preventDefault();
-
-                if (!dragObject || !stageRef.current) {
-                    return;
-                }
-
-                setDragObject(null);
-                stageRef.current.setPointersPositions(e);
-
-                const position = stageRef.current.getPointerPosition();
-                if (!position) {
-                    return;
-                }
-
-                position.x -= dragObject.offset.x;
-                position.y -= dragObject.offset.y;
-
-                const action = getDropAction(dragObject, getSceneCoord(scene, position));
-                if (action) {
-                    dispatch(action);
-                    setSelection([scene.objects.length]);
-                }
-            }}
-            onDragOver={(e) => e.preventDefault()}
-        >
+        <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
             {children}
         </div>
     );

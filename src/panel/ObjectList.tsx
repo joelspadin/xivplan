@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
-import { useSelection } from '../SelectionProvider';
+import { addSelection, selectSingle, toggleSelection, useSelection } from '../SelectionProvider';
 import { asArray, makeClassName, reversed } from '../util';
 
 const listClassNames = mergeStyleSets({
@@ -104,11 +104,20 @@ export interface ListItemProps {
 
 const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, object }) => {
     const [selection, setSelection] = useSelection();
-    const isSelected = selection.includes(sceneIndex) ?? false;
+    const isSelected = selection.has(sceneIndex);
 
-    const onClick = useCallback(() => {
-        setSelection([sceneIndex]);
-    }, [sceneIndex, setSelection]);
+    const onClick = useCallback(
+        (e: React.MouseEvent) => {
+            if (e.shiftKey) {
+                setSelection(addSelection(selection, sceneIndex));
+            } else if (e.ctrlKey) {
+                setSelection(toggleSelection(selection, sceneIndex));
+            } else {
+                setSelection(selectSingle(sceneIndex));
+            }
+        },
+        [sceneIndex, selection, setSelection],
+    );
 
     const theme = useTheme();
     const classNames = getListItemClassNames(
