@@ -266,6 +266,7 @@ enum RingStyle {
 }
 
 const directionalOptions: IChoiceGroupOption[] = [
+    // TODO: use CircleShape whenever icon font gets fixed.
     { key: RingStyle.Omnidirectional, text: 'Omnidirectional', iconProps: { iconName: 'CircleRing' } },
     {
         key: RingStyle.Directional,

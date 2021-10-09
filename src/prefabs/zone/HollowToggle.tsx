@@ -13,6 +13,7 @@ enum Styles {
 }
 
 const styleOptions: IChoiceGroupOption[] = [
+    // TODO: use CircleShape whenever icon font gets fixed.
     { key: Styles.Solid, text: 'Solid', iconProps: { iconName: 'CircleShapeSolid' } },
     { key: Styles.Hollow, text: 'Hollow', iconProps: { iconName: 'CircleRing' } },
 ];

@@ -172,6 +172,7 @@ const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, ind
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
 
 const shapeOptions: IChoiceGroupOption[] = [
+    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
     { key: 'circle', text: 'Circle', iconProps: { iconName: 'CircleRing' } },
     { key: 'square', text: 'Square', iconProps: { iconName: 'Checkbox' } },
 ];
