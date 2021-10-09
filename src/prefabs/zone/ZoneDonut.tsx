@@ -10,9 +10,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsSelected } from '../../SelectionProvider';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
@@ -59,6 +60,7 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
 });
 
 const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
@@ -68,6 +70,13 @@ const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) =>
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && (
+                    <Ring
+                        innerRadius={object.innerRadius - style.strokeWidth / 2}
+                        outerRadius={object.radius + style.strokeWidth / 2}
+                        {...SELECTED_PROPS}
+                    />
+                )}
                 <Ring innerRadius={object.innerRadius} outerRadius={object.radius} {...style} />
             </DraggableObject>
         </GroundPortal>
@@ -112,7 +121,11 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        (opacity: number) => {
+            if (opacity !== object.opacity) {
+                dispatch({ type: 'update', index, value: { ...object, opacity } });
+            }
+        },
         [dispatch, object, index],
     );
 

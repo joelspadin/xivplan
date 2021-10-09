@@ -11,9 +11,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
@@ -77,6 +78,7 @@ function getDashSize(radius: number) {
 }
 
 const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
@@ -103,6 +105,8 @@ const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index
                             opacity={0.5}
                         />
                     ))}
+
+                    {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
                     <Circle radius={object.radius} {...style} />
                     <ChevronTail
@@ -155,7 +159,11 @@ const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ o
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        (opacity: number) => {
+            if (opacity !== object.opacity) {
+                dispatch({ type: 'update', index, value: { ...object, opacity } });
+            }
+        },
         [dispatch, object, index],
     );
 

@@ -1,25 +1,29 @@
 import { getColorFromString, updateA, updateSV } from '@fluentui/react';
-import { ShapeConfig } from 'konva/lib/Shape';
 
 function getStrokeWidth(size: number) {
     return Math.max(2, Math.min(4, size / 100));
 }
 
-export function getZoneStyle(color: string, opacity: number, size = 0, hollow = false): ShapeConfig {
+export function getZoneStyle(
+    color: string,
+    opacity: number,
+    size = 0,
+    hollow = false,
+): { fill: string; stroke: string; strokeWidth: number } {
+    const strokeWidth = getStrokeWidth(size);
     const c = getColorFromString(color);
 
     if (!c) {
-        return { fill: color };
+        return { fill: color, stroke: color, strokeWidth };
     }
 
     const fill = updateA(c, hollow ? 0 : opacity).str;
     const stroke = updateA(c, opacity * 2).str;
-    const strokeWidth = getStrokeWidth(size);
 
     return { fill, stroke, strokeWidth };
 }
 
-export function getArrowStyle(color: string, opacity: number): ShapeConfig {
+export function getArrowStyle(color: string, opacity: number): { fill: string } {
     const c = getColorFromString(color);
 
     if (!c) {

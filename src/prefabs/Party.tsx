@@ -1,7 +1,7 @@
 import { Stack } from '@fluentui/react';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
-import { Image } from 'react-konva';
+import { Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -10,8 +10,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { DefaultPortal } from '../render/Portals';
+import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useScene } from '../SceneProvider';
+import { useIsSelected } from '../SelectionProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
@@ -62,12 +64,25 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 });
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const [image] = useImage(object.image);
 
     return (
         <DefaultPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && (
+                    <Rect
+                        width={object.width}
+                        height={object.height}
+                        offsetX={object.width / 2}
+                        offsetY={object.height / 2}
+                        rotation={object.rotation}
+                        cornerRadius={(object.width + object.height) / 2 / 4}
+                        {...SELECTED_PROPS}
+                    />
+                )}
+
                 <Image
                     image={image}
                     width={object.width}

@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { ShapeConfig } from 'konva/lib/Shape';
 
 export const DEFAULT_AOE_COLOR = '#fc972b';
 export const DEFAULT_AOE_OPACITY = 35;
@@ -17,6 +18,19 @@ export const COLOR_SWATCHES = [
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';
+
+export const HIGHLIGHT_COLOR = '#fff';
+export const HIGHLIGHT_WIDTH = 1.5;
+
+export const SELECTED_PROPS: ShapeConfig = {
+    fillEnabled: false,
+    listening: false,
+    stroke: HIGHLIGHT_COLOR,
+    strokeWidth: HIGHLIGHT_WIDTH,
+    shadowColor: '#06f',
+    shadowBlur: 4,
+    opacity: 0.65,
+};
 
 export interface ArenaTheme {
     fill: string;

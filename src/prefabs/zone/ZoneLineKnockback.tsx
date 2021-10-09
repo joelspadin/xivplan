@@ -7,8 +7,9 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
+import { useIsSelected } from '../../SelectionProvider';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
@@ -63,6 +64,7 @@ const ARROW_W = 25;
 const ARROW_H = 15;
 
 const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = useMemo(
@@ -84,10 +86,23 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
         });
     }, [fill, arrow, object.opacity, arrowRef]);
 
+    const highlightWidth = object.width + style.strokeWidth;
+    const highlightHeight = object.height + style.strokeWidth;
+
     return (
         <>
             <GroundPortal isActive={active}>
                 <DraggableObject object={object} index={index} onActive={setActive}>
+                    {isSelected && (
+                        <Rect
+                            offsetX={highlightWidth / 2}
+                            offsetY={highlightHeight / 2}
+                            width={highlightWidth}
+                            height={highlightHeight}
+                            rotation={object.rotation}
+                            {...SELECTED_PROPS}
+                        />
+                    )}
                     <Rect
                         offsetX={object.width / 2}
                         offsetY={object.height / 2}

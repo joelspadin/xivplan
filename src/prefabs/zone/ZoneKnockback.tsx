@@ -6,8 +6,9 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { useIsSelected } from '../../SelectionProvider';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
@@ -51,6 +52,7 @@ registerDropHandler<CircleZone>(ObjectType.Knockback, (object, position) => {
 const CHEVRON_ANGLES = Array.from({ length: 16 }).map((_, i) => (i * 360) / 16);
 
 const KnockbackRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const ring = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2),
@@ -70,6 +72,8 @@ const KnockbackRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index 
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && <Circle radius={object.radius + ring.strokeWidth / 2} {...SELECTED_PROPS} />}
+
                 <Circle radius={object.radius} {...ring} strokeEnabled={false} opacity={0.5} />
 
                 {CHEVRON_ANGLES.map((r, i) => (

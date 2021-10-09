@@ -11,9 +11,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsSelected } from '../../SelectionProvider';
 import { setOrOmit } from '../../util';
 import { ResizeableObjectProperties } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
@@ -85,15 +86,29 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 });
 
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
         [object.color, object.opacity, object.width, object.height, object.hollow],
     );
 
+    const highlightWidth = object.width + style.strokeWidth;
+    const highlightHeight = object.height + style.strokeWidth;
+
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && (
+                    <Rect
+                        offsetX={highlightWidth / 2}
+                        offsetY={highlightHeight / 2}
+                        width={highlightWidth}
+                        height={highlightHeight}
+                        rotation={object.rotation}
+                        {...SELECTED_PROPS}
+                    />
+                )}
                 <Rect
                     offsetX={object.width / 2}
                     offsetY={object.height / 2}
@@ -138,7 +153,11 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        (opacity: number) => {
+            if (opacity !== object.opacity) {
+                dispatch({ type: 'update', index, value: { ...object, opacity } });
+            }
+        },
         [dispatch, object, index],
     );
 

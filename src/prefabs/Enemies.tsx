@@ -13,9 +13,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { ArenaPortal, DefaultPortal } from '../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, useSceneTheme } from '../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
+import { useIsSelected } from '../SelectionProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
@@ -83,10 +84,11 @@ registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
 });
 
 interface RingProps extends ShapeConfig {
-    name: string;
+    name?: string;
     radius: number;
     color: string;
     theme: EnemyTheme;
+    isSelected?: boolean;
 }
 
 const EnemyLabel: React.FC<RingProps> = ({ name, radius, theme, ...props }) => {
@@ -119,13 +121,7 @@ function getInnerRadius(radius: number) {
     return Math.min(radius - 4, radius * INNER_RADIUS_RATIO);
 }
 
-function getShapeProps(
-    theme: EnemyTheme,
-    color: string,
-    radius: number,
-    strokeRatio: number,
-    minStroke: number,
-): ShapeConfig {
+function getShapeProps(theme: EnemyTheme, color: string, radius: number, strokeRatio: number, minStroke: number) {
     const strokeWidth = Math.max(minStroke, radius * strokeRatio);
     const shadowBlur = Math.max(SHADOW_BLUR_MIN, radius * SHADOW_BLUR_RATIO);
 
@@ -138,13 +134,15 @@ function getShapeProps(
     };
 }
 
-const CircleRing: React.FC<RingProps> = ({ radius, theme, color, ...props }) => {
+const CircleRing: React.FC<RingProps> = ({ radius, theme, color, isSelected, ...props }) => {
     const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
 
     return (
         <>
+            {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
+
             <Group opacity={theme.opacity} {...props}>
                 <Circle {...outerProps} radius={radius} />
                 <Circle {...innerProps} radius={innerRadius} />
@@ -157,7 +155,7 @@ interface DirectionalRingProps extends RingProps {
     rotation: number;
 }
 
-const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color, rotation, ...props }) => {
+const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color, rotation, isSelected, ...props }) => {
     const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
@@ -171,6 +169,8 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
 
     return (
         <>
+            {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
+
             <Group opacity={theme.opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Arc
                     {...outerProps}
@@ -199,6 +199,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
 };
 
 const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const theme = useSceneTheme();
 
@@ -220,18 +221,18 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) 
 
                         {object.rotation === undefined ? (
                             <CircleRing
-                                name={object.name}
                                 radius={object.radius}
                                 theme={theme.enemy}
                                 color={object.color}
+                                isSelected={isSelected}
                             />
                         ) : (
                             <DirectionalRing
-                                name={object.name}
                                 radius={object.radius}
                                 theme={theme.enemy}
                                 color={object.color}
                                 rotation={object.rotation}
+                                isSelected={isSelected}
                             />
                         )}
                     </>

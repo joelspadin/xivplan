@@ -1,6 +1,6 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Wedge } from 'react-konva';
+import { Group, Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
@@ -10,9 +10,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { setOrOmit } from '../../util';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
@@ -70,6 +71,7 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
 });
 
 const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
@@ -79,12 +81,18 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
-                <Wedge
-                    radius={object.radius}
-                    angle={object.coneAngle}
-                    rotation={object.rotation - 90 - object.coneAngle / 2}
-                    {...style}
-                />
+                <Group rotation={object.rotation - 90 - object.coneAngle / 2}>
+                    {isSelected && (
+                        <Wedge
+                            x={-style.strokeWidth / Math.SQRT2 / 2}
+                            y={-style.strokeWidth / Math.SQRT2 / 2}
+                            radius={object.radius + style.strokeWidth / Math.SQRT2}
+                            angle={object.coneAngle}
+                            {...SELECTED_PROPS}
+                        />
+                    )}
+                    <Wedge radius={object.radius} angle={object.coneAngle} {...style} />
+                </Group>
             </DraggableObject>
         </GroundPortal>
     );
@@ -122,7 +130,11 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        (opacity: number) => {
+            if (opacity !== object.opacity) {
+                dispatch({ type: 'update', index, value: { ...object, opacity } });
+            }
+        },
         [dispatch, object, index],
     );
 

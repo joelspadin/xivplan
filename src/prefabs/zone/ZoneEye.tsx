@@ -9,7 +9,9 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
+import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { useIsSelected } from '../../SelectionProvider';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 
@@ -95,7 +97,11 @@ function getStrokeColor(color: string) {
     return updateA(updateSV(c, c.s, c.v - 80), 50).str;
 }
 
+const OUTER_EYE_PATH = 'M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z';
+const INNER_EYE_PATH = 'M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z';
+
 const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const scale = object.radius / 20;
     const eyeStyle = useMemo(() => {
@@ -120,21 +126,26 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => 
     const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [object.color, object.opacity, object.radius, groupRef]);
+    }, [object.color, object.opacity, object.radius, isSelected, groupRef]);
 
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group opacity={object.opacity / 100} ref={groupRef}>
                     <Group scaleX={scale} scaleY={scale}>
+                        {isSelected && (
+                            <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...SELECTED_PROPS} />
+                        )}
+
                         <Path
-                            data="M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z"
+                            data={OUTER_EYE_PATH}
                             fill={highlightColor}
                             stroke={strokeColor}
                             strokeWidth={3}
                             fillAfterStrokeEnabled
                         />
-                        <Path data="M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z" {...eyeStyle} />
+
+                        <Path data={INNER_EYE_PATH} {...eyeStyle} />
                         <Line
                             points={[-19, 0, 19, 0]}
                             stroke={highlightColor}

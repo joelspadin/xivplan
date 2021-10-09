@@ -10,9 +10,10 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsSelected } from '../../SelectionProvider';
 import { setOrOmit } from '../../util';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
@@ -58,6 +59,7 @@ registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
 });
 
 const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
@@ -67,6 +69,8 @@ const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+
                 <Circle radius={object.radius} {...style} />
             </DraggableObject>
         </GroundPortal>
@@ -109,7 +113,11 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
     );
 
     const onOpacityChanged = useCallback(
-        (opacity: number) => dispatch({ type: 'update', index, value: { ...object, opacity } }),
+        (opacity: number) => {
+            if (opacity !== object.opacity) {
+                dispatch({ type: 'update', index, value: { ...object, opacity } });
+            }
+        },
         [dispatch, object, index],
     );
 

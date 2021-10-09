@@ -29,6 +29,11 @@ export function useSelectedObjects(): readonly SceneObject[] {
     return scene.objects.filter((_, i) => selection.has(i));
 }
 
+export function useIsSelected(index: number): boolean {
+    const [selection] = useSelection();
+    return selection.has(index);
+}
+
 export function selectSingle(index: number): SceneSelection {
     return new Set([index]);
 }

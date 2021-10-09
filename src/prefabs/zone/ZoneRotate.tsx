@@ -9,7 +9,9 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
+import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { useIsSelected } from '../../SelectionProvider';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
@@ -81,6 +83,7 @@ const ARROW_SCALE = 1 / 24;
 const ARROW_ANGLES = [45, 90, 135, 225, 270, 315];
 
 const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const isClockwise = object.type === ObjectType.RotateCW;
 
@@ -110,6 +113,8 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
+                {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+
                 <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
                     <Circle radius={object.radius} {...style} />
                     {ARROW_ANGLES.map((r, i) => (

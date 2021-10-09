@@ -1,8 +1,9 @@
-import { Dropdown, IDropdownOption, Stack } from '@fluentui/react';
+import { IChoiceGroupOption, IStackTokens, Stack } from '@fluentui/react';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
+import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -12,8 +13,10 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragPr
 import { ALIGN_TO_PIXEL } from '../render/coord';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { GroundPortal } from '../render/Portals';
+import { SELECTED_PROPS } from '../render/SceneTheme';
 import { MarkerObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
+import { useIsSelected } from '../SelectionProvider';
 import { ImageObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
@@ -87,6 +90,7 @@ function getDashSize(object: MarkerObject) {
 }
 
 const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const [image] = useImage(object.image);
 
@@ -102,23 +106,49 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
         dash: [dashSize, dashSize],
     };
 
+    const highlightWidth = object.width + strokeProps.strokeWidth * 4;
+    const highlightHeight = object.height + strokeProps.strokeWidth * 4;
+
     return (
         <GroundPortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group rotation={object.rotation}>
                     {object.shape === 'circle' && (
-                        <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
+                        <>
+                            {isSelected && (
+                                <Ellipse
+                                    radiusX={highlightWidth / 2}
+                                    radiusY={highlightHeight / 2}
+                                    {...SELECTED_PROPS}
+                                />
+                            )}
+
+                            <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
+                        </>
                     )}
                     {object.shape === 'square' && (
-                        <Rect
-                            x={-object.width / 2}
-                            y={-object.height / 2}
-                            width={object.width}
-                            height={object.height}
-                            dashOffset={dashSize / 2}
-                            {...strokeProps}
-                            {...ALIGN_TO_PIXEL}
-                        />
+                        <>
+                            {isSelected && (
+                                <Rect
+                                    x={-highlightWidth / 2}
+                                    y={-highlightHeight / 2}
+                                    width={highlightWidth}
+                                    height={highlightHeight}
+                                    {...SELECTED_PROPS}
+                                    {...ALIGN_TO_PIXEL}
+                                />
+                            )}
+
+                            <Rect
+                                x={-object.width / 2}
+                                y={-object.height / 2}
+                                width={object.width}
+                                height={object.height}
+                                dashOffset={dashSize / 2}
+                                {...strokeProps}
+                                {...ALIGN_TO_PIXEL}
+                            />
+                        </>
                     )}
                     <Image
                         image={image}
@@ -141,18 +171,16 @@ const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, ind
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
 
-const shapeOptions: IDropdownOption[] = [
-    {
-        key: 'square',
-        text: 'Square',
-    },
-    {
-        key: 'circle',
-        text: 'Circle',
-    },
+const shapeOptions: IChoiceGroupOption[] = [
+    { key: 'circle', text: 'Circle', iconProps: { iconName: 'CircleRing' } },
+    { key: 'square', text: 'Square', iconProps: { iconName: 'Checkbox' } },
 ];
 
 const swatches = [COLOR_RED, COLOR_YELLOW, COLOR_BLUE, COLOR_PURPLE];
+
+const stackTokens: IStackTokens = {
+    childrenGap: 10,
+};
 
 const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
@@ -163,7 +191,7 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
     );
 
     const onShapeChanged = useCallback(
-        (option?: IDropdownOption) => {
+        (option?: IChoiceGroupOption) => {
             const shape = (option?.key as 'circle' | 'square') ?? 'square';
             dispatch({ type: 'update', index, value: { ...object, shape } });
         },
@@ -178,13 +206,16 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <Dropdown
-                label="Shape"
-                options={shapeOptions}
-                selectedKey={object.shape}
-                onChange={(ev, option) => onShapeChanged(option)}
-            />
-            <CompactColorPicker label="Color" color={object.color} swatches={swatches} onChange={onColorChanged} />
+
+            <Stack horizontal tokens={stackTokens}>
+                <CompactColorPicker label="Color" color={object.color} swatches={swatches} onChange={onColorChanged} />
+                <CompactChoiceGroup
+                    label="Shape"
+                    options={shapeOptions}
+                    selectedKey={object.shape}
+                    onChange={(ev, option) => onShapeChanged(option)}
+                />
+            </Stack>
             <ImageObjectProperties object={object} index={index} />
         </Stack>
     );

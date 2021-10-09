@@ -7,8 +7,9 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { GroundPortal } from '../../render/Portals';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY } from '../../render/SceneTheme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
+import { useIsSelected } from '../../SelectionProvider';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { ChevronConfig, ChevronTail } from './shapes';
@@ -65,6 +66,7 @@ const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.3;
 
 const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
+    const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
@@ -100,6 +102,16 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
         <>
             <GroundPortal isActive={active}>
                 <DraggableObject object={object} index={index} onActive={setActive}>
+                    {isSelected && (
+                        <Rect
+                            offsetX={object.width / 2}
+                            offsetY={object.height / 2}
+                            width={object.width}
+                            height={object.height}
+                            rotation={object.rotation}
+                            {...SELECTED_PROPS}
+                        />
+                    )}
                     <Rect
                         offsetX={object.width / 2}
                         offsetY={object.height / 2}
