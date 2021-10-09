@@ -1,4 +1,4 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
@@ -83,6 +83,12 @@ const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ index }) => {
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);
 
+const classNames = mergeStyleSets({
+    radiusRow: {
+        marginRight: 32 + 10,
+    } as IStyle,
+});
+
 const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
@@ -120,7 +126,7 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
                 <SpinButton
                     label="Inside radius"
                     labelPosition={Position.top}

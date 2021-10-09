@@ -1,4 +1,4 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Circle, Group } from 'react-konva';
@@ -126,6 +126,12 @@ const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ index }) 
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);
 
+const classNames = mergeStyleSets({
+    radiusRow: {
+        marginRight: 32 + 10,
+    } as IStyle,
+});
+
 const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
@@ -168,7 +174,7 @@ const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ o
             />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
                 <SpinButton
                     label="Radius"
                     labelPosition={Position.top}
