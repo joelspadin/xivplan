@@ -1,8 +1,8 @@
-import { IStackTokens, Position, SpinButton, Stack, Toggle } from '@fluentui/react';
+import { IconButton, IIconProps, IIconStyles, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
@@ -252,6 +252,12 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
+const rotateIconStyle: IIconStyles = {
+    root: {
+        transform: 'rotate(135deg)',
+    },
+};
+
 const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
@@ -285,6 +291,14 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
 
     const isDirectional = object.rotation !== undefined;
 
+    const iconProps = useMemo<IIconProps>(() => {
+        if (isDirectional) {
+            return { iconName: 'ThreeQuarterCircle', styles: rotateIconStyle };
+        } else {
+            return { iconName: 'CircleRing' };
+        }
+    }, [isDirectional]);
+
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
@@ -304,7 +318,6 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
                 step={5}
             />
             <Stack horizontal verticalAlign="end" tokens={stackTokens}>
-                <Toggle checked={isDirectional} onChange={(ev, checked) => onDirectionalChanged(checked)} />
                 <SpinButtonUnits
                     label="Rotation"
                     disabled={!isDirectional}
@@ -313,6 +326,11 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
                     onChange={onRotationChanged}
                     step={15}
                     suffix="°"
+                />
+                <IconButton
+                    iconProps={iconProps}
+                    checked={isDirectional}
+                    onClick={() => onDirectionalChanged(!isDirectional)}
                 />
             </Stack>
         </Stack>
