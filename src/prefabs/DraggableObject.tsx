@@ -45,7 +45,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
             const pos = getSceneCoord(scene, e.target.position());
             dispatch({ type: 'update', index, value: { ...object, ...pos } });
         },
-        [setDragging, onActive, dispatch],
+        [setDragging, onActive, dispatch, object, index],
     );
 
     return (
