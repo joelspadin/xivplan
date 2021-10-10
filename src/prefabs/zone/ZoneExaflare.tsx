@@ -23,6 +23,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
+const NAME = 'Moving AOE';
+
 const DEFAULT_RADIUS = 40;
 const DEFAULT_LENGTH = 7;
 const MIN_RADIUS = 10;
@@ -34,7 +36,7 @@ export const ZoneExaflare: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Moving AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -126,7 +128,7 @@ registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareRe
 
 const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Exaflare" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);

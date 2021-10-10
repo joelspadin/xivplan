@@ -15,6 +15,8 @@ import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
+const NAME = 'Right triangle';
+
 const DEFAULT_RIGHT_TRIANGLE_SIZE = 150;
 
 export const ZoneRightTriangle: React.FunctionComponent = () => {
@@ -22,7 +24,7 @@ export const ZoneRightTriangle: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Right Triangle AOE"
+            name={NAME}
             icon={rightTriangleIcon}
             onDragStart={(e) => {
                 setDragObject({
@@ -110,7 +112,7 @@ registerRenderer<RectangleZone>(ObjectType.RightTriangle, LayerName.Ground, Righ
 
 const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={rightTriangleIcon} name="Right Triangle" index={index} />;
+    return <DetailsItem icon={rightTriangleIcon} name={NAME} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.RightTriangle, RightTriangleDetails);

@@ -15,6 +15,8 @@ import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
+const NAME = 'Triangle';
+
 const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
@@ -23,7 +25,7 @@ export const ZoneTriangle: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Triangle AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -111,7 +113,7 @@ registerRenderer<RectangleZone>(ObjectType.Triangle, LayerName.Ground, TriangleR
 
 const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Triangle" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Triangle, TriangleDetails);

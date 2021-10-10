@@ -22,6 +22,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
+const NAME = 'Circle';
+
 const DEFAULT_RADIUS = 50;
 const MIN_RADIUS = 10;
 
@@ -31,7 +33,7 @@ export const ZoneCircle: React.FC = () => {
     return (
         <PrefabIcon
             draggable
-            name="Circle AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -82,7 +84,7 @@ registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleRenderer
 
 const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Circle" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);

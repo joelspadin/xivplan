@@ -21,6 +21,8 @@ import { ResizeableObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 
+const NAME = 'Arrow';
+
 const DEFAULT_ARROW_WIDTH = 20;
 const DEFAULT_ARROW_HEIGHT = 150;
 const DEFAULT_ARROW_COLOR = '#000000';
@@ -32,7 +34,7 @@ export const MarkerArrow: React.FC = () => {
     return (
         <PrefabIcon
             draggable
-            name="Arrow"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -119,12 +121,12 @@ registerRenderer<ArrowObject>(ObjectType.Arrow, LayerName.Default, ArrowRenderer
 
 const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Arrow" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);
 
-const RectangleEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object, index }) => {
+const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = React.useCallback(
@@ -155,4 +157,4 @@ const RectangleEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ o
     );
 };
 
-registerPropertiesControl<ArrowObject>(ObjectType.Arrow, RectangleEditControl);
+registerPropertiesControl<ArrowObject>(ObjectType.Arrow, ArrowEditControl);

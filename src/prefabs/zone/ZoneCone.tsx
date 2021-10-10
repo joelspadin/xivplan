@@ -24,6 +24,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
+const NAME = 'Cone';
+
 const DEFAULT_RADIUS = 150;
 const DEFAULT_ANGLE = 90;
 const MIN_RADIUS = 10;
@@ -38,7 +40,7 @@ export const ZoneCone: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Cone AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
@@ -152,7 +154,7 @@ registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeRenderer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Cone" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);

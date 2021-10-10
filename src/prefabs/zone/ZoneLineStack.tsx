@@ -16,6 +16,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle } from './style';
 
+const NAME = 'Line stack';
+
 const DEFAULT_WIDTH = 100;
 const DEFAULT_HEIGHT = 150;
 
@@ -25,7 +27,7 @@ export const ZoneLineStack: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Line stack AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -147,7 +149,7 @@ registerRenderer<RectangleZone>(ObjectType.LineStack, LayerName.Ground, LineStac
 
 const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line stack" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);

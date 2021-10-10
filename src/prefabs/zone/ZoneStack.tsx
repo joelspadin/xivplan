@@ -15,6 +15,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
+const NAME = 'Stack';
+
 const DEFAULT_RADIUS = 75;
 
 export const ZoneStack: React.FC = () => {
@@ -23,7 +25,7 @@ export const ZoneStack: React.FC = () => {
     return (
         <PrefabIcon
             draggable
-            name="Stack AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -106,7 +108,7 @@ registerRenderer<CircleZone>(ObjectType.Stack, LayerName.Ground, StackRenderer);
 
 const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Stack" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

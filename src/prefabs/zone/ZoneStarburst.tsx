@@ -22,6 +22,8 @@ import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
+const NAME = 'Starburst';
+
 const DEFAULT_RADIUS = 250;
 const DEFAULT_SPOKE_WIDTH = 40;
 const DEFAULT_SPOKE_COUNT = 8;
@@ -35,7 +37,7 @@ export const ZoneStarburst: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Starburst AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -184,7 +186,7 @@ registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, Starburs
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Starburst" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);

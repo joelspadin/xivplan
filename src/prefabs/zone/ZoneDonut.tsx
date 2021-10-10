@@ -20,6 +20,8 @@ import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
+const NAME = 'Donut';
+
 const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
 
@@ -31,7 +33,7 @@ export const ZoneDonut: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Donut AOE"
+            name={NAME}
             icon={icon}
             onDragStart={(e) => {
                 setDragObject({
@@ -88,7 +90,7 @@ registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutRenderer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Donut" index={index} />;
+    return <DetailsItem icon={icon} name={NAME} index={index} />;
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);

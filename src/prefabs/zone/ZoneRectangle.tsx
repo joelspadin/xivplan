@@ -23,6 +23,8 @@ import { PrefabIcon } from '../PrefabIcon';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
+const NAME = 'Rectangle';
+
 const DEFAULT_SQUARE_SIZE = 150;
 
 export const ZoneSquare: React.FunctionComponent = () => {
@@ -30,7 +32,7 @@ export const ZoneSquare: React.FunctionComponent = () => {
     return (
         <PrefabIcon
             draggable
-            name="Square AOE"
+            name={NAME}
             icon={squareIcon}
             onDragStart={(e) => {
                 setDragObject({
@@ -127,7 +129,7 @@ registerRenderer<RectangleZone>(ObjectType.Rect, LayerName.Ground, RectangleRend
 
 const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={squareIcon} name="Rectangle" index={index} />;
+    return <DetailsItem icon={squareIcon} name={NAME} index={index} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
