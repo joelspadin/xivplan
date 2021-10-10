@@ -19,7 +19,8 @@ progression, so it will always be simpler and less powerful.
 | Create zones                  | ✅     |
 | Create tethers                |        |
 | Create text notes             |        |
-| Move objects                  |        |
+| Move objects                  | ✅     |
+| Move group selection          |        |
 | Resize objects                |        |
 | Reorder objects               | ✅     |
 | Delete objects                | ✅     |
