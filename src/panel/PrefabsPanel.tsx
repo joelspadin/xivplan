@@ -38,6 +38,7 @@ import {
     TetherPlusMinus,
     TetherPlusPlus,
 } from '../prefabs/Tethers';
+import { TextLabel } from '../prefabs/TextLabel';
 import { ZoneCircle } from '../prefabs/zone/ZoneCircle';
 import { ZoneCone } from '../prefabs/zone/ZoneCone';
 import { ZoneDonut } from '../prefabs/zone/ZoneDonut';
@@ -107,6 +108,7 @@ export const PrefabsPanel: React.FunctionComponent = () => {
 
             <Section title="Waymarks">
                 <ObjectGroup>
+                    <TextLabel />
                     <MarkerArrow />
                     <WaymarkA />
                     <WaymarkB />

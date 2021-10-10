@@ -53,8 +53,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
                                 <Layer name={LayerName.Default}>
                                     <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
                                 </Layer>
-                                <Layer name={LayerName.Tether}>
-                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Tether} />
+                                <Layer name={LayerName.Foreground}>
+                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
                                 </Layer>
                                 <Layer listening={false} name={LayerName.Active} />
                             </SelectionContext.Provider>

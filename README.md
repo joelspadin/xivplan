@@ -18,7 +18,7 @@ progression, so it will always be simpler and less powerful.
 | Create waymarks               | ✅     |
 | Create zones                  | ✅     |
 | Create tethers                |        |
-| Create text notes             |        |
+| Create text notes             | ✅     |
 | Move objects                  | ✅     |
 | Move group selection          |        |
 | Resize objects                |        |

@@ -12,33 +12,34 @@ export enum GridType {
 
 export enum ObjectType {
     Arrow = 'arrow',
+    Circle = 'circle',
+    Cone = 'cone',
+    Donut = 'donut',
     Enemy = 'enemy',
+    Exaflare = 'exaflare',
+    Eye = 'eye',
+    Knockback = 'knockback',
+    LineKnockAway = 'lineKnockAway',
+    LineKnockback = 'lineKnockback',
+    LineStack = 'lineStack',
     Marker = 'marker',
     Party = 'party',
-    Circle = 'circle',
-    Stack = 'stack',
     Proximity = 'proximity',
-    Knockback = 'knockback',
-    RotateCW = 'rotateCW',
-    RotateCCW = 'rotateCCW',
-    Eye = 'eye',
-    Donut = 'donut',
-    Cone = 'cone',
     Rect = 'rect',
-    Triangle = 'triangle',
     RightTriangle = 'rightTriangle',
-    LineStack = 'lineStack',
-    LineKnockback = 'lineKnockback',
-    LineKnockAway = 'lineKnockAway',
-    Exaflare = 'exaflare',
+    RotateCCW = 'rotateCCW',
+    RotateCW = 'rotateCW',
+    Stack = 'stack',
     Starburst = 'starburst',
-    Tower = 'tower',
     Tether = 'tether',
     TetherClose = 'tetherClose',
     TetherFar = 'tetherFar',
+    TetherMinusMinus = 'tetherMinusMinus',
     TetherPlusMinus = 'tetherPlusMinus',
     TetherTetherPlusPlus = 'tetherPlusPlus',
-    TetherMinusMinus = 'tetherMinusMinus',
+    Text = 'text',
+    Tower = 'tower',
+    Triangle = 'triangle',
 }
 
 export interface SceneId {
@@ -123,7 +124,18 @@ export interface ArrowObject extends ResizeableObject, SceneId {
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
-export type Marker = MarkerObject | ArrowObject;
+export interface TextObject extends MoveableObject, SceneId {
+    readonly type: ObjectType.Text;
+    readonly text: string;
+    readonly fontSize: number;
+    readonly align: string;
+    readonly color: string;
+    readonly opacity: number;
+    readonly rotation: number;
+}
+export const isText = makeObjectTest<TextObject>(ObjectType.Text);
+
+export type Marker = MarkerObject | ArrowObject | TextObject;
 
 export interface ActorStatus {
     readonly icon: string;

@@ -1,9 +1,12 @@
 import { ITextFieldProps, TextField } from '@fluentui/react';
 import React, { FocusEventHandler, KeyboardEventHandler, useCallback, useEffect, useState } from 'react';
+import { useDebounce } from 'react-use';
 
 type ChangeHandler = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => void;
 type KeyHandler = KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 type FocusHandler = FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+
+const DEBOUNCE_TIME = 500;
 
 export interface DeferredTextFieldProps extends Omit<ITextFieldProps, 'onChange'> {
     onChange?: (newValue: string | undefined) => void;
@@ -24,22 +27,32 @@ export const DeferredTextField: React.FC<DeferredTextFieldProps> = ({ value, onC
 
     const deferOnChange = useCallback<ChangeHandler>((ev, newValue) => setText(newValue), [setText]);
 
-    const onKeyPress = useCallback<KeyHandler>(
-        (ev) => {
-            if (ev.key === 'Enter' && text !== value) {
-                onChange?.(text);
+    const notifyChanged = useCallback(
+        (newText?: string) => {
+            if (newText !== value) {
+                onChange?.(newText);
             }
         },
-        [onChange, text, value],
+        [value, onChange],
+    );
+
+    const onKeyPress = useCallback<KeyHandler>(
+        (ev) => {
+            if (ev.key === 'Enter') {
+                notifyChanged(text);
+            }
+        },
+        [notifyChanged, text],
     );
 
     const onBlur = useCallback<FocusHandler>(() => {
-        if (text !== value) {
-            onChange?.(text);
-        }
-    }, [onChange, text, value]);
+        notifyChanged(text);
+    }, [notifyChanged, text]);
 
-    // TODO: also change with debounce?
+    const [, cancel] = useDebounce(() => notifyChanged(text), DEBOUNCE_TIME, [text]);
+    useEffect(() => {
+        return cancel;
+    });
 
     return <TextField value={text} onChange={deferOnChange} onKeyPress={onKeyPress} onBlur={onBlur} {...props} />;
 };
