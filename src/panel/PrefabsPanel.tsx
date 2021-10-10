@@ -1,6 +1,6 @@
 import { IStyle, mergeStyleSets, Text, useTheme } from '@fluentui/react';
 import React from 'react';
-import { DrawArrow } from '../prefabs/Arrow';
+import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
 import { Waymark1, Waymark2, Waymark3, Waymark4, WaymarkA, WaymarkB, WaymarkC, WaymarkD } from '../prefabs/Markers';
 import {
@@ -107,7 +107,7 @@ export const PrefabsPanel: React.FunctionComponent = () => {
 
             <Section title="Waymarks">
                 <ObjectGroup>
-                    <DrawArrow />
+                    <MarkerArrow />
                     <WaymarkA />
                     <WaymarkB />
                     <WaymarkC />

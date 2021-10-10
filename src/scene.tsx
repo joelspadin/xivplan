@@ -119,6 +119,7 @@ export const isMarker = makeObjectTest<MarkerObject>(ObjectType.Marker);
 export interface ArrowObject extends ResizeableObject, SceneId {
     readonly type: ObjectType.Arrow;
     readonly color: string;
+    readonly opacity: number;
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 

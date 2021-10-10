@@ -14,6 +14,7 @@ export const COLOR_SWATCHES = [
     '#f269ff', // pink
     '#bae3ff', // blue-white
     '#20052e', // dark purple
+    '#000000', // black
     '#6f5a48', // grid
 ];
 
