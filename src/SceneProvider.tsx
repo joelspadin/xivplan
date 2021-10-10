@@ -97,7 +97,7 @@ function addObjects(
     objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
 ): Partial<Scene> {
     let nextId = state.nextId;
-    const newObjects = asArray(objects).map((obj) => ({ id: nextId++, ...obj }));
+    const newObjects = asArray(objects).map((obj) => ({ ...obj, id: nextId++ }));
 
     return {
         objects: [...state.objects, ...newObjects],

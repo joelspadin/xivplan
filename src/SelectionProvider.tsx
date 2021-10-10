@@ -1,5 +1,5 @@
 import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
-import { SceneObject } from './scene';
+import { Scene, SceneObject } from './scene';
 import { useScene } from './SceneProvider';
 
 export type SceneSelection = ReadonlySet<number>;
@@ -22,11 +22,15 @@ export interface SelectedObjects {
     objects: readonly SceneObject[];
 }
 
+export function getSelectedObjects(scene: Scene, selection: SceneSelection): readonly SceneObject[] {
+    return scene.objects.filter((_, i) => selection.has(i));
+}
+
 export function useSelectedObjects(): readonly SceneObject[] {
     const [scene] = useScene();
     const [selection] = useSelection();
 
-    return scene.objects.filter((_, i) => selection.has(i));
+    return getSelectedObjects(scene, selection);
 }
 
 export function useIsSelected(index: number): boolean {

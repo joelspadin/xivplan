@@ -3,6 +3,7 @@ import { Vector2d } from 'konva/lib/types';
 import React, { ReactNode, useCallback, useState } from 'react';
 import { Group } from 'react-konva';
 import { getCanvasCoord, getSceneCoord } from '../render/coord';
+import { useStage } from '../render/StageProvider';
 import { MoveableObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { selectSingle, useSelection } from '../SelectionProvider';
@@ -20,6 +21,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
     const [dragging, setDragging] = useState(false);
     const [scene, dispatch] = useScene();
     const [selection, setSelection] = useSelection();
+    const stage = useStage();
     const center = getCanvasCoord(scene, object);
 
     const onDragStart = useCallback(
@@ -48,6 +50,15 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
         [setDragging, onActive, dispatch, object, index],
     );
 
+    const setCursor = useCallback(
+        (cursor: string) => {
+            if (stage) {
+                stage.container().style.cursor = cursor;
+            }
+        },
+        [stage],
+    );
+
     return (
         <SelectableObject index={index}>
             <Group
@@ -56,6 +67,8 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
                 onDragStart={onDragStart}
                 onDragMove={(e) => setDragCenter(e.target.position())}
                 onDragEnd={onDragEnd}
+                onMouseEnter={() => setCursor('move')}
+                onMouseLeave={() => setCursor('default')}
             >
                 {typeof children === 'function' ? children?.(dragging ? dragCenter : center) : children}
             </Group>

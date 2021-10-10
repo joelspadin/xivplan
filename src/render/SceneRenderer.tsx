@@ -10,6 +10,7 @@ import { ArenaRenderer } from './ArenaRenderer';
 import { getCanvasSize, getSceneCoord } from './coord';
 import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
+import { StageContext } from './StageProvider';
 
 export const SceneRenderer: React.FunctionComponent = () => {
     const theme = useTheme();
@@ -35,26 +36,28 @@ export const SceneRenderer: React.FunctionComponent = () => {
     return (
         <DropTarget stageRef={stageRef}>
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
-                <ThemeContext.Provider value={theme}>
-                    <SceneContext.Provider value={sceneBridge}>
-                        <SelectionContext.Provider value={selectionBridge}>
-                            <Layer name={LayerName.Arena}>
-                                <ArenaRenderer />
-                                <ObjectRenderer objects={scene.objects} layer={LayerName.Arena} />
-                            </Layer>
-                            <Layer name={LayerName.Ground}>
-                                <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
-                            </Layer>
-                            <Layer name={LayerName.Default}>
-                                <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
-                            </Layer>
-                            <Layer name={LayerName.Tether}>
-                                <ObjectRenderer objects={scene.objects} layer={LayerName.Tether} />
-                            </Layer>
-                            <Layer listening={false} name={LayerName.Active} />
-                        </SelectionContext.Provider>
-                    </SceneContext.Provider>
-                </ThemeContext.Provider>
+                <StageContext.Provider value={stageRef.current}>
+                    <ThemeContext.Provider value={theme}>
+                        <SceneContext.Provider value={sceneBridge}>
+                            <SelectionContext.Provider value={selectionBridge}>
+                                <Layer name={LayerName.Arena}>
+                                    <ArenaRenderer />
+                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Arena} />
+                                </Layer>
+                                <Layer name={LayerName.Ground}>
+                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
+                                </Layer>
+                                <Layer name={LayerName.Default}>
+                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
+                                </Layer>
+                                <Layer name={LayerName.Tether}>
+                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Tether} />
+                                </Layer>
+                                <Layer listening={false} name={LayerName.Active} />
+                            </SelectionContext.Provider>
+                        </SceneContext.Provider>
+                    </ThemeContext.Provider>
+                </StageContext.Provider>
             </Stage>
         </DropTarget>
     );
