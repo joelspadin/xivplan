@@ -30,7 +30,7 @@ export const SELECTED_PROPS: ShapeConfig = {
     strokeWidth: HIGHLIGHT_WIDTH,
     shadowColor: '#06f',
     shadowBlur: 4,
-    opacity: 0.65,
+    opacity: 0.55,
 };
 
 export interface ArenaTheme {

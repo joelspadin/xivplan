@@ -76,7 +76,7 @@ const StackRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) =
     return (
         <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius + ring.strokeWidth} {...SELECTED_PROPS} />}
+                {isSelected && <Circle radius={object.radius + ring.strokeWidth} {...SELECTED_PROPS} opacity={0.35} />}
 
                 <Circle radius={object.radius} {...ring} opacity={0.75} fill="transparent" />
                 <ChevronTail

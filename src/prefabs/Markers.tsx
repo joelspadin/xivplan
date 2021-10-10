@@ -121,6 +121,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
                                     radiusX={highlightWidth / 2}
                                     radiusY={highlightHeight / 2}
                                     {...SELECTED_PROPS}
+                                    opacity={0.25}
                                 />
                             )}
 
@@ -137,6 +138,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
                                     height={highlightHeight}
                                     {...SELECTED_PROPS}
                                     {...ALIGN_TO_PIXEL}
+                                    opacity={0.25}
                                 />
                             )}
 

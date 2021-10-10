@@ -147,7 +147,7 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index 
     return (
         <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius} {...SELECTED_PROPS} />}
+                {isSelected && <Circle radius={object.radius} {...SELECTED_PROPS} opacity={0.25} />}
 
                 <Circle radius={object.radius} {...gradient} />
                 {CORNER_ANGLES.map((r, i) => (

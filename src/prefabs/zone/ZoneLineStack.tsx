@@ -113,6 +113,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
                             height={object.height}
                             rotation={object.rotation}
                             {...SELECTED_PROPS}
+                            opacity={0.25}
                         />
                     )}
                     <Rect
