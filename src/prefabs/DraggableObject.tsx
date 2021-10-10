@@ -2,7 +2,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import React, { ReactNode, useCallback, useState } from 'react';
 import { Group } from 'react-konva';
-import { getCanvasCoord, getSceneCoord } from '../render/coord';
+import { getCanvasCoord, getSceneCoord } from '../coord';
 import { useStage } from '../render/StageProvider';
 import { MoveableObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';

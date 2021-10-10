@@ -3,11 +3,12 @@ import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { RefObject, useCallback, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
+import { getCanvasSize, getSceneCoord } from '../coord';
+import { HotkeyHandler } from '../HotkeyHandler';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useScene } from '../SceneProvider';
 import { SelectionContext, selectNone, selectSingle, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
-import { getCanvasSize, getSceneCoord } from './coord';
 import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
 import { StageContext } from './StageProvider';
@@ -40,6 +41,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
                     <ThemeContext.Provider value={theme}>
                         <SceneContext.Provider value={sceneBridge}>
                             <SelectionContext.Provider value={selectionBridge}>
+                                <HotkeyHandler />
+
                                 <Layer name={LayerName.Arena}>
                                     <ArenaRenderer />
                                     <ObjectRenderer objects={scene.objects} layer={LayerName.Arena} />

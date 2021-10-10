@@ -50,6 +50,10 @@ export function selectAll(objects: readonly SceneObject[]): SceneSelection {
     return new Set(objects.map((_, i) => i));
 }
 
+export function selectNewObjects(currentObjectCount: number, newObjectCount: number): SceneSelection {
+    return new Set(Array.from({ length: newObjectCount }).map((_, i) => currentObjectCount + i));
+}
+
 export function addSelection(selection: SceneSelection, index: number): SceneSelection {
     return new Set(selection).add(index);
 }

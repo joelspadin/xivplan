@@ -1,6 +1,5 @@
 import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
 import React from 'react';
-import { HotkeyHandler } from './HotkeyHandler';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
@@ -35,8 +34,6 @@ export const MainPage: React.FunctionComponent = () => {
         <SceneProvider>
             <SelectionProvider>
                 <PanelDragProvider>
-                    <HotkeyHandler />
-
                     <Stack horizontal className={classNames.root}>
                         <MainPanel />
                         <Stack.Item className={classNames.stage}>

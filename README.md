@@ -32,7 +32,7 @@ progression, so it will always be simpler and less powerful.
 | Context menus                 |        |
 | Keyboard shortcut help        |        |
 | Undo/redo                     | ✅     |
-| Copy/paste/duplicate          |        |
+| Copy/paste/duplicate          | ✅     |
 
 ## Credits
 

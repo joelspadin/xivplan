@@ -3,8 +3,6 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
 import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
 import useImage from 'use-image';
-import { ArenaShape, CustomGrid, GridType, RadialGrid, RectangularGrid, Scene } from '../scene';
-import { useScene } from '../SceneProvider';
 import {
     ALIGN_TO_PIXEL,
     getCanvasArenaEllipse,
@@ -14,7 +12,9 @@ import {
     getCanvasY,
     useCanvasArenaEllipse,
     useCanvasArenaRect,
-} from './coord';
+} from '../coord';
+import { ArenaShape, CustomGrid, GridType, RadialGrid, RectangularGrid, Scene } from '../scene';
+import { useScene } from '../SceneProvider';
 import { useSceneTheme } from './SceneTheme';
 
 export const ArenaRenderer: React.FunctionComponent = () => {

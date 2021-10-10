@@ -1,6 +1,6 @@
 import { Vector2d } from 'konva/lib/types';
-import { Scene } from '../scene';
-import { useScene } from '../SceneProvider';
+import { Scene } from './scene';
+import { useScene } from './SceneProvider';
 
 export const SCENE_PADDING = 120;
 
