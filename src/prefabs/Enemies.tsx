@@ -166,7 +166,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
     const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [radius, theme, groupRef]);
+    }, [radius, theme, color, groupRef]);
 
     return (
         <>
