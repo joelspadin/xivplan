@@ -40,12 +40,17 @@ export const SceneRenderer: React.FunctionComponent = () => {
                         <SelectionContext.Provider value={selectionBridge}>
                             <Layer name={LayerName.Arena}>
                                 <ArenaRenderer />
+                                <ObjectRenderer objects={scene.objects} layer={LayerName.Arena} />
                             </Layer>
-                            <Layer name={LayerName.Ground} />
+                            <Layer name={LayerName.Ground}>
+                                <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
+                            </Layer>
                             <Layer name={LayerName.Default}>
-                                <ObjectRenderer objects={scene.objects} />
+                                <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
                             </Layer>
-                            <Layer name={LayerName.Tether} />
+                            <Layer name={LayerName.Tether}>
+                                <ObjectRenderer objects={scene.objects} layer={LayerName.Tether} />
+                            </Layer>
                             <Layer listening={false} name={LayerName.Active} />
                         </SelectionContext.Provider>
                     </SceneContext.Provider>

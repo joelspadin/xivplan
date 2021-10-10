@@ -25,6 +25,8 @@ export enum ObjectType {
     Donut = 'donut',
     Cone = 'cone',
     Rect = 'rect',
+    Triangle = 'triangle',
+    RightTriangle = 'rightTriangle',
     LineStack = 'lineStack',
     LineKnockback = 'lineKnockback',
     LineKnockAway = 'lineKnockAway',
@@ -196,7 +198,13 @@ export interface ConeZone extends MoveableObject, SceneId {
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
 
 export interface RectangleZone extends ResizeableObject, SceneId {
-    readonly type: ObjectType.Rect | ObjectType.LineStack | ObjectType.LineKnockback | ObjectType.LineKnockAway;
+    readonly type:
+        | ObjectType.Rect
+        | ObjectType.LineStack
+        | ObjectType.LineKnockback
+        | ObjectType.LineKnockAway
+        | ObjectType.Triangle
+        | ObjectType.RightTriangle;
     readonly color: string;
     readonly opacity: number;
     readonly hollow?: boolean;
@@ -206,6 +214,8 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.LineStack,
     ObjectType.LineKnockback,
     ObjectType.LineKnockAway,
+    ObjectType.Triangle,
+    ObjectType.RightTriangle,
 );
 
 export interface ExaflareZone extends MoveableObject, SceneId {

@@ -5,8 +5,9 @@ import icon from '../../assets/zone/line_knock_away.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -107,7 +108,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
     return (
         <>
-            <GroundPortal isActive={active}>
+            <ActivePortal isActive={active}>
                 <DraggableObject object={object} index={index} onActive={setActive}>
                     {isSelected && (
                         <Rect
@@ -134,7 +135,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
                         {...stroke}
                     />
                 </DraggableObject>
-            </GroundPortal>
+            </ActivePortal>
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={patternWidth} height={patternHeight} fill={fill} />
                 <ChevronTail x={patternWidth * ARROW_PAD} rotation={-90} {...arrow} />
@@ -144,7 +145,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
     );
 };
 
-registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayRenderer);
+registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayRenderer);
 
 const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?

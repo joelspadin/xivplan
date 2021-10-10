@@ -11,8 +11,9 @@ import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { ALIGN_TO_PIXEL } from '../render/coord';
+import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { GroundPortal } from '../render/Portals';
+import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { MarkerObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -110,7 +111,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
     const highlightHeight = object.height + strokeProps.strokeWidth * 4;
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group rotation={object.rotation}>
                     {object.shape === 'circle' && (
@@ -159,11 +160,11 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
                     />
                 </Group>
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<MarkerObject>(ObjectType.Marker, MarkerRenderer);
+registerRenderer<MarkerObject>(ObjectType.Marker, LayerName.Ground, MarkerRenderer);
 
 const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, index }) => {
     return <DetailsItem icon={object.image} name={object.name} index={index} />;

@@ -26,6 +26,7 @@ export const MainPage: React.FunctionComponent = () => {
             stage: {
                 backgroundColor: theme.palette.neutralLighter,
                 overflow: 'auto',
+                minWidth: 400,
             },
         };
     }, theme);

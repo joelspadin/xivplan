@@ -6,8 +6,9 @@ import icon from '../../assets/zone/falloff.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -144,7 +145,7 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index 
     const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && <Circle radius={object.radius} {...SELECTED_PROPS} />}
 
@@ -167,11 +168,11 @@ const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index 
                     </Group>
                 ))}
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Proximity, ProximityRenderer);
+registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityRenderer);
 
 const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?

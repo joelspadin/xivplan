@@ -9,8 +9,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -97,7 +98,7 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
     const highlightHeight = object.height + style.strokeWidth;
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && (
                     <Rect
@@ -118,11 +119,11 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
                     {...style}
                 />
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<RectangleZone>(ObjectType.Rect, RectangleRenderer);
+registerRenderer<RectangleZone>(ObjectType.Rect, LayerName.Ground, RectangleRenderer);
 
 const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
@@ -132,7 +133,7 @@ const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
 
 function supportsHollow(object: RectangleZone) {
-    return [ObjectType.Rect].includes(object.type);
+    return [ObjectType.Rect, ObjectType.Triangle, ObjectType.RightTriangle].includes(object.type);
 }
 
 const stackTokens: IStackTokens = {
@@ -183,6 +184,13 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
 };
 
 registerPropertiesControl<RectangleZone>(
-    [ObjectType.Rect, ObjectType.LineStack, ObjectType.LineKnockback, ObjectType.LineKnockAway],
+    [
+        ObjectType.Rect,
+        ObjectType.LineStack,
+        ObjectType.LineKnockback,
+        ObjectType.LineKnockAway,
+        ObjectType.Triangle,
+        ObjectType.RightTriangle,
+    ],
     RectangleEditControl,
 );

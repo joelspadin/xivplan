@@ -5,8 +5,9 @@ import icon from '../../assets/zone/line_stack.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -100,7 +101,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
     return (
         <>
-            <GroundPortal isActive={active}>
+            <ActivePortal isActive={active}>
                 <DraggableObject object={object} index={index} onActive={setActive}>
                     {isSelected && (
                         <Rect
@@ -133,7 +134,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
                         fill={arrow.fill}
                     />
                 </DraggableObject>
-            </GroundPortal>
+            </ActivePortal>
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <ChevronTail x={patternWidth * ARROW_PAD} rotation={90} {...arrow} />
                 <ChevronTail x={patternWidth * (1 - ARROW_PAD)} rotation={-90} {...arrow} />
@@ -142,7 +143,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
     );
 };
 
-registerRenderer<RectangleZone>(ObjectType.LineStack, LineStackRenderer);
+registerRenderer<RectangleZone>(ObjectType.LineStack, LayerName.Ground, LineStackRenderer);
 
 const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?

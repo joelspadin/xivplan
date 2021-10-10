@@ -34,10 +34,12 @@ const headerStyle: IStyle[] = [
 
 const classNames = mergeStyleSets({
     wrapper: {
+        flexShrink: '0 !important',
         width: PANEL_WIDTH,
     } as IStyle,
 
     widePanel: {
+        flexShrink: '0 !important',
         height: '100%',
         header: headerStyle,
         section: {
@@ -48,6 +50,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 
     tallPanel: {
+        flexShrink: '0 !important',
         height: '100%',
         width: PANEL_WIDTH,
         header: headerStyle,

@@ -8,8 +8,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -79,7 +80,7 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
     );
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group rotation={object.rotation - 90 - object.coneAngle / 2}>
                     {isSelected && (
@@ -94,11 +95,11 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
                     <Wedge radius={object.radius} angle={object.coneAngle} {...style} />
                 </Group>
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<ConeZone>(ObjectType.Cone, ConeRenderer);
+registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeRenderer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ index }) => {
     // TODO: color filter icon?

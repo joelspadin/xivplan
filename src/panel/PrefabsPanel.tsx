@@ -49,10 +49,12 @@ import { ZoneLineKnockback } from '../prefabs/zone/ZoneLineKnockback';
 import { ZoneLineStack } from '../prefabs/zone/ZoneLineStack';
 import { ZoneProximity } from '../prefabs/zone/ZoneProximity';
 import { ZoneLine, ZoneSquare } from '../prefabs/zone/ZoneRectangle';
+import { ZoneRightTriangle } from '../prefabs/zone/ZoneRightTriangle';
 import { ZoneRotateClockwise, ZoneRotateCounterClockwise } from '../prefabs/zone/ZoneRotate';
 import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
 import { ZoneTower } from '../prefabs/zone/ZoneTower';
+import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
 import { PANEL_PADDING } from './PanelStyles';
 import { ObjectGroup, Section } from './Section';
 
@@ -79,20 +81,22 @@ export const PrefabsPanel: React.FunctionComponent = () => {
         <div className={classNames.root}>
             <Section title="Zones">
                 <ObjectGroup className={zonesClass}>
-                    <ZoneExaflare />
+                    <ZoneRightTriangle />
+                    <ZoneTriangle />
                     <ZoneSquare />
                     <ZoneLine />
-                    <ZoneCone />
                     <ZoneDonut />
                     <ZoneCircle />
 
-                    <ZoneLineKnockAway />
                     <ZoneLineKnockback />
                     <ZoneKnockback />
                     <ZoneProximity />
                     <ZoneLineStack />
                     <ZoneStack />
+                    <ZoneCone />
 
+                    <ZoneLineKnockAway />
+                    <ZoneExaflare />
                     <ZoneStarburst />
                     <ZoneRotateClockwise />
                     <ZoneRotateCounterClockwise />

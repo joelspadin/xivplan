@@ -9,8 +9,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -171,15 +172,15 @@ const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object, ind
     };
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />}
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<StarburstZone>(ObjectType.Starburst, StarburstRenderer);
+registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstRenderer);
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ index }) => {
     // TODO: color filter icon?

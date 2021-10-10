@@ -9,8 +9,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -129,7 +130,7 @@ const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object, index }) =>
     const zones = useMemo(() => getCountZones(object.radius, object.count), [object.radius, object.count]);
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
@@ -138,11 +139,11 @@ const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object, index }) =>
                     <CountZone key={i} {...props} {...style} listening={false} />
                 ))}
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<TowerZone>(ObjectType.Tower, TowerRenderer);
+registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerRenderer);
 
 const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ index }) => {
     // TODO: color filter icon?

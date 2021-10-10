@@ -8,8 +8,9 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
+import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { DefaultPortal } from '../render/Portals';
+import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -69,7 +70,7 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) 
     const [image] = useImage(object.image);
 
     return (
-        <DefaultPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && (
                     <Rect
@@ -92,11 +93,11 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) 
                     rotation={object.rotation}
                 />
             </DraggableObject>
-        </DefaultPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<PartyObject>(ObjectType.Party, PartyRenderer);
+registerRenderer<PartyObject>(ObjectType.Party, LayerName.Default, PartyRenderer);
 
 const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, index }) => {
     return <DetailsItem icon={object.image} name={object.name} index={index} />;

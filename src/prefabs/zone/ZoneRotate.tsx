@@ -7,8 +7,9 @@ import clockwise from '../../assets/zone/rotate_cw.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -111,7 +112,7 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
     }, [object.color, object.opacity, object.radius, object.hollow, groupRef]);
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
@@ -122,11 +123,11 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
                     ))}
                 </Group>
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateRenderer);
+registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateRenderer);
 
 const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, index }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';

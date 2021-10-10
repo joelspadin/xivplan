@@ -8,8 +8,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -68,7 +69,7 @@ const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) =>
     );
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 {isSelected && (
                     <Ring
@@ -79,11 +80,11 @@ const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) =>
                 )}
                 <Ring innerRadius={object.innerRadius} outerRadius={object.radius} {...style} />
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<DonutZone>(ObjectType.Donut, DonutRenderer);
+registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutRenderer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ index }) => {
     // TODO: color filter icon?

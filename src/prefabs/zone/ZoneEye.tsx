@@ -7,8 +7,9 @@ import icon from '../../assets/zone/eye.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -129,7 +130,7 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => 
     }, [object.color, object.opacity, object.radius, isSelected, groupRef]);
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group opacity={object.opacity / 100} ref={groupRef}>
                     <Group scaleX={scale} scaleY={scale}>
@@ -157,11 +158,11 @@ const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => 
                     </Group>
                 </Group>
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Eye, EyeRenderer);
+registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeRenderer);
 
 const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?

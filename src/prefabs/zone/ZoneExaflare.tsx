@@ -9,8 +9,9 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -89,7 +90,7 @@ const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index
     const dashSize = getDashSize(object.radius);
 
     return (
-        <GroundPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group rotation={object.rotation}>
                     {trail.map((point, i) => (
@@ -117,11 +118,11 @@ const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index
                     />
                 </Group>
             </DraggableObject>
-        </GroundPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<ExaflareZone>(ObjectType.Exaflare, ExaflareRenderer);
+registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareRenderer);
 
 const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ index }) => {
     // TODO: color filter icon?

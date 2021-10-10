@@ -11,8 +11,9 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
+import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ArenaPortal, DefaultPortal } from '../render/Portals';
+import { ActivePortal } from '../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -204,45 +205,32 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) 
     const theme = useSceneTheme();
 
     return (
-        <ArenaPortal isActive={active}>
+        <ActivePortal isActive={active}>
             <DraggableObject object={object} index={index} onActive={setActive}>
-                {(center) => (
-                    <>
-                        <DefaultPortal isActive={active}>
-                            <EnemyLabel
-                                x={active ? center.x : 0}
-                                y={active ? center.y : 0}
-                                name={object.name}
-                                radius={object.radius}
-                                theme={theme.enemy}
-                                color={object.color}
-                            />
-                        </DefaultPortal>
+                <EnemyLabel name={object.name} radius={object.radius} theme={theme.enemy} color={object.color} />
 
-                        {object.rotation === undefined ? (
-                            <CircleRing
-                                radius={object.radius}
-                                theme={theme.enemy}
-                                color={object.color}
-                                isSelected={isSelected}
-                            />
-                        ) : (
-                            <DirectionalRing
-                                radius={object.radius}
-                                theme={theme.enemy}
-                                color={object.color}
-                                rotation={object.rotation}
-                                isSelected={isSelected}
-                            />
-                        )}
-                    </>
+                {object.rotation === undefined ? (
+                    <CircleRing
+                        radius={object.radius}
+                        theme={theme.enemy}
+                        color={object.color}
+                        isSelected={isSelected}
+                    />
+                ) : (
+                    <DirectionalRing
+                        radius={object.radius}
+                        theme={theme.enemy}
+                        color={object.color}
+                        rotation={object.rotation}
+                        isSelected={isSelected}
+                    />
                 )}
             </DraggableObject>
-        </ArenaPortal>
+        </ActivePortal>
     );
 };
 
-registerRenderer<EnemyObject>(ObjectType.Enemy, EnemyRenderer);
+registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Arena, EnemyRenderer);
 
 const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
     return <DetailsItem icon={object.icon} name={object.name} index={index} />;

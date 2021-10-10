@@ -16,6 +16,7 @@ const classNames = mergeStyleSets({
     wrapper: {
         width: PANEL_WIDTH,
         userSelect: 'none',
+        flexShrink: '0 !important',
     } as IStyle,
 });
 

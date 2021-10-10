@@ -5,8 +5,9 @@ import icon from '../../assets/zone/line_knockback.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { GroundPortal } from '../../render/Portals';
+import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useIsSelected } from '../../SelectionProvider';
@@ -91,7 +92,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
     return (
         <>
-            <GroundPortal isActive={active}>
+            <ActivePortal isActive={active}>
                 <DraggableObject object={object} index={index} onActive={setActive}>
                     {isSelected && (
                         <Rect
@@ -118,7 +119,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
                         {...stroke}
                     />
                 </DraggableObject>
-            </GroundPortal>
+            </ActivePortal>
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={PATTERN_W} height={PATTERN_H} fill={fill} />
                 <ChevronTail
@@ -136,7 +137,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
     );
 };
 
-registerRenderer<RectangleZone>(ObjectType.LineKnockback, LineKnockbackRenderer);
+registerRenderer<RectangleZone>(ObjectType.LineKnockback, LayerName.Ground, LineKnockbackRenderer);
 
 const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
     // TODO: color filter icon?
