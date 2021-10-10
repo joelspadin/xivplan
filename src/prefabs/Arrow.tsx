@@ -79,7 +79,7 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
         height: object.height,
         rotation: object.rotation,
         pointerLength: object.width,
-        pointerWidth: object.width,
+        pointerWidth: object.width * 0.8,
         strokeWidth,
         lineCap: 'round',
         pointerAtEnding: true,
@@ -89,7 +89,7 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
     const groupRef = React.useRef<Konva.Group>(null);
     React.useEffect(() => {
         groupRef.current?.cache();
-    }, [object.width, object.height, object.color, object.opacity, isSelected, groupRef]);
+    }, [object.width, object.height, object.rotation, object.color, object.opacity, isSelected, groupRef]);
 
     return (
         <ActivePortal isActive={active}>
