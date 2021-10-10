@@ -1,6 +1,7 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { WedgeConfig } from 'konva/lib/shapes/Wedge';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Group, Wedge } from 'react-konva';
+import { Group, Shape, Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
@@ -16,7 +17,7 @@ import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { setOrOmit } from '../../util';
+import { degtorad, setOrOmit } from '../../util';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
@@ -71,6 +72,55 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
     };
 });
 
+interface OffsetWedgeProps extends WedgeConfig {
+    shapeOffset: number;
+}
+
+const OffsetWedge: React.FC<OffsetWedgeProps> = ({ radius, angle, shapeOffset, ...props }) => {
+    const { offsetRadius, angleRad, pointX, pointY, cornerX1, cornerY1, cornerX2, cornerY2 } = useMemo(() => {
+        const angleRad = degtorad(angle);
+        const offsetRadius = radius + shapeOffset;
+
+        const arcX1 = offsetRadius;
+        const arcY1 = 0;
+        const arcX2 = offsetRadius * Math.cos(angleRad);
+        const arcY2 = offsetRadius * Math.sin(angleRad);
+
+        const cornerX1 = arcX1;
+        const cornerY1 = arcY1 - shapeOffset;
+        const cornerX2 = arcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
+        const cornerY2 = arcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
+
+        // At 360 degrees, divisor goes to 0. Put the point in the center.
+        // At <= 15 degrees, pointDist becomes large and shows a gap with the
+        // non-offset shape. Limit pointDist to prevent that.
+        const divisor = Math.sin(angleRad / 2);
+        const pointDist = Math.min(shapeOffset * 2, divisor <= 0.001 ? 0 : shapeOffset / divisor);
+
+        const pointX = -pointDist * Math.cos(angleRad / 2);
+        const pointY = -pointDist * Math.sin(angleRad / 2);
+
+        return { offsetRadius, angleRad, pointX, pointY, cornerX1, cornerY1, cornerX2, cornerY2 };
+    }, [radius, angle, shapeOffset]);
+
+    return (
+        <Shape
+            {...props}
+            sceneFunc={(ctx, shape) => {
+                ctx.beginPath();
+
+                ctx.arc(0, 0, offsetRadius, 0, angleRad, false);
+                ctx.lineTo(cornerX2, cornerY2);
+                ctx.lineTo(pointX, pointY);
+                ctx.lineTo(cornerX1, cornerY1);
+
+                ctx.closePath();
+                ctx.fillStrokeShape(shape);
+            }}
+        />
+    );
+};
+
 const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
     const isSelected = useIsSelected(index);
     const [active, setActive] = useState(false);
@@ -84,11 +134,10 @@ const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
             <DraggableObject object={object} index={index} onActive={setActive}>
                 <Group rotation={object.rotation - 90 - object.coneAngle / 2}>
                     {isSelected && (
-                        <Wedge
-                            x={-style.strokeWidth / Math.SQRT2 / 2}
-                            y={-style.strokeWidth / Math.SQRT2 / 2}
-                            radius={object.radius + style.strokeWidth / Math.SQRT2}
+                        <OffsetWedge
+                            radius={object.radius}
                             angle={object.coneAngle}
+                            shapeOffset={style.strokeWidth / 2}
                             {...SELECTED_PROPS}
                         />
                     )}
