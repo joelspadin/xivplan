@@ -2,6 +2,7 @@ import {
     Callout,
     classNamesFunction,
     ColorPicker,
+    DirectionalHint,
     FontWeights,
     getColorFromString,
     IColorCellProps,
@@ -50,6 +51,8 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                 height: 20,
                 marginLeft: 5,
                 marginRight: 10,
+                marginTop: 5,
+                marginBottom: 5,
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: theme.semanticColors.inputBorder,
@@ -123,13 +126,8 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
         <div>
             {label && <label className={classNames.label}>{label}</label>}
             <Stack horizontal verticalAlign="center">
-                <Stack.Item>
-                    <div
-                        id={buttonId}
-                        className={classNames.colorBox}
-                        style={{ backgroundColor: color }}
-                        onClick={showCallout}
-                    />
+                <Stack.Item onClick={showCallout}>
+                    <div id={buttonId} className={classNames.colorBox} style={{ backgroundColor: color }} />
                 </Stack.Item>
                 <Stack.Item grow>
                     <DeferredTextField title="Color" value={color} onChange={onColorTextChanged} />
@@ -141,6 +139,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                     gapSpace={0}
                     target={`#${buttonId}`}
                     onDismiss={hideCallout}
+                    directionalHint={DirectionalHint.bottomCenter}
                     setInitialFocus
                 >
                     {swatchCells && (
