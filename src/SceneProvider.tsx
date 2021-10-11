@@ -23,6 +23,11 @@ export interface SetArenaHeightAction {
     value: number;
 }
 
+export interface SetArenaPaddingAction {
+    type: 'arenaPadding';
+    value: number;
+}
+
 export interface SetArenaGridAction {
     type: 'arenaGrid';
     value: Grid;
@@ -75,6 +80,7 @@ export type SceneAction =
     | SetArenaShapeAction
     | SetArenaWidthAction
     | SetArenaHeightAction
+    | SetArenaPaddingAction
     | SetArenaGridAction
     | SetArenaBackgroundAction
     | ObjectAction;
@@ -146,6 +152,9 @@ function sceneReducer(state: Readonly<Scene>, action: SceneAction): Scene {
 
         case 'arenaHeight':
             return { ...state, arena: { ...state.arena, height: action.value } };
+
+        case 'arenaPadding':
+            return { ...state, arena: { ...state.arena, padding: action.value } };
 
         case 'arenaGrid':
             return { ...state, arena: { ...state.arena, grid: action.value } };

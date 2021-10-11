@@ -85,6 +85,7 @@ export interface Arena {
     readonly shape: ArenaShape;
     readonly width: number;
     readonly height: number;
+    readonly padding: number;
     readonly grid: Grid;
     readonly backgroundImage?: string;
 }
@@ -331,10 +332,13 @@ export const DEFAULT_CUSTOM_GRID: CustomGrid = {
     columns: [-150, 0, 150],
 };
 
+export const DEFAULT_ARENA_PADDING = 120;
+
 export const DEFAULT_ARENA: Arena = {
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
+    padding: 120,
     grid: DEFAULT_RECT_GRID,
 };
 

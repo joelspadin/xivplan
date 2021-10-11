@@ -1,10 +1,11 @@
-import { ArenaPreset, ArenaShape, GridType } from '../scene';
+import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../scene';
 
 const ARENA_PRESET_3_3: ArenaPreset = {
     name: 'Square 3x3',
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Rectangular,
         rows: 3,
@@ -17,6 +18,7 @@ const ARENA_PRESET_4_4: ArenaPreset = {
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Rectangular,
         rows: 4,
@@ -29,6 +31,7 @@ const ARENA_PRESET_5_5: ArenaPreset = {
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Rectangular,
         rows: 5,
@@ -41,6 +44,7 @@ const ARENA_PRESET_4_4_CIRCLE: ArenaPreset = {
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Rectangular,
         rows: 4,
@@ -53,6 +57,7 @@ const ARENA_PRESET_6_DIV_CIRCLE: ArenaPreset = {
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Radial,
         angularDivs: 6,
@@ -65,6 +70,7 @@ const ARENA_PRESET_8_DIV_CIRCLE: ArenaPreset = {
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Radial,
         angularDivs: 8,
@@ -77,6 +83,7 @@ const ARENA_PRESET_EDEN_2: ArenaPreset = {
     shape: ArenaShape.Rectangle,
     width: 400,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Rectangular,
         rows: 6,
@@ -89,6 +96,7 @@ const ARENA_PRESET_EDEN_5: ArenaPreset = {
     shape: ArenaShape.Rectangle,
     width: 800,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Custom,
         rows: [-200, -100, 0, 100, 200],
@@ -101,6 +109,7 @@ const ARENA_PRESET_EDEN_12: ArenaPreset = {
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
+    padding: DEFAULT_ARENA_PADDING,
     grid: {
         type: GridType.Radial,
         angularDivs: 16,

@@ -2,20 +2,18 @@ import { Vector2d } from 'konva/lib/types';
 import { Scene } from './scene';
 import { useScene } from './SceneProvider';
 
-export const SCENE_PADDING = 120;
-
 export const ALIGN_TO_PIXEL = {
     offsetX: -0.5,
     offsetY: -0.5,
 };
 
 export function getCanvasX(scene: Scene, x: number): number {
-    const center = scene.arena.width / 2 + SCENE_PADDING;
+    const center = scene.arena.width / 2 + scene.arena.padding;
     return center + x;
 }
 
 export function getCanvasY(scene: Scene, y: number): number {
-    const center = scene.arena.height / 2 + SCENE_PADDING;
+    const center = scene.arena.height / 2 + scene.arena.padding;
     return center - y;
 }
 
@@ -25,8 +23,8 @@ export function getCanvasCoord(scene: Scene, p: Vector2d): Vector2d {
 
 export function getCanvasSize(scene: Scene): { width: number; height: number } {
     return {
-        width: scene.arena.width + SCENE_PADDING * 2,
-        height: scene.arena.height + SCENE_PADDING * 2,
+        width: scene.arena.width + scene.arena.padding * 2,
+        height: scene.arena.height + scene.arena.padding * 2,
     };
 }
 
@@ -62,12 +60,12 @@ export function useCanvasArenaEllipse(): { x: number; y: number; radiusX: number
 }
 
 export function getSceneX(scene: Scene, x: number): number {
-    const center = scene.arena.width / 2 + SCENE_PADDING;
+    const center = scene.arena.width / 2 + scene.arena.padding;
     return x - center;
 }
 
 export function getSceneY(scene: Scene, y: number): number {
-    const center = scene.arena.height / 2 + SCENE_PADDING;
+    const center = scene.arena.height / 2 + scene.arena.padding;
     return center - y;
 }
 

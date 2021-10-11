@@ -1,10 +1,12 @@
 import {
     ChoiceGroup,
     DefaultEffects,
+    IChoiceGroupOptionProps,
     IChoiceGroupOptionStyleProps,
     IChoiceGroupOptionStyles,
     IChoiceGroupProps,
     IChoiceGroupStyles,
+    IRenderFunction,
     IStyle,
     IStyleFunction,
 } from '@fluentui/react';
@@ -16,6 +18,9 @@ const containerStyles: Partial<IChoiceGroupStyles> = {
     },
     flexContainer: {
         flexFlow: 'row',
+    },
+    label: {
+        whiteSpace: 'nowrap',
     },
 };
 
@@ -55,8 +60,16 @@ const styles: IStyleFunction<IChoiceGroupOptionStyleProps, IChoiceGroupOptionSty
     },
 });
 
+const onRenderField: IRenderFunction<IChoiceGroupOptionProps> = (props, defaultRender) => {
+    if (!props || !defaultRender) {
+        return null;
+    }
+
+    return <div title={props.text}>{defaultRender(props)}</div>;
+};
+
 export const CompactChoiceGroup: React.FC<IChoiceGroupProps> = ({ options, ...props }) => {
-    const styledOptions = options?.map((opt) => ({ ...opt, styles }));
+    const styledOptions = options?.map((opt) => ({ ...opt, styles, onRenderField }));
 
     return <ChoiceGroup options={styledOptions} styles={containerStyles} {...props} />;
 };

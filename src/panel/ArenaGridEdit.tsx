@@ -1,5 +1,6 @@
-import { DefaultButton, Dropdown, IDropdownOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
+import { DefaultButton, IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
 import {
     CustomGrid,
@@ -17,11 +18,13 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const gridShapes: IDropdownOption[] = [
-    { key: GridType.None, text: 'None' },
-    { key: GridType.Rectangular, text: 'Rectangular' },
-    { key: GridType.Radial, text: 'Radial' },
-    { key: GridType.Custom, text: 'Custom' },
+const gridShapes: IChoiceGroupOption[] = [
+    { key: GridType.None, text: 'None', iconProps: { iconName: 'BorderDot' } },
+    // TODO: use BorderAll whenever icon font gets fixed.
+    { key: GridType.Rectangular, text: 'Square', iconProps: { iconName: 'GridViewSmall' } },
+    { key: GridType.Radial, text: 'Radial', iconProps: { iconName: 'Asterisk' } },
+    // TODO: use DynamicList whenever icon font gets fixed.
+    { key: GridType.Custom, text: 'Custom', iconProps: { iconName: 'TextField' } },
 ];
 
 function formatCustomGridRows(grid: Grid) {
@@ -72,8 +75,8 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
     }, [grid, customRows, customCols, setCustomRows, setCustomCols]);
 
     const onTypeChange = useCallback(
-        (ev: FormEvent<HTMLDivElement>, option?: IDropdownOption<GridType>) => {
-            switch (option?.key) {
+        (option?: GridType) => {
+            switch (option) {
                 case GridType.None:
                     setGrid(NO_GRID);
                     return;
@@ -98,7 +101,12 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
 
     return (
         <Stack tokens={stackTokens}>
-            <Dropdown label="Grid" options={gridShapes} selectedKey={grid.type} onChange={onTypeChange} />
+            <CompactChoiceGroup
+                label="Grid type"
+                options={gridShapes}
+                selectedKey={grid.type}
+                onChange={(e, option) => onTypeChange(option?.key as GridType)}
+            />
             {grid.type === GridType.Rectangular && (
                 <Stack horizontal tokens={stackTokens}>
                     <SpinButton
