@@ -9,6 +9,7 @@
   "dependencies": {
     "@fluentui/react": "^8.36.3",
     "@fluentui/react-hooks": "^8.3.4",
+    "hotkeys-js": "^3.8.7",
     "konva": "^8.2.2",
     "react": "^17.0.0",
     "react-beautiful-dnd": "^13.1.0",

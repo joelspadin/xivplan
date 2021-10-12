@@ -33,7 +33,7 @@ export const MainPanel: React.FunctionComponent = () => {
             <PivotItem headerText="Arena" itemKey={Tabs.Arena}>
                 <ArenaPanel />
             </PivotItem>
-            <PivotItem headerText="Object" itemKey={Tabs.Objects}>
+            <PivotItem headerText="Objects" itemKey={Tabs.Objects}>
                 <PrefabsPanel />
             </PivotItem>
             <PivotItem headerText="Status" itemKey={Tabs.Status}>

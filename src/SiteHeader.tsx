@@ -3,6 +3,7 @@ import {
     IStackTokens,
     IStyle,
     IToggleStyles,
+    Link,
     mergeStyleSets,
     Stack,
     Text,
@@ -12,6 +13,7 @@ import {
 } from '@fluentui/react';
 import React, { HTMLAttributes, useContext } from 'react';
 import { ExternalLink } from './ExternalLink';
+import { HelpContext } from './HelpProvider';
 import logoUrl from './logo.svg';
 import { DarkModeContext } from './ThemeProvider';
 
@@ -68,14 +70,14 @@ interface IHeaderStyles {
 const getClassNames = classNamesFunction<Theme, IHeaderStyles>();
 
 export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
+    const [, { setTrue: showHelp }] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
     const theme = useTheme();
 
     const themeClasses = getClassNames(() => {
         return {
             links: {
-                marginRight: 20,
-                'a, a:visited': {
+                'a, a:visited, button': {
                     color: theme.semanticColors.bodyText,
                 },
             },
@@ -92,9 +94,12 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
                     </Text>
                 </Stack.Item>
                 <Stack.Item className={themeClasses.links}>
-                    <ExternalLink href="https://github.com/joelspadin/xivplan" noIcon>
-                        GitHub
-                    </ExternalLink>
+                    <Stack horizontal tokens={stackTokens}>
+                        <Link onClick={showHelp}>Help</Link>
+                        <ExternalLink href="https://github.com/joelspadin/xivplan" noIcon>
+                            GitHub
+                        </ExternalLink>
+                    </Stack>
                 </Stack.Item>
                 <Stack.Item>
                     <Toggle

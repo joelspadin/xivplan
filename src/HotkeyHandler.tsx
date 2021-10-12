@@ -1,7 +1,9 @@
 import { Stage } from 'konva/lib/Stage';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { getSceneCoord } from './coord';
+import { HelpDialog } from './HelpDialog';
+import { HelpContext } from './HelpProvider';
+import { useHotkeys } from './HotkeyHelpProvider';
 import { useStage } from './render/StageProvider';
 import { isMoveable, Scene, SceneObject } from './scene';
 import { SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
@@ -14,14 +16,18 @@ import {
     useSelection,
 } from './SelectionProvider';
 
+const CATEGORY_HISTORY = 'History';
+const CATEGORY_SELECTION = 'Selection';
+const CATEGORY_GENERAL = 'General';
+
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
 
-    useHotkeys('ctrl+z', (e) => {
+    useHotkeys('ctrl+z', CATEGORY_HISTORY, 'Undo', (e) => {
         undo();
         e.preventDefault();
     });
-    useHotkeys('ctrl+y', (e) => {
+    useHotkeys('ctrl+y', CATEGORY_HISTORY, 'Redo', (e) => {
         redo();
         e.preventDefault();
     });
@@ -65,6 +71,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+a',
+        CATEGORY_SELECTION,
+        'Select all objects',
         (e) => {
             setSelection(selectAll(scene.objects));
             e.preventDefault();
@@ -74,6 +82,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'escape',
+        CATEGORY_SELECTION,
+        'Unselect all objects',
         (e) => {
             if (!selection.size) {
                 return;
@@ -86,6 +96,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'delete',
+        CATEGORY_SELECTION,
+        'Delete selected objects',
         (e) => {
             if (!selection.size) {
                 return;
@@ -99,6 +111,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+c',
+        CATEGORY_SELECTION,
+        'Copy selected objects',
         (e) => {
             if (!selection.size) {
                 return;
@@ -111,6 +125,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+v',
+        CATEGORY_SELECTION,
+        'Paste objects',
         (e) => {
             if (!clipboard.length || !stage) {
                 return;
@@ -123,6 +139,8 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+d',
+        CATEGORY_SELECTION,
+        'Duplicate selected objects',
         (e) => {
             if (!selection.size || !stage) {
                 return;
@@ -136,7 +154,32 @@ const SelectionActionHandler: React.FC = () => {
     return null;
 };
 
-export const HotkeyHandler: React.FC = () => {
+const HelpHandler: React.FC = () => {
+    const [isOpen, { setTrue: showHelp, setFalse: hideHelp }] = useContext(HelpContext);
+
+    useHotkeys(
+        'f1',
+        CATEGORY_GENERAL,
+        'Open help',
+        (e) => {
+            showHelp();
+            e.preventDefault();
+        },
+        [showHelp],
+    );
+
+    return <HelpDialog isOpen={isOpen} onDismiss={hideHelp} />;
+};
+
+export const RegularHotkeyHandler: React.FC = () => {
+    return (
+        <>
+            <HelpHandler />
+        </>
+    );
+};
+
+export const SceneHotkeyHandler: React.FC = () => {
     return (
         <>
             <UndoRedoHandler />

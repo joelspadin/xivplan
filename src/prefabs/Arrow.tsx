@@ -21,6 +21,9 @@ import { ResizeableObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 
+// TODO: This would be a lot nicer if you could just click on start position
+// and drag to end position instead of having a set initial size/rotation.
+
 const NAME = 'Arrow';
 
 const DEFAULT_ARROW_WIDTH = 20;

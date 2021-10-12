@@ -21,7 +21,7 @@ const enum Tabs {
 }
 
 const PROPERTIES_TITLE = 'Properties';
-const OBJECTS_TITLE = 'Objects';
+const OBJECTS_TITLE = 'Scene';
 
 const headerStyle: IStyle[] = [
     DefaultFontStyles.mediumPlus,
