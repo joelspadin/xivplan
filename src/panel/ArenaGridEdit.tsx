@@ -20,9 +20,10 @@ const stackTokens: IStackTokens = {
 
 const gridShapes: IChoiceGroupOption[] = [
     { key: GridType.None, text: 'None', iconProps: { iconName: 'BorderDot' } },
+    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
+    { key: GridType.Radial, text: 'Radial', iconProps: { iconName: 'CircleRing' } },
     // TODO: use BorderAll whenever icon font gets fixed.
     { key: GridType.Rectangular, text: 'Square', iconProps: { iconName: 'GridViewSmall' } },
-    { key: GridType.Radial, text: 'Radial', iconProps: { iconName: 'Asterisk' } },
     // TODO: use DynamicList whenever icon font gets fixed.
     { key: GridType.Custom, text: 'Custom', iconProps: { iconName: 'TextField' } },
 ];
@@ -110,7 +111,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
             {grid.type === GridType.Rectangular && (
                 <Stack horizontal tokens={stackTokens}>
                     <SpinButton
-                        label="Grid rows"
+                        label="Rows"
                         labelPosition={Position.top}
                         min={1}
                         step={1}
@@ -120,7 +121,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                         }}
                     />
                     <SpinButton
-                        label="Grid columns"
+                        label="Columns"
                         labelPosition={Position.top}
                         min={1}
                         step={1}
@@ -135,7 +136,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                 <>
                     <Stack horizontal tokens={stackTokens}>
                         <SpinButton
-                            label="Angular divisions"
+                            label="Spokes"
                             labelPosition={Position.top}
                             min={1}
                             step={1}
@@ -145,7 +146,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                             }}
                         />
                         <SpinButton
-                            label="Radial divisions"
+                            label="Rings"
                             labelPosition={Position.top}
                             min={1}
                             step={1}
@@ -175,7 +176,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
             {grid.type === GridType.Custom && (
                 <>
                     <DeferredTextField
-                        label="Grid row stops"
+                        label="Row stops"
                         value={customRows}
                         onChange={(newValue) => {
                             setCustomRows(newValue ?? '');
@@ -183,7 +184,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                         }}
                     />
                     <DeferredTextField
-                        label="Grid column stops"
+                        label="Column stops"
                         value={customCols}
                         onChange={(newValue) => {
                             setCustomRows(newValue ?? '');
