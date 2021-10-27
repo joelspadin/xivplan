@@ -9,7 +9,7 @@ import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useIsGroupSelected } from '../../SelectionProvider';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { ChevronConfig, ChevronTail } from './shapes';
@@ -64,7 +64,7 @@ const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.08;
 
 const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
@@ -107,7 +107,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
     return (
         <>
-            <ResizeableObjectContainer object={object} index={index}>
+            <ResizeableObjectContainer object={object} index={index} transformerProps={{ keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (

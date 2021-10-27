@@ -9,7 +9,6 @@ import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useIsGroupSelected } from '../../SelectionProvider';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { getZoneStyle } from './style';
@@ -71,7 +70,7 @@ const RightTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
 };
 
 const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
         [object.color, object.opacity, object.width, object.height, object.hollow],

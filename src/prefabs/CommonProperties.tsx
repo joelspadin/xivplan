@@ -67,7 +67,6 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
                     value={object.x.toString()}
                     onChange={onXChanged}
                     step={10}
-                    disabled={!!object.pinned}
                 />
                 <SpinButton
                     label="Y"
@@ -75,7 +74,6 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
                     value={object.y.toString()}
                     onChange={onYChanged}
                     step={10}
-                    disabled={!!object.pinned}
                 />
                 <IconButton iconProps={{ iconName }} checked={!!object.pinned} onClick={onTogglePinned} />
             </Stack>

@@ -14,8 +14,8 @@ import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import { ArrowObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsGroupSelected } from '../SelectionProvider';
 import { ResizeableObjectProperties } from './CommonProperties';
+import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
@@ -73,7 +73,7 @@ const POINTS = [DEFAULT_ARROW_WIDTH / 2, DEFAULT_ARROW_HEIGHT, DEFAULT_ARROW_WID
 const HIGHLIGHT_STROKE_WIDTH = STROKE_WIDTH + (SELECTED_PROPS.strokeWidth ?? 0);
 
 const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
 
     const arrowProps: ArrowConfig = {
         points: POINTS,
@@ -89,7 +89,13 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
     };
 
     return (
-        <ResizeableObjectContainer object={object} index={index} cache cacheKey={showHighlight}>
+        <ResizeableObjectContainer
+            object={object}
+            index={index}
+            cache
+            cacheKey={showHighlight}
+            transformerProps={{ centeredScaling: true }}
+        >
             {(groupProps) => (
                 <Group {...groupProps} opacity={object.opacity / 100}>
                     <Rect width={object.width} height={object.height} fill="transparent" />

@@ -14,9 +14,9 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsGroupSelected } from '../../SelectionProvider';
 import { setOrOmit } from '../../util';
 import { ResizeableObjectProperties } from '../CommonProperties';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { HollowToggle } from './HollowToggle';
@@ -88,24 +88,25 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 });
 
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
 
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
         [object],
     );
 
-    const highlightWidth = object.width + style.strokeWidth;
-    const highlightHeight = object.height + style.strokeWidth;
+    const highlightOffset = style.strokeWidth;
+    const highlightWidth = object.width + highlightOffset;
+    const highlightHeight = object.height + highlightOffset;
 
     return (
-        <ResizeableObjectContainer object={object} index={index}>
+        <ResizeableObjectContainer object={object} index={index} transformerProps={{ keepRatio: false }}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {showHighlight && (
                         <Rect
-                            offsetX={style.strokeWidth / 2}
-                            offsetY={style.strokeWidth / 2}
+                            offsetX={highlightOffset / 2}
+                            offsetY={highlightOffset / 2}
                             width={highlightWidth}
                             height={highlightHeight}
                             rotation={object.rotation}

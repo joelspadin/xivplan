@@ -15,6 +15,7 @@ export interface ResizeableObjectContainerProps {
     cache?: boolean;
     cacheKey?: unknown;
     resizerProps?: Partial<ResizerProps>;
+    transformerProps?: Konva.TransformerConfig;
     children: (groupProps: GroupProps) => React.ReactElement;
 }
 
@@ -24,6 +25,7 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
     cache,
     cacheKey,
     resizerProps,
+    transformerProps,
     children,
 }) => {
     const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
@@ -39,7 +41,14 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
     return (
         <ActivePortal isActive={dragging || resizing}>
             <DraggableObject object={object} index={index} onActive={setDragging}>
-                <Resizer {...resizerProps} object={object} index={index} nodeRef={shapeRef} dragging={dragging}>
+                <Resizer
+                    object={object}
+                    index={index}
+                    nodeRef={shapeRef}
+                    dragging={dragging}
+                    transformerProps={transformerProps}
+                    {...resizerProps}
+                >
                     {(onTransformEnd) => {
                         return children({
                             ref: shapeRef,

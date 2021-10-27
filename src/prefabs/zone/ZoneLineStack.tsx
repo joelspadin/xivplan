@@ -9,7 +9,7 @@ import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useIsGroupSelected } from '../../SelectionProvider';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { ChevronConfig, ChevronTail } from './shapes';
@@ -68,7 +68,7 @@ const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.3;
 
 const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
     const patternWidth = object.width;
@@ -101,7 +101,11 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
     return (
         <>
-            <ResizeableObjectContainer object={object} index={index}>
+            <ResizeableObjectContainer
+                object={object}
+                index={index}
+                transformerProps={{ centeredScaling: true, keepRatio: false }}
+            >
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (

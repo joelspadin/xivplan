@@ -13,8 +13,8 @@ import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsGroupSelected } from '../SelectionProvider';
 import { ImageObjectProperties } from './CommonProperties';
+import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
@@ -64,11 +64,11 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 });
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) => {
-    const showHighlight = useIsGroupSelected(index);
+    const showHighlight = useShowHighlight(object, index);
     const [image] = useImage(object.image);
 
     return (
-        <ResizeableObjectContainer object={object} index={index}>
+        <ResizeableObjectContainer object={object} index={index} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {showHighlight && (

@@ -3,10 +3,10 @@ import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { ActivePortal } from '../render/Portals';
-import { ResizeableObject, SceneObject } from '../scene';
+import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsOnlySelected } from '../SelectionProvider';
 import { clamp } from '../util';
+import { useShowResizer } from './highlight';
 
 const DEFAULT_MIN_SIZE = 20;
 
@@ -18,11 +18,12 @@ const MAX_ANCHOR_SIZE = 10;
 
 export interface ResizerProps {
     index: number;
-    object: ResizeableObject;
+    object: ResizeableObject & UnknownObject;
     nodeRef: RefObject<Konva.Group>;
     dragging?: boolean;
     minWidth?: number;
     minHeight?: number;
+    transformerProps?: Konva.TransformerConfig;
     children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
 }
 
@@ -33,10 +34,11 @@ export const Resizer: React.VFC<ResizerProps> = ({
     dragging,
     minWidth,
     minHeight,
+    transformerProps,
     children,
 }) => {
     const [scene, dispatch] = useScene();
-    const isSelected = useIsOnlySelected(index);
+    const showResizer = useShowResizer(object, index);
     const trRef = useRef<Konva.Transformer>(null);
 
     const minWidthRequired = minWidth ?? DEFAULT_MIN_SIZE;
@@ -45,11 +47,11 @@ export const Resizer: React.VFC<ResizerProps> = ({
     const anchorSize = clamp((object.width + object.height) / 10, MIN_ANCHOR_SIZE, MAX_ANCHOR_SIZE);
 
     useEffect(() => {
-        if (isSelected && trRef.current && nodeRef.current) {
+        if (showResizer && trRef.current && nodeRef.current) {
             trRef.current.nodes([nodeRef.current]);
             trRef.current.getLayer()?.batchDraw();
         }
-    }, [isSelected, nodeRef, trRef]);
+    }, [showResizer, nodeRef, trRef]);
 
     const onTransformEnd = useCallback(() => {
         const node = nodeRef.current;
@@ -87,16 +89,16 @@ export const Resizer: React.VFC<ResizerProps> = ({
     return (
         <>
             {children(onTransformEnd)}
-            {isSelected && (
+            {showResizer && (
                 <ActivePortal isActive>
                     <Transformer
                         ref={trRef}
                         visible={!dragging}
-                        centeredScaling
                         rotationSnaps={ROTATION_SNAPS}
                         rotationSnapTolerance={2}
                         boundBoxFunc={boundBoxFunc}
                         anchorSize={anchorSize}
+                        {...transformerProps}
                     />
                 </ActivePortal>
             )}
