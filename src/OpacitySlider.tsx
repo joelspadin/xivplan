@@ -5,6 +5,10 @@ const styles: Partial<ISliderStyles> = {
     titleLabel: {
         paddingTop: 5,
     },
+    container: {
+        marginTop: 5,
+        marginBottom: 4,
+    },
 };
 
 export const OpacitySlider: React.FC<ISliderProps> = (props) => {
