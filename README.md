@@ -21,7 +21,8 @@ progression, so it will always be simpler and less powerful.
 | Create text notes             | ✅     |
 | Move objects                  | ✅     |
 | Move group selection          |        |
-| Resize objects                |        |
+| Resize rectangular objects    | ✅     |
+| Resize other objects          |        |
 | Reorder objects               | ✅     |
 | Delete objects                | ✅     |
 | Edit object properties        | ✅     |
@@ -33,6 +34,7 @@ progression, so it will always be simpler and less powerful.
 | Keyboard shortcut help        | ✅     |
 | Undo/redo                     | ✅     |
 | Copy/paste/duplicate          | ✅     |
+| Rotate CW/CCW shortcuts       |        |
 
 ## Credits
 

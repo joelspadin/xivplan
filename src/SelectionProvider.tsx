@@ -38,6 +38,22 @@ export function useIsSelected(index: number): boolean {
     return selection.has(index);
 }
 
+/**
+ * Gets if the object is the only selected object.
+ */
+export function useIsOnlySelected(index: number): boolean {
+    const [selection] = useSelection();
+    return selection.size === 1 && selection.has(index);
+}
+
+/**
+ * Gets if the object is included in a group selection.
+ */
+export function useIsGroupSelected(index: number): boolean {
+    const [selection] = useSelection();
+    return selection.size > 1 && selection.has(index);
+}
+
 export function selectSingle(index: number): SceneSelection {
     return new Set([index]);
 }

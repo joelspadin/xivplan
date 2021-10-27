@@ -1,5 +1,4 @@
 import { Stack } from '@fluentui/react';
-import Konva from 'konva';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
@@ -12,14 +11,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ActivePortal } from '../render/Portals';
 import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import { ArrowObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
+import { useIsGroupSelected } from '../SelectionProvider';
 import { ResizeableObjectProperties } from './CommonProperties';
-import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
+import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
 // TODO: This would be a lot nicer if you could just click on start position
 // and drag to end position instead of having a set initial size/rotation.
@@ -69,54 +67,40 @@ registerDropHandler<ArrowObject>(ObjectType.Arrow, (object, position) => {
     };
 });
 
-const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = React.useState(false);
+const STROKE_WIDTH = DEFAULT_ARROW_WIDTH / 5;
+const POINTS = [DEFAULT_ARROW_WIDTH / 2, DEFAULT_ARROW_HEIGHT, DEFAULT_ARROW_WIDTH / 2, 0];
 
-    const points = [0, object.height / 2, 0, -object.height / 2];
-    const strokeWidth = object.width / 5;
+const HIGHLIGHT_STROKE_WIDTH = STROKE_WIDTH + (SELECTED_PROPS.strokeWidth ?? 0);
+
+const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) => {
+    const showHighlight = useIsGroupSelected(index);
 
     const arrowProps: ArrowConfig = {
-        points: points,
-        width: object.width,
-        height: object.height,
-        rotation: object.rotation,
-        pointerLength: object.width,
-        pointerWidth: object.width * 0.8,
-        strokeWidth,
+        points: POINTS,
+        width: DEFAULT_ARROW_WIDTH,
+        height: DEFAULT_ARROW_HEIGHT,
+        scaleX: object.width / DEFAULT_ARROW_WIDTH,
+        scaleY: object.height / DEFAULT_ARROW_HEIGHT,
+        pointerLength: DEFAULT_ARROW_HEIGHT * 0.15,
+        pointerWidth: DEFAULT_ARROW_WIDTH * 0.8,
+        strokeWidth: STROKE_WIDTH,
         lineCap: 'round',
         pointerAtEnding: true,
     };
 
-    // Cache so overlapping shapes with opacity appear as one object.
-    const groupRef = React.useRef<Konva.Group>(null);
-    React.useEffect(() => {
-        groupRef.current?.cache();
-    }, [object.width, object.height, object.rotation, object.color, object.opacity, isSelected, groupRef]);
-
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <Group opacity={object.opacity / 100} ref={groupRef}>
-                    <Rect
-                        width={object.width}
-                        height={object.height}
-                        offsetX={object.width / 2}
-                        offsetY={object.height / 2}
-                        fill="transparent"
-                    />
-                    {isSelected && (
-                        <Arrow
-                            {...arrowProps}
-                            {...SELECTED_PROPS}
-                            strokeWidth={strokeWidth + (SELECTED_PROPS.strokeWidth ?? 0)}
-                        />
+        <ResizeableObjectContainer object={object} index={index} cache cacheKey={showHighlight}>
+            {(groupProps) => (
+                <Group {...groupProps} opacity={object.opacity / 100}>
+                    <Rect width={object.width} height={object.height} fill="transparent" />
+                    {showHighlight && (
+                        <Arrow {...arrowProps} {...SELECTED_PROPS} strokeWidth={HIGHLIGHT_STROKE_WIDTH} />
                     )}
 
                     <Arrow {...arrowProps} fill={object.color} stroke={object.color} />
                 </Group>
-            </DraggableObject>
-        </ActivePortal>
+            )}
+        </ResizeableObjectContainer>
     );
 };
 

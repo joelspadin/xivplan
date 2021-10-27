@@ -56,7 +56,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
                                 <Layer name={LayerName.Foreground}>
                                     <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
                                 </Layer>
-                                <Layer listening={false} name={LayerName.Active} />
+                                <Layer name={LayerName.Active} />
                             </SelectionContext.Provider>
                         </SceneContext.Provider>
                     </ThemeContext.Provider>

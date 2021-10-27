@@ -2,6 +2,10 @@ export function asArray<T>(x: T | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x];
 }
 
+export function clamp(x: number, min: number, max: number): number {
+    return Math.min(Math.max(x, min), max);
+}
+
 export function degtorad(deg: number): number {
     return (deg * Math.PI) / 180;
 }

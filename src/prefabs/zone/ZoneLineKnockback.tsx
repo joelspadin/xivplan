@@ -7,12 +7,11 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useIsSelected } from '../../SelectionProvider';
-import { DraggableObject } from '../DraggableObject';
+import { useIsGroupSelected } from '../../SelectionProvider';
 import { PrefabIcon } from '../PrefabIcon';
+import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -65,8 +64,7 @@ const ARROW_W = 25;
 const ARROW_H = 15;
 
 const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const isSelected = useIsGroupSelected(index);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
@@ -87,39 +85,41 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
         });
     }, [fill, arrow, object.opacity, arrowRef]);
 
-    const highlightWidth = object.width + style.strokeWidth;
-    const highlightHeight = object.height + style.strokeWidth;
+    const highlightOffset = style.strokeWidth;
+    const highlightWidth = object.width + highlightOffset;
+    const highlightHeight = object.height + highlightOffset;
 
     return (
         <>
-            <ActivePortal isActive={active}>
-                <DraggableObject object={object} index={index} onActive={setActive}>
-                    {isSelected && (
+            <ResizeableObjectContainer object={object} index={index}>
+                {(groupProps) => (
+                    <Group {...groupProps}>
+                        {isSelected && (
+                            <Rect
+                                offsetX={highlightOffset / 2}
+                                offsetY={highlightOffset / 2}
+                                width={highlightWidth}
+                                height={highlightHeight}
+                                rotation={object.rotation}
+                                {...SELECTED_PROPS}
+                            />
+                        )}
                         <Rect
-                            offsetX={highlightWidth / 2}
-                            offsetY={highlightHeight / 2}
-                            width={highlightWidth}
-                            height={highlightHeight}
+                            width={object.width}
+                            height={object.height}
                             rotation={object.rotation}
-                            {...SELECTED_PROPS}
+                            fillPatternImage={pattern}
+                            fillPatternOffsetX={PATTERN_W / 2}
+                            fillPatternOffsetY={PATTERN_H / 2}
+                            fillPatternX={object.width / 2}
+                            fillPatternY={object.height / 2}
+                            fillPatternRepeat="repeat"
+                            {...stroke}
                         />
-                    )}
-                    <Rect
-                        offsetX={object.width / 2}
-                        offsetY={object.height / 2}
-                        width={object.width}
-                        height={object.height}
-                        rotation={object.rotation}
-                        fillPatternImage={pattern}
-                        fillPatternOffsetX={PATTERN_W / 2}
-                        fillPatternOffsetY={PATTERN_H / 2}
-                        fillPatternX={object.width / 2}
-                        fillPatternY={object.height / 2}
-                        fillPatternRepeat="repeat"
-                        {...stroke}
-                    />
-                </DraggableObject>
-            </ActivePortal>
+                    </Group>
+                )}
+            </ResizeableObjectContainer>
+
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={PATTERN_W} height={PATTERN_H} fill={fill} />
                 <ChevronTail

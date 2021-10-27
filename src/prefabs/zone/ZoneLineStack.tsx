@@ -7,12 +7,11 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useIsSelected } from '../../SelectionProvider';
-import { DraggableObject } from '../DraggableObject';
+import { useIsGroupSelected } from '../../SelectionProvider';
 import { PrefabIcon } from '../PrefabIcon';
+import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle } from './style';
 
@@ -69,8 +68,7 @@ const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.3;
 
 const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const showHighlight = useIsGroupSelected(index);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
     const patternWidth = object.width;
@@ -103,41 +101,42 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
     return (
         <>
-            <ActivePortal isActive={active}>
-                <DraggableObject object={object} index={index} onActive={setActive}>
-                    {isSelected && (
+            <ResizeableObjectContainer object={object} index={index}>
+                {(groupProps) => (
+                    <Group {...groupProps}>
+                        {showHighlight && (
+                            <Rect
+                                width={object.width}
+                                height={object.height}
+                                rotation={object.rotation}
+                                {...SELECTED_PROPS}
+                                opacity={0.25}
+                            />
+                        )}
                         <Rect
-                            offsetX={object.width / 2}
-                            offsetY={object.height / 2}
                             width={object.width}
                             height={object.height}
                             rotation={object.rotation}
-                            {...SELECTED_PROPS}
-                            opacity={0.25}
+                            fillPatternImage={pattern}
+                            fillPatternOffsetX={patternWidth / 2}
+                            fillPatternOffsetY={patternHeight / 2}
+                            fillPatternX={object.width / 2}
+                            fillPatternY={object.height / 2}
+                            fillPatternRepeat="repeat-y"
                         />
-                    )}
-                    <Rect
-                        offsetX={object.width / 2}
-                        offsetY={object.height / 2}
-                        width={object.width}
-                        height={object.height}
-                        rotation={object.rotation}
-                        fillPatternImage={pattern}
-                        fillPatternOffsetX={patternWidth / 2}
-                        fillPatternOffsetY={patternHeight / 2}
-                        fillPatternX={object.width / 2}
-                        fillPatternY={object.height / 2}
-                        fillPatternRepeat="repeat-y"
-                    />
-                    <ChevronTail
-                        rotation={180}
-                        chevronAngle={CHEVRON_ANGLE}
-                        width={object.width * 0.2}
-                        height={object.width * 0.13}
-                        fill={arrow.fill}
-                    />
-                </DraggableObject>
-            </ActivePortal>
+                        <ChevronTail
+                            rotation={180}
+                            chevronAngle={CHEVRON_ANGLE}
+                            x={object.width / 2}
+                            y={object.height / 2}
+                            width={object.width * 0.2}
+                            height={object.width * 0.13}
+                            fill={arrow.fill}
+                        />
+                    </Group>
+                )}
+            </ResizeableObjectContainer>
+
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <ChevronTail x={patternWidth * ARROW_PAD} rotation={90} {...arrow} />
                 <ChevronTail x={patternWidth * (1 - ARROW_PAD)} rotation={-90} {...arrow} />

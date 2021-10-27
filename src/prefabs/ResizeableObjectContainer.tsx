@@ -1,0 +1,60 @@
+import { useBoolean } from '@fluentui/react-hooks';
+import Konva from 'konva';
+import React, { useEffect, useRef, useState } from 'react';
+import { KonvaNodeEvents } from 'react-konva';
+import { ActivePortal } from '../render/Portals';
+import { ResizeableObject, UnknownObject } from '../scene';
+import { DraggableObject } from './DraggableObject';
+import { Resizer, ResizerProps } from './Resizer';
+
+export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
+
+export interface ResizeableObjectContainerProps {
+    index: number;
+    object: ResizeableObject & UnknownObject;
+    cache?: boolean;
+    cacheKey?: unknown;
+    resizerProps?: Partial<ResizerProps>;
+    children: (groupProps: GroupProps) => React.ReactElement;
+}
+
+export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps> = ({
+    index,
+    object,
+    cache,
+    cacheKey,
+    resizerProps,
+    children,
+}) => {
+    const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
+    const [dragging, setDragging] = useState(false);
+    const shapeRef = useRef<Konva.Group>(null);
+
+    useEffect(() => {
+        if (cache) {
+            shapeRef.current?.cache();
+        }
+    }, [cache, cacheKey, shapeRef, object, index]);
+
+    return (
+        <ActivePortal isActive={dragging || resizing}>
+            <DraggableObject object={object} index={index} onActive={setDragging}>
+                <Resizer {...resizerProps} object={object} index={index} nodeRef={shapeRef} dragging={dragging}>
+                    {(onTransformEnd) => {
+                        return children({
+                            ref: shapeRef,
+                            onTransformStart: startResizing,
+                            onTransformEnd: (e) => {
+                                onTransformEnd(e);
+                                stopResizing();
+                            },
+                            offsetX: object.width / 2,
+                            offsetY: object.height / 2,
+                            rotation: object.rotation,
+                        });
+                    }}
+                </Resizer>
+            </DraggableObject>
+        </ActivePortal>
+    );
+};

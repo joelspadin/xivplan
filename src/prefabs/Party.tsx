@@ -1,7 +1,7 @@
 import { Stack } from '@fluentui/react';
 import * as React from 'react';
-import { useCallback, useState } from 'react';
-import { Image, Rect } from 'react-konva';
+import { useCallback } from 'react';
+import { Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -10,14 +10,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
+import { useIsGroupSelected } from '../SelectionProvider';
 import { ImageObjectProperties } from './CommonProperties';
-import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
+import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
 const DEFAULT_SIZE = 32;
 
@@ -65,35 +64,25 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 });
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const showHighlight = useIsGroupSelected(index);
     const [image] = useImage(object.image);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && (
-                    <Rect
-                        width={object.width}
-                        height={object.height}
-                        offsetX={object.width / 2}
-                        offsetY={object.height / 2}
-                        rotation={object.rotation}
-                        cornerRadius={(object.width + object.height) / 2 / 5}
-                        {...SELECTED_PROPS}
-                    />
-                )}
-
-                <Image
-                    image={image}
-                    width={object.width}
-                    height={object.height}
-                    offsetX={object.width / 2}
-                    offsetY={object.height / 2}
-                    rotation={object.rotation}
-                />
-            </DraggableObject>
-        </ActivePortal>
+        <ResizeableObjectContainer object={object} index={index}>
+            {(groupProps) => (
+                <Group {...groupProps}>
+                    {showHighlight && (
+                        <Rect
+                            width={object.width}
+                            height={object.height}
+                            cornerRadius={(object.width + object.height) / 2 / 5}
+                            {...SELECTED_PROPS}
+                        />
+                    )}
+                    <Image image={image} width={object.width} height={object.height} />
+                </Group>
+            )}
+        </ResizeableObjectContainer>
     );
 };
 

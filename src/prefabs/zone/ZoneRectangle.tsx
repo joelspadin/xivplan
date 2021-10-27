@@ -1,6 +1,6 @@
 import { IStackTokens, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo, useState } from 'react';
-import { Rect } from 'react-konva';
+import React, { useCallback, useMemo } from 'react';
+import { Group, Rect } from 'react-konva';
 import lineIcon from '../../assets/zone/line.png';
 import squareIcon from '../../assets/zone/square.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -11,15 +11,14 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
+import { useIsGroupSelected } from '../../SelectionProvider';
 import { setOrOmit } from '../../util';
 import { ResizeableObjectProperties } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
+import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
@@ -89,39 +88,34 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 });
 
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const showHighlight = useIsGroupSelected(index);
+
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
-        [object.color, object.opacity, object.width, object.height, object.hollow],
+        [object],
     );
 
     const highlightWidth = object.width + style.strokeWidth;
     const highlightHeight = object.height + style.strokeWidth;
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && (
-                    <Rect
-                        offsetX={highlightWidth / 2}
-                        offsetY={highlightHeight / 2}
-                        width={highlightWidth}
-                        height={highlightHeight}
-                        rotation={object.rotation}
-                        {...SELECTED_PROPS}
-                    />
-                )}
-                <Rect
-                    offsetX={object.width / 2}
-                    offsetY={object.height / 2}
-                    width={object.width}
-                    height={object.height}
-                    rotation={object.rotation}
-                    {...style}
-                />
-            </DraggableObject>
-        </ActivePortal>
+        <ResizeableObjectContainer object={object} index={index}>
+            {(groupProps) => (
+                <Group {...groupProps}>
+                    {showHighlight && (
+                        <Rect
+                            offsetX={style.strokeWidth / 2}
+                            offsetY={style.strokeWidth / 2}
+                            width={highlightWidth}
+                            height={highlightHeight}
+                            rotation={object.rotation}
+                            {...SELECTED_PROPS}
+                        />
+                    )}
+                    <Rect width={object.width} height={object.height} {...style} />
+                </Group>
+            )}
+        </ResizeableObjectContainer>
     );
 };
 

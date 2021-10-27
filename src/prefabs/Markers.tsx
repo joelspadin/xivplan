@@ -1,6 +1,7 @@
 import { IChoiceGroupOption, IStackTokens, Stack } from '@fluentui/react';
+import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
@@ -13,14 +14,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { MarkerObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
+import { useIsGroupSelected } from '../SelectionProvider';
 import { ImageObjectProperties } from './CommonProperties';
-import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
+import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
 const DEFAULT_SIZE = 42;
 const ICON_RATIO = 32 / DEFAULT_SIZE;
@@ -90,13 +90,80 @@ function getDashSize(object: MarkerObject) {
     }
 }
 
+interface OutlineProps {
+    width: number;
+    height: number;
+    highlightWidth: number;
+    highlightHeight: number;
+    highlightOffset: number;
+    showHighlight: boolean;
+    strokeProps: ShapeConfig;
+    dashSize: number;
+}
+
+const EllipseOutline: React.FC<OutlineProps> = ({
+    width,
+    height,
+    highlightWidth,
+    highlightHeight,
+    showHighlight,
+    strokeProps,
+}) => {
+    return (
+        <>
+            {showHighlight && (
+                <Ellipse
+                    x={width / 2}
+                    y={height / 2}
+                    radiusX={highlightWidth / 2}
+                    radiusY={highlightHeight / 2}
+                    {...SELECTED_PROPS}
+                    opacity={0.25}
+                />
+            )}
+
+            <Ellipse x={width / 2} y={height / 2} radiusX={width / 2} radiusY={height / 2} {...strokeProps} />
+        </>
+    );
+};
+
+const RectangleOutline: React.FC<OutlineProps> = ({
+    width,
+    height,
+    highlightWidth,
+    highlightHeight,
+    highlightOffset,
+    showHighlight,
+    strokeProps,
+    dashSize,
+}) => {
+    return (
+        <>
+            {showHighlight && (
+                <Rect
+                    x={-highlightOffset / 2}
+                    y={-highlightOffset / 2}
+                    width={highlightWidth}
+                    height={highlightHeight}
+                    {...SELECTED_PROPS}
+                    {...ALIGN_TO_PIXEL}
+                    opacity={0.25}
+                />
+            )}
+
+            <Rect width={width} height={height} dashOffset={dashSize / 2} {...strokeProps} {...ALIGN_TO_PIXEL} />
+        </>
+    );
+};
+
 const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const showHighlight = useIsGroupSelected(index);
     const [image] = useImage(object.image);
 
     const iconWidth = object.width * ICON_RATIO;
     const iconHeight = object.height * ICON_RATIO;
+    const iconX = (object.width - iconWidth) / 2;
+    const iconY = (object.height - iconHeight) / 2;
 
     const dashSize = getDashSize(object);
     const strokeProps = {
@@ -107,62 +174,42 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
         dash: [dashSize, dashSize],
     };
 
-    const highlightWidth = object.width + strokeProps.strokeWidth * 4;
-    const highlightHeight = object.height + strokeProps.strokeWidth * 4;
+    const highlightOffset = strokeProps.strokeWidth * 4;
+    const highlightWidth = object.width + highlightOffset;
+    const highlightHeight = object.height + highlightOffset;
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <Group rotation={object.rotation}>
+        <ResizeableObjectContainer object={object} index={index}>
+            {(groupProps) => (
+                <Group {...groupProps}>
                     {object.shape === 'circle' && (
-                        <>
-                            {isSelected && (
-                                <Ellipse
-                                    radiusX={highlightWidth / 2}
-                                    radiusY={highlightHeight / 2}
-                                    {...SELECTED_PROPS}
-                                    opacity={0.25}
-                                />
-                            )}
-
-                            <Ellipse radiusX={object.width / 2} radiusY={object.height / 2} {...strokeProps} />
-                        </>
+                        <EllipseOutline
+                            width={object.width}
+                            height={object.height}
+                            showHighlight={showHighlight}
+                            highlightWidth={highlightWidth}
+                            highlightHeight={highlightHeight}
+                            highlightOffset={highlightOffset}
+                            strokeProps={strokeProps}
+                            dashSize={dashSize}
+                        />
                     )}
                     {object.shape === 'square' && (
-                        <>
-                            {isSelected && (
-                                <Rect
-                                    x={-highlightWidth / 2}
-                                    y={-highlightHeight / 2}
-                                    width={highlightWidth}
-                                    height={highlightHeight}
-                                    {...SELECTED_PROPS}
-                                    {...ALIGN_TO_PIXEL}
-                                    opacity={0.25}
-                                />
-                            )}
-
-                            <Rect
-                                x={-object.width / 2}
-                                y={-object.height / 2}
-                                width={object.width}
-                                height={object.height}
-                                dashOffset={dashSize / 2}
-                                {...strokeProps}
-                                {...ALIGN_TO_PIXEL}
-                            />
-                        </>
+                        <RectangleOutline
+                            width={object.width}
+                            height={object.height}
+                            showHighlight={showHighlight}
+                            highlightWidth={highlightWidth}
+                            highlightHeight={highlightHeight}
+                            highlightOffset={highlightOffset}
+                            strokeProps={strokeProps}
+                            dashSize={dashSize}
+                        />
                     )}
-                    <Image
-                        image={image}
-                        width={iconWidth}
-                        height={iconHeight}
-                        offsetX={iconWidth / 2}
-                        offsetY={iconHeight / 2}
-                    />
+                    <Image image={image} x={iconX} y={iconY} width={iconWidth} height={iconHeight} />
                 </Group>
-            </DraggableObject>
-        </ActivePortal>
+            )}
+        </ResizeableObjectContainer>
     );
 };
 
