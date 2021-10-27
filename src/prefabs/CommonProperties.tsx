@@ -75,7 +75,7 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
                     onChange={onYChanged}
                     step={10}
                 />
-                <IconButton iconProps={{ iconName }} checked={!!object.pinned} onClick={onTogglePinned} />
+                <IconButton iconProps={{ iconName }} checked={object.pinned} onClick={onTogglePinned} />
             </Stack>
         </>
     );

@@ -1,4 +1,4 @@
-import { Stack } from '@fluentui/react';
+import { IconButton, IStackTokens, Label, Stack } from '@fluentui/react';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
@@ -14,6 +14,7 @@ import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import { ArrowObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
+import { setOrOmit } from '../util';
 import { ResizeableObjectProperties } from './CommonProperties';
 import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
@@ -43,6 +44,7 @@ export const MarkerArrow: React.FC = () => {
                         type: ObjectType.Arrow,
                         width: DEFAULT_ARROW_WIDTH,
                         height: DEFAULT_ARROW_HEIGHT,
+                        arrowEnd: true,
                     },
                     offset: getDragOffset(e),
                 });
@@ -85,8 +87,11 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
         pointerWidth: DEFAULT_ARROW_WIDTH * 0.8,
         strokeWidth: STROKE_WIDTH,
         lineCap: 'round',
-        pointerAtEnding: true,
+        pointerAtBeginning: !!object.arrowBegin,
+        pointerAtEnding: !!object.arrowEnd,
     };
+
+    console.log(arrowProps);
 
     return (
         <ResizeableObjectContainer
@@ -119,11 +124,25 @@ const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ index }) => {
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);
 
+const stackTokens: IStackTokens = {
+    childrenGap: 10,
+};
+
 const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = React.useCallback(
         (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        [dispatch, object, index],
+    );
+
+    const onToggleArrowBegin = React.useCallback(
+        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'arrowBegin', !object.arrowBegin) }),
+        [dispatch, object, index],
+    );
+
+    const onToggleArrowEnd = React.useCallback(
+        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'arrowEnd', !object.arrowEnd) }),
         [dispatch, object, index],
     );
 
@@ -136,14 +155,27 @@ const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ objec
         [dispatch, object, index],
     );
 
+    const arrowBeginIcon = object.arrowBegin ? 'TriangleSolidLeft12' : 'Remove';
+    const arrowEndIcon = object.arrowEnd ? 'TriangleSolidRight12' : 'Remove';
+
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <Stack horizontal tokens={stackTokens} verticalAlign="end">
+                <CompactColorPicker
+                    label="Color"
+                    color={object.color}
+                    swatches={COLOR_SWATCHES}
+                    onChange={onColorChanged}
+                />
+                <Stack>
+                    <Label>Pointers</Label>
+
+                    <Stack horizontal>
+                        <IconButton iconProps={{ iconName: arrowBeginIcon }} onClick={onToggleArrowBegin} />
+                        <IconButton iconProps={{ iconName: arrowEndIcon }} onClick={onToggleArrowEnd} />
+                    </Stack>
+                </Stack>
+            </Stack>
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <ResizeableObjectProperties object={object} index={index} />
         </Stack>

@@ -122,6 +122,8 @@ export interface ArrowObject extends ResizeableObject, SceneId {
     readonly type: ObjectType.Arrow;
     readonly color: string;
     readonly opacity: number;
+    readonly arrowBegin?: boolean;
+    readonly arrowEnd?: boolean;
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
