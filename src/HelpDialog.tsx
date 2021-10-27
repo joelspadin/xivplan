@@ -34,23 +34,25 @@ export const HelpDialog: React.FC<IModalProps> = (props) => {
             </header>
             <div className={classNames.body}>
                 <section>
-                    <h2>Arena tab</h2>
+                    <h2>Left panel</h2>
+                    <h3>Arena</h3>
                     <p>Edit the appearance of the arena here.</p>
 
-                    <h2>Objects tab</h2>
+                    <h3>Objects</h3>
                     <p>Drag objects onto the arena.</p>
 
-                    <h2>Status tab</h2>
+                    <h3>Status</h3>
                     <p>Drag buffs and debuffs onto party members or enemies.</p>
 
-                    <h2>Draw tab</h2>
+                    <h3>Draw</h3>
                     <p>Draw freeform objects on the scene.</p>
 
-                    <h2>Properties panel</h2>
+                    <h2>Right panel</h2>
+                    <h3>Properties</h3>
                     <p>Select an object, then edit its properties here.</p>
 
-                    <h2>Scene panel</h2>
-                    <p>Displays a list of all objects in the scene.</p>
+                    <h3>Scene</h3>
+                    <p>Displays a list of all objects in the scene. Drag and drop to adjust layering order.</p>
                 </section>
 
                 <section>
@@ -70,7 +72,7 @@ export const HelpDialog: React.FC<IModalProps> = (props) => {
                         <dd>Add to selection</dd>
 
                         <dt>Left click + drag</dt>
-                        <dd>Transform object</dd>
+                        <dd>Move/transform object</dd>
                     </dl>
 
                     <h2>Keyboard shortcuts</h2>
@@ -142,8 +144,10 @@ const getStyles: IStyleFunctionOrObject<Theme, IHelpDialogStyles> = (theme) => {
                 },
             } as IStyle,
 
-            h2: [
-                theme.fonts.mediumPlus,
+            h2: theme.fonts.large,
+
+            h3: [
+                theme.fonts.medium,
                 {
                     fontWeight: FontWeights.semibold,
                     marginBottom: 4,
