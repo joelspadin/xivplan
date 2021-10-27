@@ -1,7 +1,8 @@
 import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { useBoolean } from '@fluentui/react-hooks';
 import Konva from 'konva';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Text } from 'react-konva';
+import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Group, Text, Transformer } from 'react-konva';
 import icon from '../assets/marker/text.png';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -17,17 +18,19 @@ import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { ObjectType, SceneObject, TextObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
+import { useShowHighlight, useShowResizer } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
+import { GroupProps } from './ResizeableObjectContainer';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
 const DEFAULT_TEXT_COLOR = '#ffffff';
 const DEFAULT_TEXT_OPACITY = 100;
 const DEFAULT_FONT_SIZE = 25;
+const MIN_FONT_SIZE = 15;
 
 export const TextLabel: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -68,6 +71,10 @@ registerDropHandler<TextObject>(ObjectType.Text, (object, position) => {
 
 const LINE_HEIGHT = 1.2;
 
+function lineCount(text: string) {
+    return text.split('\n').length;
+}
+
 function measureText(
     node: Konva.Text,
     text: string,
@@ -81,13 +88,106 @@ function measureText(
     return { width, height };
 }
 
-const RectangleRenderer: React.FC<RendererProps<TextObject>> = ({ object, index }) => {
+interface TextResizerProps {
+    index: number;
+    object: TextObject;
+    nodeRef: RefObject<Konva.Group>;
+    dragging?: boolean;
+    children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
+}
+
+const SNAP_ANGLE = 45;
+const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
+
+const TextResizer: React.VFC<TextResizerProps> = ({ object, index, nodeRef, dragging, children }) => {
+    const [scene, dispatch] = useScene();
+    const showResizer = useShowResizer(object, index);
+    const trRef = useRef<Konva.Transformer>(null);
+
+    const minHeight = useMemo(() => MIN_FONT_SIZE * LINE_HEIGHT * lineCount(object.text), [object.text]);
+
+    useEffect(() => {
+        if (showResizer && trRef.current && nodeRef.current) {
+            trRef.current.nodes([nodeRef.current]);
+            trRef.current.getLayer()?.batchDraw();
+        }
+    }, [showResizer, nodeRef, trRef]);
+
+    const onTransformEnd = useCallback(() => {
+        const node = nodeRef.current;
+        if (!node) {
+            return;
+        }
+
+        const newProps: Partial<TextObject> = {
+            rotation: Math.round(node.rotation()),
+        };
+
+        dispatch({ type: 'update', index, value: { ...object, ...newProps } });
+    }, [index, object, minHeight, scene, dispatch, nodeRef]);
+
+    return (
+        <>
+            {children(onTransformEnd)}
+            {showResizer && (
+                <ActivePortal isActive>
+                    <Transformer
+                        ref={trRef}
+                        visible={!dragging}
+                        centeredScaling
+                        resizeEnabled={false}
+                        rotationSnaps={ROTATION_SNAPS}
+                    />
+                </ActivePortal>
+            )}
+        </>
+    );
+};
+
+interface TextContainerProps {
+    index: number;
+    object: TextObject;
+    cacheKey?: unknown;
+    children: (groupProps: GroupProps) => React.ReactElement;
+}
+
+const TextContainer: React.VFC<TextContainerProps> = ({ index, object, cacheKey, children }) => {
+    const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
+    const [dragging, setDragging] = useState(false);
+    const shapeRef = useRef<Konva.Group>(null);
+
+    useEffect(() => {
+        shapeRef.current?.cache();
+    }, [cacheKey, shapeRef, object, index]);
+
+    return (
+        <ActivePortal isActive={dragging || resizing}>
+            <DraggableObject object={object} index={index} onActive={setDragging}>
+                <TextResizer object={object} index={index} nodeRef={shapeRef} dragging={dragging}>
+                    {(onTransformEnd) => {
+                        return children({
+                            ref: shapeRef,
+                            onTransformStart: startResizing,
+                            onTransformEnd: (e) => {
+                                onTransformEnd(e);
+                                stopResizing();
+                            },
+                            rotation: object.rotation,
+                        });
+                    }}
+                </TextResizer>
+            </DraggableObject>
+        </ActivePortal>
+    );
+};
+
+const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object, index }) => {
     const theme = useSceneTheme();
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+    const showHighlight = useShowHighlight(object, index);
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
     const [size, setSize] = useState({ width: 0, height: 0 });
+    const [cacheKey, setCacheKey] = useState(0);
 
     const textRef = useRef<Konva.Text>(null);
     useEffect(() => {
@@ -97,49 +197,52 @@ const RectangleRenderer: React.FC<RendererProps<TextObject>> = ({ object, index 
         }
     }, [textRef, object.text, object.fontSize]);
 
-    const strokeWidth = Math.max(1, object.fontSize / 8);
+    useEffect(() => {
+        setCacheKey(cacheKey + 1);
+    }, [textRef.current, showHighlight, size, measuredFontSize]);
+
+    const strokeWidth = Math.max(1, measuredFontSize / 8);
 
     return (
         <>
-            <ActivePortal isActive={active}>
-                <DraggableObject object={object} index={index} onActive={setActive}>
-                    {isSelected && (
+            <TextContainer object={object} index={index} cacheKey={cacheKey}>
+                {(groupProps) => (
+                    <Group
+                        {...groupProps}
+                        offsetX={size.width / 2}
+                        offsetY={size.height / 2}
+                        opacity={object.opacity / 100}
+                    >
+                        {showHighlight && (
+                            <Text
+                                text={object.text}
+                                width={size.width}
+                                height={size.height}
+                                align={object.align}
+                                verticalAlign="middle"
+                                fontSize={measuredFontSize}
+                                lineHeight={LINE_HEIGHT}
+                                {...SELECTED_PROPS}
+                                strokeWidth={strokeWidth}
+                            />
+                        )}
+
                         <Text
                             text={object.text}
                             width={size.width}
                             height={size.height}
-                            offsetX={size.width / 2}
-                            offsetY={size.height / 2}
-                            rotation={object.rotation}
                             align={object.align}
                             verticalAlign="middle"
                             fontSize={measuredFontSize}
                             lineHeight={LINE_HEIGHT}
-                            opacity={object.opacity / 100}
-                            {...SELECTED_PROPS}
+                            fill={object.color}
+                            stroke={theme.arena.fill}
                             strokeWidth={strokeWidth}
+                            fillAfterStrokeEnabled
                         />
-                    )}
-
-                    <Text
-                        text={object.text}
-                        width={size.width}
-                        height={size.height}
-                        offsetX={size.width / 2}
-                        offsetY={size.height / 2}
-                        rotation={object.rotation}
-                        align={object.align}
-                        verticalAlign="middle"
-                        fontSize={measuredFontSize}
-                        lineHeight={LINE_HEIGHT}
-                        opacity={object.opacity / 100}
-                        fill={object.color}
-                        stroke={theme.arena.fill}
-                        strokeWidth={strokeWidth}
-                        fillAfterStrokeEnabled
-                    />
-                </DraggableObject>
-            </ActivePortal>
+                    </Group>
+                )}
+            </TextContainer>
 
             {/*
             Hack to avoid flickering when increasing font size: measure the text
@@ -151,13 +254,13 @@ const RectangleRenderer: React.FC<RendererProps<TextObject>> = ({ object, index 
     );
 };
 
-registerRenderer<TextObject>(ObjectType.Text, LayerName.Foreground, RectangleRenderer);
+registerRenderer<TextObject>(ObjectType.Text, LayerName.Foreground, TextRenderer);
 
-const RectangleDetails: React.FC<ListComponentProps<TextObject>> = ({ object, index }) => {
+const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, index }) => {
     return <DetailsItem icon={icon} name={object.text} index={index} />;
 };
 
-registerListComponent<TextObject>(ObjectType.Text, RectangleDetails);
+registerListComponent<TextObject>(ObjectType.Text, TextDetails);
 
 const TEXT_COLOR_SWATCHES = [DEFAULT_TEXT_COLOR, '#000000', '#ff0000', '#00e622', '#ffc800'];
 
@@ -171,7 +274,7 @@ const alignOptions: IChoiceGroupOption[] = [
     { key: 'right', text: 'Align right', iconProps: { iconName: 'AlignRight' } },
 ];
 
-const RectangleEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object, index }) => {
+const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = useCallback(
@@ -228,7 +331,7 @@ const RectangleEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ ob
                     labelPosition={Position.top}
                     value={object.fontSize.toString()}
                     onChange={onFontSizeChanged}
-                    min={15}
+                    min={MIN_FONT_SIZE}
                     step={5}
                 />
                 <CompactChoiceGroup
@@ -252,4 +355,4 @@ const RectangleEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ ob
     );
 };
 
-registerPropertiesControl<TextObject>(ObjectType.Text, RectangleEditControl);
+registerPropertiesControl<TextObject>(ObjectType.Text, TextEditControl);
