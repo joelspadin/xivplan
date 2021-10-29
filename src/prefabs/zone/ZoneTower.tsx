@@ -80,7 +80,7 @@ const CountZone: React.FC<CircleConfig> = (props) => {
 function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
     switch (count) {
         case 1:
-            return [{ radius: radius * 0.75 }];
+            return [{ radius: radius * 0.5 }];
 
         case 2: {
             const r = radius * 0.9;
