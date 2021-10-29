@@ -230,7 +230,7 @@ const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) 
     );
 };
 
-registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Arena, EnemyRenderer);
+registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyRenderer);
 
 const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
     return <DetailsItem icon={object.icon} name={object.name} index={index} />;
