@@ -9,6 +9,7 @@ import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { getZoneStyle } from './style';
