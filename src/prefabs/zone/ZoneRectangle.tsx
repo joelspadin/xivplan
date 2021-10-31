@@ -4,6 +4,7 @@ import { Group, Rect } from 'react-konva';
 import lineIcon from '../../assets/zone/line.png';
 import squareIcon from '../../assets/zone/square.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -163,17 +164,14 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
         <Stack>
             <Stack horizontal tokens={stackTokens}>
                 <Stack.Item grow>
-                    <CompactColorPicker
-                        label="Color"
-                        color={object.color}
-                        swatches={COLOR_SWATCHES}
-                        onChange={onColorChanged}
-                    />
+                    <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
                 </Stack.Item>
                 {supportsHollow(object) && (
                     <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
                 )}
             </Stack>
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
+
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <ResizeableObjectProperties object={object} index={index} />
         </Stack>

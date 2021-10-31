@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Circle } from 'react-konva';
 import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -128,17 +129,13 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
         <Stack>
             <Stack horizontal tokens={stackTokens}>
                 <Stack.Item grow>
-                    <CompactColorPicker
-                        label="Color"
-                        color={object.color}
-                        swatches={COLOR_SWATCHES}
-                        onChange={onColorChanged}
-                    />
+                    <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
                 </Stack.Item>
                 {supportsHollow(object) && (
                     <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
                 )}
             </Stack>
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <SpinButton

@@ -6,6 +6,7 @@ import { Group, Text, Transformer } from 'react-konva';
 import icon from '../assets/marker/text.png';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { OpacitySlider } from '../OpacitySlider';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -314,16 +315,9 @@ const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object,
 
     return (
         <Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <Stack.Item grow>
-                    <CompactColorPicker
-                        label="Color"
-                        color={object.color}
-                        swatches={TEXT_COLOR_SWATCHES}
-                        onChange={onColorChanged}
-                    />
-                </Stack.Item>
-            </Stack>
+            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+            <CompactSwatchColorPicker color={object.color} swatches={TEXT_COLOR_SWATCHES} onChange={onColorChanged} />
+
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <Stack horizontal tokens={stackTokens}>
                 <SpinButton

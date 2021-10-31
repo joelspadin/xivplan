@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
@@ -300,12 +301,8 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                onChange={onColorChanged}
-                swatches={COLOR_SWATCHES}
-            />
+            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <SpinButton
                 label="Radius"

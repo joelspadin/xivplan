@@ -1,9 +1,10 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -195,6 +196,12 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
+const classNames = mergeStyleSets({
+    sizeRow: {
+        marginRight: 32 + 10,
+    } as IStyle,
+});
+
 const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object, index }) => {
     const [, dispatch] = useScene();
 
@@ -234,15 +241,12 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
 
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
+
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} className={classNames.sizeRow}>
                 <SpinButton
                     label="Radius"
                     labelPosition={Position.top}
@@ -260,7 +264,7 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
                     step={5}
                 />
             </Stack>
-            <Stack horizontal tokens={stackTokens}>
+            <Stack horizontal tokens={stackTokens} className={classNames.sizeRow}>
                 <SpinButtonUnits
                     label="Rotation"
                     labelPosition={Position.top}

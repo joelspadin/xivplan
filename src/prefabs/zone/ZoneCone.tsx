@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Shape, Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -203,14 +204,11 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
     return (
         <Stack>
             <Stack horizontal tokens={stackTokens}>
-                <CompactColorPicker
-                    label="Color"
-                    color={object.color}
-                    swatches={COLOR_SWATCHES}
-                    onChange={onColorChanged}
-                />
+                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
                 <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
             </Stack>
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
+
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens}>

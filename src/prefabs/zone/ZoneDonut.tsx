@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -134,12 +135,9 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
 
     return (
         <Stack>
-            <CompactColorPicker
-                label="Color"
-                color={object.color}
-                swatches={COLOR_SWATCHES}
-                onChange={onColorChanged}
-            />
+            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
+
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>

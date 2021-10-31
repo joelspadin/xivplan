@@ -6,6 +6,7 @@ import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DeferredTextField } from '../DeferredTextField';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -259,7 +260,7 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
 
             <Stack horizontal tokens={stackTokens}>
-                <CompactColorPicker label="Color" color={object.color} swatches={swatches} onChange={onColorChanged} />
+                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
                 <CompactChoiceGroup
                     label="Shape"
                     options={shapeOptions}
@@ -267,6 +268,7 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
                     onChange={(ev, option) => onShapeChanged(option)}
                 />
             </Stack>
+            <CompactSwatchColorPicker color={object.color} swatches={swatches} onChange={onColorChanged} />
             <ImageObjectProperties object={object} index={index} />
         </Stack>
     );

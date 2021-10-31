@@ -10,10 +10,12 @@ export const COLOR_SWATCHES = [
     '#00e622', // green
     '#00d5e8', // cyan
     '#0066ff', // blue
-    '#8b57fa', // purple
+    '#8b57fa', // violet
     '#f269ff', // pink
+    '#fb00ff', // fuschia
     '#bae3ff', // blue-white
     '#20052e', // dark purple
+    '#ffffff', // white
     '#000000', // black
     '#6f5a48', // grid
 ];

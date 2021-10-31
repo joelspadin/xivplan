@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
 import icon from '../assets/marker/arrow.png';
 import { CompactColorPicker } from '../CompactColorPicker';
+import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { OpacitySlider } from '../OpacitySlider';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
@@ -161,21 +162,17 @@ const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ objec
     return (
         <Stack>
             <Stack horizontal tokens={stackTokens} verticalAlign="end">
-                <CompactColorPicker
-                    label="Color"
-                    color={object.color}
-                    swatches={COLOR_SWATCHES}
-                    onChange={onColorChanged}
-                />
+                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
+
                 <Stack>
                     <Label>Pointers</Label>
-
                     <Stack horizontal>
                         <IconButton iconProps={{ iconName: arrowBeginIcon }} onClick={onToggleArrowBegin} />
                         <IconButton iconProps={{ iconName: arrowEndIcon }} onClick={onToggleArrowEnd} />
                     </Stack>
                 </Stack>
             </Stack>
+            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
             <ResizeableObjectProperties object={object} index={index} />
         </Stack>
