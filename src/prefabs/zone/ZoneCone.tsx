@@ -19,6 +19,7 @@ import { useScene } from '../../SceneProvider';
 import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { degtorad, setOrOmit } from '../../util';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
@@ -29,7 +30,6 @@ const NAME = 'Cone';
 
 const DEFAULT_RADIUS = 150;
 const DEFAULT_ANGLE = 90;
-const MIN_RADIUS = 10;
 const MIN_ANGLE = 5;
 const MAX_ANGLE = 360;
 

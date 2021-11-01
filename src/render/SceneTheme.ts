@@ -1,23 +1,39 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 
-export const DEFAULT_AOE_COLOR = '#fc972b';
+export const COLOR_RED = '#ff0000';
+export const COLOR_ORANGE = '#fc972b';
+export const COLOR_YELLOW = '#ffc800';
+export const COLOR_GREEN = '#00e622';
+export const COLOR_CYAN = '#00d5e8';
+export const COLOR_BLUE = '#0066ff';
+export const COLOR_VIOLET = '#8b57fa'; // violet
+export const COLOR_PINK = '#f269ff'; // pink
+export const COLOR_FUSCHIA = '#fb00ff'; // fuschia
+export const COLOR_BLUE_WHITE = '#bae3ff'; // blue-white
+export const COLOR_DARK_PURPLE = '#20052e'; // dark purple
+export const COLOR_WHITE = '#ffffff'; // white
+export const COLOR_BLACK = '#000000'; // black
+export const COLOR_GRID = '#6f5a48'; // grid
+
+export const DEFAULT_AOE_COLOR = COLOR_ORANGE;
+
 export const DEFAULT_AOE_OPACITY = 35;
 export const COLOR_SWATCHES = [
-    '#ff0000', // red
-    DEFAULT_AOE_COLOR, // orange
-    '#ffc800', // yellow
-    '#00e622', // green
-    '#00d5e8', // cyan
-    '#0066ff', // blue
-    '#8b57fa', // violet
-    '#f269ff', // pink
-    '#fb00ff', // fuschia
-    '#bae3ff', // blue-white
-    '#20052e', // dark purple
-    '#ffffff', // white
-    '#000000', // black
-    '#6f5a48', // grid
+    COLOR_RED,
+    COLOR_ORANGE,
+    COLOR_YELLOW,
+    COLOR_GREEN,
+    COLOR_CYAN,
+    COLOR_BLUE,
+    COLOR_VIOLET,
+    COLOR_PINK,
+    COLOR_FUSCHIA,
+    COLOR_BLUE_WHITE,
+    COLOR_DARK_PURPLE,
+    COLOR_WHITE,
+    COLOR_BLACK,
+    COLOR_GRID,
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';
@@ -60,17 +76,16 @@ export interface SceneTheme {
 
 const BACKGROUND = '#40352c';
 const FOREGROUND = '#ffffff';
-const GRID = '#6F5A48';
 
 export function useSceneTheme(): SceneTheme {
     return {
         arena: {
             fill: BACKGROUND,
-            stroke: GRID,
+            stroke: COLOR_GRID,
             strokeWidth: 1,
         },
         grid: {
-            stroke: GRID,
+            stroke: COLOR_GRID,
             strokeWidth: 1,
         },
         enemy: {

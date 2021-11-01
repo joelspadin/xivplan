@@ -1,6 +1,6 @@
 import { Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Circle } from 'react-konva';
 import icon from '../../assets/zone/meteor_tower.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -12,21 +12,20 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
 
 const DEFAULT_COLOR = '#bae3ff';
 const DEFAULT_RADIUS = 40;
 const DEFAULT_COUNT = 1;
-const MIN_RADIUS = 10;
 const MIN_COUNT = 1;
 const MAX_COUNT = 4;
 
@@ -120,31 +119,40 @@ function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
     return [];
 }
 
-const TowerRenderer: React.FC<RendererProps<TowerZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface TowerRendererProps extends RendererProps<TowerZone> {
+    radius: number;
+}
+
+const TowerRenderer: React.FC<TowerRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, object.opacity, radius * 2),
+        [object.color, object.opacity, radius],
     );
 
-    const zones = useMemo(() => getCountZones(object.radius, object.count), [object.radius, object.count]);
+    const zones = useMemo(() => getCountZones(radius, object.count), [radius, object.count]);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+        <>
+            {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-                <Circle radius={object.radius} {...style} opacity={0.75} />
-                {zones.map((props, i) => (
-                    <CountZone key={i} {...props} {...style} listening={false} />
-                ))}
-            </DraggableObject>
-        </ActivePortal>
+            <Circle radius={radius} {...style} opacity={0.75} />
+            {zones.map((props, i) => (
+                <CountZone key={i} {...props} {...style} listening={false} />
+            ))}
+        </>
     );
 };
 
-registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerRenderer);
+const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object, index }) => {
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <TowerRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerContainer);
 
 const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ index }) => {
     // TODO: color filter icon?
@@ -211,8 +219,4 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
     );
 };
 
-registerPropertiesControl<TowerZone>(
-    ObjectType.Tower,
-
-    TowerEditControl,
-);
+registerPropertiesControl<TowerZone>(ObjectType.Tower, TowerEditControl);

@@ -1,7 +1,7 @@
 import { getColorFromString, updateA, updateSV } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import icon from '../../assets/zone/eye.png';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -9,12 +9,11 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
-import { useIsSelected } from '../../SelectionProvider';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
@@ -101,68 +100,79 @@ function getStrokeColor(color: string) {
 const OUTER_EYE_PATH = 'M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z';
 const INNER_EYE_PATH = 'M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z';
 
-const EyeRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
-    const scale = object.radius / 20;
+interface EyeRendererProps extends RendererProps<CircleZone> {
+    radius: number;
+    groupRef: RefObject<Konva.Group>;
+}
+
+const EyeRenderer: React.FC<EyeRendererProps> = ({ object, index, radius, groupRef }) => {
+    const showHighlight = useShowHighlight(object, index);
+    const scale = radius / 20;
     const eyeStyle = useMemo(() => {
         return {
             fillRadialGradientColorStops: getEyeGradient(object.color),
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: 15,
         } as ShapeConfig;
-    }, [object.color, object.opacity, object.radius]);
+    }, [object.color, object.opacity, radius]);
     const irisStyle = useMemo(() => {
         return {
             fillRadialGradientColorStops: getIrisGradient(object.color),
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: 15,
         } as ShapeConfig;
-    }, [object.color, object.opacity, object.radius]);
+    }, [object.color, object.opacity, radius]);
 
     const strokeColor = useMemo(() => getStrokeColor(object.color), [object.color]);
     const highlightColor = useMemo(() => getHighlightColor(object.color), [object.color]);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [object.color, object.opacity, object.radius, isSelected, groupRef]);
+    }, [object.color, object.opacity, radius, showHighlight, groupRef]);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <Group opacity={object.opacity / 100} ref={groupRef}>
-                    <Group scaleX={scale} scaleY={scale}>
-                        {isSelected && (
-                            <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...SELECTED_PROPS} />
-                        )}
+        <>
+            <Group opacity={object.opacity / 100} ref={groupRef}>
+                <Group scaleX={scale} scaleY={scale}>
+                    {showHighlight && (
+                        <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...SELECTED_PROPS} />
+                    )}
 
-                        <Path
-                            data={OUTER_EYE_PATH}
-                            fill={highlightColor}
-                            stroke={strokeColor}
-                            strokeWidth={3}
-                            fillAfterStrokeEnabled
-                        />
+                    <Path
+                        data={OUTER_EYE_PATH}
+                        fill={highlightColor}
+                        stroke={strokeColor}
+                        strokeWidth={3}
+                        fillAfterStrokeEnabled
+                    />
 
-                        <Path data={INNER_EYE_PATH} {...eyeStyle} />
-                        <Line
-                            points={[-19, 0, 19, 0]}
-                            stroke={highlightColor}
-                            strokeWidth={0.25}
-                            opacity={0.7}
-                            lineCap="round"
-                        />
-                        <Circle radius={10} {...irisStyle} />
-                    </Group>
+                    <Path data={INNER_EYE_PATH} {...eyeStyle} />
+                    <Line
+                        points={[-19, 0, 19, 0]}
+                        stroke={highlightColor}
+                        strokeWidth={0.25}
+                        opacity={0.7}
+                        lineCap="round"
+                    />
+                    <Circle radius={10} {...irisStyle} />
                 </Group>
-            </DraggableObject>
-        </ActivePortal>
+            </Group>
+        </>
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeRenderer);
+const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const groupRef = useRef<Konva.Group>(null);
+
+    return (
+        <RadiusObjectContainer object={object} index={index} onTransformEnd={() => groupRef.current?.clearCache()}>
+            {(radius) => <EyeRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
 const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?

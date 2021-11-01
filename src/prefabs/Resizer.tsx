@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
-import { ActivePortal } from '../render/Portals';
+import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { clamp } from '../util';
@@ -90,7 +90,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
         <>
             {children(onTransformEnd)}
             {showResizer && (
-                <ActivePortal isActive>
+                <ControlsPortal>
                     <Transformer
                         ref={trRef}
                         visible={!dragging}
@@ -100,7 +100,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
                         anchorSize={anchorSize}
                         {...transformerProps}
                     />
-                </ActivePortal>
+                </ControlsPortal>
             )}
         </>
     );

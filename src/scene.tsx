@@ -106,6 +106,10 @@ export interface ResizeableObject extends MoveableObject {
     readonly rotation: number;
 }
 
+export interface RadiusObject extends MoveableObject {
+    readonly radius: number;
+}
+
 export interface ImageObject extends ResizeableObject {
     readonly image: string;
 }
@@ -152,12 +156,11 @@ export interface PartyObject extends ImageObject, SceneId {
 }
 export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
-export interface EnemyObject extends MoveableObject, SceneId {
+export interface EnemyObject extends RadiusObject, SceneId {
     readonly type: ObjectType.Enemy;
     readonly icon: string;
     readonly name: string;
     readonly color: string;
-    readonly radius: number;
     readonly status: ActorStatus[];
     readonly rotation?: number;
 }
@@ -168,7 +171,7 @@ export function isActor(object: UnknownObject): object is Actor {
     return isParty(object) || isEnemy(object);
 }
 
-export interface CircleZone extends MoveableObject, SceneId {
+export interface CircleZone extends RadiusObject, SceneId {
     readonly type:
         | ObjectType.Circle
         | ObjectType.Stack
@@ -181,7 +184,6 @@ export interface CircleZone extends MoveableObject, SceneId {
     readonly color: string;
     readonly opacity: number;
     readonly hollow?: boolean;
-    readonly radius: number;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
@@ -193,21 +195,19 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Eye,
 );
 
-export interface DonutZone extends MoveableObject, SceneId {
+export interface DonutZone extends RadiusObject, SceneId {
     readonly type: ObjectType.Donut;
     readonly color: string;
     readonly opacity: number;
-    readonly radius: number;
     readonly innerRadius: number;
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
-export interface ConeZone extends MoveableObject, SceneId {
+export interface ConeZone extends RadiusObject, SceneId {
     readonly type: ObjectType.Cone;
     readonly color: string;
     readonly opacity: number;
     readonly hollow?: boolean;
-    readonly radius: number;
     readonly rotation: number;
     readonly coneAngle: number;
 }
@@ -234,32 +234,29 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.RightTriangle,
 );
 
-export interface ExaflareZone extends MoveableObject, SceneId {
+export interface ExaflareZone extends RadiusObject, SceneId {
     readonly type: ObjectType.Exaflare;
     readonly color: string;
     readonly opacity: number;
-    readonly radius: number;
     readonly length: number;
     readonly rotation: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
-export interface StarburstZone extends MoveableObject, SceneId {
+export interface StarburstZone extends RadiusObject, SceneId {
     readonly type: ObjectType.Starburst;
     readonly color: string;
     readonly opacity: number;
-    readonly radius: number;
     readonly rotation: number;
     readonly spokes: number;
     readonly spokeWidth: number;
 }
 export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburst);
 
-export interface TowerZone extends MoveableObject, SceneId {
+export interface TowerZone extends RadiusObject, SceneId {
     readonly type: ObjectType.Tower;
     readonly color: string;
     readonly opacity: number;
-    readonly radius: number;
     readonly count: number;
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);

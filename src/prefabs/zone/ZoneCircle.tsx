@@ -1,5 +1,5 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Circle } from 'react-konva';
 import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -11,22 +11,21 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
 import { setOrOmit } from '../../util';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const NAME = 'Circle';
 
 const DEFAULT_RADIUS = 50;
-const MIN_RADIUS = 10;
 
 export const ZoneCircle: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -62,26 +61,35 @@ registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
     };
 });
 
-const CircleRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface CircleRendererProps extends RendererProps<CircleZone> {
+    radius: number;
+}
+
+const CircleRenderer: React.FC<CircleRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
-        [object.color, object.opacity, object.radius, object.hollow],
+        () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
+        [object.color, object.opacity, object.hollow, radius],
     );
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+        <>
+            {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-                <Circle radius={object.radius} {...style} />
-            </DraggableObject>
-        </ActivePortal>
+            <Circle radius={radius} {...style} />
+        </>
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleRenderer);
+const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <CircleRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleContainer);
 
 const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?

@@ -1,6 +1,6 @@
 import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/exaflare.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -12,15 +12,15 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -28,7 +28,6 @@ const NAME = 'Moving AOE';
 
 const DEFAULT_RADIUS = 40;
 const DEFAULT_LENGTH = 7;
-const MIN_RADIUS = 10;
 const MIN_LENGTH = 2;
 
 export const ZoneExaflare: React.FunctionComponent = () => {
@@ -81,51 +80,61 @@ function getDashSize(radius: number) {
     return (2 * Math.PI * radius) / 32;
 }
 
-const ExaflareRenderer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
+    radius: number;
+}
+
+const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, object.opacity, radius * 2),
+        [object.color, object.opacity, radius],
     );
     const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
-    const trail = useMemo(() => getTrailPositions(object.radius, object.length), [object.radius, object.length]);
-    const dashSize = getDashSize(object.radius);
+    const trail = useMemo(() => getTrailPositions(radius, object.length), [radius, object.length]);
+    const dashSize = getDashSize(radius);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <Group rotation={object.rotation}>
-                    {trail.map((point, i) => (
-                        <Circle
-                            key={i}
-                            listening={false}
-                            radius={object.radius}
-                            {...point}
-                            {...style}
-                            fillEnabled={false}
-                            dash={[dashSize, dashSize]}
-                            dashOffset={dashSize / 2}
-                            opacity={0.5}
-                        />
-                    ))}
-
-                    {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
-
-                    <Circle radius={object.radius} {...style} />
-                    <ChevronTail
-                        y={-object.radius * ARROW_H_FRAC * 0.9}
-                        width={object.radius * ARROW_W_FRAC}
-                        height={object.radius * ARROW_H_FRAC}
-                        {...arrow}
+        <>
+            <Group rotation={object.rotation}>
+                {trail.map((point, i) => (
+                    <Circle
+                        key={i}
+                        listening={false}
+                        radius={radius}
+                        {...point}
+                        {...style}
+                        fillEnabled={false}
+                        dash={[dashSize, dashSize]}
+                        dashOffset={dashSize / 2}
+                        opacity={0.5}
                     />
-                </Group>
-            </DraggableObject>
-        </ActivePortal>
+                ))}
+
+                {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+
+                <Circle radius={radius} {...style} />
+                <ChevronTail
+                    y={-radius * ARROW_H_FRAC * 0.9}
+                    width={radius * ARROW_W_FRAC}
+                    height={radius * ARROW_H_FRAC}
+                    {...arrow}
+                />
+            </Group>
+        </>
     );
 };
 
-registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareRenderer);
+const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
+    // TODO: add control points for rotation and trail length
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <ExaflareRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareContainer);
 
 const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ index }) => {
     // TODO: color filter icon?

@@ -1,6 +1,6 @@
 import { getColorFromString, updateA } from '@fluentui/react';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import icon from '../../assets/zone/falloff.png';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -8,13 +8,12 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
-import { useIsSelected } from '../../SelectionProvider';
 import { degtorad } from '../../util';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getArrowStyle, getShadowColor } from './style';
 
 const DEFAULT_RADIUS = 200;
@@ -129,50 +128,59 @@ function getShadowOffset(i: number): ShapeConfig {
     }
 }
 
-const ProximityRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface ProximityRendererProps extends RendererProps<CircleZone> {
+    radius: number;
+}
+
+const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const gradient = useMemo(
         () =>
             ({
                 fillRadialGradientColorStops: getGradient(object.color, object.opacity),
                 fillRadialGradientStartRadius: 0,
-                fillRadialGradientEndRadius: object.radius,
+                fillRadialGradientEndRadius: radius,
             } as ShapeConfig),
-        [object.color, object.opacity, object.radius],
+        [object.color, object.opacity, radius],
     );
     const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
     const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius} {...SELECTED_PROPS} opacity={0.25} />}
+        <>
+            {showHighlight && <Circle radius={radius} {...SELECTED_PROPS} opacity={0.25} />}
 
-                <Circle radius={object.radius} {...gradient} />
-                {CORNER_ANGLES.map((r, i) => (
-                    <Group key={i} rotation={r}>
-                        <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
-                        <FlareCorner
-                            scaleX={SCALE2}
-                            scaleY={SCALE2}
-                            {...arrow}
-                            shadowColor={shadowColor}
-                            {...getShadowOffset(i)}
-                        />
-                    </Group>
-                ))}
-                {ARROW_ANGLES.map((r, i) => (
-                    <Group key={i} rotation={r}>
-                        <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
-                    </Group>
-                ))}
-            </DraggableObject>
-        </ActivePortal>
+            <Circle radius={radius} {...gradient} />
+            {CORNER_ANGLES.map((r, i) => (
+                <Group key={i} rotation={r}>
+                    <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
+                    <FlareCorner
+                        scaleX={SCALE2}
+                        scaleY={SCALE2}
+                        {...arrow}
+                        shadowColor={shadowColor}
+                        {...getShadowOffset(i)}
+                    />
+                </Group>
+            ))}
+            {ARROW_ANGLES.map((r, i) => (
+                <Group key={i} rotation={r}>
+                    <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
+                </Group>
+            ))}
+        </>
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityRenderer);
+const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <ProximityRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
 const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
     // TODO: color filter icon?

@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Path } from 'react-konva';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
@@ -9,12 +9,11 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
-import { useIsSelected } from '../../SelectionProvider';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 25;
@@ -83,17 +82,22 @@ const Arrow: React.FC<ShapeConfig> = (props) => {
 const ARROW_SCALE = 1 / 24;
 const ARROW_ANGLES = [45, 90, 135, 225, 270, 315];
 
-const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface RotateRendererProps extends RendererProps<CircleZone> {
+    radius: number;
+    groupRef: RefObject<Konva.Group>;
+}
+
+const RotateRenderer: React.FC<RotateRendererProps> = ({ object, index, radius, groupRef }) => {
+    const showHighlight = useShowHighlight(object, index);
     const isClockwise = object.type === ObjectType.RotateCW;
 
     const style = useMemo(
-        () => getZoneStyle(object.color, Math.max(50, object.opacity), object.radius * 2, object.hollow),
-        [object.color, object.opacity, object.radius, object.hollow],
+        () => getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow),
+        [object.color, object.opacity, object.hollow, radius],
     );
+
     const arrow = useMemo(() => {
-        const scale = object.radius * ARROW_SCALE;
+        const scale = radius * ARROW_SCALE;
 
         return {
             ...getArrowStyle(object.color, 100),
@@ -101,33 +105,40 @@ const RotateRenderer: React.FC<RendererProps<CircleZone>> = ({ object, index }) 
             scaleX: scale,
             scaleY: scale * (isClockwise ? -1 : 1),
             stroke: getShadowColor(object.color),
-            strokeWidth: object.radius / 15,
+            strokeWidth: radius / 15,
         } as ShapeConfig;
-    }, [style.stroke, object.opacity, object.radius, isClockwise]);
+    }, [style.stroke, object.opacity, radius, isClockwise]);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
-    }, [object.color, object.opacity, object.radius, object.hollow, groupRef]);
+    }, [object, radius, arrow, groupRef]);
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && <Circle radius={object.radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+        <>
+            {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-                <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
-                    <Circle radius={object.radius} {...style} />
-                    {ARROW_ANGLES.map((r, i) => (
-                        <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
-                    ))}
-                </Group>
-            </DraggableObject>
-        </ActivePortal>
+            <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
+                <Circle radius={radius} {...style} />
+                {ARROW_ANGLES.map((r, i) => (
+                    <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
+                ))}
+            </Group>
+        </>
     );
 };
 
-registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateRenderer);
+const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+    const groupRef = useRef<Konva.Group>(null);
+
+    return (
+        <RadiusObjectContainer object={object} index={index} onTransformEnd={() => groupRef.current?.clearCache()}>
+            {(radius) => <RotateRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateContainer);
 
 const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, index }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';

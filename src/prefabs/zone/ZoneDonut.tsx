@@ -1,5 +1,5 @@
 import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -11,22 +11,20 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
 
 const NAME = 'Donut';
 
 const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
-
-const MIN_RADIUS = 10;
 
 export const ZoneDonut: React.FunctionComponent = () => {
     const [, setDragObject] = usePanelDrag();
@@ -63,31 +61,41 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
     };
 });
 
-const DonutRenderer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface DonutRendererProps extends RendererProps<DonutZone> {
+    radius: number;
+}
+
+const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2),
-        [object.color, object.opacity, object.radius],
+        () => getZoneStyle(object.color, object.opacity, radius * 2),
+        [object.color, object.opacity, radius],
     );
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {isSelected && (
-                    <Ring
-                        innerRadius={object.innerRadius - style.strokeWidth / 2}
-                        outerRadius={object.radius + style.strokeWidth / 2}
-                        {...SELECTED_PROPS}
-                    />
-                )}
-                <Ring innerRadius={object.innerRadius} outerRadius={object.radius} {...style} />
-            </DraggableObject>
-        </ActivePortal>
+        <>
+            {showHighlight && (
+                <Ring
+                    innerRadius={object.innerRadius - style.strokeWidth / 2}
+                    outerRadius={radius + style.strokeWidth / 2}
+                    {...SELECTED_PROPS}
+                />
+            )}
+            <Ring innerRadius={object.innerRadius} outerRadius={radius} {...style} />
+        </>
     );
 };
 
-registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutRenderer);
+const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
+    // TODO: add control point for inner radius
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <DonutRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ index }) => {
     // TODO: color filter icon?

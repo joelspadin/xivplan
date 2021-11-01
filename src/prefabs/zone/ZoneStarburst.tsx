@@ -1,6 +1,6 @@
 import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
@@ -12,15 +12,15 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
 
 const NAME = 'Starburst';
@@ -28,7 +28,6 @@ const NAME = 'Starburst';
 const DEFAULT_RADIUS = 250;
 const DEFAULT_SPOKE_WIDTH = 40;
 const DEFAULT_SPOKE_COUNT = 8;
-const MIN_RADIUS = 10;
 const MIN_SPOKE_WIDTH = 10;
 const MIN_SPOKE_COUNT = 3;
 const MAX_SPOKE_COUNT = 16;
@@ -73,14 +72,14 @@ interface StarburstConfig extends CircleConfig {
     radius: number;
     spokes: number;
     spokeWidth: number;
-    isSelected: boolean;
+    showHighlight: boolean;
 }
 
 function getOddRotations(spokes: number) {
     return Array.from({ length: spokes }).map((_, i) => 180 + (i / spokes) * 360);
 }
 
-const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, isSelected, ...props }) => {
+const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, showHighlight, ...props }) => {
     const items = useMemo(() => getOddRotations(spokes), [spokes]);
 
     const rect = {
@@ -96,7 +95,7 @@ const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spo
 
     return (
         <Group rotation={rotation}>
-            {isSelected &&
+            {showHighlight &&
                 items.map((r, i) => (
                     <Rect
                         key={i}
@@ -120,7 +119,14 @@ function getEvenRotations(spokes: number) {
     return Array.from({ length: items }).map((_, i) => (i / items) * 180);
 }
 
-const StarburstEven: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, isSelected, ...props }) => {
+const StarburstEven: React.FC<StarburstConfig> = ({
+    rotation,
+    radius,
+    spokes,
+    spokeWidth,
+    showHighlight,
+    ...props
+}) => {
     const items = useMemo(() => getEvenRotations(spokes), [spokes]);
 
     const rect = {
@@ -137,7 +143,7 @@ const StarburstEven: React.FC<StarburstConfig> = ({ rotation, radius, spokes, sp
 
     return (
         <Group rotation={rotation}>
-            {isSelected &&
+            {showHighlight &&
                 items.map((r, i) => (
                     <Rect
                         key={i}
@@ -157,9 +163,12 @@ const StarburstEven: React.FC<StarburstConfig> = ({ rotation, radius, spokes, sp
     );
 };
 
-const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface StarburstRendererProps extends RendererProps<StarburstZone> {
+    radius: number;
+}
+
+const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, radius }) => {
+    const showSelected = useShowHighlight(object, index);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
         [object.color, object.opacity, object.spokeWidth],
@@ -167,23 +176,27 @@ const StarburstRenderer: React.FC<RendererProps<StarburstZone>> = ({ object, ind
 
     const config: StarburstConfig = {
         ...style,
-        radius: object.radius,
+        radius: radius,
         spokes: object.spokes,
         spokeWidth: object.spokeWidth,
         rotation: object.rotation,
-        isSelected,
+        showHighlight: showSelected,
     };
 
+    return object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />;
+};
+
+const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object, index }) => {
+    // TODO: add control point for spoke width
+    // TODO: add control point for rotation
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                {object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />}
-            </DraggableObject>
-        </ActivePortal>
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <StarburstRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
     );
 };
 
-registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstRenderer);
+registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ index }) => {
     // TODO: color filter icon?

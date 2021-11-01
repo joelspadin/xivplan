@@ -2,7 +2,7 @@ import { IChoiceGroupOption, IIconStyles, IStackTokens, Position, SpinButton, St
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -14,15 +14,14 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ActivePortal } from '../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
-import { DraggableObject } from './DraggableObject';
+import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
+import { RadiusObjectContainer } from './RadiusObjectContainer';
 
 const DEFAULT_SIZE = 32;
 
@@ -200,38 +199,43 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
     );
 };
 
-const EnemyRenderer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface EnemyRendererProps extends RendererProps<EnemyObject> {
+    radius: number;
+}
+
+const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius }) => {
+    const showHighlight = useShowHighlight(object, index);
     const theme = useSceneTheme();
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <EnemyLabel name={object.name} radius={object.radius} theme={theme.enemy} color={object.color} />
+        <>
+            <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
 
-                {object.rotation === undefined ? (
-                    <CircleRing
-                        radius={object.radius}
-                        theme={theme.enemy}
-                        color={object.color}
-                        isSelected={isSelected}
-                    />
-                ) : (
-                    <DirectionalRing
-                        radius={object.radius}
-                        theme={theme.enemy}
-                        color={object.color}
-                        rotation={object.rotation}
-                        isSelected={isSelected}
-                    />
-                )}
-            </DraggableObject>
-        </ActivePortal>
+            {object.rotation === undefined ? (
+                <CircleRing radius={radius} theme={theme.enemy} color={object.color} isSelected={showHighlight} />
+            ) : (
+                <DirectionalRing
+                    radius={radius}
+                    theme={theme.enemy}
+                    color={object.color}
+                    rotation={object.rotation}
+                    isSelected={showHighlight}
+                />
+            )}
+        </>
     );
 };
 
-registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyRenderer);
+const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
+    // TODO: add control point for rotation
+    return (
+        <RadiusObjectContainer object={object} index={index}>
+            {(radius) => <EnemyRenderer object={object} index={index} radius={radius} />}
+        </RadiusObjectContainer>
+    );
+};
+
+registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyContainer);
 
 const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
     return <DetailsItem icon={object.icon} name={object.name} index={index} />;

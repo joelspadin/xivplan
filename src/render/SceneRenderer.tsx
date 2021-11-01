@@ -43,11 +43,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
                             <SelectionContext.Provider value={selectionBridge}>
                                 <SceneHotkeyHandler />
 
-                                <Layer name={LayerName.Arena}>
-                                    <ArenaRenderer />
-                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Arena} />
-                                </Layer>
                                 <Layer name={LayerName.Ground}>
+                                    <ArenaRenderer />
                                     <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
                                 </Layer>
                                 <Layer name={LayerName.Default}>
@@ -57,6 +54,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
                                     <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
                                 </Layer>
                                 <Layer name={LayerName.Active} />
+                                <Layer name={LayerName.Controls} />
                             </SelectionContext.Provider>
                         </SceneContext.Provider>
                     </ThemeContext.Provider>

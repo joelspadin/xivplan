@@ -1,3 +1,5 @@
+import { Vector2d } from 'konva/lib/types';
+
 export function asArray<T>(x: T | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x];
 }
@@ -8,6 +10,13 @@ export function clamp(x: number, min: number, max: number): number {
 
 export function degtorad(deg: number): number {
     return (deg * Math.PI) / 180;
+}
+
+export function distance(a: Vector2d, b?: Vector2d): number {
+    const h = a.x - (b?.x ?? 0);
+    const v = a.y - (b?.y ?? 0);
+
+    return Math.sqrt(h * h + v * v);
 }
 
 export function* reversed<T>(items: readonly T[]): Generator<T> {
