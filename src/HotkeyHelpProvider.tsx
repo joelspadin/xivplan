@@ -39,17 +39,25 @@ export function useHotkeys<T extends Element>(
         options = {};
     }
 
+    useHotkeyHelp(keys, category, help);
+
+    return useHotkeysBase(keys, callback, options, deps);
+}
+
+export function useHotkeyHelp(keys: string, category: string, help: string): void {
     const map = useContext(HotkeyHelpContext);
     const id = useId('key');
     useEffect(() => {
+        if (!help) {
+            return;
+        }
+
         map.set(id, { keys, category, help });
 
         return () => {
             map.delete(id);
         };
     }, [map, keys, category, help]);
-
-    return useHotkeysBase(keys, callback, options, deps);
 }
 
 export function useRegisteredHotkeys(): HotkeyInfo[] {

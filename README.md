@@ -10,31 +10,34 @@ Check out https://ff14.toolboxgaming.space if you need something more powerful.
 I'm creating this because the toolbox Strat Maker is too cumbersome to use during
 progression, so it will always be simpler and less powerful.
 
-| Feature                       | Status |
-| ----------------------------- | ------ |
-| Customize arena               | ✅     |
-| Create party objects          | ✅     |
-| Create enemy objects          | ✅     |
-| Create waymarks               | ✅     |
-| Create zones                  | ✅     |
-| Create tethers                |        |
-| Create text notes             | ✅     |
-| Move objects                  | ✅     |
-| Move group selection          |        |
-| Resize rectangular objects    | ✅     |
-| Resize other objects          |        |
-| Reorder objects               | ✅     |
-| Delete objects                | ✅     |
-| Edit object properties        | ✅     |
-| Add statuses to party/enemies |        |
-| Draw on scene                 |        |
-| Save scenes                   |        |
-| Share scenes                  |        |
-| Context menus                 |        |
-| Keyboard shortcut help        | ✅     |
-| Undo/redo                     | ✅     |
-| Copy/paste/duplicate          | ✅     |
-| Rotate CW/CCW shortcuts       |        |
+| Feature                               | Status |
+| ------------------------------------- | ------ |
+| Customize arena                       | ✅     |
+| Create party objects                  | ✅     |
+| Create enemy objects                  | ✅     |
+| Create waymarks                       | ✅     |
+| Create zones                          | ✅     |
+| Create tethers                        |        |
+| Create text notes                     | ✅     |
+| Move objects                          | ✅     |
+| Move group selection (mouse)          |        |
+| Move group selection (keyboard)       | ✅     |
+| Resize rectangular objects            | ✅     |
+| Resize circular objects               | ✅     |
+| Resize cone objects                   |        |
+| Control handles for object properties |        |
+| Reorder objects                       | ✅     |
+| Delete objects                        | ✅     |
+| Edit object properties                | ✅     |
+| Add statuses to party/enemies         |        |
+| Draw on scene                         |        |
+| Save scenes                           |        |
+| Share scenes                          |        |
+| Context menus                         |        |
+| Keyboard shortcut help                | ✅     |
+| Undo/redo                             | ✅     |
+| Copy/paste/duplicate                  | ✅     |
+| Rotate CW/CCW shortcuts               | ✅     |
 
 ## Credits
 

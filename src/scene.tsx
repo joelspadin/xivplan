@@ -100,10 +100,13 @@ export interface MoveableObject {
     readonly pinned?: boolean;
 }
 
-export interface ResizeableObject extends MoveableObject {
+export interface RotateableObject {
+    readonly rotation: number;
+}
+
+export interface ResizeableObject extends MoveableObject, RotateableObject {
     readonly width: number;
     readonly height: number;
-    readonly rotation: number;
 }
 
 export interface RadiusObject extends MoveableObject {
@@ -131,14 +134,13 @@ export interface ArrowObject extends ResizeableObject, SceneId {
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
-export interface TextObject extends MoveableObject, SceneId {
+export interface TextObject extends MoveableObject, RotateableObject, SceneId {
     readonly type: ObjectType.Text;
     readonly text: string;
     readonly fontSize: number;
     readonly align: string;
     readonly color: string;
     readonly opacity: number;
-    readonly rotation: number;
 }
 export const isText = makeObjectTest<TextObject>(ObjectType.Text);
 
@@ -203,12 +205,11 @@ export interface DonutZone extends RadiusObject, SceneId {
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
-export interface ConeZone extends RadiusObject, SceneId {
+export interface ConeZone extends RadiusObject, RotateableObject, SceneId {
     readonly type: ObjectType.Cone;
     readonly color: string;
     readonly opacity: number;
     readonly hollow?: boolean;
-    readonly rotation: number;
     readonly coneAngle: number;
 }
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
@@ -234,20 +235,18 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.RightTriangle,
 );
 
-export interface ExaflareZone extends RadiusObject, SceneId {
+export interface ExaflareZone extends RadiusObject, RotateableObject, SceneId {
     readonly type: ObjectType.Exaflare;
     readonly color: string;
     readonly opacity: number;
     readonly length: number;
-    readonly rotation: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
-export interface StarburstZone extends RadiusObject, SceneId {
+export interface StarburstZone extends RadiusObject, RotateableObject, SceneId {
     readonly type: ObjectType.Starburst;
     readonly color: string;
     readonly opacity: number;
-    readonly rotation: number;
     readonly spokes: number;
     readonly spokeWidth: number;
 }
@@ -297,6 +296,11 @@ export const isTether = makeObjectTest<Tether>(
 export function isMoveable<T>(object: T): object is MoveableObject & T {
     const moveable = object as MoveableObject & T;
     return moveable && typeof moveable.x === 'number' && typeof moveable.y === 'number';
+}
+
+export function isRotateable<T>(object: T): object is RotateableObject & T {
+    const rotateable = object as RotateableObject & T;
+    return rotateable && typeof rotateable.rotation === 'number';
 }
 
 export type SceneObject = UnknownObject | Zone | Marker | Actor | Tether;

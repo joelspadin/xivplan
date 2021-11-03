@@ -1,12 +1,13 @@
 import { Stage } from 'konva/lib/Stage';
-import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Vector2d } from 'konva/lib/types';
+import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
 import { getSceneCoord } from './coord';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
-import { useHotkeys } from './HotkeyHelpProvider';
+import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
 import { useStage } from './render/StageProvider';
-import { isMoveable, Scene, SceneObject } from './scene';
-import { SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
+import { isMoveable, isRotateable, MoveableObject, RotateableObject, Scene, SceneObject } from './scene';
+import { ObjectUpdate, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
 import {
     getSelectedObjects,
     SceneSelection,
@@ -15,10 +16,12 @@ import {
     selectNone,
     useSelection,
 } from './SelectionProvider';
+import { degtorad } from './util';
 
 const CATEGORY_HISTORY = 'History';
 const CATEGORY_SELECTION = 'Selection';
 const CATEGORY_GENERAL = 'General';
+const CATEGORY_EDIT = 'Edit';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
@@ -35,6 +38,18 @@ const UndoRedoHandler: React.FC = () => {
     return null;
 };
 
+function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
+    const moveable = objects.filter(isMoveable);
+    if (!moveable.length) {
+        return { x: 0, y: 0 };
+    }
+
+    const x = moveable.reduce((result, obj) => result + obj.x, 0) / moveable.length;
+    const y = moveable.reduce((result, obj) => result + obj.y, 0) / moveable.length;
+
+    return { x, y };
+}
+
 function pasteObjects(
     stage: Stage,
     scene: Scene,
@@ -48,14 +63,12 @@ function pasteObjects(
         return;
     }
 
-    const centerX = copyable.reduce((result, obj) => result + obj.x, 0) / copyable.length;
-    const centerY = copyable.reduce((result, obj) => result + obj.y, 0) / copyable.length;
-
+    const center = getGroupCenter(copyable);
     const mousePos = getSceneCoord(scene, stage.getRelativePointerPosition());
 
     const newObjects = copyable.map((obj) => {
-        const x = obj.x - centerX + mousePos.x;
-        const y = obj.y - centerY + mousePos.y;
+        const x = obj.x - center.x + mousePos.x;
+        const y = obj.y - center.y + mousePos.y;
         return { ...obj, x, y };
     });
 
@@ -154,6 +167,101 @@ const SelectionActionHandler: React.FC = () => {
     return null;
 };
 
+const SMALL_MOVE_OFFSET = 1;
+const DEFAULT_MOVE_OFFSET = 10;
+const LARGE_MOVE_OFFSET = 25;
+
+function rotateObject<T extends MoveableObject & RotateableObject>(object: T, center: Vector2d, rotation: number): T {
+    const cos = Math.cos(degtorad(-rotation));
+    const sin = Math.sin(degtorad(-rotation));
+
+    const offsetX = object.x - center.x;
+    const offsetY = object.y - center.y;
+    const rotatedX = offsetX * cos - offsetY * sin;
+    const rotatedY = offsetX * sin + offsetY * cos;
+
+    return {
+        ...object,
+        rotation: object.rotation + rotation,
+        x: center.x + rotatedX,
+        y: center.y + rotatedY,
+    };
+}
+
+const EditActionHandler: React.FC = () => {
+    const [selection] = useSelection();
+    const [scene, dispatch] = useScene();
+    const stage = useStage();
+
+    const moveCallback = useCallback(
+        (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
+            const updates: ObjectUpdate[] = [];
+            selection.forEach((index) => {
+                const object = scene.objects[index];
+                if (object && isMoveable(object)) {
+                    updates.push({
+                        index,
+                        value: {
+                            ...object,
+                            x: object.x + (offset?.x ?? 0),
+                            y: object.y + (offset?.y ?? 0),
+                        },
+                    });
+                }
+            });
+
+            dispatch({ type: 'updateMany', updates });
+            e.preventDefault();
+        },
+        [stage, scene, dispatch, selection],
+    );
+
+    useHotkeys('up', '', '', moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('down', '', '', moveCallback({ y: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('left', '', '', moveCallback({ x: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('right', '', '', moveCallback({ x: DEFAULT_MOVE_OFFSET }), [moveCallback]);
+
+    useHotkeys('ctrl+up', '', '', moveCallback({ y: LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+down', '', '', moveCallback({ y: -LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+left', '', '', moveCallback({ x: -LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+right', '', '', moveCallback({ x: LARGE_MOVE_OFFSET }), [moveCallback]);
+
+    useHotkeys('alt+up', '', '', moveCallback({ y: SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('alt+down', '', '', moveCallback({ y: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('alt+left', '', '', moveCallback({ x: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('alt+right', '', '', moveCallback({ x: SMALL_MOVE_OFFSET }), [moveCallback]);
+
+    useHotkeyHelp('🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object');
+    useHotkeyHelp('ctrl+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (coarse)');
+    useHotkeyHelp('alt+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (fine)');
+
+    const rotateCallback = useCallback(
+        (offset: number) => (e: KeyboardEvent) => {
+            const updates: ObjectUpdate[] = [];
+            const center = getGroupCenter(getSelectedObjects(scene, selection).filter(isMoveable));
+
+            selection.forEach((index) => {
+                const object = scene.objects[index];
+                if (object && isMoveable(object) && isRotateable(object)) {
+                    updates.push({ index, value: rotateObject(object, center, offset) });
+                }
+            });
+
+            dispatch({ type: 'updateMany', updates });
+            e.preventDefault();
+        },
+        [stage, scene, dispatch, selection],
+    );
+
+    useHotkeys('ctrl+g', CATEGORY_EDIT, 'Rotate 90° counter-clockwise', rotateCallback(-90), [rotateCallback]);
+    useHotkeys('ctrl+h', CATEGORY_EDIT, 'Rotate 90° clockwise', rotateCallback(90), [rotateCallback]);
+    useHotkeys('ctrl+j', CATEGORY_EDIT, 'Rotate 180°', rotateCallback(180), [rotateCallback]);
+
+    // TODO: add "moveMany" action and use pageup/pagedown (+ctrl) to adjust layer order
+
+    return null;
+};
+
 const HelpHandler: React.FC = () => {
     const [isOpen, { setTrue: showHelp, setFalse: hideHelp }] = useContext(HelpContext);
 
@@ -184,6 +292,7 @@ export const SceneHotkeyHandler: React.FC = () => {
         <>
             <UndoRedoHandler />
             <SelectionActionHandler />
+            <EditActionHandler />
         </>
     );
 };

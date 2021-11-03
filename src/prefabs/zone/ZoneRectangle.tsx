@@ -110,7 +110,6 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
                             offsetY={highlightOffset / 2}
                             width={highlightWidth}
                             height={highlightHeight}
-                            rotation={object.rotation}
                             {...SELECTED_PROPS}
                         />
                     )}

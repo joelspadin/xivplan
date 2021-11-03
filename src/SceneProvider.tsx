@@ -38,7 +38,7 @@ export interface SetArenaBackgroundAction {
     value: string | undefined;
 }
 
-interface ObjectUpdate {
+export interface ObjectUpdate {
     index: number;
     value: SceneObject;
 }
