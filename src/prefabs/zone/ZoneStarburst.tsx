@@ -20,7 +20,7 @@ import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
-import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { StarburstControlContainer } from './StarburstContainer';
 import { getZoneStyle } from './style';
 
 const NAME = 'Starburst';
@@ -165,9 +165,11 @@ const StarburstEven: React.FC<StarburstConfig> = ({
 
 interface StarburstRendererProps extends RendererProps<StarburstZone> {
     radius: number;
+    rotation: number;
+    spokeWidth: number;
 }
 
-const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, radius }) => {
+const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, radius, rotation, spokeWidth }) => {
     const showSelected = useShowHighlight(object, index);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
@@ -176,10 +178,10 @@ const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, ra
 
     const config: StarburstConfig = {
         ...style,
-        radius: radius,
+        radius,
+        rotation,
+        spokeWidth,
         spokes: object.spokes,
-        spokeWidth: object.spokeWidth,
-        rotation: object.rotation,
         showHighlight: showSelected,
     };
 
@@ -188,11 +190,18 @@ const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, ra
 
 const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object, index }) => {
     // TODO: add control point for spoke width
-    // TODO: add control point for rotation
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <StarburstRenderer object={object} index={index} radius={radius} />}
-        </RadiusObjectContainer>
+        <StarburstControlContainer object={object} index={index} minSpokeWidth={MIN_SPOKE_WIDTH}>
+            {({ radius, rotation, spokeWidth }) => (
+                <StarburstRenderer
+                    object={object}
+                    index={index}
+                    radius={radius}
+                    rotation={rotation}
+                    spokeWidth={spokeWidth}
+                />
+            )}
+        </StarburstControlContainer>
     );
 };
 

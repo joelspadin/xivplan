@@ -127,7 +127,7 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radi
 };
 
 const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
-    // TODO: add control points for rotation and trail length
+    // TODO: add control point for trail length
     return (
         <RadiusObjectContainer object={object} index={index} allowRotate>
             {({ radius, rotation }) => (

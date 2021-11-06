@@ -88,7 +88,6 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius, in
 };
 
 const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
-    // TODO: add control point for inner radius
     return (
         <RadiusObjectContainer object={object} index={index} allowInnerRadius>
             {({ radius, innerRadius }) => (
