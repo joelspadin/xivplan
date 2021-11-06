@@ -56,7 +56,6 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
                         object: {
                             type: ObjectType.Enemy,
                             icon: iconUrl,
-                            name,
                             radius,
                             rotation: hasDirection ? 0 : undefined,
                         },
@@ -260,7 +259,7 @@ const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object, index })
 registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyContainer);
 
 const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
-    return <DetailsItem icon={object.icon} name={object.name} index={index} />;
+    return <DetailsItem icon={object.icon} name={object.name || 'Enemy'} index={index} />;
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
