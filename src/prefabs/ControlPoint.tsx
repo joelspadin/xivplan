@@ -40,10 +40,8 @@ export interface ControlPointConfig<T extends Vector2d, S, P> {
     getRotation?(object: T, handle: HandleFuncProps, props: Readonly<P>): number;
     /**
      * Renders the border or bounding box.
-     *
-     * @param handles Handles from handleFunc().
      */
-    onRenderBorder?(object: T, state: S, handles: readonly Handle[], props: Readonly<P>): React.ReactElement | null;
+    onRenderBorder?(object: T, state: S, props: Readonly<P>): React.ReactElement | null;
 }
 
 export interface ControlPointManagerPropsBase<T, S> {
@@ -252,7 +250,7 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                     {/* Rotating this group would affect the pointer position, so rotate an inner group instead. */}
                     <Group ref={groupRef} x={center.x} y={center.y} visible={visible}>
                         <Group rotation={rotation}>
-                            {config.onRenderBorder?.(object, state, handles, props)}
+                            {config.onRenderBorder?.(object, state, props)}
                             {handles.map((handle, i) => (
                                 <Handle
                                     key={i}

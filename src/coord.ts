@@ -1,7 +1,7 @@
 import { Vector2d } from 'konva/lib/types';
 import { Scene } from './scene';
 import { useScene } from './SceneProvider';
-import { degtorad } from './util';
+import { degtorad, radtodeg } from './util';
 
 export const ALIGN_TO_PIXEL = {
     offsetX: -0.5,
@@ -94,4 +94,8 @@ export function snapAngle(angle: number, snapDivision: number, snapTolerance: nu
     }
 
     return Math.round(angle / snapDivision) * snapDivision;
+}
+
+export function getPointerAngle(pos: Vector2d): number {
+    return 90 - radtodeg(Math.atan2(pos.y, pos.x));
 }

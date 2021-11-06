@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { Circle, Line } from 'react-konva';
-import { snapAngle } from '../coord';
+import { getPointerAngle, snapAngle } from '../coord';
 import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { distance, radtodeg } from '../util';
+import { distance } from '../util';
 import { MIN_RADIUS } from './bounds';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -13,6 +13,7 @@ import {
     HandleFuncProps,
     HandleStyle,
 } from './ControlPoint';
+import { getResizeCursor } from './cursor';
 import { DraggableObject } from './DraggableObject';
 import { useShowResizer } from './highlight';
 
@@ -49,6 +50,8 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
 
     const updateObject = useCallback(
         (state: RadiusObjectState) => {
+            state.rotation = Math.round(state.rotation);
+
             if (!stateChanged(object, state)) {
                 return;
             }
@@ -56,7 +59,7 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
             const update: Partial<RadiusObjectState> = { radius: state.radius };
 
             if (isRotateable(object)) {
-                update.rotation = Math.round(state.rotation);
+                update.rotation = state.rotation;
             }
             if (isInnerRadiusObject(object)) {
                 update.innerRadius = state.innerRadius;
@@ -153,49 +156,19 @@ function getRotation(
     }
 
     if (pointerPos && activeHandleId === HandleId.Rotate) {
-        const angle = 90 - radtodeg(Math.atan2(pointerPos.y, pointerPos.x));
+        const angle = getPointerAngle(pointerPos);
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
     }
 
     return object.rotation;
 }
 
-function getCursor(angle: number): string {
-    angle = (((angle % 360) + 360) % 360) - 22.5;
-
-    if (angle <= 0) {
-        return 'ns-resize';
-    }
-    if (angle <= 45) {
-        return 'nesw-resize';
-    }
-    if (angle <= 90) {
-        return 'ew-resize';
-    }
-    if (angle <= 135) {
-        return 'nwse-resize';
-    }
-    if (angle <= 180) {
-        return 'ns-resize';
-    }
-    if (angle <= 225) {
-        return 'nesw-resize';
-    }
-    if (angle <= 270) {
-        return 'ew-resize';
-    }
-    if (angle <= 315) {
-        return 'nwse-resize';
-    }
-    return 'ns-resize';
-}
-
 function getNormalHandles(r: number, rotation: number): Handle[] {
     return [
-        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation), x: 0, y: -r },
-        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 180), x: 0, y: r },
-        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 270), x: -r, y: 0 },
-        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 90), x: r, y: 0 },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getResizeCursor(rotation), x: 0, y: -r },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getResizeCursor(rotation + 180), x: 0, y: r },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getResizeCursor(rotation + 270), x: -r, y: 0 },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getResizeCursor(rotation + 90), x: r, y: 0 },
     ];
 }
 
@@ -206,10 +179,10 @@ function getRotateHandle(r: number): Handle {
 function getInnerRadiusHandles(r: number): Handle[] {
     const d = Math.SQRT1_2 * r;
     return [
-        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(45), x: d, y: -d },
-        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(135), x: d, y: d },
-        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(225), x: -d, y: d },
-        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(315), x: -d, y: -d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getResizeCursor(45), x: d, y: -d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getResizeCursor(135), x: d, y: d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getResizeCursor(225), x: -d, y: d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getResizeCursor(315), x: -d, y: -d },
     ];
 }
 
@@ -238,7 +211,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
 
         return { radius, rotation, innerRadius };
     },
-    onRenderBorder: (object, state, handles, { allowRotate, allowInnerRadius }) => {
+    onRenderBorder: (object, state, { allowRotate, allowInnerRadius }) => {
         return (
             <>
                 {allowRotate && (

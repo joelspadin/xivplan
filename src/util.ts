@@ -16,6 +16,10 @@ export function radtodeg(rad: number): number {
     return (rad / Math.PI) * 180;
 }
 
+export function mod360(deg: number): number {
+    return ((deg % 360) + 360) % 360;
+}
+
 export function distance(a: Vector2d, b?: Vector2d): number {
     const h = a.x - (b?.x ?? 0);
     const v = a.y - (b?.y ?? 0);

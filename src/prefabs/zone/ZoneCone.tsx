@@ -5,6 +5,7 @@ import { Group, Shape, Wedge } from 'react-konva';
 import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getPointerAngle, snapAngle } from '../../coord';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
@@ -16,12 +17,14 @@ import { ActivePortal } from '../../render/Portals';
 import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { useIsSelected } from '../../SelectionProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { degtorad, setOrOmit } from '../../util';
+import { clamp, degtorad, distance, mod360, setOrOmit } from '../../util';
 import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
+import { getResizeCursor } from '../cursor';
 import { DraggableObject } from '../DraggableObject';
+import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
@@ -124,34 +127,82 @@ const OffsetWedge: React.FC<OffsetWedgeProps> = ({ radius, angle, shapeOffset, .
     );
 };
 
-const ConeRenderer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
-    const isSelected = useIsSelected(index);
-    const [active, setActive] = useState(false);
+interface ConeRendererProps extends RendererProps<ConeZone> {
+    radius: number;
+    rotation: number;
+    coneAngle: number;
+}
+
+const ConeRenderer: React.FC<ConeRendererProps> = ({ object, index, radius, rotation, coneAngle }) => {
+    const isSelected = useShowHighlight(object, index);
     const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.radius * 2, object.hollow),
-        [object.color, object.opacity, object.radius, object.hollow],
+        () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
+        [object.color, object.opacity, radius, object.hollow],
     );
 
     return (
-        <ActivePortal isActive={active}>
-            <DraggableObject object={object} index={index} onActive={setActive}>
-                <Group rotation={object.rotation - 90 - object.coneAngle / 2}>
-                    {isSelected && (
-                        <OffsetWedge
-                            radius={object.radius}
-                            angle={object.coneAngle}
-                            shapeOffset={style.strokeWidth / 2}
-                            {...SELECTED_PROPS}
+        <Group rotation={rotation - 90 - coneAngle / 2}>
+            {isSelected && (
+                <OffsetWedge
+                    radius={radius}
+                    angle={coneAngle}
+                    shapeOffset={style.strokeWidth / 2}
+                    {...SELECTED_PROPS}
+                />
+            )}
+            <Wedge radius={radius} angle={coneAngle} {...style} />
+        </Group>
+    );
+};
+
+function stateChanged(object: ConeZone, state: ConeState) {
+    return state.radius !== object.radius || state.rotation !== object.rotation || state.coneAngle !== object.coneAngle;
+}
+
+const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
+    const [, dispatch] = useScene();
+    const showResizer = useShowResizer(object, index);
+    const [resizing, setResizing] = useState(false);
+    const [dragging, setDragging] = useState(false);
+
+    const updateObject = useCallback(
+        (state: ConeState) => {
+            state.rotation = Math.round(state.rotation);
+
+            if (!stateChanged(object, state)) {
+                return;
+            }
+
+            dispatch({ type: 'update', index, value: { ...object, ...state } });
+        },
+        [dispatch, object, index],
+    );
+
+    return (
+        <ActivePortal isActive={dragging || resizing}>
+            <DraggableObject object={object} index={index} onActive={setDragging}>
+                <ConeControlPoints
+                    object={object}
+                    onActive={setResizing}
+                    visible={showResizer && !dragging}
+                    onTransformEnd={updateObject}
+                >
+                    {({ radius, rotation, coneAngle }) => (
+                        <ConeRenderer
+                            object={object}
+                            index={index}
+                            radius={radius}
+                            rotation={rotation}
+                            coneAngle={coneAngle}
                         />
                     )}
-                    <Wedge radius={object.radius} angle={object.coneAngle} {...style} />
-                </Group>
+                </ConeControlPoints>
             </DraggableObject>
         </ActivePortal>
     );
 };
 
-registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeRenderer);
+registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ index }) => {
     // TODO: color filter icon?
@@ -245,3 +296,100 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
 };
 
 registerPropertiesControl<ConeZone>(ObjectType.Cone, ConeEditControl);
+
+enum HandleId {
+    Radius,
+    Angle1,
+    Angle2,
+}
+
+interface ConeState {
+    radius: number;
+    rotation: number;
+    coneAngle: number;
+}
+
+const OUTSET = 2;
+
+const ROTATE_SNAP_DIVISION = 15;
+const ROTATE_SNAP_TOLERANCE = 2;
+
+function getRadius(object: ConeZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+    if (pointerPos && activeHandleId === HandleId.Radius) {
+        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - OUTSET));
+    }
+
+    return object.radius;
+}
+
+function getRotation(object: ConeZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+    if (pointerPos && activeHandleId === HandleId.Radius) {
+        const angle = getPointerAngle(pointerPos);
+        return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
+    }
+
+    return object.rotation;
+}
+
+function getConeAngle(object: ConeZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+    if (pointerPos) {
+        const angle = getPointerAngle(pointerPos);
+
+        if (activeHandleId === HandleId.Angle1) {
+            const coneAngle = snapAngle(
+                mod360(angle - object.rotation + 90) - 90,
+                ROTATE_SNAP_DIVISION,
+                ROTATE_SNAP_TOLERANCE,
+            );
+            return clamp(coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+        }
+        if (activeHandleId === HandleId.Angle2) {
+            const coneAngle = snapAngle(
+                mod360(angle - object.rotation + 270) - 270,
+                ROTATE_SNAP_DIVISION,
+                ROTATE_SNAP_TOLERANCE,
+            );
+
+            return clamp(-coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+        }
+    }
+
+    return object.coneAngle;
+}
+
+const ConeControlPoints = createControlPointManager<ConeZone, ConeState>({
+    handleFunc: (object, handle) => {
+        const radius = getRadius(object, handle) + OUTSET;
+        const rotation = getRotation(object, handle);
+        const coneAngle = getConeAngle(object, handle);
+
+        const x = radius * Math.sin(degtorad(coneAngle / 2));
+        const y = radius * Math.cos(degtorad(coneAngle / 2));
+
+        return [
+            { id: HandleId.Radius, style: HandleStyle.Square, cursor: getResizeCursor(rotation), x: 0, y: -radius },
+            { id: HandleId.Angle1, style: HandleStyle.Diamond, cursor: 'crosshair', x: x, y: -y },
+            { id: HandleId.Angle2, style: HandleStyle.Diamond, cursor: 'crosshair', x: -x, y: -y },
+        ];
+    },
+    getRotation: getRotation,
+    stateFunc: (object, handle) => {
+        const radius = getRadius(object, handle);
+        const rotation = getRotation(object, handle);
+        const coneAngle = getConeAngle(object, handle);
+
+        return { radius, rotation, coneAngle };
+    },
+    onRenderBorder: (object, state) => {
+        return (
+            <OffsetWedge
+                rotation={-90 - state.coneAngle / 2}
+                radius={state.radius}
+                angle={state.coneAngle}
+                shapeOffset={1}
+                stroke={CONTROL_POINT_BORDER_COLOR}
+                fillEnabled={false}
+            />
+        );
+    },
+});
