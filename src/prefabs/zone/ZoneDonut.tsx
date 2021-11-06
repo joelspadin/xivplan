@@ -63,9 +63,10 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
 
 interface DonutRendererProps extends RendererProps<DonutZone> {
     radius: number;
+    innerRadius: number;
 }
 
-const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius }) => {
+const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius, innerRadius }) => {
     const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -76,12 +77,12 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius }) 
         <>
             {showHighlight && (
                 <Ring
-                    innerRadius={object.innerRadius - style.strokeWidth / 2}
+                    innerRadius={innerRadius - style.strokeWidth / 2}
                     outerRadius={radius + style.strokeWidth / 2}
                     {...SELECTED_PROPS}
                 />
             )}
-            <Ring innerRadius={object.innerRadius} outerRadius={radius} {...style} />
+            <Ring innerRadius={innerRadius} outerRadius={radius} {...style} />
         </>
     );
 };
@@ -89,8 +90,10 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius }) 
 const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
     // TODO: add control point for inner radius
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <DonutRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object} index={index} allowInnerRadius>
+            {({ radius, innerRadius }) => (
+                <DonutRenderer object={object} index={index} radius={radius} innerRadius={innerRadius} />
+            )}
         </RadiusObjectContainer>
     );
 };
@@ -150,7 +153,7 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
             <MoveableObjectProperties object={object} index={index} />
             <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
                 <SpinButton
-                    label="Inside radius"
+                    label="Radius 1"
                     labelPosition={Position.top}
                     value={object.innerRadius.toString()}
                     onChange={onInnerRadiusChanged}
@@ -158,7 +161,7 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
                     step={5}
                 />
                 <SpinButton
-                    label="Outside radius"
+                    label="Radius 2"
                     labelPosition={Position.top}
                     value={object.radius.toString()}
                     onChange={onRadiusChanged}

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { snapAngle } from '../coord';
 import { ActivePortal } from '../render/Portals';
-import { isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
+import { InnerRadiusObject, isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { distance, radtodeg } from '../util';
 import { MIN_RADIUS } from './bounds';
@@ -18,11 +18,13 @@ import { useShowResizer } from './highlight';
 
 interface ControlPointProps {
     allowRotate?: boolean;
+    allowInnerRadius?: boolean;
 }
 
 export interface RadiusObjectState {
     radius: number;
     rotation: number;
+    innerRadius: number;
 }
 
 export interface RadiusObjectContainerProps extends ControlPointProps {
@@ -38,6 +40,7 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
     onTransformEnd,
     children,
     allowRotate,
+    allowInnerRadius,
 }) => {
     const [, dispatch] = useScene();
     const showResizer = useShowResizer(object, index);
@@ -46,15 +49,18 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
 
     const updateObject = useCallback(
         (state: RadiusObjectState) => {
-            const rotateable = isRotateable(object);
-
-            if (state.radius === object.radius && (!rotateable || state.rotation === object.rotation)) {
+            if (!stateChanged(object, state)) {
                 return;
             }
 
-            const update = rotateable
-                ? { radius: state.radius, rotation: Math.round(state.rotation) }
-                : { radius: state.radius };
+            const update: Partial<RadiusObjectState> = { radius: state.radius };
+
+            if (isRotateable(object)) {
+                update.rotation = Math.round(state.rotation);
+            }
+            if (isInnerRadiusObject(object)) {
+                update.innerRadius = state.innerRadius;
+            }
 
             dispatch({ type: 'update', index, value: { ...object, ...update } as SceneObject });
             onTransformEnd?.(state);
@@ -71,6 +77,7 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
                     visible={showResizer && !dragging}
                     onTransformEnd={updateObject}
                     allowRotate={allowRotate}
+                    allowInnerRadius={allowInnerRadius}
                 >
                     {children}
                 </RadiusControlPoints>
@@ -79,12 +86,26 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
     );
 };
 
-enum HandleIndex {
-    Top,
-    Bottom,
-    Left,
-    Right,
+function stateChanged(object: RadiusObject, state: RadiusObjectState) {
+    if (state.radius !== object.radius) {
+        return true;
+    }
+
+    if (isRotateable(object) && state.rotation !== object.rotation) {
+        return true;
+    }
+
+    if (isInnerRadiusObject(object) && state.innerRadius !== object.innerRadius) {
+        return true;
+    }
+
+    return false;
+}
+
+enum HandleId {
+    Radius,
     Rotate,
+    InnerRadius,
 }
 
 const OUTSET = 2;
@@ -93,24 +114,45 @@ const ROTATE_HANDLE_OFFSET = 50;
 const ROTATE_SNAP_DIVISION = 15;
 const ROTATE_SNAP_TOLERANCE = 2;
 
-function getRadius(object: RadiusObject, { pointerPos, activeIndex }: HandleFuncProps) {
-    if (pointerPos && activeIndex !== HandleIndex.Rotate) {
+function getRadius(object: RadiusObject, { pointerPos, activeHandleId }: HandleFuncProps) {
+    if (pointerPos && activeHandleId === HandleId.Radius) {
         return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - OUTSET));
     }
 
     return object.radius;
 }
 
+function isInnerRadiusObject(object: RadiusObject): object is RadiusObject & InnerRadiusObject {
+    const innerRadiusObject = object as InnerRadiusObject & RadiusObject;
+    return innerRadiusObject && typeof innerRadiusObject.innerRadius === 'number';
+}
+
+function getInnerRadius(
+    object: RadiusObject,
+    { pointerPos, activeHandleId }: HandleFuncProps,
+    { allowInnerRadius }: ControlPointProps,
+) {
+    if (!allowInnerRadius || !isInnerRadiusObject(object)) {
+        return 0;
+    }
+
+    if (pointerPos && activeHandleId === HandleId.InnerRadius) {
+        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) + OUTSET));
+    }
+
+    return object.innerRadius;
+}
+
 function getRotation(
     object: RadiusObject,
-    { pointerPos, activeIndex }: HandleFuncProps,
+    { pointerPos, activeHandleId }: HandleFuncProps,
     { allowRotate }: ControlPointProps,
 ) {
     if (!allowRotate || !isRotateable(object)) {
         return 0;
     }
 
-    if (pointerPos && activeIndex === HandleIndex.Rotate) {
+    if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = 90 - radtodeg(Math.atan2(pointerPos.y, pointerPos.x));
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
     }
@@ -150,15 +192,25 @@ function getCursor(angle: number): string {
 
 function getNormalHandles(r: number, rotation: number): Handle[] {
     return [
-        { style: HandleStyle.Square, cursor: getCursor(rotation), x: 0, y: -r },
-        { style: HandleStyle.Square, cursor: getCursor(rotation + 180), x: 0, y: r },
-        { style: HandleStyle.Square, cursor: getCursor(rotation + 270), x: -r, y: 0 },
-        { style: HandleStyle.Square, cursor: getCursor(rotation + 90), x: r, y: 0 },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation), x: 0, y: -r },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 180), x: 0, y: r },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 270), x: -r, y: 0 },
+        { id: HandleId.Radius, style: HandleStyle.Square, cursor: getCursor(rotation + 90), x: r, y: 0 },
     ];
 }
 
 function getRotateHandle(r: number): Handle {
-    return { style: HandleStyle.Square, cursor: 'crosshair', x: 0, y: -r - ROTATE_HANDLE_OFFSET };
+    return { id: HandleId.Rotate, style: HandleStyle.Square, cursor: 'crosshair', x: 0, y: -r - ROTATE_HANDLE_OFFSET };
+}
+
+function getInnerRadiusHandles(r: number): Handle[] {
+    const d = Math.SQRT1_2 * r;
+    return [
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(45), x: d, y: -d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(135), x: d, y: d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(225), x: -d, y: d },
+        { id: HandleId.InnerRadius, style: HandleStyle.Diamond, cursor: getCursor(315), x: -d, y: -d },
+    ];
 }
 
 const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObjectState, ControlPointProps>({
@@ -171,16 +223,22 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
             handles.push(getRotateHandle(radius));
         }
 
+        if (props.allowInnerRadius) {
+            const innerRadius = getInnerRadius(object, handle, props) - OUTSET;
+            handles.push(...getInnerRadiusHandles(innerRadius));
+        }
+
         return handles;
     },
     getRotation: getRotation,
     stateFunc: (object, handle, props) => {
         const radius = getRadius(object, handle);
+        const innerRadius = getInnerRadius(object, handle, props);
         const rotation = getRotation(object, handle, props);
 
-        return { radius, rotation };
+        return { radius, rotation, innerRadius };
     },
-    onRenderBorder: (object, state, handles, { allowRotate }) => {
+    onRenderBorder: (object, state, handles, { allowRotate, allowInnerRadius }) => {
         return (
             <>
                 {allowRotate && (
@@ -188,6 +246,14 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                         points={[0, -state.radius, 0, -state.radius - ROTATE_HANDLE_OFFSET]}
                         stroke={CONTROL_POINT_BORDER_COLOR}
                         strokeWidth={1}
+                    />
+                )}
+                {allowInnerRadius && (
+                    <Circle
+                        radius={state.innerRadius - OUTSET}
+                        stroke={CONTROL_POINT_BORDER_COLOR}
+                        strokeWidth={1}
+                        fillEnabled={false}
                     />
                 )}
                 <Circle

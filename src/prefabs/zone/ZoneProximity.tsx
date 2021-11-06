@@ -8,7 +8,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { COLOR_BLUE_WHITE, DEFAULT_AOE_COLOR, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { degtorad } from '../../util';
 import { useShowHighlight } from '../highlight';
@@ -43,7 +43,7 @@ registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
         object: {
             type: ObjectType.Proximity,
             color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
+            opacity: COLOR_BLUE_WHITE,
             radius: DEFAULT_RADIUS,
             ...object,
             ...position,

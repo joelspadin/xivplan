@@ -113,6 +113,10 @@ export interface RadiusObject extends MoveableObject {
     readonly radius: number;
 }
 
+export interface InnerRadiusObject extends MoveableObject {
+    readonly innerRadius: number;
+}
+
 export interface ImageObject extends ResizeableObject {
     readonly image: string;
 }

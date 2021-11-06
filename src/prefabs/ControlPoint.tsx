@@ -16,14 +16,14 @@ export enum HandleStyle {
 }
 
 export interface Handle extends Vector2d {
+    readonly id: number;
     readonly cursor?: string;
     readonly style?: HandleStyle;
 }
 
 export interface HandleFuncProps {
     pointerPos?: Vector2d;
-    activeHandle?: Handle;
-    activeIndex: number;
+    activeHandleId?: number;
 }
 
 export interface ControlPointConfig<T extends Vector2d, S, P> {
@@ -34,9 +34,6 @@ export interface ControlPointConfig<T extends Vector2d, S, P> {
     handleFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): Handle[];
     /**
      * Returns a state object to pass to the child.
-     *
-     * @param activeHandle The handle being transformed, or undefined if not transforming
-     * @param handleIndex The index of the handle being transformed, if transforming
      */
     stateFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): S;
 
@@ -47,8 +44,6 @@ export interface ControlPointConfig<T extends Vector2d, S, P> {
      * @param handles Handles from handleFunc().
      */
     onRenderBorder?(object: T, state: S, handles: readonly Handle[], props: Readonly<P>): React.ReactElement | null;
-
-    style?: HandleStyle;
 }
 
 export interface ControlPointManagerPropsBase<T, S> {
@@ -70,7 +65,7 @@ const CONTROL_POINT_SIZE = 10;
 const CONTROL_POINT_OFFSET = { x: CONTROL_POINT_SIZE / 2, y: CONTROL_POINT_SIZE / 2 };
 
 interface TransformState {
-    handleIndex: number;
+    handleId: number;
     /** Offset of pointer relative to handle */
     handleOffset: Vector2d;
     pointerPos: Vector2d;
@@ -126,21 +121,19 @@ const Handle: React.FC<HandleProps> = ({ style, ...props }) => {
     }
 };
 
-function getHandle(handles: readonly Handle[], index: number) {
-    const controlPos = handles[index];
-    if (controlPos === undefined) {
+function getHandleId(handles: readonly Handle[], index: number): number {
+    const activeHandle = handles[index];
+    if (activeHandle === undefined) {
         throw new Error(`Invalid control point index ${index}`);
     }
 
-    return controlPos;
+    return activeHandle.id;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function createControlPointManager<T extends Vector2d, S, P = {}>(
     config: ControlPointConfig<T, S, P>,
 ): React.VFC<ControlPointManagerProps<T, S, P>> {
-    const style = config.style ?? HandleStyle.Square;
-
     const ControlPointManager: React.VFC<ControlPointManagerProps<T, S, P>> = (props) => {
         const { children, onActive, onTransformEnd, object, visible } = props;
 
@@ -155,11 +148,10 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                 pointerPos = getHandleCenter(transform);
             }
 
-            const activeIndex = transform?.handleIndex ?? 0;
-            const handles = config.handleFunc(object, { pointerPos, activeIndex }, props);
-            const activeHandle = transform ? getHandle(handles, activeIndex) : undefined;
+            const activeHandleId = transform?.handleId ?? 0;
+            const handleProps = { pointerPos, activeHandleId };
 
-            const handleProps = { pointerPos, activeHandle, activeIndex };
+            const handles = config.handleFunc(object, handleProps, props);
             const state = config.stateFunc(object, handleProps, props);
             const rotation = config.getRotation?.(object, handleProps, props) ?? 0;
 
@@ -193,11 +185,13 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                         -rotation,
                     );
 
+                    const handleId = getHandleId(config.handleFunc(object, {}, props), i);
+
                     onActive?.(true);
-                    setTransform({ pointerPos, handleOffset, handleIndex: i });
+                    setTransform({ pointerPos, handleOffset, handleId });
                 };
             },
-            [onActive, setTransform, getPointerPos, rotation],
+            [onActive, setTransform, getPointerPos, object, rotation, props],
         );
 
         useEffect(() => {
@@ -217,11 +211,10 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                 setTransform(undefined);
 
                 const pointerPos = getHandleCenter({ ...transform, pointerPos: getPointerPos() });
-                const activeIndex = transform.handleIndex;
 
-                const handles = config.handleFunc(object, { pointerPos, activeIndex }, props);
-                const activeHandle = getHandle(handles, transform.handleIndex);
-                const state = config.stateFunc(object, { pointerPos, activeHandle, activeIndex }, props);
+                const activeHandleId = transform?.handleId ?? 0;
+                const handleProps = { pointerPos, activeHandleId };
+                const state = config.stateFunc(object, handleProps, props);
                 onTransformEnd?.(state);
             };
 
@@ -260,13 +253,13 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                     <Group ref={groupRef} x={center.x} y={center.y} visible={visible}>
                         <Group rotation={rotation}>
                             {config.onRenderBorder?.(object, state, handles, props)}
-                            {handles.map((pos, i) => (
+                            {handles.map((handle, i) => (
                                 <Handle
                                     key={i}
-                                    x={pos.x}
-                                    y={pos.y}
-                                    style={style}
-                                    onMouseEnter={() => setCursor(handles[i]?.cursor ?? 'default')}
+                                    x={handle.x}
+                                    y={handle.y}
+                                    style={handle.style ?? HandleStyle.Square}
+                                    onMouseEnter={() => setCursor(handle.cursor ?? 'default')}
                                     onMouseLeave={() => setCursor('default')}
                                     onMouseDown={getTransformStart(i)}
                                     onTouchStart={getTransformStart(i)}
