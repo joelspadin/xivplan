@@ -168,6 +168,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => 
     const updateObject = useCallback(
         (state: ConeState) => {
             state.rotation = Math.round(state.rotation);
+            state.coneAngle = Math.round(state.coneAngle);
 
             if (!stateChanged(object, state)) {
                 return;
