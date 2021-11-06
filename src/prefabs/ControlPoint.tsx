@@ -3,7 +3,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Group, KonvaNodeEvents, Rect } from 'react-konva';
-import { getCanvasCoord } from '../coord';
+import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { useStage } from '../render/StageProvider';
 import { useScene } from '../SceneProvider';
@@ -15,47 +15,51 @@ export enum HandleStyle {
     Diamond,
 }
 
-export interface ControlPointConfig<T extends Vector2d, S> {
+export interface Handle extends Vector2d {
+    readonly cursor?: string;
+    readonly style?: HandleStyle;
+}
+
+export interface HandleFuncProps {
+    pointerPos?: Vector2d;
+    activeHandle?: Handle;
+    activeIndex: number;
+}
+
+export interface ControlPointConfig<T extends Vector2d, S, P> {
     /**
-     * Returns a position for each control point relative to the center of the
+     * Returns each control point handle. Positions are relative to the center of the
      * object.
+     */
+    handleFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): Handle[];
+    /**
+     * Returns a state object to pass to the child.
      *
-     * @param pointerPos Position of the mouse relative to the center of the object,
-     * or undefined if not transforming.
+     * @param activeHandle The handle being transformed, or undefined if not transforming
+     * @param handleIndex The index of the handle being transformed, if transforming
      */
-    positionFunc(object: T, pointerPos: Vector2d | undefined): Vector2d[];
-    /**
-     * Gets the cursor icon to use for a control point.
-     */
-    cursorFunc?(controlIndex: number): string;
-    /**
-     * Returns a state object to pass to the child when not transforming.
-     */
-    stateFunc(object: T): S;
-    /**
-     * Returns a state object to pass to the child when transforming.
-     *
-     * @param controlPos Position of the control point being moved.
-     * @param controlIndex Index of the control point being moved.
-     */
-    transformStateFunc(object: T, controlPos: Vector2d, controlIndex: number): S;
+    stateFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): S;
+
+    getRotation?(object: T, handle: HandleFuncProps, props: Readonly<P>): number;
     /**
      * Renders the border or bounding box.
      *
-     * @param controlPoints Positions from positionFunc().
+     * @param handles Handles from handleFunc().
      */
-    onRenderBorder?(object: T, state: S, controlPoints: readonly Vector2d[]): React.ReactElement | null;
+    onRenderBorder?(object: T, state: S, handles: readonly Handle[], props: Readonly<P>): React.ReactElement | null;
 
     style?: HandleStyle;
 }
 
-export interface ControlPointManagerProps<T, S> {
+export interface ControlPointManagerPropsBase<T, S> {
     object: T;
     visible?: boolean;
     onActive?(active: boolean): void;
     onTransformEnd?(state: S): void;
     children: (state: S) => React.ReactElement;
 }
+
+export type ControlPointManagerProps<T, S, P> = ControlPointManagerPropsBase<T, S> & P;
 
 const SQUARE_FILL_COLOR = '#ffffff';
 const SQUARE_STROKE_COLOR = CONTROL_POINT_BORDER_COLOR;
@@ -65,13 +69,14 @@ const DIAMOND_STROKE_COLOR = '#adad00';
 const CONTROL_POINT_SIZE = 10;
 const CONTROL_POINT_OFFSET = { x: CONTROL_POINT_SIZE / 2, y: CONTROL_POINT_SIZE / 2 };
 
-interface TransformId {
-    controlIndex: number;
+interface TransformState {
+    handleIndex: number;
+    /** Offset of pointer relative to handle */
     handleOffset: Vector2d;
     pointerPos: Vector2d;
 }
 
-function getHandleCenter(transform: TransformId) {
+function getHandleCenter(transform: TransformState) {
     return {
         x: transform.pointerPos.x - transform.handleOffset.x,
         y: transform.pointerPos.y + transform.handleOffset.y,
@@ -121,8 +126,8 @@ const Handle: React.FC<HandleProps> = ({ style, ...props }) => {
     }
 };
 
-function getControlPos(positions: readonly Vector2d[], index: number) {
-    const controlPos = positions[index];
+function getHandle(handles: readonly Handle[], index: number) {
+    const controlPos = handles[index];
     if (controlPos === undefined) {
         throw new Error(`Invalid control point index ${index}`);
     }
@@ -130,39 +135,36 @@ function getControlPos(positions: readonly Vector2d[], index: number) {
     return controlPos;
 }
 
-export function createControlPointManager<T extends Vector2d, S>(
-    config: ControlPointConfig<T, S>,
-): React.VFC<ControlPointManagerProps<T, S>> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function createControlPointManager<T extends Vector2d, S, P = {}>(
+    config: ControlPointConfig<T, S, P>,
+): React.VFC<ControlPointManagerProps<T, S, P>> {
     const style = config.style ?? HandleStyle.Square;
 
-    const ControlPointManager: React.VFC<ControlPointManagerProps<T, S>> = ({
-        children,
-        onActive,
-        onTransformEnd,
-        object,
-        visible,
-    }) => {
+    const ControlPointManager: React.VFC<ControlPointManagerProps<T, S, P>> = (props) => {
+        const { children, onActive, onTransformEnd, object, visible } = props;
+
         const [scene] = useScene();
         const stage = useStage();
-        const [transform, setTransform] = useState<TransformId>();
+        const [transform, setTransform] = useState<TransformState>();
         const groupRef = useRef<Konva.Group>(null);
 
-        const { state, positions } = useMemo(() => {
-            if (!transform) {
-                return {
-                    positions: config.positionFunc(object, undefined),
-                    state: config.stateFunc(object),
-                };
+        const { state, handles, rotation } = useMemo(() => {
+            let pointerPos: Vector2d | undefined;
+            if (transform) {
+                pointerPos = getHandleCenter(transform);
             }
 
-            const positions = config.positionFunc(object, getHandleCenter(transform));
-            const controlPos = getControlPos(positions, transform.controlIndex);
+            const activeIndex = transform?.handleIndex ?? 0;
+            const handles = config.handleFunc(object, { pointerPos, activeIndex }, props);
+            const activeHandle = transform ? getHandle(handles, activeIndex) : undefined;
 
-            return {
-                positions,
-                state: config.transformStateFunc(object, controlPos, transform.controlIndex),
-            };
-        }, [transform, object]);
+            const handleProps = { pointerPos, activeHandle, activeIndex };
+            const state = config.stateFunc(object, handleProps, props);
+            const rotation = config.getRotation?.(object, handleProps, props) ?? 0;
+
+            return { handles, state, rotation };
+        }, [transform, object, props]);
 
         const getPointerPos = useCallback(() => {
             if (!groupRef.current) {
@@ -180,16 +182,22 @@ export function createControlPointManager<T extends Vector2d, S>(
 
                     const pointerPos = getPointerPos();
                     const handleCornerOffset = e.target.getRelativePointerPosition();
-                    const handleOffset = {
-                        x: handleCornerOffset.x - e.target.offsetX(),
-                        y: handleCornerOffset.y - e.target.offsetY(),
-                    };
+
+                    // Offset is relative to rotated object, but we want the offset
+                    // in screen coordinates, so back out the rotation.
+                    const handleOffset = rotateCoord(
+                        {
+                            x: handleCornerOffset.x - e.target.offsetX(),
+                            y: handleCornerOffset.y - e.target.offsetY(),
+                        },
+                        -rotation,
+                    );
 
                     onActive?.(true);
-                    setTransform({ pointerPos, handleOffset, controlIndex: i });
+                    setTransform({ pointerPos, handleOffset, handleIndex: i });
                 };
             },
-            [onActive, setTransform, getPointerPos],
+            [onActive, setTransform, getPointerPos, rotation],
         );
 
         useEffect(() => {
@@ -208,10 +216,12 @@ export function createControlPointManager<T extends Vector2d, S>(
                 onActive?.(false);
                 setTransform(undefined);
 
-                const pointerPos = getPointerPos();
-                const positions = config.positionFunc(object, getHandleCenter({ ...transform, pointerPos }));
-                const controlPos = getControlPos(positions, transform.controlIndex);
-                const state = config.transformStateFunc(object, controlPos, transform.controlIndex);
+                const pointerPos = getHandleCenter({ ...transform, pointerPos: getPointerPos() });
+                const activeIndex = transform.handleIndex;
+
+                const handles = config.handleFunc(object, { pointerPos, activeIndex }, props);
+                const activeHandle = getHandle(handles, transform.handleIndex);
+                const state = config.stateFunc(object, { pointerPos, activeHandle, activeIndex }, props);
                 onTransformEnd?.(state);
             };
 
@@ -229,7 +239,7 @@ export function createControlPointManager<T extends Vector2d, S>(
                 window.removeEventListener('mouseup', handleEnd, true);
                 window.removeEventListener('touchend', handleEnd, true);
             };
-        }, [!transform, setTransform, getPointerPos]);
+        }, [!transform, setTransform, getPointerPos, props]);
 
         const setCursor = useCallback(
             (cursor: string) => {
@@ -246,20 +256,23 @@ export function createControlPointManager<T extends Vector2d, S>(
             <>
                 {children(state)}
                 <ControlsPortal>
+                    {/* Rotating this group would affect the pointer position, so rotate an inner group instead. */}
                     <Group ref={groupRef} x={center.x} y={center.y} visible={visible}>
-                        {config.onRenderBorder?.(object, state, positions)}
-                        {positions.map((pos, i) => (
-                            <Handle
-                                key={i}
-                                x={pos.x}
-                                y={pos.y}
-                                style={style}
-                                onMouseEnter={() => setCursor(config.cursorFunc?.(i) ?? 'default')}
-                                onMouseLeave={() => setCursor('default')}
-                                onMouseDown={getTransformStart(i)}
-                                onTouchStart={getTransformStart(i)}
-                            />
-                        ))}
+                        <Group rotation={rotation}>
+                            {config.onRenderBorder?.(object, state, handles, props)}
+                            {handles.map((pos, i) => (
+                                <Handle
+                                    key={i}
+                                    x={pos.x}
+                                    y={pos.y}
+                                    style={style}
+                                    onMouseEnter={() => setCursor(handles[i]?.cursor ?? 'default')}
+                                    onMouseLeave={() => setCursor('default')}
+                                    onMouseDown={getTransformStart(i)}
+                                    onTouchStart={getTransformStart(i)}
+                                />
+                            ))}
+                        </Group>
                     </Group>
                 </ControlsPortal>
             </>

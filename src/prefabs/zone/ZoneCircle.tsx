@@ -84,7 +84,7 @@ const CircleRenderer: React.FC<CircleRendererProps> = ({ object, index, radius }
 const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <CircleRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <CircleRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

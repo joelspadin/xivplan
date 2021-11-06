@@ -99,7 +99,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, index, radius }) 
 const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <StackRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <StackRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

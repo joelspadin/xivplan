@@ -133,7 +133,7 @@ const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object, index })
 
     return (
         <RadiusObjectContainer object={object} index={index} onTransformEnd={() => groupRef.current?.clearCache()}>
-            {(radius) => <RotateRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
+            {({ radius }) => <RotateRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
         </RadiusObjectContainer>
     );
 };

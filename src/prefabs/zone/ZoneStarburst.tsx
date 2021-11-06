@@ -191,7 +191,7 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object, in
     // TODO: add control point for rotation
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <StarburstRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <StarburstRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

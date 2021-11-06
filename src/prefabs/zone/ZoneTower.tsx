@@ -147,7 +147,7 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, index, radius }) 
 const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object, index }) => {
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <TowerRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <TowerRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

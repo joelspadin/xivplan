@@ -1,7 +1,7 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
-import { getSceneCoord } from './coord';
+import { getSceneCoord, rotateCoord } from './coord';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
@@ -16,7 +16,6 @@ import {
     selectNone,
     useSelection,
 } from './SelectionProvider';
-import { degtorad } from './util';
 
 const CATEGORY_HISTORY = 'History';
 const CATEGORY_SELECTION = 'Selection';
@@ -172,19 +171,12 @@ const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
 function rotateObject<T extends MoveableObject & RotateableObject>(object: T, center: Vector2d, rotation: number): T {
-    const cos = Math.cos(degtorad(-rotation));
-    const sin = Math.sin(degtorad(-rotation));
-
-    const offsetX = object.x - center.x;
-    const offsetY = object.y - center.y;
-    const rotatedX = offsetX * cos - offsetY * sin;
-    const rotatedY = offsetX * sin + offsetY * cos;
+    const pos = rotateCoord(object, rotation, center);
 
     return {
         ...object,
         rotation: object.rotation + rotation,
-        x: center.x + rotatedX,
-        y: center.y + rotatedY,
+        ...pos,
     };
 }
 

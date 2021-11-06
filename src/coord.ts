@@ -1,6 +1,7 @@
 import { Vector2d } from 'konva/lib/types';
 import { Scene } from './scene';
 import { useScene } from './SceneProvider';
+import { degtorad } from './util';
 
 export const ALIGN_TO_PIXEL = {
     offsetX: -0.5,
@@ -71,4 +72,26 @@ export function getSceneY(scene: Scene, y: number): number {
 
 export function getSceneCoord(scene: Scene, p: Vector2d): Vector2d {
     return { x: getSceneX(scene, p.x), y: getSceneY(scene, p.y) };
+}
+
+export function rotateCoord(p: Vector2d, angle: number, center: Vector2d = { x: 0, y: 0 }): Vector2d {
+    const cos = Math.cos(degtorad(-angle));
+    const sin = Math.sin(degtorad(-angle));
+
+    const offsetX = p.x - center.x;
+    const offsetY = p.y - center.y;
+    const rotatedX = offsetX * cos - offsetY * sin;
+    const rotatedY = offsetX * sin + offsetY * cos;
+
+    return { x: center.x + rotatedX, y: center.y + rotatedY };
+}
+
+export function snapAngle(angle: number, snapDivision: number, snapTolerance: number): number {
+    const divAngle = ((angle % snapDivision) + snapDivision) % snapDivision;
+
+    if (divAngle > snapTolerance && divAngle < snapDivision - snapTolerance) {
+        return angle;
+    }
+
+    return Math.round(angle / snapDivision) * snapDivision;
 }

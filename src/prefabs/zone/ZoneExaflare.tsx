@@ -27,7 +27,7 @@ import { getArrowStyle, getZoneStyle } from './style';
 const NAME = 'Moving AOE';
 
 const DEFAULT_RADIUS = 40;
-const DEFAULT_LENGTH = 7;
+const DEFAULT_LENGTH = 10;
 const MIN_LENGTH = 2;
 
 export const ZoneExaflare: React.FunctionComponent = () => {
@@ -82,9 +82,10 @@ function getDashSize(radius: number) {
 
 interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
     radius: number;
+    rotation: number;
 }
 
-const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radius }) => {
+const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radius, rotation }) => {
     const showHighlight = useShowHighlight(object, index);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -96,7 +97,7 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radi
 
     return (
         <>
-            <Group rotation={object.rotation}>
+            <Group rotation={rotation}>
                 {trail.map((point, i) => (
                     <Circle
                         key={i}
@@ -128,8 +129,10 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radi
 const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
     // TODO: add control points for rotation and trail length
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <ExaflareRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object} index={index} allowRotate>
+            {({ radius, rotation }) => (
+                <ExaflareRenderer object={object} index={index} radius={radius} rotation={rotation} />
+            )}
         </RadiusObjectContainer>
     );
 };

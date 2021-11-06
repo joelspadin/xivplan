@@ -100,7 +100,7 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, index, ra
 const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <KnockbackRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <KnockbackRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

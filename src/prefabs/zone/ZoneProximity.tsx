@@ -175,7 +175,7 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, index, ra
 const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
     return (
         <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <ProximityRenderer object={object} index={index} radius={radius} />}
+            {({ radius }) => <ProximityRenderer object={object} index={index} radius={radius} />}
         </RadiusObjectContainer>
     );
 };

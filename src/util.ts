@@ -12,11 +12,21 @@ export function degtorad(deg: number): number {
     return (deg * Math.PI) / 180;
 }
 
+export function radtodeg(rad: number): number {
+    return (rad / Math.PI) * 180;
+}
+
 export function distance(a: Vector2d, b?: Vector2d): number {
     const h = a.x - (b?.x ?? 0);
     const v = a.y - (b?.y ?? 0);
 
     return Math.sqrt(h * h + v * v);
+}
+
+export function rotateArray<T>(items: readonly T[], offset: number): T[] {
+    offset = ((offset % items.length) + items.length) % items.length;
+
+    return [...items.slice(offset), ...items.slice(0, offset)];
 }
 
 export function* reversed<T>(items: readonly T[]): Generator<T> {

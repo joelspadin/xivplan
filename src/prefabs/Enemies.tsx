@@ -2,7 +2,7 @@ import { IChoiceGroupOption, IIconStyles, IStackTokens, Position, SpinButton, St
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -154,16 +154,24 @@ const CircleRing: React.FC<RingProps> = ({ radius, theme, color, isSelected, ...
 
 interface DirectionalRingProps extends RingProps {
     rotation: number;
+    groupRef: RefObject<Konva.Group>;
 }
 
-const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color, rotation, isSelected, ...props }) => {
+const DirectionalRing: React.FC<DirectionalRingProps> = ({
+    radius,
+    theme,
+    color,
+    rotation,
+    isSelected,
+    groupRef,
+    ...props
+}) => {
     const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const arrowScale = radius / 32;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    const groupRef = useRef<Konva.Group>(null);
     useEffect(() => {
         groupRef.current?.cache();
     }, [radius, theme, color, groupRef]);
@@ -173,6 +181,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
             {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
 
             <Group opacity={theme.opacity} ref={groupRef} rotation={rotation} {...props}>
+                <Circle radius={radius} fill="transparent" />
                 <Arc
                     {...outerProps}
                     rotation={RING_ROTATION}
@@ -201,9 +210,11 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({ radius, theme, color,
 
 interface EnemyRendererProps extends RendererProps<EnemyObject> {
     radius: number;
+    rotation: number;
+    groupRef: RefObject<Konva.Group>;
 }
 
-const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius }) => {
+const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius, rotation, groupRef }) => {
     const showHighlight = useShowHighlight(object, index);
     const theme = useSceneTheme();
 
@@ -216,10 +227,11 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius }) 
             ) : (
                 <DirectionalRing
                     radius={radius}
+                    rotation={rotation}
                     theme={theme.enemy}
                     color={object.color}
-                    rotation={object.rotation}
                     isSelected={showHighlight}
+                    groupRef={groupRef}
                 />
             )}
         </>
@@ -227,10 +239,20 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius }) 
 };
 
 const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
-    // TODO: add control point for rotation
+    const groupRef = useRef<Konva.Group>(null);
+
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {(radius) => <EnemyRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer
+            object={object}
+            index={index}
+            allowRotate={object.rotation !== undefined}
+            onTransformEnd={() => {
+                groupRef.current?.clearCache();
+            }}
+        >
+            {({ radius, rotation }) => (
+                <EnemyRenderer object={object} index={index} radius={radius} rotation={rotation} groupRef={groupRef} />
+            )}
         </RadiusObjectContainer>
     );
 };
