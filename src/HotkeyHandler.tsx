@@ -6,7 +6,7 @@ import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
 import { useStage } from './render/StageProvider';
-import { isMoveable, isRotateable, MoveableObject, RotateableObject, Scene, SceneObject } from './scene';
+import { isMoveable, isRotateable, MoveableObject, Scene, SceneObject } from './scene';
 import { ObjectUpdate, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
 import {
     getSelectedObjects,
@@ -170,14 +170,19 @@ const SMALL_MOVE_OFFSET = 1;
 const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
-function rotateObject<T extends MoveableObject & RotateableObject>(object: T, center: Vector2d, rotation: number): T {
+function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rotation: number): T {
     const pos = rotateCoord(object, rotation, center);
 
-    return {
-        ...object,
-        rotation: object.rotation + rotation,
-        ...pos,
-    };
+    const update = { ...object, ...pos };
+
+    if (isRotateable(object)) {
+        return {
+            ...update,
+            rotation: (object.rotation + rotation) % 360,
+        };
+    }
+
+    return update;
 }
 
 const EditActionHandler: React.FC = () => {
@@ -234,7 +239,7 @@ const EditActionHandler: React.FC = () => {
 
             selection.forEach((index) => {
                 const object = scene.objects[index];
-                if (object && isMoveable(object) && isRotateable(object)) {
+                if (object && isMoveable(object)) {
                     updates.push({ index, value: rotateObject(object, center, offset) });
                 }
             });
