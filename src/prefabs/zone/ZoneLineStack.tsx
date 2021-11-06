@@ -109,18 +109,11 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (
-                            <Rect
-                                width={object.width}
-                                height={object.height}
-                                rotation={object.rotation}
-                                {...SELECTED_PROPS}
-                                opacity={0.25}
-                            />
+                            <Rect width={object.width} height={object.height} {...SELECTED_PROPS} opacity={0.25} />
                         )}
                         <Rect
                             width={object.width}
                             height={object.height}
-                            rotation={object.rotation}
                             fillPatternImage={pattern}
                             fillPatternOffsetX={patternWidth / 2}
                             fillPatternOffsetY={patternHeight / 2}

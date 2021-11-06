@@ -100,14 +100,12 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
                                 offsetY={highlightOffset / 2}
                                 width={highlightWidth}
                                 height={highlightHeight}
-                                rotation={object.rotation}
                                 {...SELECTED_PROPS}
                             />
                         )}
                         <Rect
                             width={object.width}
                             height={object.height}
-                            rotation={object.rotation}
                             fillPatternImage={pattern}
                             fillPatternOffsetX={PATTERN_W / 2}
                             fillPatternOffsetY={PATTERN_H / 2}
