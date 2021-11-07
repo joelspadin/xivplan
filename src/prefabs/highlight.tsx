@@ -8,12 +8,12 @@ function isPinned(object: UnknownObject) {
     return false;
 }
 
-export function useShowHighlight(object: UnknownObject, index: number): boolean {
+export function useShowHighlight(object: UnknownObject): boolean {
     const [selection] = useSelection();
-    return selection.has(index) && (selection.size > 1 || isPinned(object));
+    return selection.has(object.id) && (selection.size > 1 || isPinned(object));
 }
 
-export function useShowResizer(object: UnknownObject, index: number): boolean {
+export function useShowResizer(object: UnknownObject): boolean {
     const [selection] = useSelection();
-    return selection.has(index) && selection.size === 1 && !isPinned(object);
+    return selection.has(object.id) && selection.size === 1 && !isPinned(object);
 }

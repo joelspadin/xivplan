@@ -26,7 +26,8 @@ progression, so it will always be simpler and less powerful.
 | Resize circular objects               | ✅     |
 | Resize cone objects                   |        |
 | Control handles for object properties |        |
-| Reorder objects                       | ✅     |
+| Reorder objects (scene list)          | ✅     |
+| Reorder objects (keyboard)            | ✅     |
 | Delete objects                        | ✅     |
 | Edit object properties                | ✅     |
 | Add statuses to party/enemies         |        |

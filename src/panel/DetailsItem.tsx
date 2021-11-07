@@ -1,6 +1,7 @@
 import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
 import React from 'react';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
+import { SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
 
 const stackTokens: IStackTokens = {
@@ -8,9 +9,9 @@ const stackTokens: IStackTokens = {
 };
 
 export interface DetailsItemProps {
+    object: SceneObject;
     icon: string;
     name: string;
-    index: number;
 }
 
 const classNames = mergeStyleSets({
@@ -21,9 +22,9 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ icon, name, index }) => {
+export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name }) => {
     const [, dispatch] = useScene();
-    const onDelete = () => dispatch({ type: 'remove', index });
+    const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>

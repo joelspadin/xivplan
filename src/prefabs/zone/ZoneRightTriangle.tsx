@@ -70,8 +70,8 @@ const RightTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
     return <Line points={points} closed {...props} />;
 };
 
-const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
         [object.color, object.opacity, object.width, object.height, object.hollow],
@@ -82,7 +82,7 @@ const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
     const highlightHeight = object.height + highlightOffset;
 
     return (
-        <ResizeableObjectContainer object={object} index={index}>
+        <ResizeableObjectContainer object={object}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {showHighlight && (
@@ -103,9 +103,9 @@ const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
 registerRenderer<RectangleZone>(ObjectType.RightTriangle, LayerName.Ground, RightTriangleRenderer);
 
-const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={rightTriangleIcon} name={NAME} index={index} />;
+    return <DetailsItem icon={rightTriangleIcon} name={NAME} object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.RightTriangle, RightTriangleDetails);

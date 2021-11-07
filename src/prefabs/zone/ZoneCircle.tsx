@@ -65,8 +65,8 @@ interface CircleRendererProps extends RendererProps<CircleZone> {
     radius: number;
 }
 
-const CircleRenderer: React.FC<CircleRendererProps> = ({ object, index, radius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
         [object.color, object.opacity, object.hollow, radius],
@@ -81,19 +81,19 @@ const CircleRenderer: React.FC<CircleRendererProps> = ({ object, index, radius }
     );
 };
 
-const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <CircleRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object}>
+            {({ radius }) => <CircleRenderer object={object} radius={radius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleContainer);
 
-const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
+const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);
@@ -106,31 +106,31 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object, index }) => {
+const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object, index],
+        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     return (
@@ -145,7 +145,7 @@ const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ objec
             </Stack>
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

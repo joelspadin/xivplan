@@ -16,7 +16,6 @@ const listClassNames = mergeStyleSets({
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
-    index: number;
     isSelected: boolean;
 }
 
@@ -70,17 +69,12 @@ export const ObjectList: React.FunctionComponent<ObjectListProps> = ({ objects, 
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId={DROP_ID}>
                     {(provided) => (
-                        <ul className={listClassNames.list} {...provided.droppableProps} ref={provided.innerRef}>
+                        <div className={listClassNames.list} {...provided.droppableProps} ref={provided.innerRef}>
                             {reversedObjects.map((object, index) => (
-                                <ListItem
-                                    object={object}
-                                    key={object.id}
-                                    index={index}
-                                    sceneIndex={reversedIndex(index, objects.length)}
-                                />
+                                <ListItem object={object} key={object.id} index={index} />
                             ))}
                             {provided.placeholder}
-                        </ul>
+                        </div>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -98,25 +92,24 @@ const getListItemClassNames = classNamesFunction<Theme, IListItemStyles>();
 
 export interface ListItemProps {
     index: number;
-    sceneIndex: number;
     object: SceneObject;
 }
 
-const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, object }) => {
+const ListItem: React.FunctionComponent<ListItemProps> = ({ index, object }) => {
     const [selection, setSelection] = useSelection();
-    const isSelected = selection.has(sceneIndex);
+    const isSelected = selection.has(object.id);
 
     const onClick = useCallback(
         (e: React.MouseEvent) => {
             if (e.shiftKey) {
-                setSelection(addSelection(selection, sceneIndex));
+                setSelection(addSelection(selection, object.id));
             } else if (e.ctrlKey) {
-                setSelection(toggleSelection(selection, sceneIndex));
+                setSelection(toggleSelection(selection, object.id));
             } else {
-                setSelection(selectSingle(sceneIndex));
+                setSelection(selectSingle(object.id));
             }
         },
-        [sceneIndex, selection, setSelection],
+        [object.id, selection, setSelection],
     );
 
     const theme = useTheme();
@@ -155,15 +148,15 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, sceneIndex, o
                 });
 
                 return (
-                    <li
+                    <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className={className}
                         onClick={onClick}
                     >
-                        <Component object={object} index={sceneIndex} isSelected={isSelected} />
-                    </li>
+                        <Component object={object} isSelected={isSelected} />
+                    </div>
                 );
             }}
         </Draggable>

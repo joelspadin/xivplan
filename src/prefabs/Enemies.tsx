@@ -213,8 +213,8 @@ interface EnemyRendererProps extends RendererProps<EnemyObject> {
     groupRef: RefObject<Konva.Group>;
 }
 
-const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius, rotation, groupRef }) => {
-    const showHighlight = useShowHighlight(object, index);
+const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef }) => {
+    const showHighlight = useShowHighlight(object);
     const theme = useSceneTheme();
 
     return (
@@ -237,20 +237,19 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, index, radius, ro
     );
 };
 
-const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object, index }) => {
+const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
 
     return (
         <RadiusObjectContainer
             object={object}
-            index={index}
             allowRotate={object.rotation !== undefined}
             onTransformEnd={() => {
                 groupRef.current?.clearCache();
             }}
         >
             {({ radius, rotation }) => (
-                <EnemyRenderer object={object} index={index} radius={radius} rotation={rotation} groupRef={groupRef} />
+                <EnemyRenderer object={object} radius={radius} rotation={rotation} groupRef={groupRef} />
             )}
         </RadiusObjectContainer>
     );
@@ -258,8 +257,8 @@ const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object, index })
 
 registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyContainer);
 
-const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, index }) => {
-    return <DetailsItem icon={object.icon} name={object.name || 'Enemy'} index={index} />;
+const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object }) => {
+    return <DetailsItem icon={object.icon} name={object.name || 'Enemy'} object={object} />;
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
@@ -289,35 +288,35 @@ const directionalOptions: IChoiceGroupOption[] = [
     },
 ];
 
-const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object, index }) => {
+const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = React.useCallback(
-        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
-        [dispatch, object, index],
+        (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onDirectionalChanged = useCallback(
         (option: RingStyle) => {
             const rotation = option === RingStyle.Directional ? 0 : undefined;
-            dispatch({ type: 'update', index, value: { ...object, rotation } });
+            dispatch({ type: 'update', value: { ...object, rotation } });
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object, index],
+        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
+        [dispatch, object],
     );
 
     const isDirectional = object.rotation !== undefined;
@@ -328,7 +327,7 @@ const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objec
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
             <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

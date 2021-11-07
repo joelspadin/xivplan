@@ -133,8 +133,8 @@ interface ConeRendererProps extends RendererProps<ConeZone> {
     coneAngle: number;
 }
 
-const ConeRenderer: React.FC<ConeRendererProps> = ({ object, index, radius, rotation, coneAngle }) => {
-    const isSelected = useShowHighlight(object, index);
+const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, coneAngle }) => {
+    const isSelected = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
         [object.color, object.opacity, radius, object.hollow],
@@ -159,9 +159,9 @@ function stateChanged(object: ConeZone, state: ConeState) {
     return state.radius !== object.radius || state.rotation !== object.rotation || state.coneAngle !== object.coneAngle;
 }
 
-const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => {
+const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
     const [, dispatch] = useScene();
-    const showResizer = useShowResizer(object, index);
+    const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
@@ -174,14 +174,14 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => 
                 return;
             }
 
-            dispatch({ type: 'update', index, value: { ...object, ...state } });
+            dispatch({ type: 'update', value: { ...object, ...state } });
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} index={index} onActive={setDragging}>
+            <DraggableObject object={object} onActive={setDragging}>
                 <ConeControlPoints
                     object={object}
                     onActive={setResizing}
@@ -189,13 +189,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => 
                     onTransformEnd={updateObject}
                 >
                     {({ radius, rotation, coneAngle }) => (
-                        <ConeRenderer
-                            object={object}
-                            index={index}
-                            radius={radius}
-                            rotation={rotation}
-                            coneAngle={coneAngle}
-                        />
+                        <ConeRenderer object={object} radius={radius} rotation={rotation} coneAngle={coneAngle} />
                     )}
                 </ConeControlPoints>
             </DraggableObject>
@@ -205,9 +199,9 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object, index }) => 
 
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
-const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ index }) => {
+const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);
@@ -220,36 +214,36 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
         [dispatch, object, index],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
         [dispatch, object, index],
     );
 
     const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
+        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
         [dispatch, object, index],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
         [dispatch, object, index],
     );
 
     const onAngleChanged = useSpinChanged(
-        (coneAngle: number) => dispatch({ type: 'update', index, value: { ...object, coneAngle } }),
+        (coneAngle: number) => dispatch({ type: 'update', value: { ...object, coneAngle } }),
         [dispatch, object, index],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
+        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
         [dispatch, object, index],
     );
 
@@ -262,7 +256,7 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <Stack horizontal tokens={stackTokens}>
                 <SpinButton
                     label="Radius"

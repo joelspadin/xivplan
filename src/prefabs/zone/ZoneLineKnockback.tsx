@@ -63,8 +63,8 @@ const PATTERN_H = 50;
 const ARROW_W = 25;
 const ARROW_H = 15;
 
-const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
@@ -91,7 +91,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
     return (
         <>
-            <ResizeableObjectContainer object={object} index={index} transformerProps={{ keepRatio: false }}>
+            <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (
@@ -137,9 +137,9 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LayerName.Ground, LineKnockbackRenderer);
 
-const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knockback" index={index} />;
+    return <DetailsItem icon={icon} name="Line knockback" object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockback, LineKnockbackDetails);

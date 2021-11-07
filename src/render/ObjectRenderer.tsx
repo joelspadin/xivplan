@@ -6,7 +6,6 @@ import { LayerName } from './layers';
 
 export interface RendererProps<T extends SceneObject = SceneObject> {
     object: T;
-    index: number;
 }
 
 export type Renderer<T extends SceneObject> = React.FunctionComponent<RendererProps<T>>;
@@ -33,13 +32,13 @@ export interface ObjectRendererProps {
 export const ObjectRenderer: React.FunctionComponent<ObjectRendererProps> = ({ objects, layer }) => {
     return (
         <>
-            {objects.map((object, index) => {
+            {objects.map((object) => {
                 if (layers[object.type] !== layer) {
                     return null;
                 }
 
                 const Component = registry.get(object.type);
-                return <Component key={object.id} object={object} index={index} />;
+                return <Component key={object.id} object={object} />;
             })}
         </>
     );

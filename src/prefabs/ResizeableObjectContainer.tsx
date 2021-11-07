@@ -10,7 +10,6 @@ import { Resizer, ResizerProps } from './Resizer';
 export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
 
 export interface ResizeableObjectContainerProps {
-    index: number;
     object: ResizeableObject & UnknownObject;
     cache?: boolean;
     cacheKey?: unknown;
@@ -20,7 +19,6 @@ export interface ResizeableObjectContainerProps {
 }
 
 export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps> = ({
-    index,
     object,
     cache,
     cacheKey,
@@ -36,14 +34,13 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
         if (cache) {
             shapeRef.current?.cache();
         }
-    }, [cache, cacheKey, shapeRef, object, index]);
+    }, [cache, cacheKey, shapeRef, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} index={index} onActive={setDragging}>
+            <DraggableObject object={object} onActive={setDragging}>
                 <Resizer
                     object={object}
-                    index={index}
                     nodeRef={shapeRef}
                     dragging={dragging}
                     transformerProps={transformerProps}

@@ -23,20 +23,18 @@ export interface StarburstObjectState {
 
 export interface StarburstContainerProps extends StarburstControlProps {
     object: StarburstZone & UnknownObject;
-    index: number;
     children: (state: StarburstObjectState) => React.ReactElement;
     onTransformEnd?(state: StarburstObjectState): void;
 }
 
 export const StarburstControlContainer: React.VFC<StarburstContainerProps> = ({
     object,
-    index,
     onTransformEnd,
     children,
     minSpokeWidth,
 }) => {
     const [, dispatch] = useScene();
-    const showResizer = useShowResizer(object, index);
+    const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
@@ -48,15 +46,15 @@ export const StarburstControlContainer: React.VFC<StarburstContainerProps> = ({
                 return;
             }
 
-            dispatch({ type: 'update', index, value: { ...object, ...state } });
+            dispatch({ type: 'update', value: { ...object, ...state } });
             onTransformEnd?.(state);
         },
-        [dispatch, onTransformEnd, object, index],
+        [dispatch, onTransformEnd, object],
     );
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} index={index} onActive={setDragging}>
+            <DraggableObject object={object} onActive={setDragging}>
                 <StarburstControlPoints
                     object={object}
                     onActive={setResizing}

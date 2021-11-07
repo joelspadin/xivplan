@@ -58,8 +58,8 @@ interface StackRendererProps extends RendererProps<CircleZone> {
     radius: number;
 }
 
-const StackRenderer: React.FC<StackRendererProps> = ({ object, index, radius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
+    const showHighlight = useShowHighlight(object);
     const ring = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
         [object.color, object.opacity, radius],
@@ -96,19 +96,19 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, index, radius }) 
     );
 };
 
-const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <StackRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object}>
+            {({ radius }) => <StackRenderer object={object} radius={radius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Stack, LayerName.Ground, StackContainer);
 
-const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
+const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

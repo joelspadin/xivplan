@@ -87,8 +87,8 @@ interface RotateRendererProps extends RendererProps<CircleZone> {
     groupRef: RefObject<Konva.Group>;
 }
 
-const RotateRenderer: React.FC<RotateRendererProps> = ({ object, index, radius, groupRef }) => {
-    const showHighlight = useShowHighlight(object, index);
+const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef }) => {
+    const showHighlight = useShowHighlight(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
     const style = useMemo(
@@ -128,23 +128,23 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, index, radius, 
     );
 };
 
-const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
 
     return (
-        <RadiusObjectContainer object={object} index={index} onTransformEnd={() => groupRef.current?.clearCache()}>
-            {({ radius }) => <RotateRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
+        <RadiusObjectContainer object={object} onTransformEnd={() => groupRef.current?.clearCache()}>
+            {({ radius }) => <RotateRenderer object={object} radius={radius} groupRef={groupRef} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateContainer);
 
-const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, index }) => {
+const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
     const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
 
-    return <DetailsItem icon={icon} name={name} index={index} />;
+    return <DetailsItem icon={icon} name={name} object={object} />;
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

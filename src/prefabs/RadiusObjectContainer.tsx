@@ -30,21 +30,19 @@ export interface RadiusObjectState {
 
 export interface RadiusObjectContainerProps extends ControlPointProps {
     object: RadiusObject & UnknownObject;
-    index: number;
     children: (state: RadiusObjectState) => React.ReactElement;
     onTransformEnd?(state: RadiusObjectState): void;
 }
 
 export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
     object,
-    index,
     onTransformEnd,
     children,
     allowRotate,
     allowInnerRadius,
 }) => {
     const [, dispatch] = useScene();
-    const showResizer = useShowResizer(object, index);
+    const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
@@ -65,15 +63,15 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
                 update.innerRadius = state.innerRadius;
             }
 
-            dispatch({ type: 'update', index, value: { ...object, ...update } as SceneObject });
+            dispatch({ type: 'update', value: { ...object, ...update } as SceneObject });
             onTransformEnd?.(state);
         },
-        [dispatch, onTransformEnd, object, index],
+        [dispatch, onTransformEnd, object],
     );
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} index={index} onActive={setDragging}>
+            <DraggableObject object={object} onActive={setDragging}>
                 <RadiusControlPoints
                     object={object}
                     onActive={setResizing}

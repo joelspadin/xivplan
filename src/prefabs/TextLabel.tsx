@@ -90,7 +90,6 @@ function measureText(
 }
 
 interface TextResizerProps {
-    index: number;
     object: TextObject;
     nodeRef: RefObject<Konva.Group>;
     dragging?: boolean;
@@ -100,9 +99,9 @@ interface TextResizerProps {
 const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
-const TextResizer: React.VFC<TextResizerProps> = ({ object, index, nodeRef, dragging, children }) => {
+const TextResizer: React.VFC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
     const [scene, dispatch] = useScene();
-    const showResizer = useShowResizer(object, index);
+    const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
     const minHeight = useMemo(() => MIN_FONT_SIZE * LINE_HEIGHT * lineCount(object.text), [object.text]);
@@ -124,8 +123,8 @@ const TextResizer: React.VFC<TextResizerProps> = ({ object, index, nodeRef, drag
             rotation: Math.round(node.rotation()),
         };
 
-        dispatch({ type: 'update', index, value: { ...object, ...newProps } });
-    }, [index, object, minHeight, scene, dispatch, nodeRef]);
+        dispatch({ type: 'update', value: { ...object, ...newProps } });
+    }, [object, minHeight, scene, dispatch, nodeRef]);
 
     return (
         <>
@@ -146,25 +145,24 @@ const TextResizer: React.VFC<TextResizerProps> = ({ object, index, nodeRef, drag
 };
 
 interface TextContainerProps {
-    index: number;
     object: TextObject;
     cacheKey?: unknown;
     children: (groupProps: GroupProps) => React.ReactElement;
 }
 
-const TextContainer: React.VFC<TextContainerProps> = ({ index, object, cacheKey, children }) => {
+const TextContainer: React.VFC<TextContainerProps> = ({ object, cacheKey, children }) => {
     const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
     useEffect(() => {
         shapeRef.current?.cache();
-    }, [cacheKey, shapeRef, object, index]);
+    }, [cacheKey, shapeRef, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} index={index} onActive={setDragging}>
-                <TextResizer object={object} index={index} nodeRef={shapeRef} dragging={dragging}>
+            <DraggableObject object={object} onActive={setDragging}>
+                <TextResizer object={object} nodeRef={shapeRef} dragging={dragging}>
                     {(onTransformEnd) => {
                         return children({
                             ref: shapeRef,
@@ -182,9 +180,9 @@ const TextContainer: React.VFC<TextContainerProps> = ({ index, object, cacheKey,
     );
 };
 
-const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object, index }) => {
+const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const theme = useSceneTheme();
-    const showHighlight = useShowHighlight(object, index);
+    const showHighlight = useShowHighlight(object);
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -206,7 +204,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object, index }) =>
 
     return (
         <>
-            <TextContainer object={object} index={index} cacheKey={cacheKey}>
+            <TextContainer object={object} cacheKey={cacheKey}>
                 {(groupProps) => (
                     <Group
                         {...groupProps}
@@ -257,8 +255,8 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object, index }) =>
 
 registerRenderer<TextObject>(ObjectType.Text, LayerName.Foreground, TextRenderer);
 
-const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, index }) => {
-    return <DetailsItem icon={icon} name={object.text} index={index} />;
+const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object }) => {
+    return <DetailsItem icon={icon} name={object.text} object={object} />;
 };
 
 registerListComponent<TextObject>(ObjectType.Text, TextDetails);
@@ -275,42 +273,42 @@ const alignOptions: IChoiceGroupOption[] = [
     { key: 'right', text: 'Align right', iconProps: { iconName: 'AlignRight' } },
 ];
 
-const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object, index }) => {
+const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onFontSizeChanged = useSpinChanged(
-        (fontSize: number) => dispatch({ type: 'update', index, value: { ...object, fontSize } as SceneObject }),
-        [dispatch, object, index],
+        (fontSize: number) => dispatch({ type: 'update', value: { ...object, fontSize } as SceneObject }),
+        [dispatch, object],
     );
 
     const onRotationChanged = useSpinChanged(
         (rotation: number) =>
-            dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } as SceneObject }),
-        [dispatch, object, index],
+            dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } as SceneObject }),
+        [dispatch, object],
     );
 
     const onAlignChanged = useCallback(
-        (align: string) => dispatch({ type: 'update', index, value: { ...object, align } }),
-        [dispatch, object, index],
+        (align: string) => dispatch({ type: 'update', value: { ...object, align } }),
+        [dispatch, object],
     );
 
     const onTextChanged = useCallback(
-        (text?: string) => dispatch({ type: 'update', index, value: { ...object, text: text ?? '' } }),
-        [dispatch, object, index],
+        (text?: string) => dispatch({ type: 'update', value: { ...object, text: text ?? '' } }),
+        [dispatch, object],
     );
 
     return (
@@ -335,7 +333,7 @@ const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object,
                     onChange={(e, option) => onAlignChanged(option?.key || DEFAULT_TEXT_ALIGN)}
                 />
             </Stack>
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <SpinButtonUnits
                 label="Rotation"
                 labelPosition={Position.top}

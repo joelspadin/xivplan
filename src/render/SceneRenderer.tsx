@@ -7,7 +7,7 @@ import { getCanvasSize, getSceneCoord } from '../coord';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useScene } from '../SceneProvider';
-import { SelectionContext, selectNone, selectSingle, useSelection } from '../SelectionProvider';
+import { SelectionContext, selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
 import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
@@ -95,7 +95,7 @@ const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, childr
             const action = getDropAction(dragObject, getSceneCoord(scene, position));
             if (action) {
                 dispatch(action);
-                setSelection(selectSingle(scene.objects.length));
+                setSelection(selectNewObjects(scene, 1));
             }
         },
         [scene, dispatch, setSelection, dragObject, setDragObject],

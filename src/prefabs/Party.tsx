@@ -63,12 +63,12 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
     };
 });
 
-const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const [image] = useImage(object.image);
 
     return (
-        <ResizeableObjectContainer object={object} index={index} transformerProps={{ centeredScaling: true }}>
+        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {showHighlight && (
@@ -88,24 +88,24 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object, index }) 
 
 registerRenderer<PartyObject>(ObjectType.Party, LayerName.Default, PartyRenderer);
 
-const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, index }) => {
-    return <DetailsItem icon={object.image} name={object.name} index={index} />;
+const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object }) => {
+    return <DetailsItem icon={object.image} name={object.name} object={object} />;
 };
 
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
 
-const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object, index }) => {
+const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
-        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
-        [dispatch, object, index],
+        (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),
+        [dispatch, object],
     );
 
     return (
         <Stack>
             <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <ImageObjectProperties object={object} index={index} />
+            <ImageObjectProperties object={object} />
         </Stack>
     );
 };

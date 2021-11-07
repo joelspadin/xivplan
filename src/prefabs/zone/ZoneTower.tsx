@@ -123,8 +123,8 @@ interface TowerRendererProps extends RendererProps<TowerZone> {
     radius: number;
 }
 
-const TowerRenderer: React.FC<TowerRendererProps> = ({ object, index, radius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
         [object.color, object.opacity, radius],
@@ -144,48 +144,48 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, index, radius }) 
     );
 };
 
-const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object, index }) => {
+const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <TowerRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object}>
+            {({ radius }) => <TowerRenderer object={object} radius={radius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerContainer);
 
-const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ index }) => {
+const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Meteor/tower" index={index} />;
+    return <DetailsItem icon={icon} name="Meteor/tower" object={object} />;
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);
 
-const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object, index }) => {
+const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onCountChanged = useSpinChanged(
-        (count: number) => dispatch({ type: 'update', index, value: { ...object, count } }),
-        [dispatch, object, index],
+        (count: number) => dispatch({ type: 'update', value: { ...object, count } }),
+        [dispatch, object],
     );
 
     const soakSuffix = object.count === 1 ? ' player' : ' players';
@@ -196,7 +196,7 @@ const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object,
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <SpinButton
                 label="Radius"
                 labelPosition={Position.top}

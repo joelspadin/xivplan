@@ -75,8 +75,8 @@ const POINTS = [DEFAULT_ARROW_WIDTH / 2, DEFAULT_ARROW_HEIGHT, DEFAULT_ARROW_WID
 
 const HIGHLIGHT_STROKE_WIDTH = STROKE_WIDTH + (SELECTED_PROPS.strokeWidth ?? 0);
 
-const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
 
     const arrowProps: ArrowConfig = {
         points: POINTS,
@@ -97,7 +97,6 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
     return (
         <ResizeableObjectContainer
             object={object}
-            index={index}
             cache
             cacheKey={showHighlight}
             transformerProps={{ centeredScaling: true }}
@@ -118,9 +117,9 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object, index }) 
 
 registerRenderer<ArrowObject>(ObjectType.Arrow, LayerName.Default, ArrowRenderer);
 
-const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ index }) => {
+const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);
@@ -129,31 +128,31 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object, index }) => {
+const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = React.useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onToggleArrowBegin = React.useCallback(
-        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'arrowBegin', !object.arrowBegin) }),
-        [dispatch, object, index],
+        () => dispatch({ type: 'update', value: setOrOmit(object, 'arrowBegin', !object.arrowBegin) }),
+        [dispatch, object],
     );
 
     const onToggleArrowEnd = React.useCallback(
-        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'arrowEnd', !object.arrowEnd) }),
-        [dispatch, object, index],
+        () => dispatch({ type: 'update', value: setOrOmit(object, 'arrowEnd', !object.arrowEnd) }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = React.useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const arrowBeginIcon = object.arrowBegin ? 'TriangleSolidLeft12' : 'Remove';
@@ -174,7 +173,7 @@ const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ objec
             </Stack>
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <ResizeableObjectProperties object={object} index={index} />
+            <ResizeableObjectProperties object={object} />
         </Stack>
     );
 };

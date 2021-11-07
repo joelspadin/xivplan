@@ -63,8 +63,8 @@ const ARROW_SIZE_FRAC = 0.3;
 const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.08;
 
-const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
@@ -107,7 +107,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
     return (
         <>
-            <ResizeableObjectContainer object={object} index={index} transformerProps={{ keepRatio: false }}>
+            <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (
@@ -144,9 +144,9 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object,
 
 registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayRenderer);
 
-const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knock away" index={index} />;
+    return <DetailsItem icon={icon} name="Line knock away" object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);

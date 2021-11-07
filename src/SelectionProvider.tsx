@@ -2,6 +2,9 @@ import React, { createContext, Dispatch, SetStateAction, useContext, useState } 
 import { Scene, SceneObject } from './scene';
 import { useScene } from './SceneProvider';
 
+/**
+ * Set of object IDs for selected objects.
+ */
 export type SceneSelection = ReadonlySet<number>;
 
 export type SelectionState = [SceneSelection, Dispatch<SetStateAction<SceneSelection>>];
@@ -23,7 +26,7 @@ export interface SelectedObjects {
 }
 
 export function getSelectedObjects(scene: Scene, selection: SceneSelection): readonly SceneObject[] {
-    return scene.objects.filter((_, i) => selection.has(i));
+    return scene.objects.filter((object) => selection.has(object.id));
 }
 
 export function useSelectedObjects(): readonly SceneObject[] {
@@ -33,13 +36,13 @@ export function useSelectedObjects(): readonly SceneObject[] {
     return getSelectedObjects(scene, selection);
 }
 
-export function useIsSelected(index: number): boolean {
+export function useIsSelected(object: SceneObject): boolean {
     const [selection] = useSelection();
-    return selection.has(index);
+    return selection.has(object.id);
 }
 
-export function selectSingle(index: number): SceneSelection {
-    return new Set([index]);
+export function selectSingle(id: number): SceneSelection {
+    return new Set([id]);
 }
 
 export function selectNone(): SceneSelection {
@@ -47,27 +50,27 @@ export function selectNone(): SceneSelection {
 }
 
 export function selectAll(objects: readonly SceneObject[]): SceneSelection {
-    return new Set(objects.map((_, i) => i));
+    return new Set(objects.map((object) => object.id));
 }
 
-export function selectNewObjects(currentObjectCount: number, newObjectCount: number): SceneSelection {
-    return new Set(Array.from({ length: newObjectCount }).map((_, i) => currentObjectCount + i));
+export function selectNewObjects(scene: Scene, newObjectCount: number): SceneSelection {
+    return new Set(Array.from({ length: newObjectCount }).map((_, i) => scene.nextId + i));
 }
 
-export function addSelection(selection: SceneSelection, index: number): SceneSelection {
-    return new Set(selection).add(index);
+export function addSelection(selection: SceneSelection, id: number): SceneSelection {
+    return new Set(selection).add(id);
 }
 
-export function removeSelection(selection: SceneSelection, index: number): SceneSelection {
+export function removeSelection(selection: SceneSelection, id: number): SceneSelection {
     const newSelection = new Set(selection);
-    newSelection.delete(index);
+    newSelection.delete(id);
     return newSelection;
 }
 
-export function toggleSelection(selection: SceneSelection, index: number): SceneSelection {
-    if (selection.has(index)) {
-        return removeSelection(selection, index);
+export function toggleSelection(selection: SceneSelection, id: number): SceneSelection {
+    if (selection.has(id)) {
+        return removeSelection(selection, id);
     } else {
-        return addSelection(selection, index);
+        return addSelection(selection, id);
     }
 }

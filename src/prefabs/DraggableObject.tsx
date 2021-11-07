@@ -11,12 +11,11 @@ import { SelectableObject } from './SelectableObject';
 
 export interface DraggableObjectProps {
     object: MoveableObject & UnknownObject;
-    index: number;
     onActive?: React.Dispatch<boolean>;
     children?: ReactNode | ((center: Vector2d) => React.ReactElement);
 }
 
-export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index, onActive, children }) => {
+export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onActive, children }) => {
     const [dragCenter, setDragCenter] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
     const [scene, dispatch] = useScene();
@@ -32,11 +31,11 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
 
             // If we start dragging an object that isn't selected, it should
             // become the new selection.
-            if (!selection.has(index)) {
-                setSelection(selectSingle(index));
+            if (!selection.has(object.id)) {
+                setSelection(selectSingle(object.id));
             }
         },
-        [setDragging, onActive, setDragCenter, index, selection, setSelection],
+        [setDragging, onActive, setDragCenter, object.id, selection, setSelection],
     );
 
     const onDragEnd = useCallback(
@@ -45,9 +44,9 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
             onActive?.(false);
 
             const pos = getSceneCoord(scene, e.target.position());
-            dispatch({ type: 'update', index, value: { ...object, ...pos } });
+            dispatch({ type: 'update', value: { ...object, ...pos } });
         },
-        [setDragging, onActive, dispatch, object, index],
+        [setDragging, onActive, dispatch, object],
     );
 
     const setCursor = useCallback(
@@ -60,7 +59,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, index
     );
 
     return (
-        <SelectableObject index={index}>
+        <SelectableObject object={object}>
             <Group
                 {...center}
                 draggable={!object.pinned}

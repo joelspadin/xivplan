@@ -157,8 +157,8 @@ const RectangleOutline: React.FC<OutlineProps> = ({
     );
 };
 
-const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const [image] = useImage(object.image);
 
     const iconWidth = object.width * ICON_RATIO;
@@ -180,7 +180,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
     const highlightHeight = object.height + highlightOffset;
 
     return (
-        <ResizeableObjectContainer object={object} index={index} transformerProps={{ centeredScaling: true }}>
+        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {object.shape === 'circle' && (
@@ -216,8 +216,8 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object, index }
 
 registerRenderer<MarkerObject>(ObjectType.Marker, LayerName.Ground, MarkerRenderer);
 
-const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, index }) => {
-    return <DetailsItem icon={object.image} name={object.name} index={index} />;
+const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object }) => {
+    return <DetailsItem icon={object.image} name={object.name} object={object} />;
 };
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
@@ -234,25 +234,25 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object, index }) => {
+const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onNameChanged = useCallback(
-        (newName?: string) => dispatch({ type: 'update', index, value: { ...object, name: newName ?? '' } }),
-        [dispatch, object, index],
+        (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),
+        [dispatch, object],
     );
 
     const onShapeChanged = useCallback(
         (option?: IChoiceGroupOption) => {
             const shape = (option?.key as 'circle' | 'square') ?? 'square';
-            dispatch({ type: 'update', index, value: { ...object, shape } });
+            dispatch({ type: 'update', value: { ...object, shape } });
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     return (
@@ -269,7 +269,7 @@ const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ obj
                 />
             </Stack>
             <CompactSwatchColorPicker color={object.color} swatches={swatches} onChange={onColorChanged} />
-            <ImageObjectProperties object={object} index={index} />
+            <ImageObjectProperties object={object} />
         </Stack>
     );
 };

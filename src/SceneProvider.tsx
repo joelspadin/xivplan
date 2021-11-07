@@ -38,18 +38,9 @@ export interface SetArenaBackgroundAction {
     value: string | undefined;
 }
 
-export interface ObjectUpdate {
-    index: number;
-    value: SceneObject;
-}
-
-export interface ObjectUpdateAction extends ObjectUpdate {
+export interface ObjectUpdateAction {
     type: 'update';
-}
-
-export interface ObjectUpdateManyAction {
-    type: 'updateMany';
-    updates: readonly ObjectUpdate[];
+    value: SceneObject | readonly SceneObject[];
 }
 
 export interface ObjectAddAction {
@@ -59,7 +50,7 @@ export interface ObjectAddAction {
 
 export interface ObjectRemoveAction {
     type: 'remove';
-    index: number | readonly number[];
+    ids: number | readonly number[];
 }
 
 export interface ObjectMoveAction {
@@ -68,12 +59,17 @@ export interface ObjectMoveAction {
     to: number;
 }
 
+export interface GroupMoveAction {
+    type: 'moveUp' | 'moveDown' | 'moveToTop' | 'moveToBottom';
+    ids: number | readonly number[];
+}
+
 export type ObjectAction =
     | ObjectAddAction
     | ObjectRemoveAction
     | ObjectMoveAction
-    | ObjectUpdateAction
-    | ObjectUpdateManyAction;
+    | GroupMoveAction
+    | ObjectUpdateAction;
 
 export type SceneAction =
     | SetArenaAction
@@ -98,6 +94,11 @@ export const SceneContext = Context;
 export const useScene = usePresent;
 export const useSceneUndoRedo = useUndoRedo;
 
+export function getObjectById(scene: Scene, id: number): SceneObject | undefined {
+    const index = scene.objects.findIndex((o) => o.id === id);
+    return index >= 0 ? scene.objects[index] : undefined;
+}
+
 function addObjects(
     state: Readonly<Scene>,
     objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
@@ -111,9 +112,9 @@ function addObjects(
     };
 }
 
-function removeObjects(state: Readonly<Scene>, indices: readonly number[]): Partial<Scene> {
+function removeObjects(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
     return {
-        objects: state.objects.filter((_, i) => !indices.includes(i)),
+        objects: state.objects.filter((object) => !ids.includes(object.id)),
     };
 }
 
@@ -129,11 +130,76 @@ function moveObject(state: Readonly<Scene>, from: number, to: number): Partial<S
     return { objects };
 }
 
-function updateObjects(state: Readonly<Scene>, updates: ObjectUpdate | readonly ObjectUpdate[]): Partial<Scene> {
+function mapSelected(state: Readonly<Scene>, ids: readonly number[]) {
+    return state.objects.map((object) => ({ object, selected: ids.includes(object.id) }));
+}
+
+function unmapSelected(objects: { object: SceneObject; selected: boolean }[]): Partial<Scene> {
+    return {
+        objects: objects.map((o) => o.object),
+    };
+}
+
+function moveGroupUp(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
+    const objects = mapSelected(state, ids);
+
+    for (let i = objects.length - 1; i > 0; i--) {
+        const current = objects[i];
+        const next = objects[i - 1];
+
+        if (current && next && !current.selected && next.selected) {
+            objects[i] = next;
+            objects[i - 1] = current;
+        }
+    }
+
+    return unmapSelected(objects);
+}
+
+function moveGroupDown(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
+    const objects = mapSelected(state, ids);
+
+    for (let i = 0; i < objects.length - 1; i++) {
+        const current = objects[i];
+        const next = objects[i + 1];
+
+        if (current && next && !current.selected && next.selected) {
+            objects[i] = next;
+            objects[i + 1] = current;
+        }
+    }
+
+    return unmapSelected(objects);
+}
+
+function moveGroupToTop(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
+    const objects = mapSelected(state, ids);
+
+    objects.sort((a, b) => {
+        return (a.selected ? 1 : 0) - (b.selected ? 1 : 0);
+    });
+
+    return unmapSelected(objects);
+}
+
+function moveGroupToBottom(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
+    const objects = mapSelected(state, ids);
+
+    objects.sort((a, b) => {
+        return (b.selected ? 1 : 0) - (a.selected ? 1 : 0);
+    });
+
+    return unmapSelected(objects);
+}
+
+function updateObjects(state: Readonly<Scene>, values: readonly SceneObject[]): Partial<Scene> {
     const objects = state.objects.slice();
 
-    for (const update of asArray(updates)) {
-        objects[update.index] = update.value;
+    for (const update of asArray(values)) {
+        const index = objects.findIndex((o) => o.id === update.id);
+        if (index >= 0) {
+            objects[index] = update;
+        }
     }
 
     return { objects };
@@ -166,15 +232,24 @@ function sceneReducer(state: Readonly<Scene>, action: SceneAction): Scene {
             return { ...state, ...addObjects(state, action.object) };
 
         case 'remove':
-            return { ...state, ...removeObjects(state, asArray(action.index)) };
+            return { ...state, ...removeObjects(state, asArray(action.ids)) };
 
         case 'move':
             return { ...state, ...moveObject(state, action.from, action.to) };
 
-        case 'update':
-            return { ...state, ...updateObjects(state, action) };
+        case 'moveUp':
+            return { ...state, ...moveGroupUp(state, asArray(action.ids)) };
 
-        case 'updateMany':
-            return { ...state, ...updateObjects(state, action.updates) };
+        case 'moveDown':
+            return { ...state, ...moveGroupDown(state, asArray(action.ids)) };
+
+        case 'moveToTop':
+            return { ...state, ...moveGroupToTop(state, asArray(action.ids)) };
+
+        case 'moveToBottom':
+            return { ...state, ...moveGroupToBottom(state, asArray(action.ids)) };
+
+        case 'update':
+            return { ...state, ...updateObjects(state, asArray(action.value)) };
     }
 }

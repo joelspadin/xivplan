@@ -85,8 +85,8 @@ interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
     rotation: number;
 }
 
-const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radius, rotation }) => {
-    const showHighlight = useShowHighlight(object, index);
+const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
         [object.color, object.opacity, radius],
@@ -126,22 +126,20 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, index, radi
     );
 };
 
-const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object, index }) => {
+const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object }) => {
     // TODO: add control point for trail length
     return (
-        <RadiusObjectContainer object={object} index={index} allowRotate>
-            {({ radius, rotation }) => (
-                <ExaflareRenderer object={object} index={index} radius={radius} rotation={rotation} />
-            )}
+        <RadiusObjectContainer object={object} allowRotate>
+            {({ radius, rotation }) => <ExaflareRenderer object={object} radius={radius} rotation={rotation} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareContainer);
 
-const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ index }) => {
+const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);
@@ -156,36 +154,36 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ object, index }) => {
+const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onLengthChanged = useSpinChanged(
-        (length: number) => dispatch({ type: 'update', index, value: { ...object, length } }),
-        [dispatch, object, index],
+        (length: number) => dispatch({ type: 'update', value: { ...object, length } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object, index],
+        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
+        [dispatch, object],
     );
 
     return (
@@ -194,7 +192,7 @@ const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ o
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
                 <SpinButton
                     label="Radius"

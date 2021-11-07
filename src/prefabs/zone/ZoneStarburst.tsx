@@ -169,8 +169,8 @@ interface StarburstRendererProps extends RendererProps<StarburstZone> {
     spokeWidth: number;
 }
 
-const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, radius, rotation, spokeWidth }) => {
-    const showSelected = useShowHighlight(object, index);
+const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, rotation, spokeWidth }) => {
+    const showSelected = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
         [object.color, object.opacity, object.spokeWidth],
@@ -188,18 +188,12 @@ const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, index, ra
     return object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />;
 };
 
-const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object, index }) => {
+const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) => {
     // TODO: add control point for spoke width
     return (
-        <StarburstControlContainer object={object} index={index} minSpokeWidth={MIN_SPOKE_WIDTH}>
+        <StarburstControlContainer object={object} minSpokeWidth={MIN_SPOKE_WIDTH}>
             {({ radius, rotation, spokeWidth }) => (
-                <StarburstRenderer
-                    object={object}
-                    index={index}
-                    radius={radius}
-                    rotation={rotation}
-                    spokeWidth={spokeWidth}
-                />
+                <StarburstRenderer object={object} radius={radius} rotation={rotation} spokeWidth={spokeWidth} />
             )}
         </StarburstControlContainer>
     );
@@ -207,9 +201,9 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object, in
 
 registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
-const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ index }) => {
+const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);
@@ -224,41 +218,41 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object, index }) => {
+const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object, index],
+        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
+        [dispatch, object],
     );
 
     const onSpokesChanged = useSpinChanged(
-        (spokes: number) => dispatch({ type: 'update', index, value: { ...object, spokes } }),
-        [dispatch, object, index],
+        (spokes: number) => dispatch({ type: 'update', value: { ...object, spokes } }),
+        [dispatch, object],
     );
 
     const onSpokeWidthChanged = useSpinChanged(
-        (spokeWidth: number) => dispatch({ type: 'update', index, value: { ...object, spokeWidth } }),
-        [dispatch, object, index],
+        (spokeWidth: number) => dispatch({ type: 'update', value: { ...object, spokeWidth } }),
+        [dispatch, object],
     );
 
     return (
@@ -267,7 +261,7 @@ const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <Stack horizontal tokens={stackTokens} className={classNames.sizeRow}>
                 <SpinButton
                     label="Radius"

@@ -71,8 +71,8 @@ const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) 
     return <Line points={points} closed {...props} />;
 };
 
-const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
         [object.color, object.opacity, object.width, object.height, object.hollow],
@@ -85,7 +85,7 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, inde
     const offsetY = (object.height * 2) / 3;
 
     return (
-        <ResizeableObjectContainer object={object} index={index} transformerProps={{ centeredScaling: true }}>
+        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps} offsetY={offsetY}>
                     {showHighlight && (
@@ -106,9 +106,9 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, inde
 
 registerRenderer<RectangleZone>(ObjectType.Triangle, LayerName.Ground, TriangleRenderer);
 
-const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Triangle, TriangleDetails);

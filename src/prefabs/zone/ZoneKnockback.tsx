@@ -55,8 +55,8 @@ interface KnockbackRendererProps extends RendererProps<CircleZone> {
     radius: number;
 }
 
-const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, index, radius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius }) => {
+    const showHighlight = useShowHighlight(object);
     const ring = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
         [object.color, object.opacity, radius],
@@ -97,19 +97,19 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, index, ra
     );
 };
 
-const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <KnockbackRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object}>
+            {({ radius }) => <KnockbackRenderer object={object} radius={radius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Knockback, LayerName.Ground, KnockbackContainer);
 
-const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
+const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Knockback" index={index} />;
+    return <DetailsItem icon={icon} name="Knockback" object={object} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

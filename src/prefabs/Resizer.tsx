@@ -17,7 +17,6 @@ const MIN_ANCHOR_SIZE = 6;
 const MAX_ANCHOR_SIZE = 10;
 
 export interface ResizerProps {
-    index: number;
     object: ResizeableObject & UnknownObject;
     nodeRef: RefObject<Konva.Group>;
     dragging?: boolean;
@@ -28,7 +27,6 @@ export interface ResizerProps {
 }
 
 export const Resizer: React.VFC<ResizerProps> = ({
-    index,
     object,
     nodeRef,
     dragging,
@@ -38,7 +36,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
     children,
 }) => {
     const [scene, dispatch] = useScene();
-    const showResizer = useShowResizer(object, index);
+    const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
     const minWidthRequired = minWidth ?? DEFAULT_MIN_SIZE;
@@ -73,8 +71,8 @@ export const Resizer: React.VFC<ResizerProps> = ({
         node.y(0);
         node.clearCache();
 
-        dispatch({ type: 'update', index, value: { ...object, ...newProps } as SceneObject });
-    }, [index, object, minWidthRequired, minHeightRequired, scene, dispatch, nodeRef]);
+        dispatch({ type: 'update', value: { ...object, ...newProps } as SceneObject });
+    }, [object, minWidthRequired, minHeightRequired, scene, dispatch, nodeRef]);
 
     const boundBoxFunc = useCallback(
         (oldBox: Box, newBox: Box) => {

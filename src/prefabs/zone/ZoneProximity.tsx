@@ -132,8 +132,8 @@ interface ProximityRendererProps extends RendererProps<CircleZone> {
     radius: number;
 }
 
-const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, index, radius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+    const showHighlight = useShowHighlight(object);
     const gradient = useMemo(
         () =>
             ({
@@ -172,19 +172,19 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, index, ra
     );
 };
 
-const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index}>
-            {({ radius }) => <ProximityRenderer object={object} index={index} radius={radius} />}
+        <RadiusObjectContainer object={object}>
+            {({ radius }) => <ProximityRenderer object={object} radius={radius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
-const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
+const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Proximity AOE" index={index} />;
+    return <DetailsItem icon={icon} name="Proximity AOE" object={object} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

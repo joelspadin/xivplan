@@ -18,7 +18,6 @@ const classNames = mergeStyleSets({
 
 export interface ObjectPropertiesProps<T> {
     object: T & UnknownObject;
-    index: number;
 }
 
 export function useSpinChanged(
@@ -39,21 +38,21 @@ export function useSpinChanged(
     }, deps);
 }
 
-export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object, index }) => {
+export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onTogglePinned = useCallback(
-        () => dispatch({ type: 'update', index, value: setOrOmit(object, 'pinned', !object.pinned) as SceneObject }),
-        [dispatch, object, index],
+        () => dispatch({ type: 'update', value: setOrOmit(object, 'pinned', !object.pinned) as SceneObject }),
+        [dispatch, object],
     );
 
     const onXChanged = useSpinChanged(
-        (x: number) => dispatch({ type: 'update', index, value: { ...object, x } as SceneObject }),
-        [dispatch, object, index],
+        (x: number) => dispatch({ type: 'update', value: { ...object, x } as SceneObject }),
+        [dispatch, object],
     );
     const onYChanged = useSpinChanged(
-        (y: number) => dispatch({ type: 'update', index, value: { ...object, y } as SceneObject }),
-        [dispatch, object, index],
+        (y: number) => dispatch({ type: 'update', value: { ...object, y } as SceneObject }),
+        [dispatch, object],
     );
 
     const iconName = object.pinned ? 'LockSolid' : 'UnlockSolid';
@@ -86,26 +85,26 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
     );
 };
 
-export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({ object, index }) => {
+export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onWidthChanged = useSpinChanged(
-        (width: number) => dispatch({ type: 'update', index, value: { ...object, width } as SceneObject }),
-        [dispatch, object, index],
+        (width: number) => dispatch({ type: 'update', value: { ...object, width } as SceneObject }),
+        [dispatch, object],
     );
     const onHeightChanged = useSpinChanged(
-        (height: number) => dispatch({ type: 'update', index, value: { ...object, height } as SceneObject }),
-        [dispatch, object, index],
+        (height: number) => dispatch({ type: 'update', value: { ...object, height } as SceneObject }),
+        [dispatch, object],
     );
     const onRotationChanged = useSpinChanged(
         (rotation: number) =>
-            dispatch({ type: 'update', index, value: { ...object, rotation: rotation % 360 } as SceneObject }),
-        [dispatch, object, index],
+            dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } as SceneObject }),
+        [dispatch, object],
     );
 
     return (
         <>
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <Stack horizontal tokens={stackTokens} className={classNames.sizeRow}>
                 <SpinButton
                     label="Width"
@@ -137,19 +136,18 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
 };
 
 // TODO: allow list of preset images
-export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object, index }) => {
+export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onImageChanged = useCallback(
-        (image?: string) =>
-            dispatch({ type: 'update', index, value: { ...object, image: image ?? '' } as SceneObject }),
-        [dispatch, object, index],
+        (image?: string) => dispatch({ type: 'update', value: { ...object, image: image ?? '' } as SceneObject }),
+        [dispatch, object],
     );
 
     return (
         <>
             <DeferredTextField label="Image URL" value={object.image} onChange={onImageChanged} />
-            <ResizeableObjectProperties object={object} index={index} />
+            <ResizeableObjectProperties object={object} />
         </>
     );
 };

@@ -88,8 +88,8 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
     };
 });
 
-const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
 
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
@@ -101,7 +101,7 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
     const highlightHeight = object.height + highlightOffset;
 
     return (
-        <ResizeableObjectContainer object={object} index={index} transformerProps={{ keepRatio: false }}>
+        <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
             {(groupProps) => (
                 <Group {...groupProps}>
                     {showHighlight && (
@@ -122,9 +122,9 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
 registerRenderer<RectangleZone>(ObjectType.Rect, LayerName.Ground, RectangleRenderer);
 
-const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={squareIcon} name={NAME} index={index} />;
+    return <DetailsItem icon={squareIcon} name={NAME} object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
@@ -137,26 +137,26 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object, index }) => {
+const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', index, value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object, index],
+        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     return (
@@ -172,7 +172,7 @@ const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <ResizeableObjectProperties object={object} index={index} />
+            <ResizeableObjectProperties object={object} />
         </Stack>
     );
 };

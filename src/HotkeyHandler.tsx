@@ -7,7 +7,7 @@ import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
 import { useStage } from './render/StageProvider';
 import { isMoveable, isRotateable, MoveableObject, Scene, SceneObject } from './scene';
-import { ObjectUpdate, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
+import { getObjectById, GroupMoveAction, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
 import {
     getSelectedObjects,
     SceneSelection,
@@ -72,7 +72,7 @@ function pasteObjects(
     });
 
     dispatch({ type: 'add', object: newObjects });
-    setSelection(selectNewObjects(scene.objects.length, newObjects.length));
+    setSelection(selectNewObjects(scene, newObjects.length));
 }
 
 const SelectionActionHandler: React.FC = () => {
@@ -114,7 +114,7 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size) {
                 return;
             }
-            dispatch({ type: 'remove', index: [...selection] });
+            dispatch({ type: 'remove', ids: [...selection] });
             setSelection(selectNone());
             e.preventDefault();
         },
@@ -186,28 +186,25 @@ function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rot
 }
 
 const EditActionHandler: React.FC = () => {
-    const [selection] = useSelection();
+    const [selection, setSelection] = useSelection();
     const [scene, dispatch] = useScene();
     const stage = useStage();
 
     const moveCallback = useCallback(
         (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
-            const updates: ObjectUpdate[] = [];
-            selection.forEach((index) => {
-                const object = scene.objects[index];
+            const value: SceneObject[] = [];
+            selection.forEach((id) => {
+                const object = getObjectById(scene, id);
                 if (object && isMoveable(object)) {
-                    updates.push({
-                        index,
-                        value: {
-                            ...object,
-                            x: object.x + (offset?.x ?? 0),
-                            y: object.y + (offset?.y ?? 0),
-                        },
+                    value.push({
+                        ...object,
+                        x: object.x + (offset?.x ?? 0),
+                        y: object.y + (offset?.y ?? 0),
                     });
                 }
             });
 
-            dispatch({ type: 'updateMany', updates });
+            dispatch({ type: 'update', value });
             e.preventDefault();
         },
         [stage, scene, dispatch, selection],
@@ -234,17 +231,17 @@ const EditActionHandler: React.FC = () => {
 
     const rotateCallback = useCallback(
         (offset: number) => (e: KeyboardEvent) => {
-            const updates: ObjectUpdate[] = [];
+            const value: SceneObject[] = [];
             const center = getGroupCenter(getSelectedObjects(scene, selection).filter(isMoveable));
 
-            selection.forEach((index) => {
-                const object = scene.objects[index];
+            selection.forEach((id) => {
+                const object = getObjectById(scene, id);
                 if (object && isMoveable(object)) {
-                    updates.push({ index, value: rotateObject(object, center, offset) });
+                    value.push(rotateObject(object, center, offset));
                 }
             });
 
-            dispatch({ type: 'updateMany', updates });
+            dispatch({ type: 'update', value });
             e.preventDefault();
         },
         [stage, scene, dispatch, selection],
@@ -254,7 +251,18 @@ const EditActionHandler: React.FC = () => {
     useHotkeys('ctrl+h', CATEGORY_EDIT, 'Rotate 90° clockwise', rotateCallback(90), [rotateCallback]);
     useHotkeys('ctrl+j', CATEGORY_EDIT, 'Rotate 180°', rotateCallback(180), [rotateCallback]);
 
-    // TODO: add "moveMany" action and use pageup/pagedown (+ctrl) to adjust layer order
+    const orderCallback = useCallback(
+        (type: GroupMoveAction['type']) => (e: KeyboardEvent) => {
+            dispatch({ type, ids: [...selection] });
+            e.preventDefault();
+        },
+        [dispatch, selection, setSelection],
+    );
+
+    useHotkeys('pageup', CATEGORY_EDIT, 'Move layer up', orderCallback('moveUp'), [orderCallback]);
+    useHotkeys('pagedown', CATEGORY_EDIT, 'Move layer down', orderCallback('moveDown'), [orderCallback]);
+    useHotkeys('shift+pageup', CATEGORY_EDIT, 'Move to top', orderCallback('moveToTop'), [orderCallback]);
+    useHotkeys('shift+pagedown', CATEGORY_EDIT, 'Move to bottom', orderCallback('moveToBottom'), [orderCallback]);
 
     return null;
 };

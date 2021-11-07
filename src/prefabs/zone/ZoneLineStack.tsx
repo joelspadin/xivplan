@@ -67,8 +67,8 @@ const ARROW_SIZE_FRAC = 0.3;
 const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.3;
 
-const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, index }) => {
-    const showHighlight = useShowHighlight(object, index);
+const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+    const showHighlight = useShowHighlight(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
     const patternWidth = object.width;
@@ -101,11 +101,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
     return (
         <>
-            <ResizeableObjectContainer
-                object={object}
-                index={index}
-                transformerProps={{ centeredScaling: true, keepRatio: false }}
-            >
+            <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true, keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
                         {showHighlight && (
@@ -144,9 +140,9 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object, ind
 
 registerRenderer<RectangleZone>(ObjectType.LineStack, LayerName.Ground, LineStackRenderer);
 
-const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ index }) => {
+const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);

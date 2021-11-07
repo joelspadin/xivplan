@@ -105,8 +105,8 @@ interface EyeRendererProps extends RendererProps<CircleZone> {
     groupRef: RefObject<Konva.Group>;
 }
 
-const EyeRenderer: React.FC<EyeRendererProps> = ({ object, index, radius, groupRef }) => {
-    const showHighlight = useShowHighlight(object, index);
+const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {
+    const showHighlight = useShowHighlight(object);
     const scale = radius / 20;
     const eyeStyle = useMemo(() => {
         return {
@@ -162,21 +162,21 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, index, radius, groupR
     );
 };
 
-const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object, index }) => {
+const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
 
     return (
-        <RadiusObjectContainer object={object} index={index} onTransformEnd={() => groupRef.current?.clearCache()}>
-            {({ radius }) => <EyeRenderer object={object} index={index} radius={radius} groupRef={groupRef} />}
+        <RadiusObjectContainer object={object} onTransformEnd={() => groupRef.current?.clearCache()}>
+            {({ radius }) => <EyeRenderer object={object} radius={radius} groupRef={groupRef} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
-const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ index }) => {
+const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Look away" index={index} />;
+    return <DetailsItem icon={icon} name="Look away" object={object} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

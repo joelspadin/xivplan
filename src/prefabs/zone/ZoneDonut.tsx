@@ -66,8 +66,8 @@ interface DonutRendererProps extends RendererProps<DonutZone> {
     innerRadius: number;
 }
 
-const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius, innerRadius }) => {
-    const showHighlight = useShowHighlight(object, index);
+const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius }) => {
+    const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
         [object.color, object.opacity, radius],
@@ -87,21 +87,19 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, index, radius, in
     );
 };
 
-const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object, index }) => {
+const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object} index={index} allowInnerRadius>
-            {({ radius, innerRadius }) => (
-                <DonutRenderer object={object} index={index} radius={radius} innerRadius={innerRadius} />
-            )}
+        <RadiusObjectContainer object={object} allowInnerRadius>
+            {({ radius, innerRadius }) => <DonutRenderer object={object} radius={radius} innerRadius={innerRadius} />}
         </RadiusObjectContainer>
     );
 };
 
 registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
-const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ index }) => {
+const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} index={index} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} />;
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);
@@ -116,31 +114,31 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object, index }) => {
+const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onInnerRadiusChanged = useSpinChanged(
-        (innerRadius: number) => dispatch({ type: 'update', index, value: { ...object, innerRadius } }),
-        [dispatch, object, index],
+        (innerRadius: number) => dispatch({ type: 'update', value: { ...object, innerRadius } }),
+        [dispatch, object],
     );
 
     const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', index, value: { ...object, radius } }),
-        [dispatch, object, index],
+        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', index, value: { ...object, color } }),
-        [dispatch, object, index],
+        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
         (opacity: number) => {
             if (opacity !== object.opacity) {
-                dispatch({ type: 'update', index, value: { ...object, opacity } });
+                dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     return (
@@ -149,7 +147,7 @@ const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object,
             <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
 
             <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} index={index} />
+            <MoveableObjectProperties object={object} />
             <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
                 <SpinButton
                     label="Radius 1"
