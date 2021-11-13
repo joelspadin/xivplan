@@ -17,10 +17,10 @@ import {
     useSelection,
 } from './SelectionProvider';
 
-const CATEGORY_HISTORY = 'History';
-const CATEGORY_SELECTION = 'Selection';
-const CATEGORY_GENERAL = 'General';
-const CATEGORY_EDIT = 'Edit';
+const CATEGORY_GENERAL = '1.General';
+const CATEGORY_SELECTION = '2.Selection';
+const CATEGORY_EDIT = '3.Edit';
+const CATEGORY_HISTORY = '4.History';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
