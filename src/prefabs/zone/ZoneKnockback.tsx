@@ -108,8 +108,7 @@ const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 registerRenderer<CircleZone>(ObjectType.Knockback, LayerName.Ground, KnockbackContainer);
 
 const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Knockback" object={object} />;
+    return <DetailsItem icon={icon} name="Knockback" object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

@@ -145,8 +145,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayRenderer);
 
 const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knock away" object={object} />;
+    return <DetailsItem icon={icon} name="Line knock away" object={object} color={object.color} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);

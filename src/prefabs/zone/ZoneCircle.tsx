@@ -92,8 +92,7 @@ const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleContainer);
 
 const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);

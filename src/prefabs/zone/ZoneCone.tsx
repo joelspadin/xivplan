@@ -200,8 +200,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);
@@ -210,22 +209,22 @@ const stackTokens: IStackTokens = {
     childrenGap: 10,
 };
 
-const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, index }) => {
+const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object }) => {
     const [, dispatch] = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onHollowChanged = useCallback(
         (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onOpacityChanged = useCallback(
@@ -234,17 +233,17 @@ const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object, i
                 dispatch({ type: 'update', value: { ...object, opacity } });
             }
         },
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onAngleChanged = useSpinChanged(
         (coneAngle: number) => dispatch({ type: 'update', value: { ...object, coneAngle } }),
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     const onRotationChanged = useSpinChanged(
         (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object, index],
+        [dispatch, object],
     );
 
     return (

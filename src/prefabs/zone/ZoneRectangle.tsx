@@ -123,8 +123,7 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 registerRenderer<RectangleZone>(ObjectType.Rect, LayerName.Ground, RectangleRenderer);
 
 const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={squareIcon} name={NAME} object={object} />;
+    return <DetailsItem icon={squareIcon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);

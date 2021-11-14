@@ -155,8 +155,7 @@ const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
 registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerContainer);
 
 const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Meteor/tower" object={object} />;
+    return <DetailsItem icon={icon} name="Meteor/tower" object={object} color={object.color} />;
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);

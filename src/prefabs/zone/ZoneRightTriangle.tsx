@@ -104,8 +104,7 @@ const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.RightTriangle, LayerName.Ground, RightTriangleRenderer);
 
 const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={rightTriangleIcon} name={NAME} object={object} />;
+    return <DetailsItem icon={rightTriangleIcon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.RightTriangle, RightTriangleDetails);

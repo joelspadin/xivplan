@@ -1,5 +1,6 @@
 import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
 import React from 'react';
+import { getRecolorFilter } from '../color';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
 import { SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -11,6 +12,7 @@ const stackTokens: IStackTokens = {
 export interface DetailsItemProps {
     object: SceneObject;
     icon?: string;
+    color?: string;
     name: string;
 }
 
@@ -22,13 +24,17 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name }) => {
+export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name, color }) => {
     const [, dispatch] = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
+    const filter = color ? getRecolorFilter(color) : undefined;
+
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
-            <Stack.Item>{icon && <PrefabIcon icon={icon} name={name} shouldFadeIn={false} />}</Stack.Item>
+            <Stack.Item>
+                {icon && <PrefabIcon icon={icon} name={name} filter={filter} shouldFadeIn={false} />}
+            </Stack.Item>
             <Stack.Item grow className={classNames.name}>
                 {name}
             </Stack.Item>

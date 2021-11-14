@@ -107,8 +107,7 @@ const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Stack, LayerName.Ground, StackContainer);
 
 const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

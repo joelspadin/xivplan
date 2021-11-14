@@ -141,8 +141,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 registerRenderer<RectangleZone>(ObjectType.LineStack, LayerName.Ground, LineStackRenderer);
 
 const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);

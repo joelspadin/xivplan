@@ -202,8 +202,7 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) 
 registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);

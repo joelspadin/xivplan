@@ -8,7 +8,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_BLUE_WHITE, DEFAULT_AOE_COLOR, SELECTED_PROPS } from '../../render/SceneTheme';
+import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { degtorad } from '../../util';
 import { useShowHighlight } from '../highlight';
@@ -42,8 +42,8 @@ registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
         type: 'add',
         object: {
             type: ObjectType.Proximity,
-            color: DEFAULT_AOE_COLOR,
-            opacity: COLOR_BLUE_WHITE,
+            color: COLOR_BLUE_WHITE,
+            opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
             ...object,
             ...position,
@@ -146,6 +146,8 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
     const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
     const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
 
+    console.log(object.color, arrow);
+
     return (
         <>
             {showHighlight && <Circle radius={radius} {...SELECTED_PROPS} opacity={0.25} />}
@@ -183,8 +185,7 @@ const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
 const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Proximity AOE" object={object} />;
+    return <DetailsItem icon={icon} name="Proximity AOE" object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

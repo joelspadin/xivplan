@@ -138,8 +138,7 @@ const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object }) =>
 registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareContainer);
 
 const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);

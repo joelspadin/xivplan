@@ -144,7 +144,7 @@ const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => 
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
     const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
 
-    return <DetailsItem icon={icon} name={name} object={object} />;
+    return <DetailsItem icon={icon} name={name} object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

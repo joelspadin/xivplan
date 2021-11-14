@@ -175,8 +175,7 @@ const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
 const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Look away" object={object} />;
+    return <DetailsItem icon={icon} name="Look away" object={object} color={object.color} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

@@ -12,9 +12,10 @@ const draggableProps: Partial<IImageStyles> = {
 export interface PrefabIconProps extends IImageProps {
     icon: string;
     name?: string;
+    filter?: string;
 }
 
-export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name, ...props }) => {
+export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name, filter, ...props }) => {
     return (
         <Image
             {...props}
@@ -23,6 +24,7 @@ export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, nam
             width={PREFAB_ICON_SIZE}
             height={PREFAB_ICON_SIZE}
             styles={props.draggable ? draggableProps : undefined}
+            style={{ filter }}
         />
     );
 };

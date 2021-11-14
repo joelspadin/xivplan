@@ -138,8 +138,7 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LayerName.Ground, LineKnockbackRenderer);
 
 const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name="Line knockback" object={object} />;
+    return <DetailsItem icon={icon} name="Line knockback" object={object} color={object.color} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockback, LineKnockbackDetails);

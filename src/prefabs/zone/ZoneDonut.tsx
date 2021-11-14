@@ -98,8 +98,7 @@ const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
 registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object }) => {
-    // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);
