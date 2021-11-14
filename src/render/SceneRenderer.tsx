@@ -27,13 +27,10 @@ export const SceneRenderer: React.FunctionComponent = () => {
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
 
-    console.log(scene);
-
     const onClickStage = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
             // Clicking on nothing (with no modifier keys held) should cancel selection.
             if (!e.evt.ctrlKey && !e.evt.shiftKey) {
-                console.log('click');
                 setSelection(selectNone());
             }
         },
