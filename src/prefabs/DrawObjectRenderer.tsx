@@ -20,7 +20,7 @@ import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
 export const DRAW_LINE_PROPS: LineConfig = {
     lineCap: 'round',
-    tension: 0.5,
+    tension: 0.25,
 };
 
 function getLinePoints(object: DrawObject) {

@@ -8,9 +8,10 @@ import { DrawConfig, EditMode, useDrawConfig, useEditMode } from '../EditModePro
 import { DRAW_LINE_PROPS } from '../prefabs/DrawObjectRenderer';
 import { DrawObject, ObjectType, Scene } from '../scene';
 import { useScene } from '../SceneProvider';
+import { selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
 import { useStage } from './StageProvider';
 
-const SIMPLIFY_THRESHOLD = 0.3;
+const SIMPLIFY_THRESHOLD = 0.5;
 const SIMPLIFY_HIGH_QUALITY = true;
 
 export const DrawTarget: React.FC = () => {
@@ -55,11 +56,6 @@ function getDrawObject(points: Vector2d[], config: DrawConfig): Omit<DrawObject,
     const x = bbox.left + width / 2;
     const y = bbox.bottom + height / 2;
 
-    if (simplified.length === 1) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        simplified.push(simplified[0]!);
-    }
-
     const relativePoints = simplified.map((pos) => {
         return {
             x: width === 0 ? 0 : (pos.x - x) / width,
@@ -75,6 +71,7 @@ const DrawTargetLayer: React.FC = () => {
     const [isDrawing, setIsDrawing] = useState(false);
     const [config] = useDrawConfig();
     const [scene, dispatch] = useScene();
+    const [, setSelection] = useSelection();
     const stage = useStage();
 
     useEffect(() => {
@@ -88,13 +85,15 @@ const DrawTargetLayer: React.FC = () => {
 
     const onMouseDown = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
+            setSelection(selectNone());
+
             const pos = getPointerPosition(scene, e);
             if (pos) {
                 setIsDrawing(true);
                 setPoints([pos]);
             }
         },
-        [scene, setIsDrawing, setPoints],
+        [scene, setSelection, setIsDrawing, setPoints],
     );
 
     const onMouseMove = useCallback(
@@ -118,10 +117,12 @@ const DrawTargetLayer: React.FC = () => {
 
         setIsDrawing(false);
 
-        if (points.length > 1) {
-            dispatch({ type: 'add', object: getDrawObject(points, config) });
+        const object = getDrawObject(points, config);
+        if (object.points.length > 1) {
+            dispatch({ type: 'add', object });
+            setSelection(selectNewObjects(scene, 1));
         }
-    }, [config, dispatch, isDrawing, setIsDrawing, points]);
+    }, [config, scene, dispatch, setSelection, isDrawing, setIsDrawing, points]);
 
     const linePoints = useMemo(() => convertPoints(scene, points), [scene, points]);
 
@@ -143,6 +144,7 @@ const DrawTargetLayer: React.FC = () => {
                 onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}
                 onMouseUp={onMouseUp}
+                onClick={(e) => (e.cancelBubble = true)}
             />
         </>
     );

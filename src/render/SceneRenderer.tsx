@@ -33,6 +33,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
         (e: KonvaEventObject<MouseEvent>) => {
             // Clicking on nothing (with no modifier keys held) should cancel selection.
             if (!e.evt.ctrlKey && !e.evt.shiftKey) {
+                console.log('click');
                 setSelection(selectNone());
             }
         },
