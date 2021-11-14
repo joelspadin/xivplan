@@ -3,13 +3,12 @@ import React from 'react';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { useSelection } from '../SelectionProvider';
+import { getSelectedObjects, useSelection } from '../SelectionProvider';
 import { asArray } from '../util';
 import { PANEL_PADDING } from './PanelStyles';
 
 export interface PropertiesControlProps<T extends SceneObject = SceneObject> {
     object: T;
-    index: number;
 }
 
 export type PropertiesControl<T extends SceneObject> = React.FC<PropertiesControlProps<T>>;
@@ -50,13 +49,12 @@ const Controls: React.FC = () => {
         return <p>Multiple objects selected.</p>;
     }
 
-    const index = selection.values().next().value;
-    const object = scene.objects[index];
+    const object = getSelectedObjects(scene, selection)[0];
 
     if (!object) {
-        return <p>Envalid selection.</p>;
+        return <p>Invalid selection.</p>;
     }
 
     const Component = registry.get(object.type);
-    return <Component object={object} index={index} />;
+    return <Component object={object} />;
 };
