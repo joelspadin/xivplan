@@ -1,3 +1,5 @@
+import { Vector2d } from 'konva/lib/types';
+
 export enum ArenaShape {
     Rectangle = 'rectangle',
     Circle = 'circle',
@@ -15,6 +17,7 @@ export enum ObjectType {
     Circle = 'circle',
     Cone = 'cone',
     Donut = 'donut',
+    Draw = 'draw',
     Enemy = 'enemy',
     Exaflare = 'exaflare',
     Eye = 'eye',
@@ -296,6 +299,15 @@ export const isTether = makeObjectTest<Tether>(
     ObjectType.TetherTetherPlusPlus,
     ObjectType.TetherMinusMinus,
 );
+
+export interface DrawObject extends ResizeableObject, RotateableObject, SceneId {
+    readonly type: ObjectType.Draw;
+    readonly points: readonly Vector2d[];
+    readonly brushSize: number;
+    readonly color: string;
+    readonly opacity: number;
+}
+export const isDrawObject = makeObjectTest<DrawObject>(ObjectType.Draw);
 
 export function isMoveable<T>(object: T): object is MoveableObject & T {
     const moveable = object as MoveableObject & T;

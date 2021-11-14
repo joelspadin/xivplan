@@ -92,8 +92,6 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
         pointerAtEnding: !!object.arrowEnd,
     };
 
-    console.log(arrowProps);
-
     return (
         <ResizeableObjectContainer
             object={object}

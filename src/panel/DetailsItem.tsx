@@ -10,7 +10,7 @@ const stackTokens: IStackTokens = {
 
 export interface DetailsItemProps {
     object: SceneObject;
-    icon: string;
+    icon?: string;
     name: string;
 }
 
@@ -28,9 +28,7 @@ export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object,
 
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
-            <Stack.Item>
-                <PrefabIcon icon={icon} name={name} shouldFadeIn={false} />
-            </Stack.Item>
+            <Stack.Item>{icon && <PrefabIcon icon={icon} name={name} shouldFadeIn={false} />}</Stack.Item>
             <Stack.Item grow className={classNames.name}>
                 {name}
             </Stack.Item>

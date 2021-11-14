@@ -1,6 +1,8 @@
 import { IPivotStyles, IStyle, mergeStyleSets, Pivot, PivotItem } from '@fluentui/react';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { EditMode, useEditMode } from '../EditModeProvider';
 import { ArenaPanel } from './ArenaPanel';
+import { DrawPanel } from './DrawPanel';
 import { PANEL_WIDTH } from './PanelStyles';
 import { PrefabsPanel } from './PrefabsPanel';
 import { StatusPanel } from './StatusPanel';
@@ -28,8 +30,25 @@ const pivotStyles: Partial<IPivotStyles> = {
 };
 
 export const MainPanel: React.FunctionComponent = () => {
+    const [, setEditMode] = useEditMode();
+
+    const onTabChanged = useCallback(
+        (item?: PivotItem) => {
+            // Cancel any special edit mode when changing tabs.
+            // Draw tab should always default to draw mode.
+            const newMode = item?.props.itemKey === Tabs.Draw ? EditMode.Draw : EditMode.Default;
+            setEditMode(newMode);
+        },
+        [setEditMode],
+    );
+
     return (
-        <Pivot className={classNames.wrapper} styles={pivotStyles}>
+        <Pivot
+            className={classNames.wrapper}
+            styles={pivotStyles}
+            defaultSelectedKey={Tabs.Objects}
+            onLinkClick={onTabChanged}
+        >
             <PivotItem headerText="Arena" itemKey={Tabs.Arena}>
                 <ArenaPanel />
             </PivotItem>
@@ -40,7 +59,7 @@ export const MainPanel: React.FunctionComponent = () => {
                 <StatusPanel />
             </PivotItem>
             <PivotItem headerText="Draw" itemKey={Tabs.Draw}>
-                <p>TODO</p>
+                <DrawPanel />
             </PivotItem>
         </Pivot>
     );

@@ -4,11 +4,14 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import React, { RefObject, useCallback, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { getCanvasSize, getSceneCoord } from '../coord';
+import { DrawConfigContext, EditModeContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
+import { Scene } from '../scene';
 import { SceneContext, useScene } from '../SceneProvider';
 import { SelectionContext, selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
+import { DrawTarget } from './DrawTarget';
 import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
 import { StageContext } from './StageProvider';
@@ -17,6 +20,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
     const theme = useTheme();
     const sceneBridge = useContext(SceneContext);
     const selectionBridge = useContext(SelectionContext);
+    const editModeBridge = useContext(EditModeContext);
+    const drawConfigBridge = useContext(DrawConfigContext);
     const [scene] = useScene();
     const [, setSelection] = selectionBridge;
     const size = getCanvasSize(scene);
@@ -40,27 +45,45 @@ export const SceneRenderer: React.FunctionComponent = () => {
                 <StageContext.Provider value={stageRef.current}>
                     <ThemeContext.Provider value={theme}>
                         <SceneContext.Provider value={sceneBridge}>
-                            <SelectionContext.Provider value={selectionBridge}>
-                                <SceneHotkeyHandler />
-
-                                <Layer name={LayerName.Ground}>
-                                    <ArenaRenderer />
-                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
-                                </Layer>
-                                <Layer name={LayerName.Default}>
-                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
-                                </Layer>
-                                <Layer name={LayerName.Foreground}>
-                                    <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
-                                </Layer>
-                                <Layer name={LayerName.Active} />
-                                <Layer name={LayerName.Controls} />
-                            </SelectionContext.Provider>
+                            <EditModeContext.Provider value={editModeBridge}>
+                                <DrawConfigContext.Provider value={drawConfigBridge}>
+                                    <SelectionContext.Provider value={selectionBridge}>
+                                        <SceneContents scene={scene} />
+                                    </SelectionContext.Provider>
+                                </DrawConfigContext.Provider>
+                            </EditModeContext.Provider>
                         </SceneContext.Provider>
                     </ThemeContext.Provider>
                 </StageContext.Provider>
             </Stage>
         </DropTarget>
+    );
+};
+
+interface SceneContentsProps {
+    scene: Scene;
+}
+
+const SceneContents: React.FC<SceneContentsProps> = ({ scene }) => {
+    return (
+        <>
+            <SceneHotkeyHandler />
+
+            <Layer name={LayerName.Ground}>
+                <ArenaRenderer />
+                <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
+            </Layer>
+            <Layer name={LayerName.Default}>
+                <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
+            </Layer>
+            <Layer name={LayerName.Foreground}>
+                <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
+            </Layer>
+            <Layer name={LayerName.Active}>
+                <DrawTarget />
+            </Layer>
+            <Layer name={LayerName.Controls} />
+        </>
     );
 };
 

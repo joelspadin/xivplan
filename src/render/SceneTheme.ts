@@ -74,13 +74,13 @@ export interface SceneTheme {
     enemy: EnemyTheme;
 }
 
-const BACKGROUND = '#40352c';
-const FOREGROUND = '#ffffff';
+export const ARENA_BACKGROUND_COLOR = '#40352c';
+export const ARENA_TEXT_COLOR = '#ffffff';
 
 export function useSceneTheme(): SceneTheme {
     return {
         arena: {
-            fill: BACKGROUND,
+            fill: ARENA_BACKGROUND_COLOR,
             stroke: COLOR_GRID,
             strokeWidth: 1,
         },
@@ -92,8 +92,8 @@ export function useSceneTheme(): SceneTheme {
             opacity: 0.75,
             ringShadowOpacity: 0.5,
             text: {
-                fill: FOREGROUND,
-                stroke: BACKGROUND,
+                fill: ARENA_TEXT_COLOR,
+                stroke: ARENA_BACKGROUND_COLOR,
             },
         },
     };

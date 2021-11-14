@@ -31,7 +31,7 @@ progression, so it will always be simpler and less powerful.
 | Delete objects                        | ✅     |
 | Edit object properties                | ✅     |
 | Add statuses to party/enemies         |        |
-| Draw on scene                         |        |
+| Draw on scene                         | ✅     |
 | Save scenes                           |        |
 | Share scenes                          |        |
 | Context menus                         |        |
