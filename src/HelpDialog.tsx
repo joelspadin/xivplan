@@ -56,6 +56,11 @@ export const HelpDialog: React.FC<IModalProps> = (props) => {
                 </section>
 
                 <section>
+                    <h2>Keyboard shortcuts</h2>
+                    <HotkeyList />
+                </section>
+
+                <section>
                     <h2>Mouse shortcuts</h2>
                     <dl>
                         <dt>Left click</dt>
@@ -74,9 +79,6 @@ export const HelpDialog: React.FC<IModalProps> = (props) => {
                         <dt>Left click + drag</dt>
                         <dd>Move/transform object</dd>
                     </dl>
-
-                    <h2>Keyboard shortcuts</h2>
-                    <HotkeyList />
                 </section>
             </div>
         </Modal>
@@ -104,6 +106,7 @@ interface IHelpDialogStyles {
     container: IStyle;
     header: IStyle;
     body: IStyle;
+    shortcuts: IStyle;
 }
 
 const getClassNames = classNamesFunction<Theme, IHelpDialogStyles>();
@@ -114,7 +117,6 @@ const getStyles: IStyleFunctionOrObject<Theme, IHelpDialogStyles> = (theme) => {
             display: 'flex',
             flexFlow: 'column nowrap',
             alignItems: 'stretch',
-            maxWidth: '60vw',
         },
         header: [
             theme.fonts.xLarge,
@@ -131,10 +133,9 @@ const getStyles: IStyleFunctionOrObject<Theme, IHelpDialogStyles> = (theme) => {
         body: {
             flex: '4 4 auto',
             padding: '0 24px 24px 24px',
-            overflowY: 'auto',
 
             display: 'grid',
-            gridTemplate: 'auto / 30em auto',
+            gridTemplate: 'auto / minmax(15em, 30em) repeat(2, minmax(20em, auto))',
 
             section: {
                 marginRight: 40,
@@ -142,6 +143,11 @@ const getStyles: IStyleFunctionOrObject<Theme, IHelpDialogStyles> = (theme) => {
                 ':last-child': {
                     marginRight: 0,
                 },
+            } as IStyle,
+
+            '@media (max-width: 992px)': {
+                display: 'flex',
+                flexFlow: 'column',
             } as IStyle,
 
             h2: theme.fonts.large,
