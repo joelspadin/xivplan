@@ -36,18 +36,28 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
     const classNames = getClassNames(() => {
         return {
             colorBox: {
-                width: 20,
-                height: 20,
+                display: 'inline-block',
+                userSelect: 'none',
+                cursor: 'pointer',
+                width: 22,
+                height: 22,
+                padding: 0,
                 marginLeft: 5,
                 marginRight: 10,
                 marginTop: 5,
                 marginBottom: 5,
+                boxSizing: 'border-box',
+                borderRadius: 0,
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: theme.semanticColors.inputBorder,
 
                 ':hover': {
-                    borderColor: theme.semanticColors.inputBorderHovered,
+                    borderWidth: 1,
+                    borderColor: theme.palette.neutralSecondary,
+                    boxShadow: `inset 0 0 0 1px ${theme.palette.neutralLight}`,
+                    padding: 3,
+                    backgroundColor: theme.semanticColors.bodyBackground,
                 } as IStyle,
             },
             label: [
@@ -97,7 +107,11 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
             {label && <label className={classNames.label}>{label}</label>}
             <Stack horizontal verticalAlign="center">
                 <Stack.Item onClick={showCallout}>
-                    <div id={buttonId} className={classNames.colorBox} style={{ backgroundColor: color }} />
+                    <button type="button" id={buttonId} className={classNames.colorBox}>
+                        <svg viewBox="0 0 20 20" fill={color} focusable={false}>
+                            <rect width="100%" height="100%" />
+                        </svg>
+                    </button>
                 </Stack.Item>
                 <Stack.Item grow>
                     <DeferredTextField title="Color" value={color} onChange={onColorTextChanged} />
