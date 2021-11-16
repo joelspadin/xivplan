@@ -5,6 +5,7 @@ import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { EditMode, useDrawConfig, useEditMode } from '../EditModeProvider';
+import { useHotkeys } from '../HotkeyHelpProvider';
 import { OpacitySlider } from '../OpacitySlider';
 import { useSpinChanged } from '../prefabs/CommonProperties';
 import '../prefabs/DrawObjectRenderer';
@@ -49,6 +50,17 @@ export const DrawPanel: React.FC = () => {
         (brushSize: number) => setConfig({ ...config, brushSize }),
         [config, setConfig],
     );
+
+    const modeHotkey = useCallback(
+        (mode: EditMode) => (e: KeyboardEvent) => {
+            setEditMode(mode);
+            e.preventDefault();
+        },
+        [setEditMode],
+    );
+
+    useHotkeys('e', '', '', modeHotkey(EditMode.Default), [editMode]);
+    useHotkeys('d', '', '', modeHotkey(EditMode.Draw), [editMode]);
 
     return (
         <div className={classNames.root}>

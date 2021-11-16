@@ -21,6 +21,7 @@ const CATEGORY_GENERAL = '1.General';
 const CATEGORY_SELECTION = '2.Selection';
 const CATEGORY_EDIT = '3.Edit';
 const CATEGORY_HISTORY = '4.History';
+const CATEGORY_DRAW = '5.Draw';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
@@ -284,6 +285,13 @@ const HelpHandler: React.FC = () => {
     return <HelpDialog isOpen={isOpen} onDismiss={hideHelp} />;
 };
 
+const DrawModeHandler: React.FC = () => {
+    useHotkeyHelp('e', CATEGORY_DRAW, '(On draw tab) switch to edit mode');
+    useHotkeyHelp('d', CATEGORY_DRAW, '(On draw tab) switch to draw mode');
+
+    return null;
+};
+
 export const RegularHotkeyHandler: React.FC = () => {
     return (
         <>
@@ -298,6 +306,7 @@ export const SceneHotkeyHandler: React.FC = () => {
             <UndoRedoHandler />
             <SelectionActionHandler />
             <EditActionHandler />
+            <DrawModeHandler />
         </>
     );
 };
