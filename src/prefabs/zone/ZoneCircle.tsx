@@ -91,8 +91,8 @@ const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleContainer);
 
-const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);

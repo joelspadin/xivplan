@@ -106,8 +106,8 @@ const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Stack, LayerName.Ground, StackContainer);
 
-const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

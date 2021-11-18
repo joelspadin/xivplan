@@ -1,21 +1,15 @@
-import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
-import { getSceneCoord, rotateCoord } from './coord';
+import React, { useCallback, useContext, useState } from 'react';
+import { rotateCoord } from './coord';
+import { getGroupCenter, pasteObjects } from './copy';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
+import { makeTethers } from './prefabs/Tethers';
 import { useStage } from './render/StageProvider';
-import { isMoveable, isRotateable, MoveableObject, Scene, SceneObject } from './scene';
-import { getObjectById, GroupMoveAction, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
-import {
-    getSelectedObjects,
-    SceneSelection,
-    selectAll,
-    selectNewObjects,
-    selectNone,
-    useSelection,
-} from './SelectionProvider';
+import { isMoveable, isRotateable, MoveableObject, SceneObject, TetherType } from './scene';
+import { getObjectById, GroupMoveAction, useScene, useSceneUndoRedo } from './SceneProvider';
+import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './SelectionProvider';
 
 const CATEGORY_GENERAL = '1.General';
 const CATEGORY_SELECTION = '2.Selection';
@@ -37,44 +31,6 @@ const UndoRedoHandler: React.FC = () => {
 
     return null;
 };
-
-function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
-    const moveable = objects.filter(isMoveable);
-    if (!moveable.length) {
-        return { x: 0, y: 0 };
-    }
-
-    const x = moveable.reduce((result, obj) => result + obj.x, 0) / moveable.length;
-    const y = moveable.reduce((result, obj) => result + obj.y, 0) / moveable.length;
-
-    return { x, y };
-}
-
-function pasteObjects(
-    stage: Stage,
-    scene: Scene,
-    dispatch: Dispatch<SceneAction>,
-    setSelection: Dispatch<SetStateAction<SceneSelection>>,
-    objects: readonly SceneObject[],
-) {
-    // TODO: allow copying tethers
-    const copyable = objects.filter(isMoveable);
-    if (!copyable.length) {
-        return;
-    }
-
-    const center = getGroupCenter(copyable);
-    const mousePos = getSceneCoord(scene, stage.getRelativePointerPosition());
-
-    const newObjects = copyable.map((obj) => {
-        const x = obj.x - center.x + mousePos.x;
-        const y = obj.y - center.y + mousePos.y;
-        return { ...obj, x, y };
-    });
-
-    dispatch({ type: 'add', object: newObjects });
-    setSelection(selectNewObjects(scene, newObjects.length));
-}
 
 const SelectionActionHandler: React.FC = () => {
     const [clipboard, setClipboard] = useState<readonly SceneObject[]>([]);
@@ -135,7 +91,6 @@ const SelectionActionHandler: React.FC = () => {
         },
         [scene, selection],
     );
-
     useHotkeys(
         'ctrl+v',
         CATEGORY_SELECTION,
@@ -163,6 +118,29 @@ const SelectionActionHandler: React.FC = () => {
         },
         [stage, scene, dispatch, selection, setSelection],
     );
+
+    const tetherCallback = useCallback(
+        (type: TetherType) => (e: KeyboardEvent) => {
+            const tethers = makeTethers(getSelectedObjects(scene, selection), type);
+            if (tethers.length === 0) {
+                return;
+            }
+
+            dispatch({ type: 'add', object: tethers });
+            setSelection(selectNewObjects(scene, tethers.length));
+            e.preventDefault();
+        },
+        [scene, dispatch, selection, setSelection],
+    );
+
+    useHotkeys('/', CATEGORY_SELECTION, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
+    useHotkeys('shift+=', CATEGORY_SELECTION, 'Tether +/+', tetherCallback(TetherType.PlusPlus), [tetherCallback]);
+    useHotkeys('-', CATEGORY_SELECTION, 'Tether -/-', tetherCallback(TetherType.MinusMinus), [tetherCallback]);
+    useHotkeys('=', CATEGORY_SELECTION, 'Tether +/-', tetherCallback(TetherType.PlusMinus), [tetherCallback]);
+    useHotkeys('shift+,', CATEGORY_SELECTION, 'Tether (stay together)', tetherCallback(TetherType.Close), [
+        tetherCallback,
+    ]);
+    useHotkeys('shift+.', CATEGORY_SELECTION, 'Tether (stay apart)', tetherCallback(TetherType.Far), [tetherCallback]);
 
     return null;
 };

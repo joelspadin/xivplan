@@ -97,8 +97,8 @@ const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
 
 registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
-const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);

@@ -137,8 +137,8 @@ const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object }) =>
 
 registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareContainer);
 
-const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);

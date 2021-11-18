@@ -137,8 +137,8 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LayerName.Ground, LineKnockbackRenderer);
 
-const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name="Line knockback" object={object} color={object.color} />;
+const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name="Line knockback" object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockback, LineKnockbackDetails);

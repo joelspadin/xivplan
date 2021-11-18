@@ -174,8 +174,8 @@ const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
-const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name="Look away" object={object} color={object.color} />;
+const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name="Look away" object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

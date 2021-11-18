@@ -32,8 +32,8 @@ import {
 } from '../prefabs/Party';
 import {
     TetherClose,
-    TetherDefault,
     TetherFar,
+    TetherLine,
     TetherMinusMinus,
     TetherPlusMinus,
     TetherPlusPlus,
@@ -178,13 +178,13 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                     Select a tether type, then click two objects to tether them together.
                 </Text>
                 <ObjectGroup className={zonesClass}>
+                    <TetherLine />
+                    <TetherClose />
+                    <TetherFar />
+
                     <TetherPlusMinus />
                     <TetherPlusPlus />
                     <TetherMinusMinus />
-
-                    <TetherClose />
-                    <TetherFar />
-                    <TetherDefault />
                 </ObjectGroup>
             </Section>
         </div>

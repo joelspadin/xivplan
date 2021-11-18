@@ -18,7 +18,8 @@ import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS 
 import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { clamp, degtorad, distance, mod360, setOrOmit } from '../../util';
+import { clamp, degtorad, mod360, setOrOmit } from '../../util';
+import { distance } from '../../vector';
 import { MIN_RADIUS } from '../bounds';
 import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
@@ -199,8 +200,8 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
-const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);

@@ -17,6 +17,14 @@ export const ActivePortal: React.FC<PortalProps> = ({ isActive, children }) => {
     );
 };
 
+export const ForegroundPortal: React.FC = ({ children }) => {
+    return (
+        <Portal selector={LayerSelector.Foreground} enabled>
+            {children}
+        </Portal>
+    );
+};
+
 export const ControlsPortal: React.FC = ({ children }) => {
     return (
         <Portal selector={LayerSelector.Controls} enabled>

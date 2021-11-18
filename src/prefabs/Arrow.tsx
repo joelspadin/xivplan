@@ -115,9 +115,9 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
 
 registerRenderer<ArrowObject>(ObjectType.Arrow, LayerName.Default, ArrowRenderer);
 
-const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ object }) => {
+const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ object, isNested }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} />;
+    return <DetailsItem icon={icon} name={NAME} object={object} isNested={isNested} />;
 };
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);

@@ -13,16 +13,17 @@ export interface PrefabIconProps extends IImageProps {
     icon: string;
     name?: string;
     filter?: string;
+    size?: number;
 }
 
-export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name, filter, ...props }) => {
+export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name, filter, size, ...props }) => {
     return (
         <Image
             {...props}
             src={icon}
             title={name}
-            width={PREFAB_ICON_SIZE}
-            height={PREFAB_ICON_SIZE}
+            width={size ?? PREFAB_ICON_SIZE}
+            height={size ?? PREFAB_ICON_SIZE}
             styles={props.draggable ? draggableProps : undefined}
             style={{ filter }}
         />

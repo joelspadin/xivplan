@@ -17,7 +17,8 @@ progression, so it will always be simpler and less powerful.
 | Create enemy objects                  | ✅     |
 | Create waymarks                       | ✅     |
 | Create zones                          | ✅     |
-| Create tethers                        |        |
+| Create tethers (mouse)                |        |
+| Create tethers (keyboard)             | ✅     |
 | Create text notes                     | ✅     |
 | Move objects                          | ✅     |
 | Move group selection (mouse)          |        |

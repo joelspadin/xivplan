@@ -16,7 +16,8 @@ const listClassNames = mergeStyleSets({
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
-    isSelected: boolean;
+    isSelected?: boolean;
+    isNested?: boolean;
 }
 
 export type ListComponent<T extends SceneObject> = React.FunctionComponent<ListComponentProps<T>>;
@@ -30,6 +31,10 @@ export function registerListComponent<T extends SceneObject>(
     for (const id of asArray(ids)) {
         registry.register(id, component);
     }
+}
+
+export function getListComponent(object: SceneObject): React.FunctionComponent<ListComponentProps<SceneObject>> {
+    return registry.get(object.type);
 }
 
 export type MoveCallback = (from: number, to: number) => void;
@@ -136,7 +141,7 @@ const ListItem: React.FunctionComponent<ListItemProps> = ({ index, object }) => 
         theme,
     );
 
-    const Component = registry.get(object.type);
+    const Component = getListComponent(object);
 
     return (
         <Draggable draggableId={object.id.toString()} index={index}>

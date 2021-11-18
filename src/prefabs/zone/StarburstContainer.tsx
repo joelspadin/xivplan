@@ -4,7 +4,7 @@ import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { ActivePortal } from '../../render/Portals';
 import { StarburstZone, UnknownObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { distance } from '../../util';
+import { distance } from '../../vector';
 import { MIN_RADIUS } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
 import { getResizeCursor } from '../cursor';

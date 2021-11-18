@@ -1,12 +1,11 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import React, { ReactNode, useCallback, useState } from 'react';
-import { Group } from 'react-konva';
 import { getCanvasCoord, getSceneCoord } from '../coord';
-import { useStage } from '../render/StageProvider';
 import { MoveableObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { selectSingle, useSelection } from '../SelectionProvider';
+import { CursorGroup } from './cursor';
 import { SelectableObject } from './SelectableObject';
 
 export interface DraggableObjectProps {
@@ -20,7 +19,6 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onAct
     const [dragging, setDragging] = useState(false);
     const [scene, dispatch] = useScene();
     const [selection, setSelection] = useSelection();
-    const stage = useStage();
     const center = getCanvasCoord(scene, object);
 
     const onDragStart = useCallback(
@@ -49,28 +47,18 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onAct
         [setDragging, onActive, dispatch, object],
     );
 
-    const setCursor = useCallback(
-        (cursor: string) => {
-            if (stage) {
-                stage.container().style.cursor = cursor;
-            }
-        },
-        [stage],
-    );
-
     return (
         <SelectableObject object={object}>
-            <Group
+            <CursorGroup
                 {...center}
+                cursor="move"
                 draggable={!object.pinned}
                 onDragStart={onDragStart}
                 onDragMove={(e) => setDragCenter(e.target.position())}
                 onDragEnd={onDragEnd}
-                onMouseEnter={() => setCursor('move')}
-                onMouseLeave={() => setCursor('default')}
             >
                 {typeof children === 'function' ? children?.(dragging ? dragCenter : center) : children}
-            </Group>
+            </CursorGroup>
         </SelectableObject>
     );
 };

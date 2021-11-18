@@ -140,8 +140,8 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 
 registerRenderer<RectangleZone>(ObjectType.LineStack, LayerName.Ground, LineStackRenderer);
 
-const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);

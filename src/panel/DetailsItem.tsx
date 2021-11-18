@@ -14,6 +14,7 @@ export interface DetailsItemProps {
     icon?: string;
     color?: string;
     name: string;
+    isNested?: boolean;
 }
 
 const classNames = mergeStyleSets({
@@ -24,7 +25,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name, color }) => {
+export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
     const [, dispatch] = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
@@ -33,12 +34,20 @@ export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object,
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
             <Stack.Item>
-                {icon && <PrefabIcon icon={icon} name={name} filter={filter} shouldFadeIn={false} />}
+                {icon && (
+                    <PrefabIcon
+                        icon={icon}
+                        name={name}
+                        filter={filter}
+                        shouldFadeIn={false}
+                        size={isNested ? 20 : undefined}
+                    />
+                )}
             </Stack.Item>
             <Stack.Item grow className={classNames.name}>
                 {name}
             </Stack.Item>
-            <IconButton iconProps={{ iconName: 'Delete' }} onClick={onDelete} />
+            {!isNested && <IconButton iconProps={{ iconName: 'Delete' }} onClick={onDelete} />}
         </Stack>
     );
 };

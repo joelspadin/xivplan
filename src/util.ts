@@ -1,5 +1,3 @@
-import { Vector2d } from 'konva/lib/types';
-
 export function asArray<T>(x: T | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x];
 }
@@ -20,17 +18,19 @@ export function mod360(deg: number): number {
     return ((deg % 360) + 360) % 360;
 }
 
-export function distance(a: Vector2d, b?: Vector2d): number {
-    const h = a.x - (b?.x ?? 0);
-    const v = a.y - (b?.y ?? 0);
-
-    return Math.sqrt(h * h + v * v);
-}
-
 export function rotateArray<T>(items: readonly T[], offset: number): T[] {
     offset = ((offset % items.length) + items.length) % items.length;
 
     return [...items.slice(offset), ...items.slice(0, offset)];
+}
+
+export function* combinations<T>(items: readonly T[]): Generator<[T, T]> {
+    for (let i = 0; i < items.length; i++) {
+        for (let j = i + 1; j < items.length; j++) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            yield [items[i]!, items[j]!];
+        }
+    }
 }
 
 export function* reversed<T>(items: readonly T[]): Generator<T> {

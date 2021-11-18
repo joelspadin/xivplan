@@ -37,6 +37,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
         [setSelection],
     );
 
+    console.log(scene);
+
     return (
         <DropTarget stageRef={stageRef}>
             <Stage {...size} ref={stageRef} onClick={onClickStage}>

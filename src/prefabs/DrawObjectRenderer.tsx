@@ -63,8 +63,8 @@ const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => 
 
 registerRenderer<DrawObject>(ObjectType.Draw, LayerName.Default, DrawObjectRenderer);
 
-const DrawDetails: React.FC<ListComponentProps<DrawObject>> = ({ object }) => {
-    return <DetailsItem name="Drawing" object={object} />;
+const DrawDetails: React.FC<ListComponentProps<DrawObject>> = ({ object, isNested }) => {
+    return <DetailsItem name="Drawing" object={object} isNested={isNested} />;
 };
 
 registerListComponent<DrawObject>(ObjectType.Draw, DrawDetails);

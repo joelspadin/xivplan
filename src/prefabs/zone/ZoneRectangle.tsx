@@ -122,8 +122,8 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
 
 registerRenderer<RectangleZone>(ObjectType.Rect, LayerName.Ground, RectangleRenderer);
 
-const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    return <DetailsItem icon={squareIcon} name={NAME} object={object} color={object.color} />;
+const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={squareIcon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);

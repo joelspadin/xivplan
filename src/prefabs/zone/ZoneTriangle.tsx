@@ -106,8 +106,8 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =>
 
 registerRenderer<RectangleZone>(ObjectType.Triangle, LayerName.Ground, TriangleRenderer);
 
-const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} />;
+const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, isNested }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
 };
 
 registerListComponent<RectangleZone>(ObjectType.Triangle, TriangleDetails);

@@ -4,6 +4,7 @@ import { COLOR_YELLOW } from './render/SceneTheme';
 export enum EditMode {
     Default = 'default',
     Draw = 'draw',
+    Tether = 'tether',
 }
 
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];

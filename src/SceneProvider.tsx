@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { Arena, ArenaShape, DEFAULT_SCENE, Grid, Scene, SceneObject, SceneObjectWithoutId } from './scene';
+import {
+    Arena,
+    ArenaShape,
+    DEFAULT_SCENE,
+    Grid,
+    isTether,
+    Scene,
+    SceneObject,
+    SceneObjectWithoutId,
+    Tether,
+} from './scene';
 import { createUndoContext } from './undo/undoContext';
 import { asArray } from './util';
 
@@ -99,22 +109,70 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return index >= 0 ? scene.objects[index] : undefined;
 }
 
+function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
+    // Tethers should be created below their targets.
+    let startIdx = objects.findIndex((x) => x.id === tether.startId);
+    let endIdx = objects.findIndex((x) => x.id === tether.endId);
+
+    if (startIdx < 0) {
+        startIdx = objects.length;
+    }
+    if (endIdx < 0) {
+        endIdx = objects.length;
+    }
+    return Math.min(startIdx, endIdx);
+}
+
 function addObjects(
     state: Readonly<Scene>,
     objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
 ): Partial<Scene> {
     let nextId = state.nextId;
-    const newObjects = asArray(objects).map((obj) => ({ ...obj, id: nextId++ }));
+    const addedObjects = asArray(objects)
+        .map((obj) => {
+            if (obj.id !== undefined) {
+                return obj as SceneObject;
+            }
+            return { ...obj, id: nextId++ };
+        })
+        .filter((obj) => {
+            if (state.objects.some((existing) => existing.id === obj.id)) {
+                console.error(`Cannot create new object with already-used ID ${obj.id}`);
+                return false;
+            }
+            return true;
+        });
+
+    const result = [...state.objects];
+
+    for (const object of addedObjects) {
+        if (isTether(object)) {
+            result.splice(getTetherIndex(result, object), 0, object);
+        } else {
+            result.push(object);
+        }
+    }
 
     return {
-        objects: [...state.objects, ...newObjects],
+        objects: result,
         nextId,
     };
 }
 
 function removeObjects(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
     return {
-        objects: state.objects.filter((object) => !ids.includes(object.id)),
+        objects: state.objects.filter((object) => {
+            if (ids.includes(object.id)) {
+                return false;
+            }
+
+            if (isTether(object)) {
+                // Delete any tether that is tethered to a deleted object.
+                return !ids.includes(object.startId) && !ids.includes(object.endId);
+            }
+
+            return true;
+        }),
     };
 }
 

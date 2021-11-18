@@ -35,11 +35,6 @@ export enum ObjectType {
     Stack = 'stack',
     Starburst = 'starburst',
     Tether = 'tether',
-    TetherClose = 'tetherClose',
-    TetherFar = 'tetherFar',
-    TetherMinusMinus = 'tetherMinusMinus',
-    TetherPlusMinus = 'tetherPlusMinus',
-    TetherTetherPlusPlus = 'tetherPlusPlus',
     Text = 'text',
     Tower = 'tower',
     Triangle = 'triangle',
@@ -280,25 +275,25 @@ export function isZone(object: UnknownObject): object is Zone {
     );
 }
 
+export enum TetherType {
+    Line = 'line',
+    Close = 'close',
+    Far = 'far',
+    MinusMinus = '--',
+    PlusMinus = '+-',
+    PlusPlus = '++',
+}
+
 export interface Tether extends SceneId {
-    readonly type:
-        | ObjectType.Tether
-        | ObjectType.TetherClose
-        | ObjectType.TetherFar
-        | ObjectType.TetherPlusMinus
-        | ObjectType.TetherTetherPlusPlus
-        | ObjectType.TetherMinusMinus;
+    readonly type: ObjectType.Tether;
+    readonly tether: TetherType;
     readonly startId: number;
     readonly endId: number;
+    readonly width: number;
+    readonly color: string;
+    readonly opacity: number;
 }
-export const isTether = makeObjectTest<Tether>(
-    ObjectType.Tether,
-    ObjectType.TetherClose,
-    ObjectType.TetherFar,
-    ObjectType.TetherPlusMinus,
-    ObjectType.TetherTetherPlusPlus,
-    ObjectType.TetherMinusMinus,
-);
+export const isTether = makeObjectTest<Tether>(ObjectType.Tether);
 
 export interface DrawObject extends ResizeableObject, RotateableObject, SceneId {
     readonly type: ObjectType.Draw;
@@ -319,9 +314,27 @@ export function isRotateable<T>(object: T): object is RotateableObject & T {
     return rotateable && typeof rotateable.rotation === 'number';
 }
 
+export function isResizable<T>(object: T): object is ResizeableObject & T {
+    if (!isMoveable(object) || !isRotateable(object)) {
+        return false;
+    }
+
+    const resizable = object as ResizeableObject & T;
+    return resizable && typeof resizable.width === 'number' && typeof resizable.height === 'number';
+}
+
+export function isRadiusObject<T>(object: T): object is RadiusObject & T {
+    if (!isMoveable(object)) {
+        return false;
+    }
+
+    const radiusObj = object as RadiusObject & T;
+    return radiusObj && typeof radiusObj.radius === 'number';
+}
+
 export type SceneObject = UnknownObject | Zone | Marker | Actor | Tether;
 
-export type SceneObjectWithoutId = Omit<SceneObject, 'id'>;
+export type SceneObjectWithoutId = Omit<SceneObject, 'id'> & { id?: number };
 
 export interface Scene {
     readonly nextId: number;

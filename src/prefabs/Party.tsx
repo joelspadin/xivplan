@@ -88,8 +88,8 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
 
 registerRenderer<PartyObject>(ObjectType.Party, LayerName.Default, PartyRenderer);
 
-const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object }) => {
-    return <DetailsItem icon={object.image} name={object.name} object={object} />;
+const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, isNested }) => {
+    return <DetailsItem icon={object.image} name={object.name} object={object} isNested={isNested} />;
 };
 
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
