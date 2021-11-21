@@ -25,8 +25,8 @@ progression, so it will always be simpler and less powerful.
 | Move group selection (keyboard)       | ✅     |
 | Resize rectangular objects            | ✅     |
 | Resize circular objects               | ✅     |
-| Resize cone objects                   |        |
-| Control handles for object properties |        |
+| Resize cone objects                   | ✅     |
+| Control handles for object properties | ✅     |
 | Reorder objects (scene list)          | ✅     |
 | Reorder objects (keyboard)            | ✅     |
 | Delete objects                        | ✅     |
