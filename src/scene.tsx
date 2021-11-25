@@ -16,6 +16,7 @@ export enum ObjectType {
     Arrow = 'arrow',
     Circle = 'circle',
     Cone = 'cone',
+    Cursor = 'cursor',
     Donut = 'donut',
     Draw = 'draw',
     Enemy = 'enemy',
@@ -117,6 +118,13 @@ export interface InnerRadiusObject extends MoveableObject {
 
 export interface ImageObject extends ResizeableObject {
     readonly image: string;
+}
+
+/**
+ * Special object for treating the cursor location as a tether target.
+ */
+export interface FakeCursorObject extends MoveableObject, SceneId {
+    readonly type: ObjectType.Cursor;
 }
 
 export interface MarkerObject extends ImageObject, SceneId {

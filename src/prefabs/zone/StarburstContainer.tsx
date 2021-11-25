@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { StarburstZone, UnknownObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { distance } from '../../vector';
 import { MIN_RADIUS } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
-import { getResizeCursor } from '../cursor';
 import { DraggableObject } from '../DraggableObject';
 import { useShowResizer } from '../highlight';
 

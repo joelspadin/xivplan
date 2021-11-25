@@ -1,6 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { useCallback } from 'react';
 import { Group } from 'react-konva';
+import { EditMode, useEditMode } from '../EditModeProvider';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../SelectionProvider';
 
@@ -10,6 +11,8 @@ export interface SelectableObjectProps {
 
 export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, children }) => {
     const [selection, setSelection] = useSelection();
+    const [editMode] = useEditMode();
+    const isSelectable = editMode === EditMode.Normal;
 
     const onClick = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
@@ -26,5 +29,5 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
         [object.id, selection, setSelection],
     );
 
-    return <Group onClick={onClick}>{children}</Group>;
+    return <Group onClick={isSelectable ? onClick : undefined}>{children}</Group>;
 };

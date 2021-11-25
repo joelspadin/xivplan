@@ -17,8 +17,7 @@ progression, so it will always be simpler and less powerful.
 | Create enemy objects                  | ✅     |
 | Create waymarks                       | ✅     |
 | Create zones                          | ✅     |
-| Create tethers (mouse)                |        |
-| Create tethers (keyboard)             | ✅     |
+| Create tethers                        | ✅     |
 | Create text notes                     | ✅     |
 | Move objects                          | ✅     |
 | Move group selection (mouse)          |        |
@@ -27,12 +26,12 @@ progression, so it will always be simpler and less powerful.
 | Resize circular objects               | ✅     |
 | Resize cone objects                   | ✅     |
 | Control handles for object properties | ✅     |
-| Reorder objects (scene list)          | ✅     |
-| Reorder objects (keyboard)            | ✅     |
+| Reorder objects                       | ✅     |
 | Delete objects                        | ✅     |
 | Edit object properties                | ✅     |
 | Add statuses to party/enemies         |        |
 | Draw on scene                         | ✅     |
+| Create multiple scenes                |        |
 | Save scenes                           |        |
 | Share scenes                          |        |
 | Context menus                         |        |

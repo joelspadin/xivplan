@@ -36,7 +36,7 @@ export const MainPanel: React.FunctionComponent = () => {
         (item?: PivotItem) => {
             // Cancel any special edit mode when changing tabs.
             // Draw tab should always default to draw mode.
-            const newMode = item?.props.itemKey === Tabs.Draw ? EditMode.Draw : EditMode.Default;
+            const newMode = item?.props.itemKey === Tabs.Draw ? EditMode.Draw : EditMode.Normal;
             setEditMode(newMode);
         },
         [setEditMode],

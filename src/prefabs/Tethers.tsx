@@ -14,13 +14,15 @@ import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { LineConfig } from 'konva/lib/shapes/Line';
 import { Vector2d } from 'konva/lib/types';
 import * as React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { getRecolorFilter } from '../color';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { getCanvasCoord } from '../coord';
+import { CursorGroup } from '../cursor';
+import { EditMode, useEditMode, useTetherConfig } from '../EditModeProvider';
 import { OpacitySlider } from '../OpacitySlider';
 import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ObjectList';
 import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
@@ -29,6 +31,7 @@ import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
 import { ForegroundPortal } from '../render/Portals';
 import { COLOR_FUSCHIA, COLOR_GREEN, COLOR_ORANGE, COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import {
+    FakeCursorObject,
     isEnemy,
     isMarker,
     isMoveable,
@@ -42,13 +45,13 @@ import {
     TetherType,
 } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
-import { useIsSelected } from '../SelectionProvider';
+import { selectNone, useIsSelected, useSelection } from '../SelectionProvider';
 import { combinations } from '../util';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
 import { useSpinChanged } from './CommonProperties';
-import { CursorGroup } from './cursor';
 import { MagnetMinus, MagnetPlus } from './Magnets';
 import { PrefabIcon } from './PrefabIcon';
+import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
 
 const DEFAULT_WIDTH = 6;
@@ -83,9 +86,33 @@ function getIcon(tether: TetherType) {
     return getIconUrl(CONFIGS[tether].icon);
 }
 
+interface TetherButtonProps {
+    tether: TetherType;
+}
+
+const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
+    const [, setSelection] = useSelection();
+    const [editMode, setEditMode] = useEditMode();
+    const [tetherConfig, setTetherConfig] = useTetherConfig();
+
+    const checked = editMode === EditMode.Tether && tetherConfig.tether === tether;
+
+    const onClick = useCallback(() => {
+        if (checked) {
+            setEditMode(EditMode.Normal);
+        } else {
+            setEditMode(EditMode.Tether);
+            setSelection(selectNone());
+            setTetherConfig({ tether });
+        }
+    }, [checked, tether, setEditMode, setSelection, setTetherConfig]);
+
+    return <PrefabToggle name={getName(tether)} icon={getIcon(tether)} onClick={onClick} checked={checked} />;
+};
+
 function makeIcon(type: TetherType) {
     // eslint-disable-next-line react/display-name
-    return () => <PrefabIcon name={getName(type)} icon={getIcon(type)} />;
+    return () => <TetherButton tether={type} />;
 }
 
 const INVALID_START_POS: Vector2d = { x: -20, y: 0 };
@@ -157,7 +184,7 @@ function getSelectedProps(object: Tether): NodeConfig {
 
 interface TetherProps extends RendererProps<Tether> {
     scene: Scene;
-    showHighlight: boolean;
+    showHighlight?: boolean;
     startObject: SceneObject | undefined;
     endObject: SceneObject | undefined;
 }
@@ -329,6 +356,7 @@ function getRenderer(type: TetherType) {
 const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const showHighlight = useIsSelected(object);
     const groupRef = React.useRef<Konva.Group>(null);
+    const [editMode] = useEditMode();
     const [scene] = useScene();
 
     const startObject = getObjectById(scene, object.startId);
@@ -336,14 +364,16 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
 
     const Renderer = getRenderer(object.tether);
 
+    const isSelectable = editMode === EditMode.Normal;
+
     // Cache so overlapping shapes with opacity appear as one object.
-    React.useEffect(() => {
+    useEffect(() => {
         groupRef.current?.cache();
     }, [object, startObject, endObject, groupRef, showHighlight]);
 
     return (
         <SelectableObject object={object}>
-            <CursorGroup cursor="pointer">
+            <CursorGroup cursor={isSelectable ? 'pointer' : undefined}>
                 <Group ref={groupRef} opacity={object.opacity / 100}>
                     <Renderer
                         object={object}
@@ -359,6 +389,45 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
 };
 
 registerRenderer<Tether>(ObjectType.Tether, LayerName.Default, TetherRenderer);
+
+export interface TetherToCursorProps {
+    startObject: SceneObject | undefined;
+    cursorPos: Vector2d;
+    tether: TetherType;
+}
+
+export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cursorPos, tether }) => {
+    const groupRef = React.useRef<Konva.Group>(null);
+    const [scene] = useScene();
+
+    const fakeTetherObject = useMemo(() => {
+        return {
+            id: -1,
+            ...makeTether(-1, -1, tether),
+        };
+    }, [tether]);
+
+    const fakeCursorObject = useMemo(() => {
+        return {
+            type: ObjectType.Cursor,
+            id: -1,
+            ...cursorPos,
+        } as FakeCursorObject;
+    }, [cursorPos]);
+
+    const Renderer = getRenderer(tether);
+
+    // Cache so overlapping shapes with opacity appear as one object.
+    useEffect(() => {
+        groupRef.current?.cache();
+    }, [startObject, cursorPos, tether, groupRef]);
+
+    return (
+        <Group ref={groupRef} opacity={0.5}>
+            <Renderer object={fakeTetherObject} scene={scene} startObject={startObject} endObject={fakeCursorObject} />
+        </Group>
+    );
+};
 
 const stackTokens: IStackTokens = {
     childrenGap: 8,

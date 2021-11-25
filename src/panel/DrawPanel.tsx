@@ -20,7 +20,7 @@ const classNames = mergeStyleSets({
 
 const modeOptions: IChoiceGroupOption[] = [
     {
-        key: EditMode.Default,
+        key: EditMode.Normal,
         text: 'Edit',
         iconProps: { iconName: 'TouchPointer' },
     },
@@ -59,7 +59,7 @@ export const DrawPanel: React.FC = () => {
         [setEditMode],
     );
 
-    useHotkeys('e', '', '', modeHotkey(EditMode.Default), [editMode]);
+    useHotkeys('e', '', '', modeHotkey(EditMode.Normal), [editMode]);
     useHotkeys('d', '', '', modeHotkey(EditMode.Draw), [editMode]);
 
     return (

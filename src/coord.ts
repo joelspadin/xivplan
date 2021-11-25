@@ -1,3 +1,4 @@
+import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import { Scene } from './scene';
 import { useScene } from './SceneProvider';
@@ -99,4 +100,12 @@ export function snapAngle(angle: number, snapDivision: number, snapTolerance: nu
 
 export function getPointerAngle(pos: Vector2d): number {
     return vecAngle(pos);
+}
+
+export function getPointerPosition(scene: Scene, stage: Stage | undefined | null): Vector2d | null {
+    const pos = stage?.getPointerPosition();
+    if (!pos) {
+        return null;
+    }
+    return getSceneCoord(scene, pos);
 }

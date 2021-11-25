@@ -3,7 +3,8 @@ import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Line, Rect } from 'react-konva';
 import simplify from 'simplify-js';
-import { getCanvasCoord, getSceneCoord } from '../coord';
+import { getCanvasCoord, getPointerPosition } from '../coord';
+import { useDefaultCursor } from '../cursor';
 import { DrawConfig, EditMode, useDrawConfig, useEditMode } from '../EditModeProvider';
 import { DRAW_LINE_PROPS } from '../prefabs/DrawObjectRenderer';
 import { DrawObject, ObjectType, Scene } from '../scene';
@@ -18,14 +19,6 @@ export const DrawTarget: React.FC = () => {
     const [editMode] = useEditMode();
     return editMode === EditMode.Draw ? <DrawTargetLayer /> : null;
 };
-
-function getPointerPosition(scene: Scene, e: KonvaEventObject<MouseEvent>) {
-    const pos = e.target.getStage()?.getPointerPosition();
-    if (!pos) {
-        return null;
-    }
-    return getSceneCoord(scene, pos);
-}
 
 function convertPoints(scene: Scene, points: readonly Vector2d[]): number[] {
     const result: number[] = [];
@@ -72,22 +65,26 @@ const DrawTargetLayer: React.FC = () => {
     const [config] = useDrawConfig();
     const [scene, dispatch] = useScene();
     const [, setSelection] = useSelection();
+    const [, setDefaultCursor] = useDefaultCursor();
     const stage = useStage();
 
     useEffect(() => {
         if (stage) {
+            setDefaultCursor('crosshair');
             stage.container().style.cursor = 'crosshair';
+
             return () => {
+                setDefaultCursor('default');
                 stage.container().style.cursor = 'default';
             };
         }
-    }, [stage]);
+    }, [stage, setDefaultCursor]);
 
     const onMouseDown = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
             setSelection(selectNone());
 
-            const pos = getPointerPosition(scene, e);
+            const pos = getPointerPosition(scene, e.target.getStage());
             if (pos) {
                 setIsDrawing(true);
                 setPoints([pos]);
@@ -102,7 +99,7 @@ const DrawTargetLayer: React.FC = () => {
                 return;
             }
 
-            const pos = getPointerPosition(scene, e);
+            const pos = getPointerPosition(scene, e.target.getStage());
             if (pos) {
                 setPoints([...points, pos]);
             }

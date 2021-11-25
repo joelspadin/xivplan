@@ -1,8 +1,8 @@
 import Konva from 'konva';
-import React, { useCallback } from 'react';
+import React, { createContext, Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
 import { Group, KonvaNodeEvents } from 'react-konva';
-import { useStage } from '../render/StageProvider';
-import { mod360 } from '../util';
+import { useStage } from './render/StageProvider';
+import { mod360 } from './util';
 
 export function getResizeCursor(angle: number): string {
     angle = mod360(angle) - 22.5;
@@ -34,16 +34,31 @@ export function getResizeCursor(angle: number): string {
     return 'ns-resize';
 }
 
+export type DefaultCursorState = [string, Dispatch<SetStateAction<string>>];
+
+export const DefaultCursorContext = createContext<DefaultCursorState>(['default', () => undefined]);
+
+export const DefaultCursorProvider: React.FC = ({ children }) => {
+    const state = useState('default');
+
+    return <DefaultCursorContext.Provider value={state}>{children}</DefaultCursorContext.Provider>;
+};
+
+export function useDefaultCursor(): DefaultCursorState {
+    return useContext(DefaultCursorContext);
+}
+
 export interface CursorGroupProps extends Konva.NodeConfig, KonvaNodeEvents {
-    cursor: string;
+    cursor?: string;
 }
 
 export const CursorGroup: React.FC<CursorGroupProps> = ({ cursor, children, ...props }) => {
+    const [defaultCursor] = useDefaultCursor();
     const stage = useStage();
 
     const setCursor = useCallback(
-        (cursor: string) => {
-            if (stage) {
+        (cursor?: string) => {
+            if (stage && cursor) {
                 stage.container().style.cursor = cursor;
             }
         },
@@ -51,7 +66,7 @@ export const CursorGroup: React.FC<CursorGroupProps> = ({ cursor, children, ...p
     );
 
     return (
-        <Group onMouseEnter={() => setCursor(cursor)} onMouseLeave={() => setCursor('default')} {...props}>
+        <Group onMouseEnter={() => setCursor(cursor)} onMouseLeave={() => setCursor(defaultCursor)} {...props}>
             {children}
         </Group>
     );

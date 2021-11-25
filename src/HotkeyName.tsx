@@ -41,7 +41,7 @@ const getClassNames = classNamesFunction<Theme, IHotkeysStyles>();
 const getStyles: IStyleFunctionOrObject<Theme, IHotkeysStyles> = (theme) => {
     return {
         root: {
-            display: 'flex',
+            display: 'inline-flex',
             flexFlow: 'row',
             alignItems: 'center',
             whiteSpace: 'nowrap',

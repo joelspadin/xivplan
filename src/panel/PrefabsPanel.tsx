@@ -1,5 +1,6 @@
 import { IStyle, mergeStyleSets, Text, useTheme } from '@fluentui/react';
 import React from 'react';
+import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
 import { Waymark1, Waymark2, Waymark3, Waymark4, WaymarkA, WaymarkB, WaymarkC, WaymarkD } from '../prefabs/Markers';
@@ -174,9 +175,6 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                 </ObjectGroup>
             </Section>
             <Section title="Tethers">
-                <Text block variant="small" className={classNames.usage}>
-                    Select a tether type, then click two objects to tether them together.
-                </Text>
                 <ObjectGroup className={zonesClass}>
                     <TetherLine />
                     <TetherClose />
@@ -186,6 +184,10 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                     <TetherPlusPlus />
                     <TetherMinusMinus />
                 </ObjectGroup>
+                <Text block variant="small" className={classNames.usage}>
+                    Select a tether type, then click two objects to add a tether. Press <HotkeyName keys="esc" /> or
+                    unselect the tether button to cancel. Use <HotkeyName keys="ctrl" /> + click to create chains.
+                </Text>
             </Section>
         </div>
     );

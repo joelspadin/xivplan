@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { getPointerAngle, snapAngle } from '../coord';
+import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -13,7 +14,6 @@ import {
     HandleFuncProps,
     HandleStyle,
 } from './ControlPoint';
-import { getResizeCursor } from './cursor';
 import { DraggableObject } from './DraggableObject';
 import { useShowResizer } from './highlight';
 

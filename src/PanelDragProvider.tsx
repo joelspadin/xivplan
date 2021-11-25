@@ -1,5 +1,6 @@
 import { Vector2d } from 'konva/lib/types';
-import React, { createContext, Dispatch, useContext, useState } from 'react';
+import React, { createContext, Dispatch, useCallback, useContext, useState } from 'react';
+import { EditMode, useEditMode } from './EditModeProvider';
 import { SceneObject } from './scene';
 import { SceneAction } from './SceneProvider';
 import { asArray } from './util';
@@ -20,7 +21,19 @@ export const PanelDragProvider: React.FunctionComponent = ({ children }) => {
 };
 
 export function usePanelDrag(): PanelDragState {
-    return useContext(PanelDragContext);
+    const [dragObject, setDragObject] = useContext(PanelDragContext);
+    const [, setEditMode] = useEditMode();
+
+    const wrappedSet = useCallback(
+        (value: PanelDragObject | null) => {
+            // Drag and dropping an object should cancel tether inputs.
+            setEditMode(EditMode.Normal);
+            setDragObject(value);
+        },
+        [setDragObject, setEditMode],
+    );
+
+    return [dragObject, wrappedSet];
 }
 
 export type DropHandler<T extends SceneObject> = (object: Partial<T>, position: Vector2d) => SceneAction;

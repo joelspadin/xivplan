@@ -4,10 +4,10 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import React, { RefObject, useCallback, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { getCanvasSize, getSceneCoord } from '../coord';
-import { DrawConfigContext, EditModeContext } from '../EditModeProvider';
+import { DefaultCursorProvider } from '../cursor';
+import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
-import { Scene } from '../scene';
 import { SceneContext, useScene } from '../SceneProvider';
 import { SelectionContext, selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
@@ -15,6 +15,7 @@ import { DrawTarget } from './DrawTarget';
 import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
 import { StageContext } from './StageProvider';
+import { TetherEditRenderer } from './TetherEditRenderer';
 
 export const SceneRenderer: React.FunctionComponent = () => {
     const theme = useTheme();
@@ -22,6 +23,8 @@ export const SceneRenderer: React.FunctionComponent = () => {
     const selectionBridge = useContext(SelectionContext);
     const editModeBridge = useContext(EditModeContext);
     const drawConfigBridge = useContext(DrawConfigContext);
+    const tetherConfigBridge = useContext(TetherConfigContext);
+
     const [scene] = useScene();
     const [, setSelection] = selectionBridge;
     const size = getCanvasSize(scene);
@@ -43,28 +46,30 @@ export const SceneRenderer: React.FunctionComponent = () => {
         <DropTarget stageRef={stageRef}>
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
                 <StageContext.Provider value={stageRef.current}>
-                    <ThemeContext.Provider value={theme}>
-                        <SceneContext.Provider value={sceneBridge}>
-                            <EditModeContext.Provider value={editModeBridge}>
-                                <DrawConfigContext.Provider value={drawConfigBridge}>
-                                    <SelectionContext.Provider value={selectionBridge}>
-                                        <SceneContents scene={scene} />
-                                    </SelectionContext.Provider>
-                                </DrawConfigContext.Provider>
-                            </EditModeContext.Provider>
-                        </SceneContext.Provider>
-                    </ThemeContext.Provider>
+                    <DefaultCursorProvider>
+                        <ThemeContext.Provider value={theme}>
+                            <SceneContext.Provider value={sceneBridge}>
+                                <EditModeContext.Provider value={editModeBridge}>
+                                    <DrawConfigContext.Provider value={drawConfigBridge}>
+                                        <TetherConfigContext.Provider value={tetherConfigBridge}>
+                                            <SelectionContext.Provider value={selectionBridge}>
+                                                <SceneContents />
+                                            </SelectionContext.Provider>
+                                        </TetherConfigContext.Provider>
+                                    </DrawConfigContext.Provider>
+                                </EditModeContext.Provider>
+                            </SceneContext.Provider>
+                        </ThemeContext.Provider>
+                    </DefaultCursorProvider>
                 </StageContext.Provider>
             </Stage>
         </DropTarget>
     );
 };
 
-interface SceneContentsProps {
-    scene: Scene;
-}
+const SceneContents: React.FC = () => {
+    const [scene] = useScene();
 
-const SceneContents: React.FC<SceneContentsProps> = ({ scene }) => {
     return (
         <>
             <SceneHotkeyHandler />
@@ -78,6 +83,8 @@ const SceneContents: React.FC<SceneContentsProps> = ({ scene }) => {
             </Layer>
             <Layer name={LayerName.Foreground}>
                 <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
+
+                <TetherEditRenderer />
             </Layer>
             <Layer name={LayerName.Active}>
                 <DrawTarget />

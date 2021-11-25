@@ -2,6 +2,7 @@ import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useContext, useState } from 'react';
 import { rotateCoord } from './coord';
 import { getGroupCenter, pasteObjects } from './copy';
+import { EditMode, useEditMode, useTetherConfig } from './EditModeProvider';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
@@ -35,6 +36,8 @@ const UndoRedoHandler: React.FC = () => {
 const SelectionActionHandler: React.FC = () => {
     const [clipboard, setClipboard] = useState<readonly SceneObject[]>([]);
     const [selection, setSelection] = useSelection();
+    const [editMode, setEditMode] = useEditMode();
+    const [tetherConfig, setTetherConfig] = useTetherConfig();
     const [scene, dispatch] = useScene();
     const stage = useStage();
 
@@ -43,24 +46,29 @@ const SelectionActionHandler: React.FC = () => {
         CATEGORY_SELECTION,
         'Select all objects',
         (e) => {
+            if (editMode !== EditMode.Normal) {
+                return;
+            }
             setSelection(selectAll(scene.objects));
             e.preventDefault();
         },
-        [setSelection, scene.objects],
+        [setSelection, scene.objects, editMode],
     );
 
     useHotkeys(
         'escape',
         CATEGORY_SELECTION,
-        'Unselect all objects',
+        'Unselect all, cancel tool',
         (e) => {
-            if (!selection.size) {
-                return;
+            if (selection.size) {
+                setSelection(selectNone());
+            } else if (editMode !== EditMode.Normal) {
+                setEditMode(EditMode.Normal);
             }
-            setSelection(selectNone());
+
             e.preventDefault();
         },
-        [selection, setSelection],
+        [selection, setSelection, editMode, setEditMode],
     );
 
     useHotkeys(
@@ -68,14 +76,14 @@ const SelectionActionHandler: React.FC = () => {
         CATEGORY_SELECTION,
         'Delete selected objects',
         (e) => {
-            if (!selection.size) {
+            if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
             dispatch({ type: 'remove', ids: [...selection] });
             setSelection(selectNone());
             e.preventDefault();
         },
-        [selection, setSelection, dispatch],
+        [selection, setSelection, dispatch, editMode],
     );
 
     useHotkeys(
@@ -83,26 +91,26 @@ const SelectionActionHandler: React.FC = () => {
         CATEGORY_SELECTION,
         'Copy selected objects',
         (e) => {
-            if (!selection.size) {
+            if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
             setClipboard(getSelectedObjects(scene, selection));
             e.preventDefault();
         },
-        [scene, selection],
+        [scene, selection, editMode],
     );
     useHotkeys(
         'ctrl+v',
         CATEGORY_SELECTION,
         'Paste objects',
         (e) => {
-            if (!clipboard.length || !stage) {
+            if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
             }
             pasteObjects(stage, scene, dispatch, setSelection, clipboard);
             e.preventDefault();
         },
-        [stage, scene, dispatch, setSelection, clipboard],
+        [stage, scene, dispatch, setSelection, clipboard, editMode],
     );
 
     useHotkeys(
@@ -110,27 +118,44 @@ const SelectionActionHandler: React.FC = () => {
         CATEGORY_SELECTION,
         'Duplicate selected objects',
         (e) => {
-            if (!selection.size || !stage) {
+            if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
             }
             pasteObjects(stage, scene, dispatch, setSelection, getSelectedObjects(scene, selection));
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection, setSelection],
+        [stage, scene, dispatch, selection, setSelection, editMode],
     );
 
     const tetherCallback = useCallback(
         (type: TetherType) => (e: KeyboardEvent) => {
-            const tethers = makeTethers(getSelectedObjects(scene, selection), type);
-            if (tethers.length === 0) {
-                return;
+            if (selection.size === 0) {
+                // When nothing selected, tether hotkeys should toggle tether tool.
+                if (editMode === EditMode.Tether && tetherConfig.tether === type) {
+                    setEditMode(EditMode.Normal);
+                } else {
+                    setEditMode(EditMode.Tether);
+                    setTetherConfig({ tether: type });
+                }
+            } else {
+                // When objects are selected and in normal mode, tether hotkeys
+                // should directly create tethers.
+                if (editMode !== EditMode.Normal) {
+                    return;
+                }
+
+                const tethers = makeTethers(getSelectedObjects(scene, selection), type);
+                if (tethers.length === 0) {
+                    return;
+                }
+
+                dispatch({ type: 'add', object: tethers });
+                setSelection(selectNewObjects(scene, tethers.length));
             }
 
-            dispatch({ type: 'add', object: tethers });
-            setSelection(selectNewObjects(scene, tethers.length));
             e.preventDefault();
         },
-        [scene, dispatch, selection, setSelection],
+        [scene, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
     );
 
     useHotkeys('/', CATEGORY_SELECTION, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
@@ -167,10 +192,15 @@ function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rot
 const EditActionHandler: React.FC = () => {
     const [selection, setSelection] = useSelection();
     const [scene, dispatch] = useScene();
+    const [editMode] = useEditMode();
     const stage = useStage();
 
     const moveCallback = useCallback(
         (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
+            if (editMode !== EditMode.Normal) {
+                return;
+            }
+
             const value: SceneObject[] = [];
             selection.forEach((id) => {
                 const object = getObjectById(scene, id);
@@ -186,7 +216,7 @@ const EditActionHandler: React.FC = () => {
             dispatch({ type: 'update', value });
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection],
+        [stage, scene, dispatch, selection, editMode],
     );
 
     useHotkeys('up', '', '', moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
@@ -210,6 +240,10 @@ const EditActionHandler: React.FC = () => {
 
     const rotateCallback = useCallback(
         (offset: number) => (e: KeyboardEvent) => {
+            if (editMode !== EditMode.Normal) {
+                return;
+            }
+
             const value: SceneObject[] = [];
             const center = getGroupCenter(getSelectedObjects(scene, selection).filter(isMoveable));
 
@@ -223,7 +257,7 @@ const EditActionHandler: React.FC = () => {
             dispatch({ type: 'update', value });
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection],
+        [stage, scene, dispatch, selection, editMode],
     );
 
     useHotkeys('ctrl+g', CATEGORY_EDIT, 'Rotate 90° counter-clockwise', rotateCallback(-90), [rotateCallback]);

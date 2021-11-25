@@ -1,21 +1,16 @@
 import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { COLOR_YELLOW } from './render/SceneTheme';
+import { TetherType } from './scene';
 
 export enum EditMode {
-    Default = 'default',
+    Normal = 'normal',
     Draw = 'draw',
     Tether = 'tether',
 }
 
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];
 
-export const EditModeContext = createContext<EditModeState>([EditMode.Default, () => undefined]);
-
-export const EditModeProvider: React.FC = ({ children }) => {
-    const state = useState<EditMode>(EditMode.Default);
-
-    return <EditModeContext.Provider value={state}>{children}</EditModeContext.Provider>;
-};
+export const EditModeContext = createContext<EditModeState>([EditMode.Normal, () => undefined]);
 
 export function useEditMode(): EditModeState {
     return useContext(EditModeContext);
@@ -37,12 +32,36 @@ export type DrawConfigState = [DrawConfig, Dispatch<SetStateAction<DrawConfig>>]
 
 export const DrawConfigContext = createContext<DrawConfigState>([DEFAULT_DRAW_CONFIG, () => undefined]);
 
-export const DrawConfigProvider: React.FC = ({ children }) => {
-    const state = useState<DrawConfig>(DEFAULT_DRAW_CONFIG);
-
-    return <DrawConfigContext.Provider value={state}>{children}</DrawConfigContext.Provider>;
-};
-
 export function useDrawConfig(): DrawConfigState {
     return useContext(DrawConfigContext);
 }
+
+export interface TetherConfig {
+    tether: TetherType;
+}
+
+const DEFAULT_TETHER_CONFIG: TetherConfig = {
+    tether: TetherType.Line,
+};
+
+export type TetherConfigState = [TetherConfig, Dispatch<SetStateAction<TetherConfig>>];
+
+export const TetherConfigContext = createContext<TetherConfigState>([DEFAULT_TETHER_CONFIG, () => undefined]);
+
+export function useTetherConfig(): TetherConfigState {
+    return useContext(TetherConfigContext);
+}
+
+export const EditModeProvider: React.FC = ({ children }) => {
+    const editMode = useState<EditMode>(EditMode.Normal);
+    const drawConfig = useState<DrawConfig>(DEFAULT_DRAW_CONFIG);
+    const tetherConfig = useState<TetherConfig>(DEFAULT_TETHER_CONFIG);
+
+    return (
+        <EditModeContext.Provider value={editMode}>
+            <DrawConfigContext.Provider value={drawConfig}>
+                <TetherConfigContext.Provider value={tetherConfig}>{children}</TetherConfigContext.Provider>
+            </DrawConfigContext.Provider>
+        </EditModeContext.Provider>
+    );
+};
