@@ -8,9 +8,8 @@ import { SiteHeader, SiteHeaderHeight } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 
 interface IAppStyles {
-    header: IStyle;
+    root: IStyle;
     contentWrapper: IStyle;
-    content: IStyle;
 }
 
 const getClassNames = classNamesFunction<Theme, IAppStyles>();
@@ -19,7 +18,9 @@ const Content: React.FunctionComponent = () => {
     const theme = useTheme();
     const classNames = getClassNames(() => {
         return {
-            header: {},
+            root: {
+                colorScheme: theme.isInverted ? 'dark' : 'light',
+            },
             contentWrapper: {
                 position: 'absolute',
                 top: SiteHeaderHeight,
@@ -28,15 +29,14 @@ const Content: React.FunctionComponent = () => {
                 bottom: 0,
                 overflow: 'hidden',
             },
-            content: {},
         };
     }, theme);
 
     return (
-        <div>
-            <SiteHeader className={classNames.header} />
+        <div className={classNames.root}>
+            <SiteHeader />
             <div className={classNames.contentWrapper}>
-                <div className={classNames.content}>
+                <div>
                     <Routes />
                 </div>
             </div>
