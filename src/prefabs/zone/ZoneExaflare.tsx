@@ -26,7 +26,7 @@ import { getArrowStyle, getZoneStyle } from './style';
 
 const NAME = 'Moving AOE';
 
-const DEFAULT_RADIUS = 40;
+const DEFAULT_RADIUS = 50;
 const DEFAULT_LENGTH = 10;
 const MIN_LENGTH = 2;
 
@@ -69,10 +69,12 @@ registerDropHandler<ExaflareZone>(ObjectType.Exaflare, (object, position) => {
 const ARROW_W_FRAC = 0.8;
 const ARROW_H_FRAC = 0.5;
 
+const TRAIL_SPACING = 0.6;
+
 function getTrailPositions(radius: number, length: number): Vector2d[] {
     return Array.from({ length }).map((_, i) => ({
         x: 0,
-        y: -radius * i,
+        y: -(radius * 2 * TRAIL_SPACING) * i,
     }));
 }
 
