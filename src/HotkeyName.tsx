@@ -17,7 +17,7 @@ export const HotkeyName: React.FC<HotkeysProps> = ({ keys, suffix }) => {
     const theme = useTheme();
     const classNames = getClassNames(getStyles, theme);
 
-    const parts = keys.split('+');
+    const parts = keys === '+' ? ['+'] : keys.split('+');
 
     return (
         <span className={classNames.root}>

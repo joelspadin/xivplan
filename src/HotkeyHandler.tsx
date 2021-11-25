@@ -13,10 +13,11 @@ import { getObjectById, GroupMoveAction, useScene, useSceneUndoRedo } from './Sc
 import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './SelectionProvider';
 
 const CATEGORY_GENERAL = '1.General';
-const CATEGORY_SELECTION = '2.Selection';
-const CATEGORY_EDIT = '3.Edit';
-const CATEGORY_HISTORY = '4.History';
-const CATEGORY_DRAW = '5.Draw';
+const CATEGORY_HISTORY = '2.History';
+const CATEGORY_SELECTION = '3.Selection';
+const CATEGORY_EDIT = '4.Edit';
+const CATEGORY_TETHER = '5.Tether';
+const CATEGORY_DRAW = '6.Draw';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
@@ -158,14 +159,15 @@ const SelectionActionHandler: React.FC = () => {
         [scene, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
     );
 
-    useHotkeys('/', CATEGORY_SELECTION, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
-    useHotkeys('shift+=', CATEGORY_SELECTION, 'Tether +/+', tetherCallback(TetherType.PlusPlus), [tetherCallback]);
-    useHotkeys('-', CATEGORY_SELECTION, 'Tether -/-', tetherCallback(TetherType.MinusMinus), [tetherCallback]);
-    useHotkeys('=', CATEGORY_SELECTION, 'Tether +/-', tetherCallback(TetherType.PlusMinus), [tetherCallback]);
-    useHotkeys('shift+,', CATEGORY_SELECTION, 'Tether (stay together)', tetherCallback(TetherType.Close), [
-        tetherCallback,
-    ]);
-    useHotkeys('shift+.', CATEGORY_SELECTION, 'Tether (stay apart)', tetherCallback(TetherType.Far), [tetherCallback]);
+    useHotkeys('/', CATEGORY_TETHER, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
+    useHotkeys('-', CATEGORY_TETHER, 'Tether -/-', tetherCallback(TetherType.MinusMinus), [tetherCallback]);
+    useHotkeys('=', CATEGORY_TETHER, 'Tether +/-', tetherCallback(TetherType.PlusMinus), [tetherCallback]);
+    useHotkeys('shift+=', '', '', tetherCallback(TetherType.PlusPlus), [tetherCallback]);
+    useHotkeyHelp('+', CATEGORY_TETHER, 'Tether +/+');
+    useHotkeys('shift+,', '', '', tetherCallback(TetherType.Close), [tetherCallback]);
+    useHotkeyHelp('<', CATEGORY_TETHER, 'Tether (stay together)');
+    useHotkeys('shift+.', '', '', tetherCallback(TetherType.Far), [tetherCallback]);
+    useHotkeyHelp('>', CATEGORY_TETHER, 'Tether (stay apart)');
 
     return null;
 };
