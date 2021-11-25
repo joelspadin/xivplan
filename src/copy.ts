@@ -14,6 +14,7 @@ import {
 } from './scene';
 import { SceneAction } from './SceneProvider';
 import { SceneSelection, selectNewObjects } from './SelectionProvider';
+import { vecAdd, vecSub, VEC_ZERO } from './vector';
 
 export function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
     const moveable = objects.filter(isMoveable);
@@ -31,14 +32,20 @@ function copyMoveableObjects(
     stage: Stage,
     scene: Scene,
     objects: readonly (MoveableObject & SceneObject)[],
+    centerOnMouse = true,
 ): SceneObjectWithoutId[] {
-    const center = getGroupCenter(objects);
-    const mousePos = getSceneCoord(scene, stage.getRelativePointerPosition());
+    let offset = VEC_ZERO;
+
+    if (centerOnMouse) {
+        const center = getGroupCenter(objects);
+        const mousePos = getSceneCoord(scene, stage.getRelativePointerPosition());
+
+        offset = vecSub(mousePos, center);
+    }
 
     return objects.map((obj) => {
-        const x = obj.x - center.x + mousePos.x;
-        const y = obj.y - center.y + mousePos.y;
-        return { ...obj, x, y, id: undefined };
+        const pos = vecAdd(obj, offset);
+        return { ...obj, ...pos, id: undefined };
     });
 }
 
@@ -79,13 +86,14 @@ export function pasteObjects(
     dispatch: Dispatch<SceneAction>,
     setSelection: Dispatch<SetStateAction<SceneSelection>>,
     objects: readonly SceneObject[],
+    centerOnMouse = true,
 ): void {
     const newObjects: SceneObjectWithoutId[] = [];
     const moveable = objects.filter(isMoveable);
     const tethers = objects.filter(isTether);
 
     if (moveable.length) {
-        newObjects.push(...copyMoveableObjects(stage, scene, moveable));
+        newObjects.push(...copyMoveableObjects(stage, scene, moveable, centerOnMouse));
     }
 
     if (tethers.length) {

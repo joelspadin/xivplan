@@ -121,7 +121,7 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, dispatch, setSelection, getSelectedObjects(scene, selection));
+            pasteObjects(stage, scene, dispatch, setSelection, getSelectedObjects(scene, selection), false);
             e.preventDefault();
         },
         [stage, scene, dispatch, selection, setSelection, editMode],
