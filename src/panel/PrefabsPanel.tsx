@@ -40,6 +40,7 @@ import {
     TetherPlusPlus,
 } from '../prefabs/Tethers';
 import { TextLabel } from '../prefabs/TextLabel';
+import { ZoneArc } from '../prefabs/zone/ZoneArc';
 import { ZoneCircle } from '../prefabs/zone/ZoneCircle';
 import { ZoneCone } from '../prefabs/zone/ZoneCone';
 import { ZoneDonut } from '../prefabs/zone/ZoneDonut';
@@ -90,13 +91,14 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                     <ZoneDonut />
                     <ZoneCircle />
 
-                    <ZoneLineKnockback />
                     <ZoneKnockback />
                     <ZoneProximity />
                     <ZoneLineStack />
                     <ZoneStack />
+                    <ZoneArc />
                     <ZoneCone />
 
+                    <ZoneLineKnockback />
                     <ZoneLineKnockAway />
                     <ZoneExaflare />
                     <ZoneStarburst />

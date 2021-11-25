@@ -13,6 +13,7 @@ export enum GridType {
 }
 
 export enum ObjectType {
+    Arc = 'arc',
     Arrow = 'arrow',
     Circle = 'circle',
     Cone = 'cone',
@@ -215,14 +216,23 @@ export interface DonutZone extends RadiusObject, SceneId {
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
-export interface ConeZone extends RadiusObject, RotateableObject, SceneId {
-    readonly type: ObjectType.Cone;
+export interface ConeProps extends RadiusObject, RotateableObject {
     readonly color: string;
     readonly opacity: number;
     readonly hollow?: boolean;
     readonly coneAngle: number;
 }
+
+export interface ConeZone extends ConeProps, SceneId {
+    readonly type: ObjectType.Cone;
+}
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
+
+export interface ArcZone extends ConeProps, SceneId {
+    readonly type: ObjectType.Arc;
+    readonly innerRadius: number;
+}
+export const isArcZone = makeObjectTest<ArcZone>(ObjectType.Arc);
 
 export interface RectangleZone extends ResizeableObject, SceneId {
     readonly type:
@@ -270,12 +280,21 @@ export interface TowerZone extends RadiusObject, SceneId {
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
-export type Zone = CircleZone | DonutZone | ConeZone | RectangleZone | ExaflareZone | StarburstZone | TowerZone;
+export type Zone =
+    | CircleZone
+    | DonutZone
+    | ConeZone
+    | ArcZone
+    | RectangleZone
+    | ExaflareZone
+    | StarburstZone
+    | TowerZone;
 export function isZone(object: UnknownObject): object is Zone {
     return (
         isCircleZone(object) ||
         isDonutZone(object) ||
         isConeZone(object) ||
+        isArcZone(object) ||
         isRectangleZone(object) ||
         isExaflareZone(object) ||
         isStarburstZone(object) ||
