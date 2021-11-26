@@ -9,7 +9,7 @@ assignees: ''
 
 # ⚠⚠⚠ Please read this before asking for any instance or mechanic-related features ⚠⚠⚠
 
-I do blind progression. My group does not always clear things quickly. You will probably see new raid bosses and mechanics before me, but **I don't want to know anything about any content I have not already cleared**.
+I do almost all content in this game without guides. You will probably see new raid bosses and mechanics before me, but **I don't want to know anything about any content I have not already cleared**.
 
 You may discuss the following content:
 
