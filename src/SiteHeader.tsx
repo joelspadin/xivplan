@@ -11,7 +11,9 @@ import {
     Toggle,
     useTheme,
 } from '@fluentui/react';
+import { useBoolean } from '@fluentui/react-hooks';
 import React, { HTMLAttributes, useContext } from 'react';
+import { AboutDialog } from './AboutDialog';
 import { ExternalLink } from './ExternalLink';
 import { HelpContext } from './HelpProvider';
 import logoUrl from './logo.svg';
@@ -22,17 +24,6 @@ export const SiteHeaderHeight = 48;
 const classNames = mergeStyleSets({
     root: {
         height: SiteHeaderHeight,
-
-        a: {
-            textDecoration: 'none',
-            display: 'inline-block',
-            boxSizing: 'border-box',
-            height: SiteHeaderHeight,
-            padding: '15px 8px 11px',
-            ':hover, :focus': {
-                textDecoration: 'underline',
-            },
-        },
     } as IStyle,
     brand: {
         textDecoration: 'none',
@@ -59,7 +50,7 @@ const stackTokens: IStackTokens = {
 const toggleStyles: Partial<IToggleStyles> = {
     root: { marginBottom: 0 },
     label: {
-        display: 'block',
+        paddingTop: 4,
     },
 };
 
@@ -70,6 +61,7 @@ interface IHeaderStyles {
 const getClassNames = classNamesFunction<Theme, IHeaderStyles>();
 
 export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
+    const [aboutOpen, { setTrue: showAbout, setFalse: hideAbout }] = useBoolean(false);
     const [, { setTrue: showHelp }] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
     const theme = useTheme();
@@ -90,12 +82,13 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
                 <Stack.Item className={classNames.brand} grow>
                     <img src={logoUrl} alt="Site logo" className={classNames.icon} />
                     <Text variant="large" className={classNames.title}>
-                        FFXIV Raid Planner
+                        XIVPlan
                     </Text>
                 </Stack.Item>
                 <Stack.Item className={themeClasses.links}>
                     <Stack horizontal tokens={stackTokens}>
                         <Link onClick={showHelp}>Help</Link>
+                        <Link onClick={showAbout}>About</Link>
                         <ExternalLink href="https://github.com/joelspadin/xivplan" noIcon>
                             GitHub
                         </ExternalLink>
@@ -115,6 +108,7 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
                     />
                 </Stack.Item>
             </Stack>
+            <AboutDialog isOpen={aboutOpen} onDismiss={hideAbout} />
         </header>
     );
 };

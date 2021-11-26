@@ -3,12 +3,17 @@
 https://xivplan.netlify.app/
 
 This is a tool for quickly diagramming raid strategies for Final Fantasy XIV,
-inspired by https://raidplan.io. Or at least it will be. It's not very quick to
-use yet.
+inspired by [RaidPlan.io](https://raidplan.io).
 
-Check out https://ff14.toolboxgaming.space if you need something more powerful.
-I'm creating this because the toolbox Strat Maker is too cumbersome to use during
-progression, so it will always be simpler and less powerful.
+## Alternatives
+
+[RaidPlan.io](https://raidplan.io/ffxiv) now supports FFXIV.
+
+[FF14 Toolbox Gaming Space](https://ff14.toolboxgaming.space) is a more powerful
+tool that supports animations and much more. Its UI is cumbersome to use though,
+so it is not well suited to quickly diagramming during raids.
+
+## Feature Status
 
 | Feature                               | Status |
 | ------------------------------------- | ------ |
