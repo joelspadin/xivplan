@@ -23,7 +23,9 @@ import {
     PartyPaladin,
     PartyPhysicalRanged,
     PartyRanged,
+    PartyReaper,
     PartyRedMage,
+    PartySage,
     PartySamurai,
     PartyScholar,
     PartySummoner,
@@ -150,12 +152,14 @@ export const PrefabsPanel: React.FunctionComponent = () => {
                     <PartyWhiteMage />
                     <PartyScholar />
                     <PartyAstrologian />
+                    <PartySage />
                 </ObjectGroup>
                 <ObjectGroup>
                     <PartyMonk />
                     <PartyDragoon />
                     <PartyNinja />
                     <PartySamurai />
+                    <PartyReaper />
                 </ObjectGroup>
                 <ObjectGroup>
                     <PartyBard />

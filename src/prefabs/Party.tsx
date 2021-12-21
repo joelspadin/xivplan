@@ -44,6 +44,8 @@ enum Job {
     Monk,
     Dragoon,
     Ninja,
+    Reaper,
+    Sage,
     Samurai,
     Bard,
     Machinist,
@@ -69,9 +71,11 @@ const JOBS: Record<Job, JobProps> = {
     [Job.WhiteMage]: { name: 'White Mage', icon: 'WHM.png' },
     [Job.Scholar]: { name: 'Scholar', icon: 'SCH.png' },
     [Job.Astrologian]: { name: 'Astrologian', icon: 'AST.png' },
+    [Job.Sage]: { name: 'Sage', icon: 'SGE.png' },
     [Job.Monk]: { name: 'Monk', icon: 'MNK.png' },
     [Job.Dragoon]: { name: 'Dragoon', icon: 'DRG.png' },
     [Job.Ninja]: { name: 'Ninja', icon: 'NIN.png' },
+    [Job.Reaper]: { name: 'Reaper', icon: 'RPR.png' },
     [Job.Samurai]: { name: 'Samurai', icon: 'SAM.png' },
     [Job.Bard]: { name: 'Bard', icon: 'BRD.png' },
     [Job.Machinist]: { name: 'Machinist', icon: 'MCH.png' },
@@ -173,8 +177,8 @@ const iconChoices = [
     [Job.RoleAny, Job.RoleTank, Job.RoleHealer, Job.RoleDps],
     [Job.RoleMagicRanged, Job.RolePhysicalRanged, Job.RoleRanged, Job.RoleMelee],
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
-    [Job.WhiteMage, Job.Scholar, Job.Astrologian],
-    [Job.Monk, Job.Dragoon, Job.Ninja, Job.Samurai],
+    [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
+    [Job.Monk, Job.Dragoon, Job.Ninja, Job.Samurai, Job.Reaper],
     [Job.Bard, Job.Machinist, Job.Dancer, Job.BlackMage, Job.Summoner, Job.RedMage],
 ].map((row) => row.map((job) => getJob(job)));
 
@@ -259,11 +263,13 @@ export const PartyGunbreaker = makeIcon(Job.Gunbreaker);
 export const PartyWhiteMage = makeIcon(Job.WhiteMage);
 export const PartyScholar = makeIcon(Job.Scholar);
 export const PartyAstrologian = makeIcon(Job.Astrologian);
+export const PartySage = makeIcon(Job.Sage);
 
 export const PartyMonk = makeIcon(Job.Monk);
 export const PartyDragoon = makeIcon(Job.Dragoon);
 export const PartyNinja = makeIcon(Job.Ninja);
 export const PartySamurai = makeIcon(Job.Samurai);
+export const PartyReaper = makeIcon(Job.Reaper);
 
 export const PartyBard = makeIcon(Job.Bard);
 export const PartyMachinist = makeIcon(Job.Machinist);
