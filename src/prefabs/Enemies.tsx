@@ -14,7 +14,14 @@ import { PropertiesControlProps, registerPropertiesControl } from '../panel/Prop
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_ENEMY_COLOR, EnemyTheme, SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_ENEMY_COLOR,
+    EnemyTheme,
+    SELECTED_PROPS,
+    useSceneTheme,
+} from '../render/SceneTheme';
 import { EnemyObject, ObjectType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
@@ -211,14 +218,17 @@ interface EnemyRendererProps extends RendererProps<EnemyObject> {
     radius: number;
     rotation: number;
     groupRef: RefObject<Konva.Group>;
+    isDragging?: boolean;
 }
 
-const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef }) => {
+const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const theme = useSceneTheme();
 
     return (
         <>
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
+
             <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
 
             {object.rotation === undefined ? (
@@ -248,8 +258,14 @@ const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
                 groupRef.current?.clearCache();
             }}
         >
-            {({ radius, rotation }) => (
-                <EnemyRenderer object={object} radius={radius} rotation={rotation} groupRef={groupRef} />
+            {({ radius, rotation, isDragging }) => (
+                <EnemyRenderer
+                    object={object}
+                    radius={radius}
+                    rotation={rotation}
+                    groupRef={groupRef}
+                    isDragging={isDragging}
+                />
             )}
         </RadiusObjectContainer>
     );

@@ -12,7 +12,7 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -121,9 +121,10 @@ function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
 
 interface TowerRendererProps extends RendererProps<TowerZone> {
     radius: number;
+    isDragging?: boolean;
 }
 
-const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius }) => {
+const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -140,6 +141,8 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius }) => {
             {zones.map((props, i) => (
                 <CountZone key={i} {...props} {...style} listening={false} />
             ))}
+
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
         </>
     );
 };
@@ -147,7 +150,7 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius }) => {
 const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object}>
-            {({ radius }) => <TowerRenderer object={object} radius={radius} />}
+            {(props) => <TowerRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

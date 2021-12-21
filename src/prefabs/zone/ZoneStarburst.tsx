@@ -1,7 +1,7 @@
 import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useCallback, useMemo } from 'react';
-import { Group, Rect } from 'react-konva';
+import { Circle, Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
@@ -12,7 +12,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    SELECTED_PROPS,
+} from '../../render/SceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -167,9 +173,10 @@ interface StarburstRendererProps extends RendererProps<StarburstZone> {
     radius: number;
     rotation: number;
     spokeWidth: number;
+    isDragging?: boolean;
 }
 
-const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, rotation, spokeWidth }) => {
+const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, rotation, spokeWidth, isDragging }) => {
     const showSelected = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
@@ -185,16 +192,19 @@ const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, r
         showHighlight: showSelected,
     };
 
-    return object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />;
+    return (
+        <Group>
+            {object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />}
+
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+        </Group>
+    );
 };
 
 const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) => {
-    // TODO: add control point for spoke width
     return (
         <StarburstControlContainer object={object} minSpokeWidth={MIN_SPOKE_WIDTH}>
-            {({ radius, rotation, spokeWidth }) => (
-                <StarburstRenderer object={object} radius={radius} rotation={rotation} spokeWidth={spokeWidth} />
-            )}
+            {(props) => <StarburstRenderer object={object} {...props} />}
         </StarburstControlContainer>
     );
 };

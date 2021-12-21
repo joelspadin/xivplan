@@ -250,7 +250,8 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                     {/* Rotating this group would affect the pointer position, so rotate an inner group instead. */}
                     <Group ref={groupRef} x={center.x} y={center.y} visible={visible}>
                         <Group rotation={rotation}>
-                            {config.onRenderBorder?.(object, state, props)}
+                            <Group listening={false}>{config.onRenderBorder?.(object, state, props)}</Group>
+
                             {handles.map((handle, i) => (
                                 <Handle
                                     key={i}

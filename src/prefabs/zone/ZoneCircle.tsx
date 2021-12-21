@@ -11,7 +11,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    SELECTED_PROPS,
+} from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { setOrOmit } from '../../util';
@@ -63,9 +69,10 @@ registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
 
 interface CircleRendererProps extends RendererProps<CircleZone> {
     radius: number;
+    isDragging?: boolean;
 }
 
-const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius }) => {
+const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
@@ -77,6 +84,8 @@ const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius }) => {
             {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
             <Circle radius={radius} {...style} />
+
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
         </>
     );
 };
@@ -84,7 +93,7 @@ const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius }) => {
 const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object}>
-            {({ radius }) => <CircleRenderer object={object} radius={radius} />}
+            {(props) => <CircleRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

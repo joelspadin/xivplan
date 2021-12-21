@@ -1,6 +1,6 @@
 import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo } from 'react';
-import { Ring } from 'react-konva';
+import { Circle, Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
@@ -11,7 +11,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    SELECTED_PROPS,
+} from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { MIN_RADIUS } from '../bounds';
@@ -64,9 +70,10 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
 interface DonutRendererProps extends RendererProps<DonutZone> {
     radius: number;
     innerRadius: number;
+    isDragging?: boolean;
 }
 
-const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius }) => {
+const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -83,6 +90,8 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
                 />
             )}
             <Ring innerRadius={innerRadius} outerRadius={radius} {...style} />
+
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
         </>
     );
 };
@@ -90,7 +99,7 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
 const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object} allowInnerRadius>
-            {({ radius, innerRadius }) => <DonutRenderer object={object} radius={radius} innerRadius={innerRadius} />}
+            {(props) => <DonutRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

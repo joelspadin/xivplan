@@ -3,6 +3,7 @@ import { Circle, Line } from 'react-konva';
 import { getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
+import { CENTER_DOT_RADIUS } from '../render/SceneTheme';
 import { InnerRadiusObject, isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { distance } from '../vector';
@@ -28,9 +29,14 @@ export interface RadiusObjectState {
     innerRadius: number;
 }
 
+export interface ExtendedRadiusObjectState extends RadiusObjectState {
+    isDragging: boolean;
+    isResizing: boolean;
+}
+
 export interface RadiusObjectContainerProps extends ControlPointProps {
     object: RadiusObject & UnknownObject;
-    children: (state: RadiusObjectState) => React.ReactElement;
+    children: (state: ExtendedRadiusObjectState) => React.ReactElement;
     onTransformEnd?(state: RadiusObjectState): void;
 }
 
@@ -43,8 +49,8 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
 }) => {
     const [, dispatch] = useScene();
     const showResizer = useShowResizer(object);
-    const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const [isResizing, setResizing] = useState(false);
+    const [isDragging, setDragging] = useState(false);
 
     const updateObject = useCallback(
         (state: RadiusObjectState) => {
@@ -70,17 +76,17 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
     );
 
     return (
-        <ActivePortal isActive={dragging || resizing}>
+        <ActivePortal isActive={isDragging || isResizing}>
             <DraggableObject object={object} onActive={setDragging}>
                 <RadiusControlPoints
                     object={object}
                     onActive={setResizing}
-                    visible={showResizer && !dragging}
+                    visible={showResizer && !isDragging}
                     onTransformEnd={updateObject}
                     allowRotate={allowRotate}
                     allowInnerRadius={allowInnerRadius}
                 >
-                    {children}
+                    {(props) => children({ ...props, isDragging, isResizing })}
                 </RadiusControlPoints>
             </DraggableObject>
         </ActivePortal>
@@ -227,6 +233,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                         fillEnabled={false}
                     />
                 )}
+                <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
                 <Circle
                     radius={state.radius + OUTSET}
                     stroke={CONTROL_POINT_BORDER_COLOR}

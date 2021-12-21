@@ -1,7 +1,7 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { ArcConfig } from 'konva/lib/shapes/Arc';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Arc, Group, Shape } from 'react-konva';
+import { Arc, Circle, Group, Shape } from 'react-konva';
 import icon from '../../assets/zone/arc.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
@@ -15,7 +15,13 @@ import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDra
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
 import { ActivePortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    SELECTED_PROPS,
+} from '../../render/SceneTheme';
 import { ArcZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -163,9 +169,17 @@ interface ArcRendererProps extends RendererProps<ArcZone> {
     innerRadius: number;
     rotation: number;
     coneAngle: number;
+    isDragging?: boolean;
 }
 
-const ArcRenderer: React.FC<ArcRendererProps> = ({ object, outerRadius, innerRadius, rotation, coneAngle }) => {
+const ArcRenderer: React.FC<ArcRendererProps> = ({
+    object,
+    outerRadius,
+    innerRadius,
+    rotation,
+    coneAngle,
+    isDragging,
+}) => {
     const isSelected = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow),
@@ -183,6 +197,7 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({ object, outerRadius, innerRad
                     {...SELECTED_PROPS}
                 />
             )}
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
             <Arc outerRadius={outerRadius} innerRadius={innerRadius} angle={coneAngle} {...style} />
         </Group>
     );
@@ -227,13 +242,16 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
                     onTransformEnd={updateObject}
                 >
                     {({ radius, innerRadius, rotation, coneAngle }) => (
-                        <ArcRenderer
-                            object={object}
-                            outerRadius={radius}
-                            innerRadius={innerRadius}
-                            rotation={rotation}
-                            coneAngle={coneAngle}
-                        />
+                        <>
+                            <ArcRenderer
+                                object={object}
+                                outerRadius={radius}
+                                innerRadius={innerRadius}
+                                rotation={rotation}
+                                coneAngle={coneAngle}
+                                isDragging={dragging}
+                            />
+                        </>
                     )}
                 </ArcControlPoints>
             </DraggableObject>
@@ -462,15 +480,18 @@ const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
     },
     onRenderBorder: (object, state) => {
         return (
-            <OffsetArc
-                rotation={-90 - state.coneAngle / 2}
-                outerRadius={state.radius}
-                innerRadius={state.innerRadius}
-                angle={state.coneAngle}
-                shapeOffset={1}
-                stroke={CONTROL_POINT_BORDER_COLOR}
-                fillEnabled={false}
-            />
+            <>
+                <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
+                <OffsetArc
+                    rotation={-90 - state.coneAngle / 2}
+                    outerRadius={state.radius}
+                    innerRadius={state.innerRadius}
+                    angle={state.coneAngle}
+                    shapeOffset={1}
+                    stroke={CONTROL_POINT_BORDER_COLOR}
+                    fillEnabled={false}
+                />
+            </>
         );
     },
 });

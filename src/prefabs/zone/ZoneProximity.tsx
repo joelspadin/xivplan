@@ -130,6 +130,7 @@ function getShadowOffset(i: number): ShapeConfig {
 
 interface ProximityRendererProps extends RendererProps<CircleZone> {
     radius: number;
+    isDragging?: boolean;
 }
 
 const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
@@ -146,30 +147,33 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
     const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
     const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
 
-    console.log(object.color, arrow);
+    const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
 
     return (
         <>
             {showHighlight && <Circle radius={radius} {...SELECTED_PROPS} opacity={0.25} />}
 
             <Circle radius={radius} {...gradient} />
-            {CORNER_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r}>
-                    <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
-                    <FlareCorner
-                        scaleX={SCALE2}
-                        scaleY={SCALE2}
-                        {...arrow}
-                        shadowColor={shadowColor}
-                        {...getShadowOffset(i)}
-                    />
-                </Group>
-            ))}
-            {ARROW_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r}>
-                    <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
-                </Group>
-            ))}
+
+            <Group scaleX={arrowScale} scaleY={arrowScale}>
+                {CORNER_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r}>
+                        <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
+                        <FlareCorner
+                            scaleX={SCALE2}
+                            scaleY={SCALE2}
+                            {...arrow}
+                            shadowColor={shadowColor}
+                            {...getShadowOffset(i)}
+                        />
+                    </Group>
+                ))}
+                {ARROW_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r}>
+                        <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
+                    </Group>
+                ))}
+            </Group>
         </>
     );
 };
@@ -177,7 +181,7 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
 const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object}>
-            {({ radius }) => <ProximityRenderer object={object} radius={radius} />}
+            {(props) => <ProximityRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

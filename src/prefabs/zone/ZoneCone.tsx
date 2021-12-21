@@ -189,9 +189,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
                     visible={showResizer && !dragging}
                     onTransformEnd={updateObject}
                 >
-                    {({ radius, rotation, coneAngle }) => (
-                        <ConeRenderer object={object} radius={radius} rotation={rotation} coneAngle={coneAngle} />
-                    )}
+                    {(props) => <ConeRenderer object={object} {...props} />}
                 </ConeControlPoints>
             </DraggableObject>
         </ActivePortal>

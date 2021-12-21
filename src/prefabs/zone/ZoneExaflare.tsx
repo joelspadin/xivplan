@@ -12,7 +12,13 @@ import { PropertiesControlProps, registerPropertiesControl } from '../../panel/P
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    COLOR_SWATCHES,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    SELECTED_PROPS,
+} from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -85,9 +91,10 @@ function getDashSize(radius: number) {
 interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
     radius: number;
     rotation: number;
+    isDragging?: boolean;
 }
 
-const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation }) => {
+const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const style = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -123,6 +130,8 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
                     height={radius * ARROW_H_FRAC}
                     {...arrow}
                 />
+
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
             </Group>
         </>
     );
@@ -132,7 +141,7 @@ const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object }) =>
     // TODO: add control point for trail length
     return (
         <RadiusObjectContainer object={object} allowRotate>
-            {({ radius, rotation }) => <ExaflareRenderer object={object} radius={radius} rotation={rotation} />}
+            {(props) => <ExaflareRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

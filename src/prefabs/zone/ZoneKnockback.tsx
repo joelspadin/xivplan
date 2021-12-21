@@ -6,7 +6,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
@@ -53,9 +53,10 @@ const CHEVRON_ANGLES = Array.from({ length: 16 }).map((_, i) => (i * 360) / 16);
 
 interface KnockbackRendererProps extends RendererProps<CircleZone> {
     radius: number;
+    isDragging?: boolean;
 }
 
-const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius }) => {
+const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const ring = useMemo(
         () => getZoneStyle(object.color, object.opacity, radius * 2),
@@ -77,6 +78,8 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius })
             {showHighlight && <Circle radius={radius + ring.strokeWidth / 2} {...SELECTED_PROPS} />}
 
             <Circle radius={radius} {...ring} strokeEnabled={false} opacity={0.5} />
+
+            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={ring.stroke} />}
 
             {CHEVRON_ANGLES.map((r, i) => (
                 <Group key={i} rotation={r} listening={false}>
@@ -100,7 +103,7 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius })
 const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object}>
-            {({ radius }) => <KnockbackRenderer object={object} radius={radius} />}
+            {(props) => <KnockbackRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
 };

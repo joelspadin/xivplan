@@ -1,6 +1,11 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 
+/**
+ * Radius of a dot to display when editing an object that is centered on a point.
+ */
+export const CENTER_DOT_RADIUS = 3;
+
 export const COLOR_RED = '#ff0000';
 export const COLOR_ORANGE = '#fc972b';
 export const COLOR_YELLOW = '#ffc800';
@@ -77,24 +82,26 @@ export interface SceneTheme {
 export const ARENA_BACKGROUND_COLOR = '#40352c';
 export const ARENA_TEXT_COLOR = '#ffffff';
 
+const SCENE_THEME = {
+    arena: {
+        fill: ARENA_BACKGROUND_COLOR,
+        stroke: COLOR_GRID,
+        strokeWidth: 1,
+    },
+    grid: {
+        stroke: COLOR_GRID,
+        strokeWidth: 1,
+    },
+    enemy: {
+        opacity: 0.75,
+        ringShadowOpacity: 0.5,
+        text: {
+            fill: ARENA_TEXT_COLOR,
+            stroke: ARENA_BACKGROUND_COLOR,
+        },
+    },
+};
+
 export function useSceneTheme(): SceneTheme {
-    return {
-        arena: {
-            fill: ARENA_BACKGROUND_COLOR,
-            stroke: COLOR_GRID,
-            strokeWidth: 1,
-        },
-        grid: {
-            stroke: COLOR_GRID,
-            strokeWidth: 1,
-        },
-        enemy: {
-            opacity: 0.75,
-            ringShadowOpacity: 0.5,
-            text: {
-                fill: ARENA_TEXT_COLOR,
-                stroke: ARENA_BACKGROUND_COLOR,
-            },
-        },
-    };
+    return SCENE_THEME;
 }

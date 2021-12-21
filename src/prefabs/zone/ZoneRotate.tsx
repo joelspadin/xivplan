@@ -9,7 +9,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ObjectLis
 import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { SELECTED_PROPS } from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, SELECTED_PROPS } from '../../render/SceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
@@ -84,10 +84,11 @@ const ARROW_ANGLES = [45, 90, 135, 225, 270, 315];
 
 interface RotateRendererProps extends RendererProps<CircleZone> {
     radius: number;
+    isDragging?: boolean;
     groupRef: RefObject<Konva.Group>;
 }
 
-const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef }) => {
+const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
@@ -112,7 +113,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
     // Cache so overlapping shapes with opacity appear as one object.
     useEffect(() => {
         groupRef.current?.cache();
-    }, [object, radius, arrow, groupRef]);
+    }, [object, radius, arrow, isDragging, groupRef]);
 
     return (
         <>
@@ -120,9 +121,12 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
 
             <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
                 <Circle radius={radius} {...style} />
+
                 {ARROW_ANGLES.map((r, i) => (
                     <Arrow key={i} rotation={r} fillAfterStrokeEnabled strokeScaleEnabled={false} {...arrow} />
                 ))}
+
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
             </Group>
         </>
     );
@@ -133,7 +137,7 @@ const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
     return (
         <RadiusObjectContainer object={object} onTransformEnd={() => groupRef.current?.clearCache()}>
-            {({ radius }) => <RotateRenderer object={object} radius={radius} groupRef={groupRef} />}
+            {(props) => <RotateRenderer object={object} {...props} groupRef={groupRef} />}
         </RadiusObjectContainer>
     );
 };
