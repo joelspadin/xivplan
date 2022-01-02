@@ -14,6 +14,7 @@ I do almost all content in this game without guides. You will probably see new r
 You may discuss the following content:
 
 ✅ All content from Shadowbringers and earlier
+✅ Patch 6.0 extreme trials
 
 Please do not discuss the following content:
 
