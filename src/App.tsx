@@ -1,9 +1,9 @@
 import { classNamesFunction, Theme, useTheme } from '@fluentui/react';
 import { IStyle } from '@fluentui/style-utilities';
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { HelpProvider } from './HelpProvider';
-import { Routes } from './Routes';
+import { MainPage } from './MainPage';
 import { SiteHeader, SiteHeaderHeight } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 
@@ -14,44 +14,54 @@ interface IAppStyles {
 
 const getClassNames = classNamesFunction<Theme, IAppStyles>();
 
-const Content: React.FunctionComponent = () => {
+function getStyles(theme: Theme): IAppStyles {
+    return {
+        root: {
+            colorScheme: theme.isInverted ? 'dark' : 'light',
+        },
+        contentWrapper: {
+            position: 'absolute',
+            top: SiteHeaderHeight,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflow: 'hidden',
+        },
+    };
+}
+
+export const BaseProviders: React.FC = ({ children }) => {
+    return (
+        <ThemeProvider>
+            <HelpProvider>{children}</HelpProvider>
+        </ThemeProvider>
+    );
+};
+
+const Layout: React.FunctionComponent = () => {
     const theme = useTheme();
-    const classNames = getClassNames(() => {
-        return {
-            root: {
-                colorScheme: theme.isInverted ? 'dark' : 'light',
-            },
-            contentWrapper: {
-                position: 'absolute',
-                top: SiteHeaderHeight,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                overflow: 'hidden',
-            },
-        };
-    }, theme);
+    const classNames = getClassNames(getStyles, theme);
 
     return (
-        <div className={classNames.root}>
-            <SiteHeader />
-            <div className={classNames.contentWrapper}>
-                <div>
-                    <Routes />
+        <BaseProviders>
+            <div className={classNames.root}>
+                <SiteHeader />
+                <div className={classNames.contentWrapper}>
+                    <div>
+                        <Outlet />
+                    </div>
                 </div>
             </div>
-        </div>
+        </BaseProviders>
     );
 };
 
 export const App: React.FunctionComponent = () => {
     return (
-        <Router>
-            <ThemeProvider>
-                <HelpProvider>
-                    <Content />
-                </HelpProvider>
-            </ThemeProvider>
-        </Router>
+        <Routes>
+            <Route path="/" element={<Layout />}>
+                <Route index element={<MainPage />} />
+            </Route>
+        </Routes>
     );
 };
