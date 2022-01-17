@@ -43,25 +43,25 @@ const Layout: React.FunctionComponent = () => {
     const classNames = getClassNames(getStyles, theme);
 
     return (
-        <BaseProviders>
-            <div className={classNames.root}>
-                <SiteHeader />
-                <div className={classNames.contentWrapper}>
-                    <div>
-                        <Outlet />
-                    </div>
+        <div className={classNames.root}>
+            <SiteHeader />
+            <div className={classNames.contentWrapper}>
+                <div>
+                    <Outlet />
                 </div>
             </div>
-        </BaseProviders>
+        </div>
     );
 };
 
 export const App: React.FunctionComponent = () => {
     return (
-        <Routes>
-            <Route path="/" element={<Layout />}>
-                <Route index element={<MainPage />} />
-            </Route>
-        </Routes>
+        <BaseProviders>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<MainPage />} />
+                </Route>
+            </Routes>
+        </BaseProviders>
     );
 };
