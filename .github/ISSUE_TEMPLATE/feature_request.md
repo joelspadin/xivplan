@@ -15,6 +15,7 @@ You may discuss the following content:
 
 * ✅ All content from Shadowbringers and earlier
 * ✅ Patch 6.0 extreme trials
+* ✅ Asphodelos savage **1st and 2nd circle only**
 
 Please do not discuss the following content:
 
