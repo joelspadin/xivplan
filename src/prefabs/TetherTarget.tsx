@@ -29,13 +29,13 @@ export const TetherTarget: React.FC<TetherTargetProps> = ({ object, children }) 
     const [selection, setSelection] = useSelection();
     const [editMode] = useEditMode();
     const [tetherConfig] = useTetherConfig();
-    const [scene, dispatch] = useScene();
+    const { dispatch, step } = useScene();
 
     const isSelectable = editMode === EditMode.Tether;
 
     const onClick = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
-            const targetIds = getSelectedObjects(scene, selection)
+            const targetIds = getSelectedObjects(step, selection)
                 .filter(isMoveable)
                 .map((x) => x.id);
 
@@ -50,7 +50,7 @@ export const TetherTarget: React.FC<TetherTargetProps> = ({ object, children }) 
 
             e.cancelBubble = true;
         },
-        [object.id, selection, setSelection, scene, dispatch, tetherConfig],
+        [object.id, selection, setSelection, step, dispatch, tetherConfig],
     );
 
     return (

@@ -161,7 +161,7 @@ function stateChanged(object: ConeZone, state: ConeState) {
 }
 
 const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
@@ -209,7 +209,7 @@ const stackTokens: IStackTokens = {
 };
 
 const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),

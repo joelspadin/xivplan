@@ -137,7 +137,7 @@ const stackTokens: IStackTokens = {
 };
 
 const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', value: { ...object, color } }),

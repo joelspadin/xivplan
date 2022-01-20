@@ -8,7 +8,7 @@ import { DefaultCursorProvider } from '../cursor';
 import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { getDropAction, usePanelDrag } from '../PanelDragProvider';
-import { SceneContext, useScene } from '../SceneProvider';
+import { SceneContext, useCurrentStep, useScene } from '../SceneProvider';
 import { SelectionContext, selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
 import { ArenaRenderer } from './ArenaRenderer';
 import { DrawTarget } from './DrawTarget';
@@ -25,7 +25,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
     const drawConfigBridge = useContext(DrawConfigContext);
     const tetherConfigBridge = useContext(TetherConfigContext);
 
-    const [scene] = useScene();
+    const { scene } = useScene();
     const [, setSelection] = selectionBridge;
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
@@ -68,7 +68,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
 };
 
 const SceneContents: React.FC = () => {
-    const [scene] = useScene();
+    const step = useCurrentStep();
 
     return (
         <>
@@ -76,13 +76,13 @@ const SceneContents: React.FC = () => {
 
             <Layer name={LayerName.Ground}>
                 <ArenaRenderer />
-                <ObjectRenderer objects={scene.objects} layer={LayerName.Ground} />
+                <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
             <Layer name={LayerName.Default}>
-                <ObjectRenderer objects={scene.objects} layer={LayerName.Default} />
+                <ObjectRenderer objects={step.objects} layer={LayerName.Default} />
             </Layer>
             <Layer name={LayerName.Foreground}>
-                <ObjectRenderer objects={scene.objects} layer={LayerName.Foreground} />
+                <ObjectRenderer objects={step.objects} layer={LayerName.Foreground} />
 
                 <TetherEditRenderer />
             </Layer>
@@ -99,7 +99,7 @@ interface DropTargetProps {
 }
 
 const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, children }) => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
 

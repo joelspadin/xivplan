@@ -12,7 +12,7 @@ const classNames = mergeStyleSets({
 });
 
 export const SceneObjectsPanel: React.FunctionComponent = () => {
-    const [scene, dispatch] = useScene();
+    const { dispatch, step } = useScene();
 
     const moveObject = useCallback(
         (from: number, to: number) => {
@@ -23,7 +23,7 @@ export const SceneObjectsPanel: React.FunctionComponent = () => {
 
     return (
         <div className={classNames.root}>
-            <ObjectList objects={scene.objects} onMove={moveObject} />
+            <ObjectList objects={step.objects} onMove={moveObject} />
         </div>
     );
 };

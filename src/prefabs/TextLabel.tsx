@@ -100,7 +100,7 @@ const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
 const TextResizer: React.VFC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -274,7 +274,7 @@ const alignOptions: IChoiceGroupOption[] = [
 ];
 
 const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', value: { ...object, color } }),

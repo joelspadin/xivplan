@@ -20,7 +20,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onAct
     const [editMode] = useEditMode();
     const [dragCenter, setDragCenter] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const [selection, setSelection] = useSelection();
     const center = getCanvasCoord(scene, object);
 

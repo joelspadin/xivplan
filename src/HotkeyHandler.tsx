@@ -1,16 +1,24 @@
+import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useContext, useState } from 'react';
-import { rotateCoord } from './coord';
-import { getGroupCenter, pasteObjects } from './copy';
+import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
+import { getSceneCoord, rotateCoord } from './coord';
+import { copyObjects, getGroupCenter } from './copy';
 import { EditMode, useEditMode, useTetherConfig } from './EditModeProvider';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
 import { makeTethers } from './prefabs/Tethers';
 import { useStage } from './render/StageProvider';
-import { isMoveable, isRotateable, MoveableObject, SceneObject, TetherType } from './scene';
-import { getObjectById, GroupMoveAction, useScene, useSceneUndoRedo } from './SceneProvider';
-import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './SelectionProvider';
+import { isMoveable, isRotateable, MoveableObject, Scene, SceneObject, TetherType } from './scene';
+import { getObjectById, GroupMoveAction, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
+import {
+    getSelectedObjects,
+    SceneSelection,
+    selectAll,
+    selectNewObjects,
+    selectNone,
+    useSelection,
+} from './SelectionProvider';
 
 const CATEGORY_GENERAL = '1.General';
 const CATEGORY_HISTORY = '2.History';
@@ -18,6 +26,7 @@ const CATEGORY_SELECTION = '3.Selection';
 const CATEGORY_EDIT = '4.Edit';
 const CATEGORY_TETHER = '5.Tether';
 const CATEGORY_DRAW = '6.Draw';
+const CATEGORY_STEPS = '7.Steos';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
@@ -34,12 +43,29 @@ const UndoRedoHandler: React.FC = () => {
     return null;
 };
 
+function pasteObjects(
+    stage: Stage,
+    scene: Scene,
+    dispatch: Dispatch<SceneAction>,
+    setSelection: Dispatch<SetStateAction<SceneSelection>>,
+    objects: readonly SceneObject[],
+    centerOnMouse = true,
+): void {
+    const newCenter = centerOnMouse ? getSceneCoord(scene, stage.getRelativePointerPosition()) : undefined;
+    const newObjects = copyObjects(scene, objects, newCenter);
+
+    if (newObjects.length) {
+        dispatch({ type: 'add', object: newObjects });
+        setSelection(selectNewObjects(scene, newObjects.length));
+    }
+}
+
 const SelectionActionHandler: React.FC = () => {
     const [clipboard, setClipboard] = useState<readonly SceneObject[]>([]);
     const [selection, setSelection] = useSelection();
     const [editMode, setEditMode] = useEditMode();
     const [tetherConfig, setTetherConfig] = useTetherConfig();
-    const [scene, dispatch] = useScene();
+    const { scene, step, dispatch } = useScene();
     const stage = useStage();
 
     useHotkeys(
@@ -50,10 +76,10 @@ const SelectionActionHandler: React.FC = () => {
             if (editMode !== EditMode.Normal) {
                 return;
             }
-            setSelection(selectAll(scene.objects));
+            setSelection(selectAll(step.objects));
             e.preventDefault();
         },
-        [setSelection, scene.objects, editMode],
+        [setSelection, step.objects, editMode],
     );
 
     useHotkeys(
@@ -95,10 +121,10 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
-            setClipboard(getSelectedObjects(scene, selection));
+            setClipboard(getSelectedObjects(step, selection));
             e.preventDefault();
         },
-        [scene, selection, editMode],
+        [step, selection, editMode],
     );
     useHotkeys(
         'ctrl+v',
@@ -122,10 +148,10 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, dispatch, setSelection, getSelectedObjects(scene, selection), false);
+            pasteObjects(stage, scene, dispatch, setSelection, getSelectedObjects(step, selection), false);
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection, setSelection, editMode],
+        [stage, scene, step, dispatch, selection, setSelection, editMode],
     );
 
     const tetherCallback = useCallback(
@@ -145,7 +171,7 @@ const SelectionActionHandler: React.FC = () => {
                     return;
                 }
 
-                const tethers = makeTethers(getSelectedObjects(scene, selection), type);
+                const tethers = makeTethers(getSelectedObjects(step, selection), type);
                 if (tethers.length === 0) {
                     return;
                 }
@@ -156,7 +182,7 @@ const SelectionActionHandler: React.FC = () => {
 
             e.preventDefault();
         },
-        [scene, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
+        [scene, step, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
     );
 
     useHotkeys('/', CATEGORY_TETHER, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
@@ -193,7 +219,7 @@ function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rot
 
 const EditActionHandler: React.FC = () => {
     const [selection, setSelection] = useSelection();
-    const [scene, dispatch] = useScene();
+    const { scene, step, dispatch } = useScene();
     const [editMode] = useEditMode();
     const stage = useStage();
 
@@ -231,14 +257,14 @@ const EditActionHandler: React.FC = () => {
     useHotkeys('ctrl+left', '', '', moveCallback({ x: -LARGE_MOVE_OFFSET }), [moveCallback]);
     useHotkeys('ctrl+right', '', '', moveCallback({ x: LARGE_MOVE_OFFSET }), [moveCallback]);
 
-    useHotkeys('alt+up', '', '', moveCallback({ y: SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('alt+down', '', '', moveCallback({ y: -SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('alt+left', '', '', moveCallback({ x: -SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('alt+right', '', '', moveCallback({ x: SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+up', '', '', moveCallback({ y: SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+down', '', '', moveCallback({ y: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+left', '', '', moveCallback({ x: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+right', '', '', moveCallback({ x: SMALL_MOVE_OFFSET }), [moveCallback]);
 
     useHotkeyHelp('🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object');
     useHotkeyHelp('ctrl+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (coarse)');
-    useHotkeyHelp('alt+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (fine)');
+    useHotkeyHelp('shift+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (fine)');
 
     const rotateCallback = useCallback(
         (offset: number) => (e: KeyboardEvent) => {
@@ -247,7 +273,7 @@ const EditActionHandler: React.FC = () => {
             }
 
             const value: SceneObject[] = [];
-            const center = getGroupCenter(getSelectedObjects(scene, selection).filter(isMoveable));
+            const center = getGroupCenter(getSelectedObjects(step, selection).filter(isMoveable));
 
             selection.forEach((id) => {
                 const object = getObjectById(scene, id);
@@ -259,7 +285,7 @@ const EditActionHandler: React.FC = () => {
             dispatch({ type: 'update', value });
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection, editMode],
+        [stage, scene, step, dispatch, selection, editMode],
     );
 
     useHotkeys('ctrl+g', CATEGORY_EDIT, 'Rotate 90° counter-clockwise', rotateCallback(-90), [rotateCallback]);
@@ -306,6 +332,45 @@ const DrawModeHandler: React.FC = () => {
     return null;
 };
 
+const StepHandler: React.FC = () => {
+    const { dispatch } = useScene();
+
+    useHotkeys(
+        'alt+left',
+        CATEGORY_STEPS,
+        'Previous step',
+        (e) => {
+            dispatch({ type: 'previousStep' });
+            e.preventDefault();
+        },
+        [dispatch],
+    );
+
+    useHotkeys(
+        'alt+right',
+        CATEGORY_STEPS,
+        'Next step',
+        (e) => {
+            dispatch({ type: 'nextStep' });
+            e.preventDefault();
+        },
+        [dispatch],
+    );
+
+    useHotkeys(
+        'ctrl+enter',
+        CATEGORY_STEPS,
+        'Add step',
+        (e) => {
+            dispatch({ type: 'addStep' });
+            e.preventDefault();
+        },
+        [dispatch],
+    );
+
+    return null;
+};
+
 export const RegularHotkeyHandler: React.FC = () => {
     return (
         <>
@@ -321,6 +386,7 @@ export const SceneHotkeyHandler: React.FC = () => {
             <SelectionActionHandler />
             <EditActionHandler />
             <DrawModeHandler />
+            <StepHandler />
         </>
     );
 };

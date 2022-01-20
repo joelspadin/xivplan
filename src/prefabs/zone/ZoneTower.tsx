@@ -164,7 +164,7 @@ const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, isNeste
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);
 
 const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),

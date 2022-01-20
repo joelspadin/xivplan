@@ -55,7 +55,7 @@ function didCustomGridChange(grid: CustomGrid, rowsText: string, colsText: strin
 }
 
 export const ArenaGridEdit: React.FunctionComponent = () => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const grid = scene.arena.grid;
 
     const setGrid = useCallback(

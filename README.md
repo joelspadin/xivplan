@@ -36,7 +36,7 @@ so it is not well suited to quickly diagramming during raids.
 | Edit object properties                | ✅     |
 | Add statuses to party/enemies         |        |
 | Draw on scene                         | ✅     |
-| Create multiple scenes                |        |
+| Create multiple steps                 | ✅     |
 | Save scenes                           |        |
 | Share scenes                          |        |
 | Context menus                         |        |

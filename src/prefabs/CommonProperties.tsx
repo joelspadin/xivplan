@@ -39,7 +39,7 @@ export function useSpinChanged(
 }
 
 export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onTogglePinned = useCallback(
         () => dispatch({ type: 'update', value: setOrOmit(object, 'pinned', !object.pinned) as SceneObject }),
@@ -86,7 +86,7 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
 };
 
 export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onWidthChanged = useSpinChanged(
         (width: number) => dispatch({ type: 'update', value: { ...object, width } as SceneObject }),
@@ -137,7 +137,7 @@ export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<Resizeab
 
 // TODO: allow list of preset images
 export const ImageObjectProperties: React.FC<ObjectPropertiesProps<ImageObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onImageChanged = useCallback(
         (image?: string) => dispatch({ type: 'update', value: { ...object, image: image ?? '' } as SceneObject }),

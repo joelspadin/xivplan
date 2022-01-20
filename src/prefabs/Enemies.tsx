@@ -305,7 +305,7 @@ const directionalOptions: IChoiceGroupOption[] = [
 ];
 
 const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onNameChanged = React.useCallback(
         (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),

@@ -135,7 +135,7 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
     const ControlPointManager: React.VFC<ControlPointManagerProps<T, S, P>> = (props) => {
         const { children, onActive, onTransformEnd, object, visible } = props;
 
-        const [scene] = useScene();
+        const { scene } = useScene();
         const stage = useStage();
         const [transform, setTransform] = useState<TransformState>();
         const groupRef = useRef<Konva.Group>(null);

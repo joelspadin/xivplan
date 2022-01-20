@@ -53,14 +53,14 @@ function getArenaClip(scene: Scene): (context: KonvaContext) => void {
 }
 
 const ArenaClip: React.FunctionComponent = ({ children }) => {
-    const [scene] = useScene();
+    const { scene } = useScene();
     const clip = getArenaClip(scene);
 
     return <Group clipFunc={clip}>{children}</Group>;
 };
 
 const BackgroundImage: React.FunctionComponent = () => {
-    const [scene] = useScene();
+    const { scene } = useScene();
     const [image] = useImage(scene.arena.backgroundImage ?? '');
 
     if (!image) {
@@ -73,7 +73,7 @@ const BackgroundImage: React.FunctionComponent = () => {
 };
 
 const BackgroundRenderer: React.FunctionComponent = () => {
-    const [scene] = useScene();
+    const { scene } = useScene();
 
     switch (scene.arena.shape) {
         case ArenaShape.Circle:
@@ -106,7 +106,7 @@ const RectangularBackground: React.FunctionComponent = () => {
 };
 
 const GridRenderer: React.FunctionComponent = () => {
-    const [scene] = useScene();
+    const { scene } = useScene();
 
     switch (scene.arena.grid.type) {
         case GridType.None:
@@ -166,7 +166,7 @@ function getSpokeGridDivs(divs: number, startAngle: number | undefined, radiusX:
 
 const RadialGridRenderer: React.FunctionComponent<GridProps<RadialGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const [scene] = useScene();
+    const { scene } = useScene();
     const clip = getArenaClip(scene);
     const position = getCanvasArenaEllipse(scene);
 
@@ -209,7 +209,7 @@ function getLinearGridDivs(divs: number, start: number, distance: number) {
 
 const RectangularGridRenderer: React.FunctionComponent<GridProps<RectangularGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const [scene] = useScene();
+    const { scene } = useScene();
 
     const position = getCanvasArenaRect(scene);
 
@@ -242,7 +242,7 @@ const RectangularGridRenderer: React.FunctionComponent<GridProps<RectangularGrid
 
 const CustomGridRenderer: React.FunctionComponent<GridProps<CustomGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const [scene] = useScene();
+    const { scene } = useScene();
     const clip = getArenaClip(scene);
     const position = getCanvasArenaRect(scene);
 

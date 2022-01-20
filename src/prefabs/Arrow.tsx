@@ -127,7 +127,7 @@ const stackTokens: IStackTokens = {
 };
 
 const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onColorChanged = React.useCallback(
         (color: string) => dispatch({ type: 'update', value: { ...object, color } }),

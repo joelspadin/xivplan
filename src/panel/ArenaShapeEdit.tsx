@@ -22,7 +22,7 @@ const arenaShapes: IChoiceGroupOption[] = [
 ];
 
 export const ArenaShapeEdit: React.FunctionComponent = () => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 
     const onWidthChanged = useSpinChanged((value) => dispatch({ type: 'arenaWidth', value }), [dispatch]);

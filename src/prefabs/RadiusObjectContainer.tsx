@@ -47,7 +47,7 @@ export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
     allowRotate,
     allowInnerRadius,
 }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const [isDragging, setDragging] = useState(false);

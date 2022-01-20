@@ -2,7 +2,7 @@ import { IStyle, mergeStyleSets } from '@fluentui/react';
 import React from 'react';
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
-import { useScene } from '../SceneProvider';
+import { useCurrentStep } from '../SceneProvider';
 import { getSelectedObjects, useSelection } from '../SelectionProvider';
 import { asArray } from '../util';
 import { PANEL_PADDING } from './PanelStyles';
@@ -40,7 +40,7 @@ export const PropertiesPanel: React.FC = () => {
 
 const Controls: React.FC = () => {
     const [selection] = useSelection();
-    const [scene] = useScene();
+    const step = useCurrentStep();
 
     if (selection.size === 0) {
         return <p>No object selected.</p>;
@@ -49,7 +49,7 @@ const Controls: React.FC = () => {
         return <p>Multiple objects selected.</p>;
     }
 
-    const object = getSelectedObjects(scene, selection)[0];
+    const object = getSelectedObjects(step, selection)[0];
 
     if (!object) {
         return <p>Invalid selection.</p>;

@@ -38,7 +38,7 @@ export const StarburstControlContainer: React.VFC<StarburstContainerProps> = ({
     children,
     minSpokeWidth,
 }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const [isDragging, setDragging] = useState(false);

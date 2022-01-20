@@ -39,7 +39,7 @@ interface PresetButtonProps {
 }
 
 const PresetButton: React.FunctionComponent<PresetButtonProps> = ({ preset }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const { name, ...arena } = preset;
     return (

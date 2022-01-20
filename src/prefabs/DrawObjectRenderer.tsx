@@ -70,7 +70,7 @@ const DrawDetails: React.FC<ListComponentProps<DrawObject>> = ({ object, isNeste
 registerListComponent<DrawObject>(ObjectType.Draw, DrawDetails);
 
 const DrawObjectEditControl: React.FC<PropertiesControlProps<DrawObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onColorChanged = useCallback(
         (color: string) => dispatch({ type: 'update', value: { ...object, color } as SceneObject }),

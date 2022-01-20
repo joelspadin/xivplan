@@ -26,7 +26,7 @@ const classNames = mergeStyleSets({
 });
 
 export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
     const filter = color ? getRecolorFilter(color) : undefined;

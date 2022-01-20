@@ -1,7 +1,4 @@
-import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import { Dispatch, SetStateAction } from 'react';
-import { getSceneCoord } from './coord';
 import {
     isMoveable,
     isTether,
@@ -12,8 +9,7 @@ import {
     Tether,
     UnknownObject,
 } from './scene';
-import { SceneAction } from './SceneProvider';
-import { SceneSelection, selectNewObjects } from './SelectionProvider';
+import { isNotNull } from './util';
 import { vecAdd, vecSub, VEC_ZERO } from './vector';
 
 export function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
@@ -28,27 +24,6 @@ export function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
     return { x, y };
 }
 
-function copyMoveableObjects(
-    stage: Stage,
-    scene: Scene,
-    objects: readonly (MoveableObject & SceneObject)[],
-    centerOnMouse = true,
-): SceneObjectWithoutId[] {
-    let offset = VEC_ZERO;
-
-    if (centerOnMouse) {
-        const center = getGroupCenter(objects);
-        const mousePos = getSceneCoord(scene, stage.getRelativePointerPosition());
-
-        offset = vecSub(mousePos, center);
-    }
-
-    return objects.map((obj) => {
-        const pos = vecAdd(obj, offset);
-        return { ...obj, ...pos, id: undefined };
-    });
-}
-
 function isTargetCopied(originalTargets: readonly UnknownObject[], id: number) {
     return originalTargets.some((obj) => obj.id === id);
 }
@@ -61,47 +36,70 @@ function retargetTether(scene: Scene, originalTargets: readonly UnknownObject[],
     return id;
 }
 
-function copyTethers(
-    scene: Scene,
-    tethers: readonly Tether[],
-    originalTargets: readonly UnknownObject[],
-): SceneObjectWithoutId[] {
-    return tethers
-        .filter((t) => {
-            return isTargetCopied(originalTargets, t.startId) || isTargetCopied(originalTargets, t.endId);
-        })
-        .map((t) => {
-            return {
-                ...t,
-                startId: retargetTether(scene, originalTargets, t.startId),
-                endId: retargetTether(scene, originalTargets, t.endId),
-                id: undefined,
-            };
-        });
+function getOffset(objects: readonly SceneObject[], newCenter?: Vector2d) {
+    if (newCenter) {
+        const currentCenter = getGroupCenter(objects.filter(isMoveable));
+        return vecSub(newCenter, currentCenter);
+    }
+
+    return VEC_ZERO;
 }
 
-export function pasteObjects(
-    stage: Stage,
-    scene: Scene,
-    dispatch: Dispatch<SceneAction>,
-    setSelection: Dispatch<SetStateAction<SceneSelection>>,
+function isCopyable(object: Readonly<SceneObject>, objects: readonly SceneObject[]) {
+    if (isMoveable(object)) {
+        return true;
+    }
+
+    if (isTether(object)) {
+        return isTargetCopied(objects, object.startId) || isTargetCopied(objects, object.endId);
+    }
+
+    return false;
+}
+
+function copyObject(object: Readonly<MoveableObject & UnknownObject>, offset: Vector2d): SceneObjectWithoutId {
+    const pos = vecAdd(object, offset);
+    return { ...object, ...pos, id: undefined };
+}
+
+function copyTether(
+    scene: Readonly<Scene>,
+    tether: Readonly<Tether>,
+    originalTargets: readonly UnknownObject[],
+): SceneObjectWithoutId | null {
+    if (!isTargetCopied(originalTargets, tether.startId) && !isTargetCopied(originalTargets, tether.endId)) {
+        return null;
+    }
+
+    const newTether = {
+        ...tether,
+        startId: retargetTether(scene, originalTargets, tether.startId),
+        endId: retargetTether(scene, originalTargets, tether.endId),
+    };
+
+    return { ...newTether, id: undefined };
+}
+
+export function copyObjects(
+    scene: Readonly<Scene>,
     objects: readonly SceneObject[],
-    centerOnMouse = true,
-): void {
-    const newObjects: SceneObjectWithoutId[] = [];
-    const moveable = objects.filter(isMoveable);
-    const tethers = objects.filter(isTether);
+    newCenter?: Vector2d,
+): SceneObjectWithoutId[] {
+    const copyable = objects.slice().filter((o) => isCopyable(o, objects));
 
-    if (moveable.length) {
-        newObjects.push(...copyMoveableObjects(stage, scene, moveable, centerOnMouse));
-    }
+    const offset = getOffset(copyable, newCenter);
 
-    if (tethers.length) {
-        newObjects.push(...copyTethers(scene, tethers, moveable));
-    }
+    return objects
+        .map((obj) => {
+            if (isMoveable(obj)) {
+                return copyObject(obj, offset);
+            }
 
-    if (newObjects.length) {
-        dispatch({ type: 'add', object: newObjects });
-        setSelection(selectNewObjects(scene, newObjects.length));
-    }
+            if (isTether(obj)) {
+                return copyTether(scene, obj, copyable);
+            }
+
+            return null;
+        })
+        .filter(isNotNull);
 }

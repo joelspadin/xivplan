@@ -196,7 +196,7 @@ const stackTokens: IStackTokens = {
 };
 
 const PartyIconSelect: React.FC<PropertiesControlProps<PartyObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onClick = useCallback(
         (name: string, image: string) => dispatch({ type: 'update', value: { ...object, name, image } }),
@@ -227,7 +227,7 @@ const PartyIconSelect: React.FC<PropertiesControlProps<PartyObject>> = ({ object
 };
 
 const PartyEditControl: React.FC<PropertiesControlProps<PartyObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onNameChanged = useCallback(
         (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),

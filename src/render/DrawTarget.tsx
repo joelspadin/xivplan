@@ -63,7 +63,7 @@ const DrawTargetLayer: React.FC = () => {
     const [points, setPoints] = useState<Vector2d[]>([]);
     const [isDrawing, setIsDrawing] = useState(false);
     const [config] = useDrawConfig();
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const [, setSelection] = useSelection();
     const [, setDefaultCursor] = useDefaultCursor();
     const stage = useStage();

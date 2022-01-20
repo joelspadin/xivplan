@@ -165,7 +165,7 @@ const stackTokens: IStackTokens = {
 };
 
 const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),

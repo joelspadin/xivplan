@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { copyObjects } from './copy';
 import {
     Arena,
     ArenaShape,
@@ -8,10 +9,11 @@ import {
     Scene,
     SceneObject,
     SceneObjectWithoutId,
+    SceneStep,
     Tether,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
-import { asArray } from './util';
+import { asArray, clamp } from './util';
 
 export interface SetArenaAction {
     type: 'arena';
@@ -48,6 +50,15 @@ export interface SetArenaBackgroundAction {
     value: string | undefined;
 }
 
+export type ArenaAction =
+    | SetArenaAction
+    | SetArenaShapeAction
+    | SetArenaWidthAction
+    | SetArenaHeightAction
+    | SetArenaPaddingAction
+    | SetArenaGridAction
+    | SetArenaBackgroundAction;
+
 export interface ObjectUpdateAction {
     type: 'update';
     value: SceneObject | readonly SceneObject[];
@@ -81,32 +92,91 @@ export type ObjectAction =
     | GroupMoveAction
     | ObjectUpdateAction;
 
-export type SceneAction =
-    | SetArenaAction
-    | SetArenaShapeAction
-    | SetArenaWidthAction
-    | SetArenaHeightAction
-    | SetArenaPaddingAction
-    | SetArenaGridAction
-    | SetArenaBackgroundAction
-    | ObjectAction;
+export interface SetStepAction {
+    type: 'setStep';
+    index: number;
+}
+
+export interface IncrementStepAction {
+    type: 'nextStep' | 'previousStep';
+}
+
+export interface AddStepAction {
+    type: 'addStep';
+    after?: number;
+}
+
+export interface RemoveStepAction {
+    type: 'removeStep';
+    index: number;
+}
+
+export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction;
+
+export type SceneAction = ArenaAction | ObjectAction | StepAction;
+
+interface EditorState {
+    scene: Scene;
+    currentStep: number;
+}
+
+function getCurrentStep(state: EditorState): SceneStep {
+    const step = state.scene.steps[state.currentStep];
+    if (!step) {
+        throw new Error(`Invalid step index ${state.currentStep}`);
+    }
+    return step;
+}
+
+const INITIAL_STATE: EditorState = {
+    scene: DEFAULT_SCENE,
+    currentStep: 0,
+};
 
 const HISTORY_SIZE = 1000;
 
 const { UndoProvider, Context, usePresent, useUndoRedo } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
 export const SceneProvider: React.FunctionComponent = ({ children }) => {
-    return <UndoProvider initialState={DEFAULT_SCENE}>{children}</UndoProvider>;
+    return <UndoProvider initialState={INITIAL_STATE}>{children}</UndoProvider>;
 };
 
 export const SceneContext = Context;
 
-export const useScene = usePresent;
+export interface SceneContext {
+    scene: Scene;
+    step: SceneStep;
+    stepIndex: number;
+    dispatch: React.Dispatch<SceneAction>;
+}
+
+export function useScene(): SceneContext {
+    const [present, dispatch] = usePresent();
+
+    return {
+        scene: present.scene,
+        step: getCurrentStep(present),
+        stepIndex: present.currentStep,
+        dispatch,
+    };
+}
+
+export function useCurrentStep(): SceneStep {
+    const [present] = usePresent();
+    return getCurrentStep(present);
+}
+
 export const useSceneUndoRedo = useUndoRedo;
 
 export function getObjectById(scene: Scene, id: number): SceneObject | undefined {
-    const index = scene.objects.findIndex((o) => o.id === id);
-    return index >= 0 ? scene.objects[index] : undefined;
+    for (const step of scene.steps) {
+        const object = step.objects.find((o) => o.id === id);
+        if (object) {
+            return object;
+        }
+    }
+
+    return undefined;
 }
 
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
@@ -123,12 +193,13 @@ function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number
     return Math.min(startIdx, endIdx);
 }
 
-function addObjects(
-    state: Readonly<Scene>,
-    objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
-): Partial<Scene> {
-    let nextId = state.nextId;
-    const addedObjects = asArray(objects)
+function assignObjectIds(
+    scene: Readonly<Scene>,
+    objects: readonly SceneObjectWithoutId[],
+): { objects: SceneObject[]; nextId: number } {
+    let nextId = scene.nextId;
+
+    const newObjects = objects
         .map((obj) => {
             if (obj.id !== undefined) {
                 return obj as SceneObject;
@@ -136,70 +207,157 @@ function addObjects(
             return { ...obj, id: nextId++ };
         })
         .filter((obj) => {
-            if (state.objects.some((existing) => existing.id === obj.id)) {
+            if (objects.some((existing) => existing.id === obj.id)) {
                 console.error(`Cannot create new object with already-used ID ${obj.id}`);
                 return false;
             }
             return true;
         });
 
-    const result = [...state.objects];
-
-    for (const object of addedObjects) {
-        if (isTether(object)) {
-            result.splice(getTetherIndex(result, object), 0, object);
-        } else {
-            result.push(object);
-        }
-    }
-
     return {
-        objects: result,
+        objects: newObjects,
         nextId,
     };
 }
 
-function removeObjects(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
+function setStep(state: Readonly<EditorState>, index: number): EditorState {
+    if (index === state.currentStep) {
+        return state;
+    }
     return {
-        objects: state.objects.filter((object) => {
-            if (ids.includes(object.id)) {
-                return false;
-            }
-
-            if (isTether(object)) {
-                // Delete any tether that is tethered to a deleted object.
-                return !ids.includes(object.startId) && !ids.includes(object.endId);
-            }
-
-            return true;
-        }),
+        ...state,
+        currentStep: clamp(index, 0, state.scene.steps.length - 1),
     };
 }
 
-function moveObject(state: Readonly<Scene>, from: number, to: number): Partial<Scene> {
+function addStep(state: Readonly<EditorState>, after: number): EditorState {
+    const copy = copyObjects(state.scene, getCurrentStep(state).objects);
+    const { objects, nextId } = assignObjectIds(state.scene, copy);
+
+    const newStep: SceneStep = { objects };
+
+    const steps = state.scene.steps.slice();
+    steps.splice(after + 1, 0, newStep);
+
+    return {
+        scene: { ...state.scene, nextId, steps },
+        currentStep: after + 1,
+    };
+}
+
+function removeStep(state: Readonly<EditorState>, index: number): EditorState {
+    const newSteps = state.scene.steps.slice();
+    newSteps.splice(index, 1);
+
+    if (newSteps.length === 0) {
+        newSteps.push({ objects: [] });
+    }
+
+    let currentStep = state.currentStep;
+    if (index === currentStep) {
+        currentStep--;
+    }
+    currentStep = clamp(currentStep, 0, newSteps.length - 1);
+
+    return {
+        scene: {
+            ...state.scene,
+            steps: newSteps,
+        },
+        currentStep,
+    };
+}
+
+function updateStep(scene: Readonly<Scene>, index: number, step: SceneStep): Scene {
+    const result: Scene = {
+        nextId: scene.nextId,
+        arena: scene.arena,
+        steps: [...scene.steps],
+    };
+    result.steps[index] = step;
+    return result;
+}
+
+function updateCurrentStep(state: Readonly<EditorState>, step: SceneStep): EditorState {
+    return {
+        ...state,
+        scene: updateStep(state.scene, state.currentStep, step),
+    };
+}
+
+function addObjects(
+    state: Readonly<EditorState>,
+    objects: SceneObjectWithoutId | readonly SceneObjectWithoutId[],
+): EditorState {
+    const currentStep = getCurrentStep(state);
+
+    const { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
+
+    const newObjects = [...currentStep.objects];
+
+    for (const object of addedObjects) {
+        if (isTether(object)) {
+            newObjects.splice(getTetherIndex(newObjects, object), 0, object);
+        } else {
+            newObjects.push(object);
+        }
+    }
+
+    return {
+        ...state,
+        scene: {
+            ...updateStep(state.scene, state.currentStep, { objects: newObjects }),
+            nextId,
+        },
+    };
+}
+
+function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    const currentStep = getCurrentStep(state);
+
+    const objects = currentStep.objects.filter((object) => {
+        if (ids.includes(object.id)) {
+            return false;
+        }
+
+        if (isTether(object)) {
+            // Delete any tether that is tethered to a deleted object.
+            return !ids.includes(object.startId) && !ids.includes(object.endId);
+        }
+
+        return true;
+    });
+
+    return updateCurrentStep(state, { objects });
+}
+
+function moveObject(state: Readonly<EditorState>, from: number, to: number): EditorState {
     if (from === to) {
         return state;
     }
 
-    const objects = state.objects.slice();
+    const currentStep = getCurrentStep(state);
+
+    const objects = currentStep.objects.slice();
     const items = objects.splice(from, 1);
     objects.splice(to, 0, ...items);
 
-    return { objects };
+    return updateCurrentStep(state, { objects });
 }
 
-function mapSelected(state: Readonly<Scene>, ids: readonly number[]) {
-    return state.objects.map((object) => ({ object, selected: ids.includes(object.id) }));
+function mapSelected(step: Readonly<SceneStep>, ids: readonly number[]) {
+    return step.objects.map((object) => ({ object, selected: ids.includes(object.id) }));
 }
 
-function unmapSelected(objects: { object: SceneObject; selected: boolean }[]): Partial<Scene> {
+function unmapSelected(objects: { object: SceneObject; selected: boolean }[]): SceneStep {
     return {
         objects: objects.map((o) => o.object),
     };
 }
 
-function moveGroupUp(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
-    const objects = mapSelected(state, ids);
+function moveGroupUp(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    const currentStep = getCurrentStep(state);
+    const objects = mapSelected(currentStep, ids);
 
     for (let i = objects.length - 1; i > 0; i--) {
         const current = objects[i];
@@ -211,11 +369,12 @@ function moveGroupUp(state: Readonly<Scene>, ids: readonly number[]): Partial<Sc
         }
     }
 
-    return unmapSelected(objects);
+    return updateCurrentStep(state, unmapSelected(objects));
 }
 
-function moveGroupDown(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
-    const objects = mapSelected(state, ids);
+function moveGroupDown(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    const currentStep = getCurrentStep(state);
+    const objects = mapSelected(currentStep, ids);
 
     for (let i = 0; i < objects.length - 1; i++) {
         const current = objects[i];
@@ -227,31 +386,34 @@ function moveGroupDown(state: Readonly<Scene>, ids: readonly number[]): Partial<
         }
     }
 
-    return unmapSelected(objects);
+    return updateCurrentStep(state, unmapSelected(objects));
 }
 
-function moveGroupToTop(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
-    const objects = mapSelected(state, ids);
+function moveGroupToTop(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    const currentStep = getCurrentStep(state);
+    const objects = mapSelected(currentStep, ids);
 
     objects.sort((a, b) => {
         return (a.selected ? 1 : 0) - (b.selected ? 1 : 0);
     });
 
-    return unmapSelected(objects);
+    return updateCurrentStep(state, unmapSelected(objects));
 }
 
-function moveGroupToBottom(state: Readonly<Scene>, ids: readonly number[]): Partial<Scene> {
-    const objects = mapSelected(state, ids);
+function moveGroupToBottom(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    const currentStep = getCurrentStep(state);
+    const objects = mapSelected(currentStep, ids);
 
     objects.sort((a, b) => {
         return (b.selected ? 1 : 0) - (a.selected ? 1 : 0);
     });
 
-    return unmapSelected(objects);
+    return updateCurrentStep(state, unmapSelected(objects));
 }
 
-function updateObjects(state: Readonly<Scene>, values: readonly SceneObject[]): Partial<Scene> {
-    const objects = state.objects.slice();
+function updateObjects(state: Readonly<EditorState>, values: readonly SceneObject[]): EditorState {
+    const currentStep = getCurrentStep(state);
+    const objects = currentStep.objects.slice();
 
     for (const update of asArray(values)) {
         const index = objects.findIndex((o) => o.id === update.id);
@@ -260,54 +422,82 @@ function updateObjects(state: Readonly<Scene>, values: readonly SceneObject[]): 
         }
     }
 
-    return { objects };
+    return updateCurrentStep(state, { objects });
 }
 
-function sceneReducer(state: Readonly<Scene>, action: SceneAction): Scene {
+function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
+    return {
+        scene: { ...state.scene, arena },
+        currentStep: state.currentStep,
+    };
+}
+
+function sceneReducer(state: Readonly<EditorState>, action: SceneAction): EditorState {
     switch (action.type) {
+        case 'setStep':
+            return setStep(state, action.index);
+
+        case 'nextStep':
+            if (state.currentStep === state.scene.steps.length - 1) {
+                return state;
+            }
+            return setStep(state, state.currentStep + 1);
+
+        case 'previousStep':
+            if (state.currentStep === 0) {
+                return state;
+            }
+            return setStep(state, state.currentStep - 1);
+
+        case 'addStep':
+            return addStep(state, action.after ?? state.currentStep);
+
+        case 'removeStep':
+            return removeStep(state, action.index);
+
         case 'arena':
-            return { ...state, arena: action.value };
+            return updateArena(state, action.value);
 
         case 'arenaShape':
-            return { ...state, arena: { ...state.arena, shape: action.value } };
+            return updateArena(state, { ...state.scene.arena, shape: action.value });
 
         case 'arenaWidth':
-            return { ...state, arena: { ...state.arena, width: action.value } };
+            return updateArena(state, { ...state.scene.arena, width: action.value });
 
         case 'arenaHeight':
-            return { ...state, arena: { ...state.arena, height: action.value } };
+            return updateArena(state, { ...state.scene.arena, height: action.value });
 
         case 'arenaPadding':
-            return { ...state, arena: { ...state.arena, padding: action.value } };
+            return updateArena(state, { ...state.scene.arena, padding: action.value });
 
         case 'arenaGrid':
-            return { ...state, arena: { ...state.arena, grid: action.value } };
+            return updateArena(state, { ...state.scene.arena, grid: action.value });
 
         case 'arenaBackground':
-            return { ...state, arena: { ...state.arena, backgroundImage: action.value } };
+            return updateArena(state, { ...state.scene.arena, backgroundImage: action.value });
 
         case 'add':
-            return { ...state, ...addObjects(state, action.object) };
+            return addObjects(state, action.object);
 
         case 'remove':
-            return { ...state, ...removeObjects(state, asArray(action.ids)) };
+            return removeObjects(state, asArray(action.ids));
 
         case 'move':
-            return { ...state, ...moveObject(state, action.from, action.to) };
+            return moveObject(state, action.from, action.to);
 
         case 'moveUp':
-            return { ...state, ...moveGroupUp(state, asArray(action.ids)) };
+            return moveGroupUp(state, asArray(action.ids));
 
         case 'moveDown':
-            return { ...state, ...moveGroupDown(state, asArray(action.ids)) };
+            return moveGroupDown(state, asArray(action.ids));
 
         case 'moveToTop':
-            return { ...state, ...moveGroupToTop(state, asArray(action.ids)) };
+            return moveGroupToTop(state, asArray(action.ids));
 
         case 'moveToBottom':
-            return { ...state, ...moveGroupToBottom(state, asArray(action.ids)) };
+            return moveGroupToBottom(state, asArray(action.ids));
 
         case 'update':
-            return { ...state, ...updateObjects(state, asArray(action.value)) };
+            return updateObjects(state, asArray(action.value));
     }
 }

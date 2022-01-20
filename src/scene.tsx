@@ -363,10 +363,14 @@ export type SceneObject = UnknownObject | Zone | Marker | Actor | Tether;
 
 export type SceneObjectWithoutId = Omit<SceneObject, 'id'> & { id?: number };
 
+export interface SceneStep {
+    readonly objects: readonly SceneObject[];
+}
+
 export interface Scene {
     readonly nextId: number;
     readonly arena: Arena;
-    readonly objects: readonly SceneObject[];
+    readonly steps: SceneStep[];
 }
 
 export const NO_GRID: NoGrid = {
@@ -404,5 +408,5 @@ export const DEFAULT_ARENA: Arena = {
 export const DEFAULT_SCENE: Scene = {
     nextId: 1,
     arena: DEFAULT_ARENA,
-    objects: [],
+    steps: [{ objects: [] }],
 };

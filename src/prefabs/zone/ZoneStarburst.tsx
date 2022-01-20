@@ -228,7 +228,7 @@ const classNames = mergeStyleSets({
 });
 
 const StarburstEditControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),

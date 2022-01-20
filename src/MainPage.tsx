@@ -8,6 +8,7 @@ import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
 import { SceneProvider } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
+import { StepSelect } from './StepSelect';
 
 interface IContentStyles {
     root: IStyle;
@@ -42,6 +43,7 @@ export const MainPage: React.FunctionComponent = () => {
                         <Stack horizontal className={classNames.root}>
                             <MainPanel />
                             <Stack.Item className={classNames.stage}>
+                                <StepSelect />
                                 <SceneRenderer />
                             </Stack.Item>
                             <DetailsPanel />

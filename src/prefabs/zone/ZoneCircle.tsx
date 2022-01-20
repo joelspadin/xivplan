@@ -115,7 +115,7 @@ const stackTokens: IStackTokens = {
 };
 
 const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onRadiusChanged = useSpinChanged(
         (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),

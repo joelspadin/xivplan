@@ -1,6 +1,6 @@
 import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
-import { Scene, SceneObject } from './scene';
-import { useScene } from './SceneProvider';
+import { Scene, SceneObject, SceneStep } from './scene';
+import { useCurrentStep } from './SceneProvider';
 
 /**
  * Set of object IDs for selected objects.
@@ -25,15 +25,15 @@ export interface SelectedObjects {
     objects: readonly SceneObject[];
 }
 
-export function getSelectedObjects(scene: Scene, selection: SceneSelection): readonly SceneObject[] {
-    return scene.objects.filter((object) => selection.has(object.id));
+export function getSelectedObjects(step: SceneStep, selection: SceneSelection): readonly SceneObject[] {
+    return step.objects.filter((object) => selection.has(object.id));
 }
 
 export function useSelectedObjects(): readonly SceneObject[] {
-    const [scene] = useScene();
+    const step = useCurrentStep();
     const [selection] = useSelection();
 
-    return getSelectedObjects(scene, selection);
+    return getSelectedObjects(step, selection);
 }
 
 export function useIsSelected(object: SceneObject): boolean {

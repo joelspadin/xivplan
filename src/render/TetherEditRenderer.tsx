@@ -20,7 +20,7 @@ const TetherEditLayer: React.FC = () => {
     const [, setDefaultCursor] = useDefaultCursor();
     const [tetherConfig] = useTetherConfig();
     const [selection] = useSelection();
-    const [scene] = useScene();
+    const { scene, step } = useScene();
     const stage = useStage();
 
     const onMouseMove = useCallback(() => setCursor(getPointerPosition(scene, stage)), [scene, stage, setCursor]);
@@ -46,7 +46,7 @@ const TetherEditLayer: React.FC = () => {
             return undefined;
         }
 
-        const objects = getSelectedObjects(scene, selection);
+        const objects = getSelectedObjects(step, selection);
         const [start] = objects;
 
         if (!start || !isMoveable(start)) {
@@ -55,7 +55,7 @@ const TetherEditLayer: React.FC = () => {
 
         // TODO: end position should snap to object when cursor is over object.
         return { startObject: start, cursorPos: cursor, tether: tetherConfig.tether };
-    }, [cursor, scene, selection]);
+    }, [cursor, step, selection]);
 
     if (!tetherProps) {
         return null;

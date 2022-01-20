@@ -235,7 +235,7 @@ const stackTokens: IStackTokens = {
 };
 
 const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onNameChanged = useCallback(
         (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),

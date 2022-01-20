@@ -123,7 +123,7 @@ const stackTokens: IStackTokens = {
 };
 
 const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onInnerRadiusChanged = useSpinChanged(
         (innerRadius: number) => dispatch({ type: 'update', value: { ...object, innerRadius } }),

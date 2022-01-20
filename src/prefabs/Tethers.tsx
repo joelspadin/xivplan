@@ -357,7 +357,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const showHighlight = useIsSelected(object);
     const groupRef = React.useRef<Konva.Group>(null);
     const [editMode] = useEditMode();
-    const [scene] = useScene();
+    const { scene } = useScene();
 
     const startObject = getObjectById(scene, object.startId);
     const endObject = getObjectById(scene, object.endId);
@@ -398,7 +398,7 @@ export interface TetherToCursorProps {
 
 export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cursorPos, tether }) => {
     const groupRef = React.useRef<Konva.Group>(null);
-    const [scene] = useScene();
+    const { scene } = useScene();
 
     const fakeTetherObject = useMemo(() => {
         return {
@@ -468,7 +468,7 @@ function getIconColorFilter(object: Tether) {
 }
 
 const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const filter = React.useMemo(() => getIconColorFilter(object), [object]);
 
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
@@ -515,7 +515,7 @@ const tetherOptions: IChoiceGroupOption[] = [
 });
 
 const TetherEditControl: React.FC<PropertiesControlProps<Tether>> = ({ object }) => {
-    const [, dispatch] = useScene();
+    const { dispatch } = useScene();
 
     const onTetherChanged = useCallback(
         (tether: TetherType) => dispatch({ type: 'update', value: { ...object, tether } }),

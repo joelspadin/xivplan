@@ -35,7 +35,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
     transformerProps,
     children,
 }) => {
-    const [scene, dispatch] = useScene();
+    const { scene, dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 

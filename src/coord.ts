@@ -48,17 +48,17 @@ export function getCanvasArenaEllipse(scene: Scene): { x: number; y: number; rad
 }
 
 export function useCanvasCoord(p: Vector2d): Vector2d {
-    const [scene] = useScene();
+    const { scene } = useScene();
     return getCanvasCoord(scene, p);
 }
 
 export function useCanvasArenaRect(): { x: number; y: number; width: number; height: number } {
-    const [scene] = useScene();
+    const { scene } = useScene();
     return getCanvasArenaRect(scene);
 }
 
 export function useCanvasArenaEllipse(): { x: number; y: number; radiusX: number; radiusY: number } {
-    const [scene] = useScene();
+    const { scene } = useScene();
     return getCanvasArenaEllipse(scene);
 }
 
