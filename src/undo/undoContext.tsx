@@ -61,7 +61,7 @@ export function createUndoContext<S, A>(
         undo.isPossible = state.past.length > 0;
 
         const redo = useCallback(() => dispatch(redoAction()), [dispatch]) as UndoRedoFunc;
-        redo.isPossible = state.past.length > 0;
+        redo.isPossible = state.future.length > 0;
 
         return [undo, redo];
     }
