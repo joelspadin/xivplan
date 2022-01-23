@@ -1,5 +1,5 @@
 import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getRecolorFilter } from '../color';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
 import { SceneObject } from '../scene';
@@ -29,7 +29,7 @@ export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object,
     const { dispatch } = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
-    const filter = color ? getRecolorFilter(color) : undefined;
+    const filter = useMemo(() => (color ? getRecolorFilter(color) : undefined), [color]);
 
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
