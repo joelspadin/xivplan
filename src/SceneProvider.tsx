@@ -112,12 +112,24 @@ export interface RemoveStepAction {
 }
 
 export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction;
+export interface SetSourceAction {
+    type: 'setSource';
+    source: FileSource | undefined;
+}
 
-export type SceneAction = ArenaAction | ObjectAction | StepAction;
+export type SceneAction = ArenaAction | ObjectAction | StepAction | SetSourceAction;
+
+export interface LocalFileSource {
+    type: 'local';
+    name: string;
+}
+
+export type FileSource = LocalFileSource;
 
 interface EditorState {
     scene: Scene;
     currentStep: number;
+    source?: FileSource;
 }
 
 function getCurrentStep(state: EditorState): SceneStep {
@@ -135,7 +147,7 @@ const INITIAL_STATE: EditorState = {
 
 const HISTORY_SIZE = 1000;
 
-const { UndoProvider, Context, usePresent, useUndoRedo } = createUndoContext(sceneReducer, HISTORY_SIZE);
+const { UndoProvider, Context, usePresent, useUndoRedo, useReset } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
 export const SceneProvider: React.FunctionComponent = ({ children }) => {
     return <UndoProvider initialState={INITIAL_STATE}>{children}</UndoProvider>;
@@ -147,6 +159,7 @@ export interface SceneContext {
     scene: Scene;
     step: SceneStep;
     stepIndex: number;
+    source?: FileSource;
     dispatch: React.Dispatch<SceneAction>;
 }
 
@@ -157,6 +170,7 @@ export function useScene(): SceneContext {
         scene: present.scene,
         step: getCurrentStep(present),
         stepIndex: present.currentStep,
+        source: present.source,
         dispatch,
     };
 }
@@ -167,6 +181,11 @@ export function useCurrentStep(): SceneStep {
 }
 
 export const useSceneUndoRedo = useUndoRedo;
+
+export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
+    const reset = useReset();
+    return (scene: Scene, source?: FileSource) => reset({ scene, source, currentStep: 0 });
+}
 
 export function getObjectById(scene: Scene, id: number): SceneObject | undefined {
     for (const step of scene.steps) {
@@ -240,6 +259,7 @@ function addStep(state: Readonly<EditorState>, after: number): EditorState {
     steps.splice(after + 1, 0, newStep);
 
     return {
+        ...state,
         scene: { ...state.scene, nextId, steps },
         currentStep: after + 1,
     };
@@ -260,6 +280,7 @@ function removeStep(state: Readonly<EditorState>, index: number): EditorState {
     currentStep = clamp(currentStep, 0, newSteps.length - 1);
 
     return {
+        ...state,
         scene: {
             ...state.scene,
             steps: newSteps,
@@ -434,6 +455,9 @@ function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
 
 function sceneReducer(state: Readonly<EditorState>, action: SceneAction): EditorState {
     switch (action.type) {
+        case 'setSource':
+            return { ...state, source: action.source };
+
         case 'setStep':
             return setStep(state, action.index);
 

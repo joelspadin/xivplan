@@ -37,7 +37,9 @@ so it is not well suited to quickly diagramming during raids.
 | Add statuses to party/enemies         |        |
 | Draw on scene                         | ✅     |
 | Create multiple steps                 | ✅     |
-| Save scenes                           |        |
+| Create multiple steps                 | ✅     |
+| Save scenes to browser                | ✅     |
+| Save scenes to gist                   |        |
 | Share scenes                          |        |
 | Context menus                         |        |
 | Keyboard shortcut help                | ✅     |

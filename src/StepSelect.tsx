@@ -10,7 +10,6 @@ import {
     useTheme,
 } from '@fluentui/react';
 import React, { useMemo } from 'react';
-import { getCanvasSize } from './coord';
 import { useScene } from './SceneProvider';
 
 const getButtonStyles: IStyleFunction<Theme, IButtonStyles> = (theme) => {
@@ -98,8 +97,9 @@ const getClassNames = classNamesFunction<Theme, IStepSelectStyles>();
 const getStepSelectStyles: IStyleFunction<Theme, IStepSelectStyles> = (theme) => {
     return {
         root: {
+            gridArea: 'steps',
             backgroundColor: theme.palette.neutralLighterAlt,
-            padding: 6,
+            padding: 4,
 
             ul: {
                 display: 'flex',
@@ -111,10 +111,7 @@ const getStepSelectStyles: IStyleFunction<Theme, IStepSelectStyles> = (theme) =>
 
             li: {
                 listStyle: 'none',
-
-                ':not(:first-child)': {
-                    marginLeft: BUTTON_SPACING,
-                },
+                margin: BUTTON_SPACING / 2,
             } as IStyle,
         } as IStyle,
     };
@@ -122,15 +119,13 @@ const getStepSelectStyles: IStyleFunction<Theme, IStepSelectStyles> = (theme) =>
 
 export const StepSelect: React.FC = () => {
     const { scene } = useScene();
-    const { width: maxWidth } = getCanvasSize(scene);
-
     const steps = useMemo(() => scene.steps.map((_, i) => i), [scene.steps.length]);
 
     const theme = useTheme();
     const classNames = getClassNames(getStepSelectStyles, theme);
 
     return (
-        <Stack horizontal tokens={{ childrenGap: BUTTON_SPACING, maxWidth }} className={classNames.root}>
+        <Stack horizontal tokens={{ childrenGap: BUTTON_SPACING }} className={classNames.root}>
             <ul>
                 {steps.map((i) => (
                     <li key={i}>

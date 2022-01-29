@@ -1,5 +1,5 @@
 import React, { ComponentType, createContext, Dispatch, useCallback, useContext, useReducer } from 'react';
-import { createUndoReducer, redoAction, undoAction, UndoRedoAction, UndoRedoState } from './undoReducer';
+import { createUndoReducer, redoAction, resetAction, undoAction, UndoRedoAction, UndoRedoState } from './undoReducer';
 
 export interface UndoProviderProps<S> {
     initialState: S;
@@ -10,21 +10,22 @@ export type UndoRedoFunc = {
     isPossible: boolean;
 };
 
-export type UndoContext<S, A> = [state: UndoRedoState<S>, dispatch: Dispatch<A | UndoRedoAction>];
+export type UndoContext<S, A> = [state: UndoRedoState<S>, dispatch: Dispatch<A | UndoRedoAction<S>>];
 
 export function createUndoContext<S, A>(
     reducer: React.Reducer<S, A>,
     historyLimit = Infinity,
 ): {
     UndoProvider: ComponentType<UndoProviderProps<S>>;
-    Context: React.Context<UndoContext<S | undefined, A>>;
+    Context: React.Context<UndoContext<S, A>>;
     usePresent: () => [state: S, dispatch: Dispatch<A>];
     useUndoRedo: () => [undo: UndoRedoFunc, redo: UndoRedoFunc];
+    useReset: () => Dispatch<S>;
 } {
-    const Context = createContext<UndoContext<S | undefined, A>>([
+    const Context = createContext<UndoContext<S, A>>([
         {
             past: [],
-            present: undefined,
+            present: undefined as unknown as S,
             future: [],
         },
         () => {
@@ -66,5 +67,11 @@ export function createUndoContext<S, A>(
         return [undo, redo];
     }
 
-    return { UndoProvider, Context, usePresent, useUndoRedo };
+    function useReset(): Dispatch<S> {
+        const [, dispatch] = useContext(Context);
+
+        return useCallback((state: S) => dispatch(resetAction(state)), [dispatch]);
+    }
+
+    return { UndoProvider, Context, usePresent, useUndoRedo, useReset };
 }

@@ -1,56 +1,80 @@
-import { classNamesFunction, IStyle, Stack, Theme, useTheme } from '@fluentui/react';
-import React from 'react';
+import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
+import React, { useEffect } from 'react';
+import { DirtyProvider, useIsDirty } from './DirtyProvider';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
+import { MainCommandBar } from './MainCommandBar';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
-import { SceneProvider } from './SceneProvider';
+import { SceneProvider, useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
 
 interface IContentStyles {
-    root: IStyle;
     stage: IStyle;
 }
 
 const getClassNames = classNamesFunction<Theme, IContentStyles>();
 
 export const MainPage: React.FunctionComponent = () => {
+    return (
+        <SceneProvider>
+            <DirtyProvider>
+                <EditModeProvider>
+                    <SelectionProvider>
+                        <PanelDragProvider>
+                            <MainPageContent />
+                        </PanelDragProvider>
+                    </SelectionProvider>
+                </EditModeProvider>
+            </DirtyProvider>
+        </SceneProvider>
+    );
+};
+
+const MainPageContent: React.FC = () => {
+    usePageTitle();
     const theme = useTheme();
     const classNames = getClassNames(() => {
         return {
-            root: {
-                position: 'absolute',
-                inset: 0,
-            },
             stage: {
-                backgroundColor: theme.palette.neutralLighter,
+                gridArea: 'content',
                 overflow: 'auto',
+                backgroundColor: theme.palette.neutralLighter,
                 minWidth: 400,
             },
         };
     }, theme);
 
     return (
-        <SceneProvider>
-            <EditModeProvider>
-                <SelectionProvider>
-                    <PanelDragProvider>
-                        <RegularHotkeyHandler />
+        <>
+            <RegularHotkeyHandler />
+            <MainCommandBar />
 
-                        <Stack horizontal className={classNames.root}>
-                            <MainPanel />
-                            <Stack.Item className={classNames.stage}>
-                                <StepSelect />
-                                <SceneRenderer />
-                            </Stack.Item>
-                            <DetailsPanel />
-                        </Stack>
-                    </PanelDragProvider>
-                </SelectionProvider>
-            </EditModeProvider>
-        </SceneProvider>
+            <MainPanel />
+
+            <StepSelect />
+
+            <div className={classNames.stage}>
+                <SceneRenderer />
+            </div>
+
+            <DetailsPanel />
+        </>
     );
 };
+
+const DEFAULT_TITLE = 'FFXIV Raid Planner';
+
+function usePageTitle() {
+    const { source } = useScene();
+    const isDirty = useIsDirty();
+
+    useEffect(() => {
+        const name = source?.name ?? DEFAULT_TITLE;
+        const flag = isDirty ? ' ●' : '';
+        document.title = `${name}${flag}`;
+    }, [source, isDirty]);
+}

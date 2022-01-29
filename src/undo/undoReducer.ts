@@ -9,6 +9,7 @@ export interface UndoRedoState<S> {
 enum ActionTypes {
     Undo = 'undo',
     Redo = 'redo',
+    Reset = 'reset',
 }
 
 export type UndoAction = {
@@ -19,9 +20,14 @@ export type RedoAction = {
     type: ActionTypes.Redo;
 };
 
-export type UndoRedoAction = UndoAction | RedoAction;
+export type ResetAction<S> = {
+    type: ActionTypes.Reset;
+    state: S;
+};
 
-export type UndoRedoReducer<S, A> = React.Reducer<UndoRedoState<S>, A | UndoRedoAction>;
+export type UndoRedoAction<S> = UndoAction | RedoAction | ResetAction<S>;
+
+export type UndoRedoReducer<S, A> = React.Reducer<UndoRedoState<S>, A | UndoRedoAction<S>>;
 
 export function createUndoReducer<S, A>(reducer: React.Reducer<S, A>, historyLimit = Infinity): UndoRedoReducer<S, A> {
     return (state, action) => {
@@ -53,6 +59,14 @@ export function createUndoReducer<S, A>(reducer: React.Reducer<S, A>, historyLim
                     future,
                 };
             }
+
+            if (action.type === ActionTypes.Reset) {
+                return {
+                    past: [],
+                    present: action.state,
+                    future: [],
+                };
+            }
         }
 
         return {
@@ -69,4 +83,8 @@ export function undoAction(): UndoAction {
 
 export function redoAction(): RedoAction {
     return { type: ActionTypes.Redo };
+}
+
+export function resetAction<S>(state: S): ResetAction<S> {
+    return { type: ActionTypes.Reset, state };
 }

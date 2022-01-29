@@ -14,6 +14,7 @@ import {
 import { useBoolean } from '@fluentui/react-hooks';
 import React, { HTMLAttributes, useContext } from 'react';
 import { AboutDialog } from './AboutDialog';
+import { CommandBarContext } from './CommandBarProvider';
 import { ExternalLink } from './ExternalLink';
 import { HelpContext } from './HelpProvider';
 import logoUrl from './logo.svg';
@@ -23,7 +24,7 @@ export const SiteHeaderHeight = 48;
 
 const classNames = mergeStyleSets({
     root: {
-        height: SiteHeaderHeight,
+        minHeight: SiteHeaderHeight,
     } as IStyle,
     brand: {
         textDecoration: 'none',
@@ -40,6 +41,11 @@ const classNames = mergeStyleSets({
     title: {
         lineHeight: SiteHeaderHeight,
         fontWeight: 600,
+    } as IStyle,
+    commandBar: {
+        // TODO: should probably tie this to panel width
+        // TODO: handle small windows more gracefully
+        marginLeft: 123,
     } as IStyle,
 });
 
@@ -64,6 +70,7 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
     const [aboutOpen, { setTrue: showAbout, setFalse: hideAbout }] = useBoolean(false);
     const [, { setTrue: showHelp }] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
+    const [commands] = useContext(CommandBarContext);
     const theme = useTheme();
 
     const themeClasses = getClassNames(() => {
@@ -79,11 +86,14 @@ export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = 
     return (
         <header className={`${classNames.root} ${className ?? ''}`} {...props}>
             <Stack horizontal wrap verticalAlign="center" tokens={stackTokens}>
-                <Stack.Item className={classNames.brand} grow>
+                <Stack.Item className={classNames.brand}>
                     <img src={logoUrl} alt="Site logo" className={classNames.icon} />
                     <Text variant="large" className={classNames.title}>
                         XIVPlan
                     </Text>
+                </Stack.Item>
+                <Stack.Item className={classNames.commandBar} grow>
+                    {commands ? commands : <div></div>}
                 </Stack.Item>
                 <Stack.Item className={themeClasses.links}>
                     <Stack horizontal tokens={stackTokens}>

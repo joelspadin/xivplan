@@ -16,9 +16,9 @@ const enum Tabs {
 
 const classNames = mergeStyleSets({
     wrapper: {
+        gridArea: 'left-panel',
         width: PANEL_WIDTH,
         userSelect: 'none',
-        flexShrink: '0 !important',
     } as IStyle,
 });
 

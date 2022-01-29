@@ -2,14 +2,15 @@ import { classNamesFunction, Theme, useTheme } from '@fluentui/react';
 import { IStyle } from '@fluentui/style-utilities';
 import React from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
+import { CommandBarProvider } from './CommandBarProvider';
 import { HelpProvider } from './HelpProvider';
 import { MainPage } from './MainPage';
-import { SiteHeader, SiteHeaderHeight } from './SiteHeader';
+import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 
 interface IAppStyles {
     root: IStyle;
-    contentWrapper: IStyle;
+    header: IStyle;
 }
 
 const getClassNames = classNamesFunction<Theme, IAppStyles>();
@@ -18,14 +19,22 @@ function getStyles(theme: Theme): IAppStyles {
     return {
         root: {
             colorScheme: theme.isInverted ? 'dark' : 'light',
-        },
-        contentWrapper: {
             position: 'absolute',
-            top: SiteHeaderHeight,
+            top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateColumns: `auto minmax(400px, auto) 1fr`,
+            gridTemplateRows: `min-content auto 1fr`,
+            gridTemplateAreas: `
+                "header     header  header"
+                "left-panel steps   right-panel"
+                "left-panel content right-panel"
+            `,
+        },
+        header: {
+            gridArea: 'header',
         },
     };
 }
@@ -33,7 +42,9 @@ function getStyles(theme: Theme): IAppStyles {
 export const BaseProviders: React.FC = ({ children }) => {
     return (
         <ThemeProvider>
-            <HelpProvider>{children}</HelpProvider>
+            <HelpProvider>
+                <CommandBarProvider>{children}</CommandBarProvider>
+            </HelpProvider>
         </ThemeProvider>
     );
 };
@@ -44,12 +55,8 @@ const Layout: React.FunctionComponent = () => {
 
     return (
         <div className={classNames.root}>
-            <SiteHeader />
-            <div className={classNames.contentWrapper}>
-                <div>
-                    <Outlet />
-                </div>
-            </div>
+            <SiteHeader className={classNames.header} />
+            <Outlet />
         </div>
     );
 };
