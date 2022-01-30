@@ -1,4 +1,3 @@
-import { compress, decodeBase64, decompress, encodeBase64 } from 'lzutf8';
 import { openFileLocal, saveFileLocal } from './file/localFile';
 import { Scene } from './scene';
 import { FileSource } from './SceneProvider';
@@ -15,16 +14,6 @@ export async function openFile(source: FileSource): Promise<Scene> {
         case 'local':
             return await openFileLocal(source.name);
     }
-}
-
-export function compressScene(scene: Readonly<Scene>): string {
-    const json = JSON.stringify(scene);
-    return encodeBase64(compress(json));
-}
-
-export function decompressScene(compressed: string): Scene {
-    const json = decompress(decodeBase64(compressed));
-    return jsonToScene(json);
 }
 
 export function sceneToJson(scene: Readonly<Scene>): string {

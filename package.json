@@ -14,7 +14,6 @@
     "hotkeys-js": "^3.8.7",
     "konva": "^8.3.2",
     "localforage": "^1.10.0",
-    "lzutf8": "^0.6.0",
     "react": "^17.0.0",
     "react-async": "^10.0.1",
     "react-beautiful-dnd": "^13.1.0",
