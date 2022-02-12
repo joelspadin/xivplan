@@ -32,6 +32,10 @@ export async function openFileLocal(name: string): Promise<Scene> {
     return scene;
 }
 
+export async function deleteFileLocal(name: string): Promise<void> {
+    await files.removeItem(name);
+}
+
 export interface FileEntry {
     name: string;
     lastEdited?: Date;

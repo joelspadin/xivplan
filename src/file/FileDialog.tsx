@@ -5,6 +5,7 @@ import {
     DetailsListLayoutMode,
     DialogFooter,
     IColumn,
+    IconButton,
     IDetailsListStyles,
     IModalProps,
     IStyle,
@@ -23,12 +24,13 @@ import {
 import { useConst, useForceUpdate } from '@fluentui/react-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-async';
+import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { useIsDirty, useSetSavedState } from '../DirtyProvider';
 import { openFile, saveFile } from '../file';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
-import { confirmOverwriteFile, confirmUnsavedChanges } from './FilePrompts';
-import { FileEntry, listLocalFiles } from './localFile';
+import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './FilePrompts';
+import { deleteFileLocal, FileEntry, listLocalFiles } from './localFile';
 
 const classNames = mergeStyleSets({
     tab: {
@@ -46,6 +48,10 @@ const classNames = mergeStyleSets({
     } as IStyle,
     footer: {
         gridArea: 'footer',
+    } as IStyle,
+
+    listButton: {
+        margin: '-7px 0 -7px',
     } as IStyle,
 });
 
@@ -89,21 +95,39 @@ interface SourceTabProps {
     onDismiss?: () => void;
 }
 
-const openFileColumns: IColumn[] = [
-    {
-        key: 'name',
-        name: 'Name',
-        fieldName: 'name',
-        minWidth: 200,
-    },
-    {
-        key: 'modified',
-        name: 'Date modified',
-        fieldName: 'lastModified',
-        minWidth: 200,
-        onRender: (item: FileEntry) => item.lastEdited?.toLocaleString(),
-    },
-];
+const getOpenFileColumns = (theme: Theme, reloadFiles: () => void) =>
+    [
+        {
+            key: 'name',
+            name: 'Name',
+            fieldName: 'name',
+            minWidth: 200,
+        },
+        {
+            key: 'modified',
+            name: 'Date modified',
+            fieldName: 'lastModified',
+            minWidth: 200,
+            onRender: (item: FileEntry) => item.lastEdited?.toLocaleString(),
+        },
+        {
+            key: 'delete',
+            name: '',
+            minWidth: 32,
+            onRender: (item: FileEntry) => (
+                <IconButton
+                    className={classNames.listButton}
+                    iconProps={{ iconName: 'Delete' }}
+                    onClick={async () => {
+                        if (await confirmDeleteFile(item.name, theme)) {
+                            await deleteFileLocal(item.name);
+                            reloadFiles();
+                        }
+                    }}
+                />
+            ),
+        },
+    ] as IColumn[];
 
 const listStyles: Partial<IDetailsListStyles> = {
     root: {
@@ -127,11 +151,15 @@ const listStyles: Partial<IDetailsListStyles> = {
 };
 
 const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
-    const { data: files, error, isPending } = useAsync(listLocalFiles);
     const loadScene = useLoadScene();
     const setSavedState = useSetSavedState();
     const isDirty = useIsDirty();
     const theme = useTheme();
+
+    const [counter, { inc: reloadFiles }] = useCounter();
+    const { data: files, error, isPending } = useAsync(listLocalFiles, { watch: counter });
+
+    const columns = useMemo(() => getOpenFileColumns(theme, reloadFiles), [theme, reloadFiles]);
 
     const forceUpdate = useForceUpdate();
     const selection = useConst(() => new Selection({ onSelectionChanged: forceUpdate }));
@@ -170,7 +198,7 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     return (
         <>
             <DetailsList
-                columns={openFileColumns}
+                columns={columns}
                 items={files}
                 layoutMode={DetailsListLayoutMode.fixedColumns}
                 constrainMode={ConstrainMode.unconstrained}

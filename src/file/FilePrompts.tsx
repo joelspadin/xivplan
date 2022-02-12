@@ -4,6 +4,7 @@ import {
     DialogFooter,
     DialogType,
     IDialogContentProps,
+    IDialogContentStyles,
     IDialogProps,
     PrimaryButton,
     Theme,
@@ -66,6 +67,45 @@ export async function confirmOverwriteFile(theme?: Theme): Promise<boolean | und
         return (
             <ThemeProvider theme={theme}>
                 <OverwriteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} />
+            </ThemeProvider>
+        );
+    });
+}
+
+interface DeleteFilePromptProps extends FilePromptProps {
+    filename: string;
+}
+
+const deleteContentStyles: Partial<IDialogContentStyles> = {
+    title: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+};
+
+export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ onCancel, onConfirm, filename, ...props }) => {
+    const deleteContent: IDialogContentProps = {
+        type: DialogType.normal,
+        title: `Delete ${filename}`,
+        subText: `Are you sure you want to delete this file?`,
+        styles: deleteContentStyles,
+    };
+
+    return (
+        <Dialog dialogContentProps={deleteContent} onDismiss={onCancel} {...props}>
+            <DialogFooter>
+                <PrimaryButton text="Delete" onClick={onConfirm} />
+                <DefaultButton text="Cancel" onClick={onCancel} />
+            </DialogFooter>
+        </Dialog>
+    );
+};
+
+export async function confirmDeleteFile(filename: string, theme?: Theme): Promise<boolean | undefined> {
+    return await reactModal(({ show, onSubmit, onDismiss }) => {
+        return (
+            <ThemeProvider theme={theme}>
+                <DeleteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} filename={filename} />
             </ThemeProvider>
         );
     });
