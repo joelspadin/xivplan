@@ -46,6 +46,7 @@ export const StarburstControlContainer: React.VFC<StarburstContainerProps> = ({
     const updateObject = useCallback(
         (state: StarburstObjectState) => {
             state.rotation = Math.round(state.rotation);
+            state.spokeWidth = Math.round(state.spokeWidth);
 
             if (!stateChanged(object, state)) {
                 return;
