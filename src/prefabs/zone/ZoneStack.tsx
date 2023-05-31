@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
 import { Circle } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/stack.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 

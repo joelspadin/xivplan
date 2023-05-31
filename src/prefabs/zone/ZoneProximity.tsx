@@ -2,23 +2,24 @@ import { getColorFromString, updateA } from '@fluentui/react';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/falloff.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
+import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
-import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { getArrowStyle, getShadowColor } from './style';
 
 const DEFAULT_RADIUS = 200;
 
-export const ZoneProximity: React.FunctionComponent = () => {
+export const ZoneProximity: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon

@@ -1,17 +1,18 @@
 import { RectConfig } from 'konva/lib/shapes/Rect';
 import React, { useMemo } from 'react';
 import { Group, Line } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/triangle.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Triangle';
@@ -19,7 +20,7 @@ const NAME = 'Triangle';
 const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
-export const ZoneTriangle: React.FunctionComponent = () => {
+export const ZoneTriangle: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon

@@ -66,7 +66,7 @@ interface IHeaderStyles {
 
 const getClassNames = classNamesFunction<Theme, IHeaderStyles>();
 
-export const SiteHeader: React.FunctionComponent<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
+export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
     const [aboutOpen, { setTrue: showAbout, setFalse: hideAbout }] = useBoolean(false);
     const [, { setTrue: showHelp }] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);

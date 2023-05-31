@@ -8,12 +8,13 @@ import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
+import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { useScene } from '../SceneProvider';
+import { SpinButtonUnits } from '../SpinButtonUnits';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
-import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     COLOR_SWATCHES,
@@ -22,13 +23,14 @@ import {
     SELECTED_PROPS,
     useSceneTheme,
 } from '../render/SceneTheme';
+import { LayerName } from '../render/layers';
 import { EnemyObject, ObjectType } from '../scene';
-import { useScene } from '../SceneProvider';
-import { SpinButtonUnits } from '../SpinButtonUnits';
-import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
-import { useShowHighlight } from './highlight';
+import { usePanelDrag } from '../usePanelDrag';
+import { MoveableObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
+import { useShowHighlight } from './highlight';
+import { useSpinChanged } from './useSpinChanged';
 
 const DEFAULT_SIZE = 32;
 

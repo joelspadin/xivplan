@@ -1,28 +1,9 @@
 import { IStyle, mergeStyleSets } from '@fluentui/react';
 import React from 'react';
-import { Registry } from '../Registry';
-import { SceneObject } from '../scene';
 import { useCurrentStep } from '../SceneProvider';
-import { getSelectedObjects, useSelection } from '../SelectionProvider';
-import { asArray } from '../util';
+import { getSelectedObjects, useSelection } from '../selection';
 import { PANEL_PADDING } from './PanelStyles';
-
-export interface PropertiesControlProps<T extends SceneObject = SceneObject> {
-    object: T;
-}
-
-export type PropertiesControl<T extends SceneObject> = React.FC<PropertiesControlProps<T>>;
-
-const registry = new Registry<PropertiesControlProps>();
-
-export function registerPropertiesControl<T extends SceneObject>(
-    ids: string | string[],
-    component: PropertiesControl<T>,
-): void {
-    for (const id of asArray(ids)) {
-        registry.register(id, component);
-    }
-}
+import { getPropertiesControl } from './PropertiesControlRegistry';
 
 const classNames = mergeStyleSets({
     root: {
@@ -55,6 +36,6 @@ const Controls: React.FC = () => {
         return <p>Invalid selection.</p>;
     }
 
-    const Component = registry.get(object.type);
+    const Component = getPropertiesControl(object);
     return <Component object={object} />;
 };

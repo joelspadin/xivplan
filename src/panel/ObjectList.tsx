@@ -1,10 +1,10 @@
 import { classNamesFunction, IStyle, mergeStyleSets, Theme, useTheme } from '@fluentui/react';
 import React, { useCallback } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
-import { addSelection, selectSingle, toggleSelection, useSelection } from '../SelectionProvider';
-import { asArray, makeClassName, reversed } from '../util';
+import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
+import { makeClassName, reversed } from '../util';
+import { getListComponent } from './ListComponentRegistry';
 
 const listClassNames = mergeStyleSets({
     list: {
@@ -13,29 +13,6 @@ const listClassNames = mergeStyleSets({
         listStyle: 'none',
     } as IStyle,
 });
-
-export interface ListComponentProps<T extends SceneObject = SceneObject> {
-    object: T;
-    isSelected?: boolean;
-    isNested?: boolean;
-}
-
-export type ListComponent<T extends SceneObject> = React.FunctionComponent<ListComponentProps<T>>;
-
-const registry = new Registry<ListComponentProps>();
-
-export function registerListComponent<T extends SceneObject>(
-    ids: string | string[],
-    component: ListComponent<T>,
-): void {
-    for (const id of asArray(ids)) {
-        registry.register(id, component);
-    }
-}
-
-export function getListComponent(object: SceneObject): React.FunctionComponent<ListComponentProps<SceneObject>> {
-    return registry.get(object.type);
-}
 
 export type MoveCallback = (from: number, to: number) => void;
 
@@ -50,7 +27,7 @@ function reversedIndex(i: number, length: number) {
     return length - 1 - i;
 }
 
-export const ObjectList: React.FunctionComponent<ObjectListProps> = ({ objects, onMove }) => {
+export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     const onDragEnd = useCallback(
         (result: DropResult) => {
             if (result.destination?.droppableId !== DROP_ID) {
@@ -100,7 +77,7 @@ export interface ListItemProps {
     object: SceneObject;
 }
 
-const ListItem: React.FunctionComponent<ListItemProps> = ({ index, object }) => {
+const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
     const [selection, setSelection] = useSelection();
     const isSelected = selection.has(object.id);
 

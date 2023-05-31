@@ -11,7 +11,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const SceneObjectsPanel: React.FunctionComponent = () => {
+export const SceneObjectsPanel: React.FC = () => {
     const { dispatch, step } = useScene();
 
     const moveObject = useCallback(

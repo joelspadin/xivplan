@@ -1,30 +1,32 @@
 import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import Konva from 'konva';
-import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
-import icon from '../assets/marker/text.png';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { DeferredTextField } from '../DeferredTextField';
+import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { OpacitySlider } from '../OpacitySlider';
-import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../PanelDragProvider';
-import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { ActivePortal } from '../render/Portals';
-import { SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
-import { ObjectType, SceneObject, TextObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
-import { MoveableObjectProperties, useSpinChanged } from './CommonProperties';
+import icon from '../assets/marker/text.png';
+import { DetailsItem } from '../panel/DetailsItem';
+import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { ActivePortal } from '../render/Portals';
+import { SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
+import { LayerName } from '../render/layers';
+import { ObjectType, SceneObject, TextObject } from '../scene';
+import { usePanelDrag } from '../usePanelDrag';
+import { MoveableObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
-import { useShowHighlight, useShowResizer } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
+import { useShowHighlight, useShowResizer } from './highlight';
+import { useSpinChanged } from './useSpinChanged';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
@@ -72,9 +74,9 @@ registerDropHandler<TextObject>(ObjectType.Text, (object, position) => {
 
 const LINE_HEIGHT = 1.2;
 
-function lineCount(text: string) {
-    return text.split('\n').length;
-}
+// function lineCount(text: string) {
+//     return text.split('\n').length;
+// }
 
 function measureText(
     node: Konva.Text,
@@ -99,12 +101,12 @@ interface TextResizerProps {
 const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
-const TextResizer: React.VFC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
-    const { scene, dispatch } = useScene();
+const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
+    const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
-    const minHeight = useMemo(() => MIN_FONT_SIZE * LINE_HEIGHT * lineCount(object.text), [object.text]);
+    // const minHeight = useMemo(() => MIN_FONT_SIZE * LINE_HEIGHT * lineCount(object.text), [object.text]);
 
     useEffect(() => {
         if (showResizer && trRef.current && nodeRef.current) {
@@ -124,7 +126,7 @@ const TextResizer: React.VFC<TextResizerProps> = ({ object, nodeRef, dragging, c
         };
 
         dispatch({ type: 'update', value: { ...object, ...newProps } });
-    }, [object, minHeight, scene, dispatch, nodeRef]);
+    }, [object, dispatch, nodeRef]);
 
     return (
         <>
@@ -150,7 +152,7 @@ interface TextContainerProps {
     children: (groupProps: GroupProps) => React.ReactElement;
 }
 
-const TextContainer: React.VFC<TextContainerProps> = ({ object, cacheKey, children }) => {
+const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, children }) => {
     const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
@@ -198,7 +200,8 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
 
     useEffect(() => {
         setCacheKey(cacheKey + 1);
-    }, [textRef.current, showHighlight, size, measuredFontSize]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [textRef, showHighlight, size, measuredFontSize]);
 
     const strokeWidth = Math.max(1, measuredFontSize / 8);
 

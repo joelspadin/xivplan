@@ -1,4 +1,4 @@
-import { PREFAB_ICON_SIZE } from '../prefabs/PrefabIcon';
+import { PREFAB_ICON_SIZE } from '../prefabs/PrefabIconStyles';
 
 export const PANEL_COLUMNS = 6;
 export const PANEL_PADDING = 8;

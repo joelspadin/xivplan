@@ -11,6 +11,12 @@
       },
       "isBackground": true,
       "problemMatcher": ["$tsc-watch"]
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "label": "npm: lint",
+      "problemMatcher": ["$eslint-stylish"]
     }
   ]
 }

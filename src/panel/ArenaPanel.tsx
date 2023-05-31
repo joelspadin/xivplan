@@ -19,7 +19,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const ArenaPanel: React.FunctionComponent = () => {
+export const ArenaPanel: React.FC = () => {
     return (
         <Stack className={classNames.panel} tokens={stackTokens}>
             <ArenaShapeEdit />
@@ -38,7 +38,7 @@ interface PresetButtonProps {
     preset: ArenaPreset;
 }
 
-const PresetButton: React.FunctionComponent<PresetButtonProps> = ({ preset }) => {
+const PresetButton: React.FC<PresetButtonProps> = ({ preset }) => {
     const { dispatch } = useScene();
 
     const { name, ...arena } = preset;

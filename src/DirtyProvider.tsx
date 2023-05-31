@@ -1,17 +1,15 @@
 import { DefaultButton, Dialog, DialogFooter, DialogType, IDialogContentProps, PrimaryButton } from '@fluentui/react';
 import { Action } from 'history';
-import React, { Dispatch, PropsWithChildren, createContext, useCallback, useContext, useState } from 'react';
-import { Location, useLocation, useNavigate } from 'react-router-dom';
+import React, { Dispatch, PropsWithChildren, createContext, useCallback, useState } from 'react';
+import { Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
 import { useScene } from './SceneProvider';
 import { Scene } from './scene';
 
-const DirtyContext = createContext(false);
-const SavedStateContext = createContext<Dispatch<Scene>>(() => undefined);
+export const DirtyContext = createContext(false);
+export const SavedStateContext = createContext<Dispatch<Scene>>(() => undefined);
 
-export interface DirtyProviderProps extends PropsWithChildren {}
-
-export const DirtyProvider: React.FC<DirtyProviderProps> = ({ children }) => {
+export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { scene } = useScene();
     const [savedState, setSavedState] = useState<Scene>(scene);
     const isDirty = scene !== savedState;
@@ -26,20 +24,6 @@ export const DirtyProvider: React.FC<DirtyProviderProps> = ({ children }) => {
         </SavedStateContext.Provider>
     );
 };
-
-/**
- * @returns whether the scene has changed since the last save.
- */
-export function useIsDirty(): boolean {
-    return useContext(DirtyContext);
-}
-
-/**
- * @returns a function which sets the scene against which useIsDirty() compares.
- */
-export function useSetSavedState(): Dispatch<Scene> {
-    return useContext(SavedStateContext);
-}
 
 const NAV_LOCK_MESSAGE = 'Are you sure you want to leave? Your unsaved changes will be lost.';
 
@@ -62,24 +46,24 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
     useBeforeUnload(locked, NAV_LOCK_MESSAGE);
 
     const navigate = useNavigate();
-    const currentLocation = useLocation();
+    // const currentLocation = useLocation();
 
     const [showDialog, setShowDialog] = useState(false);
     const [nextLocation, setNextLocation] = useState<NextLocation>();
 
-    // TODO: react-router-dom currently missing support for <Prompt>
-    const onPrompt = useCallback(
-        (location: Location, action: Action) => {
-            if (location.pathname === currentLocation.pathname) {
-                return true;
-            }
+    // TODO: https://github.com/remix-run/react-router/issues/8139
+    // const onPrompt = useCallback(
+    //     (location: Location, action: Action) => {
+    //         if (location.pathname === currentLocation.pathname) {
+    //             return true;
+    //         }
 
-            setNextLocation({ location, action });
-            setShowDialog(true);
-            return false;
-        },
-        [setNextLocation, showDialog],
-    );
+    //         setNextLocation({ location, action });
+    //         setShowDialog(true);
+    //         return false;
+    //     },
+    //     [setNextLocation, showDialog],
+    // );
 
     const onCancelNavigate = useCallback(() => {
         setNextLocation(undefined);
@@ -106,7 +90,7 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
                 navigate(nextLocation.location, { replace: true });
                 break;
         }
-    }, [setShowDialog, navigate]);
+    }, [nextLocation, setShowDialog, navigate]);
 
     return (
         <>

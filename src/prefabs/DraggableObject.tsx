@@ -1,12 +1,13 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import React, { ReactNode, useCallback, useState } from 'react';
-import { getCanvasCoord, getSceneCoord } from '../coord';
-import { CursorGroup } from '../cursor';
-import { EditMode, useEditMode } from '../EditModeProvider';
-import { MoveableObject, UnknownObject } from '../scene';
+import { CursorGroup } from '../CursorGroup';
+import { EditMode } from '../EditModeProvider';
 import { useScene } from '../SceneProvider';
-import { selectSingle, useSelection } from '../SelectionProvider';
+import { getCanvasCoord, getSceneCoord } from '../coord';
+import { MoveableObject, UnknownObject } from '../scene';
+import { selectSingle, useSelection } from '../selection';
+import { useEditMode } from '../useEditMode';
 import { SelectableObject } from './SelectableObject';
 import { TetherTarget } from './TetherTarget';
 
@@ -49,7 +50,7 @@ export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onAct
             const pos = getSceneCoord(scene, e.target.position());
             dispatch({ type: 'update', value: { ...object, ...pos } });
         },
-        [setDragging, onActive, dispatch, object],
+        [scene, setDragging, onActive, dispatch, object],
     );
 
     return (

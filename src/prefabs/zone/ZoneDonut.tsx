@@ -4,13 +4,13 @@ import { Circle, Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     COLOR_SWATCHES,
@@ -20,11 +20,13 @@ import {
 } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { usePanelDrag } from '../../usePanelDrag';
 import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { MoveableObjectProperties } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useSpinChanged } from '../useSpinChanged';
 import { getZoneStyle } from './style';
 
 const NAME = 'Donut';
@@ -32,7 +34,7 @@ const NAME = 'Donut';
 const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
 
-export const ZoneDonut: React.FunctionComponent = () => {
+export const ZoneDonut: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

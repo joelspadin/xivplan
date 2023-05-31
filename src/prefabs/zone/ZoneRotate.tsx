@@ -2,18 +2,19 @@ import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Path } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { CENTER_DOT_RADIUS, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 25;
@@ -21,7 +22,7 @@ const DEFAULT_OPACITY = 50;
 const CLOCKWISE_COLOR = '#fc972b';
 const COUNTER_CLOCKWISE_COLOR = '#0066ff';
 
-export const ZoneRotateClockwise: React.FunctionComponent = () => {
+export const ZoneRotateClockwise: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
@@ -41,7 +42,7 @@ export const ZoneRotateClockwise: React.FunctionComponent = () => {
     );
 };
 
-export const ZoneRotateCounterClockwise: React.FunctionComponent = () => {
+export const ZoneRotateCounterClockwise: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
@@ -108,7 +109,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
             stroke: getShadowColor(object.color),
             strokeWidth: radius / 15,
         } as ShapeConfig;
-    }, [style.stroke, object.opacity, radius, isClockwise]);
+    }, [object.color, radius, isClockwise]);
 
     // Cache so overlapping shapes with opacity appear as one object.
     useEffect(() => {

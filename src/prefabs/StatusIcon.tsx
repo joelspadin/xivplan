@@ -16,7 +16,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const StatusIcon: React.FunctionComponent<ActorStatus> = ({ name, icon }) => {
+export const StatusIcon: React.FC<ActorStatus> = ({ name, icon }) => {
     return (
         <Stack draggable horizontal verticalAlign="center" data-is-focusable={true} className={classNames.row}>
             <Image

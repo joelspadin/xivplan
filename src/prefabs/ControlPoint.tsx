@@ -2,11 +2,12 @@ import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Group, KonvaNodeEvents, Rect } from 'react-konva';
+import { Group } from 'react-konva';
+import { useScene } from '../SceneProvider';
 import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
-import { useStage } from '../render/StageProvider';
-import { useScene } from '../SceneProvider';
+import { useStage } from '../render/stage';
+import { Handle } from './Handle';
 
 export const CONTROL_POINT_BORDER_COLOR = '#00a1ff';
 
@@ -54,13 +55,13 @@ export interface ControlPointManagerPropsBase<T, S> {
 
 export type ControlPointManagerProps<T, S, P> = ControlPointManagerPropsBase<T, S> & P;
 
-const SQUARE_FILL_COLOR = '#ffffff';
-const SQUARE_STROKE_COLOR = CONTROL_POINT_BORDER_COLOR;
-const DIAMOND_FILL_COLOR = '#fafa00';
-const DIAMOND_STROKE_COLOR = '#adad00';
+export const SQUARE_FILL_COLOR = '#ffffff';
+export const SQUARE_STROKE_COLOR = CONTROL_POINT_BORDER_COLOR;
+export const DIAMOND_FILL_COLOR = '#fafa00';
+export const DIAMOND_STROKE_COLOR = '#adad00';
 
-const CONTROL_POINT_SIZE = 10;
-const CONTROL_POINT_OFFSET = { x: CONTROL_POINT_SIZE / 2, y: CONTROL_POINT_SIZE / 2 };
+export const CONTROL_POINT_SIZE = 10;
+export const CONTROL_POINT_OFFSET = { x: CONTROL_POINT_SIZE / 2, y: CONTROL_POINT_SIZE / 2 };
 
 interface TransformState {
     handleId: number;
@@ -76,49 +77,6 @@ function getHandleCenter(transform: TransformState) {
     };
 }
 
-interface HandleProps extends Konva.NodeConfig, KonvaNodeEvents {
-    style: HandleStyle;
-}
-
-const SquareHandle: React.FC<Konva.NodeConfig> = (props) => {
-    return (
-        <Rect
-            {...props}
-            width={CONTROL_POINT_SIZE}
-            height={CONTROL_POINT_SIZE}
-            offset={CONTROL_POINT_OFFSET}
-            fill={SQUARE_FILL_COLOR}
-            stroke={SQUARE_STROKE_COLOR}
-            strokeWidth={1}
-        />
-    );
-};
-
-const DiamondHandle: React.FC<Konva.NodeConfig> = (props) => {
-    return (
-        <Rect
-            {...props}
-            width={CONTROL_POINT_SIZE}
-            height={CONTROL_POINT_SIZE}
-            offset={CONTROL_POINT_OFFSET}
-            fill={DIAMOND_FILL_COLOR}
-            stroke={DIAMOND_STROKE_COLOR}
-            strokeWidth={1}
-            rotation={45}
-        />
-    );
-};
-
-const Handle: React.FC<HandleProps> = ({ style, ...props }) => {
-    switch (style) {
-        case HandleStyle.Square:
-            return <SquareHandle {...props} />;
-
-        case HandleStyle.Diamond:
-            return <DiamondHandle {...props} />;
-    }
-};
-
 function getHandleId(handles: readonly Handle[], index: number): number {
     const activeHandle = handles[index];
     if (activeHandle === undefined) {
@@ -131,8 +89,8 @@ function getHandleId(handles: readonly Handle[], index: number): number {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function createControlPointManager<T extends Vector2d, S, P = {}>(
     config: ControlPointConfig<T, S, P>,
-): React.VFC<ControlPointManagerProps<T, S, P>> {
-    const ControlPointManager: React.VFC<ControlPointManagerProps<T, S, P>> = (props) => {
+): React.FC<ControlPointManagerProps<T, S, P>> {
+    const ControlPointManager: React.FC<ControlPointManagerProps<T, S, P>> = (props) => {
         const { children, onActive, onTransformEnd, object, visible } = props;
 
         const { scene } = useScene();
@@ -163,7 +121,7 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
 
             const { x, y } = groupRef.current.getRelativePointerPosition();
             return { x, y: -y };
-        }, [groupRef, stage]);
+        }, [groupRef]);
 
         const getTransformStart = useCallback(
             (i: number) => {
@@ -230,7 +188,7 @@ export function createControlPointManager<T extends Vector2d, S, P = {}>(
                 window.removeEventListener('mouseup', handleEnd, true);
                 window.removeEventListener('touchend', handleEnd, true);
             };
-        }, [!transform, setTransform, getPointerPos, props]);
+        }, [transform, object, onActive, setTransform, onTransformEnd, getPointerPos, props]);
 
         const setCursor = useCallback(
             (cursor: string) => {

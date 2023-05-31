@@ -1,6 +1,6 @@
 import { classNamesFunction, Theme, useTheme } from '@fluentui/react';
 import { IStyle } from '@fluentui/style-utilities';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { CommandBarProvider } from './CommandBarProvider';
 import { HelpProvider } from './HelpProvider';
@@ -39,7 +39,7 @@ function getStyles(theme: Theme): IAppStyles {
     };
 }
 
-export const BaseProviders: React.FC = ({ children }) => {
+export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
     return (
         <ThemeProvider>
             <HelpProvider>
@@ -49,7 +49,7 @@ export const BaseProviders: React.FC = ({ children }) => {
     );
 };
 
-const Layout: React.FunctionComponent = () => {
+const Layout: React.FC = () => {
     const theme = useTheme();
     const classNames = getClassNames(getStyles, theme);
 
@@ -61,7 +61,7 @@ const Layout: React.FunctionComponent = () => {
     );
 };
 
-export const App: React.FunctionComponent = () => {
+export const App: React.FC = () => {
     return (
         <BaseProviders>
             <Routes>

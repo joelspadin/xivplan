@@ -1,7 +1,7 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import { Scene } from './scene';
 import { useScene } from './SceneProvider';
+import { Scene } from './scene';
 import { degtorad } from './util';
 import { vecAngle } from './vector';
 

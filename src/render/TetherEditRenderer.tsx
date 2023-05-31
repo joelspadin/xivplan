@@ -1,14 +1,16 @@
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Group } from 'react-konva';
+import { EditMode } from '../EditModeProvider';
+import { useScene } from '../SceneProvider';
 import { getPointerPosition } from '../coord';
 import { useDefaultCursor } from '../cursor';
-import { EditMode, useEditMode, useTetherConfig } from '../EditModeProvider';
 import { TetherToCursor, TetherToCursorProps } from '../prefabs/Tethers';
 import { isMoveable } from '../scene';
-import { useScene } from '../SceneProvider';
-import { getSelectedObjects, useSelection } from '../SelectionProvider';
-import { useStage } from './StageProvider';
+import { getSelectedObjects, useSelection } from '../selection';
+import { useEditMode } from '../useEditMode';
+import { useTetherConfig } from '../useTetherConfig';
+import { useStage } from './stage';
 
 export const TetherEditRenderer: React.FC = () => {
     const [editMode] = useEditMode();
@@ -55,7 +57,7 @@ const TetherEditLayer: React.FC = () => {
 
         // TODO: end position should snap to object when cursor is over object.
         return { startObject: start, cursorPos: cursor, tether: tetherConfig.tether };
-    }, [cursor, step, selection]);
+    }, [cursor, step, selection, tetherConfig.tether]);
 
     if (!tetherProps) {
         return null;

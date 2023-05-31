@@ -1,39 +1,32 @@
 import { useId } from '@fluentui/react-hooks';
-import { KeyHandler } from 'hotkeys-js';
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Options, useHotkeys as useHotkeysBase } from 'react-hotkeys-hook';
+import type { HotkeyCallback, RefType } from 'react-hotkeys-hook/dist/types';
+import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
 
-export interface HotkeyInfo {
-    category: string;
-    keys: string;
-    help: string;
-}
-
-const HotkeyHelpContext = createContext<Map<string, HotkeyInfo>>(new Map());
-
-export function useHotkeys<T extends Element>(
+export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
     help: string,
-    callback: KeyHandler,
+    callback: HotkeyCallback,
     deps?: unknown[],
-): React.MutableRefObject<T | null>;
-export function useHotkeys<T extends Element>(
+): React.MutableRefObject<RefType<T>>;
+export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
     help: string,
-    callback: KeyHandler,
+    callback: HotkeyCallback,
     options?: Options,
     deps?: unknown[],
-): React.MutableRefObject<T | null>;
-export function useHotkeys<T extends Element>(
+): React.MutableRefObject<RefType<T>>;
+export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
     help: string,
-    callback: KeyHandler,
+    callback: HotkeyCallback,
     options?: Options | unknown[],
     deps?: unknown[],
-): React.MutableRefObject<T | null> {
+): React.MutableRefObject<RefType<T>> {
     if (Array.isArray(options)) {
         deps = options;
         options = {};
@@ -57,7 +50,7 @@ export function useHotkeyHelp(keys: string, category: string, help: string): voi
         return () => {
             map.delete(id);
         };
-    }, [map, keys, category, help]);
+    }, [map, id, keys, category, help]);
 }
 
 export function useRegisteredHotkeys(): HotkeyInfo[] {

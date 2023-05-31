@@ -2,31 +2,33 @@ import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { WedgeConfig } from 'konva/lib/shapes/Wedge';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Shape, Wedge } from 'react-konva';
-import icon from '../../assets/zone/cone.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
-import { getPointerAngle, snapAngle } from '../../coord';
-import { getResizeCursor } from '../../cursor';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { ActivePortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
-import { ConeZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import icon from '../../assets/zone/cone.png';
+import { getPointerAngle, snapAngle } from '../../coord';
+import { getResizeCursor } from '../../cursor';
+import { DetailsItem } from '../../panel/DetailsItem';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
+import { ActivePortal } from '../../render/Portals';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
+import { ConeZone, ObjectType } from '../../scene';
+import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360, setOrOmit } from '../../util';
 import { distance } from '../../vector';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
+import { MoveableObjectProperties } from '../CommonProperties';
+import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
-import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { MIN_RADIUS } from '../bounds';
+import { useShowHighlight, useShowResizer } from '../highlight';
+import { useSpinChanged } from '../useSpinChanged';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
@@ -39,7 +41,7 @@ const MAX_ANGLE = 360;
 
 const ICON_SIZE = 32;
 
-export const ZoneCone: React.FunctionComponent = () => {
+export const ZoneCone: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

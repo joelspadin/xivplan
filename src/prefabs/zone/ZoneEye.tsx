@@ -3,23 +3,24 @@ import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useEffect, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/eye.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useShowHighlight } from '../highlight';
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
 const DEFAULT_COLOR = '#ff0000';
 
-export const ZoneEye: React.FunctionComponent = () => {
+export const ZoneEye: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
@@ -114,14 +115,14 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: 15,
         } as ShapeConfig;
-    }, [object.color, object.opacity, radius]);
+    }, [object.color]);
     const irisStyle = useMemo(() => {
         return {
             fillRadialGradientColorStops: getIrisGradient(object.color),
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: 15,
         } as ShapeConfig;
-    }, [object.color, object.opacity, radius]);
+    }, [object.color]);
 
     const strokeColor = useMemo(() => getStrokeColor(object.color), [object.color]);
     const highlightColor = useMemo(() => getHighlightColor(object.color), [object.color]);

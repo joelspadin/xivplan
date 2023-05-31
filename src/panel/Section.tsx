@@ -18,7 +18,7 @@ export interface SectionProps extends HTMLAttributes<HTMLElement> {
     title?: string;
 }
 
-export const Section: React.FunctionComponent<SectionProps> = ({ title, children, ...props }) => {
+export const Section: React.FC<SectionProps> = ({ title, children, ...props }) => {
     return (
         <section {...props}>
             <Separator className={classNames.separator}>{title}</Separator>
@@ -27,7 +27,7 @@ export const Section: React.FunctionComponent<SectionProps> = ({ title, children
     );
 };
 
-export const ObjectGroup: React.FunctionComponent<HTMLAttributes<HTMLElement>> = ({ children, ...props }) => {
+export const ObjectGroup: React.FC<HTMLAttributes<HTMLElement>> = ({ children, ...props }) => {
     return (
         <Stack horizontal wrap horizontalAlign="end" tokens={stackTokens} className={classNames.group} {...props}>
             {children}

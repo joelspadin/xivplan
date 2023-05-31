@@ -1,6 +1,6 @@
 import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
 import React, { useEffect } from 'react';
-import { DirtyProvider, useIsDirty } from './DirtyProvider';
+import { DirtyProvider } from './DirtyProvider';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
 import { MainCommandBar } from './MainCommandBar';
@@ -11,6 +11,7 @@ import { SceneRenderer } from './render/SceneRenderer';
 import { SceneProvider, useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
+import { useIsDirty } from './useIsDirty';
 
 interface IContentStyles {
     stage: IStyle;
@@ -18,7 +19,7 @@ interface IContentStyles {
 
 const getClassNames = classNamesFunction<Theme, IContentStyles>();
 
-export const MainPage: React.FunctionComponent = () => {
+export const MainPage: React.FC = () => {
     return (
         <SceneProvider>
             <DirtyProvider>

@@ -1,16 +1,16 @@
 import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo } from 'react';
 import { Circle } from 'react-konva';
-import icon from '../../assets/zone/circle.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
+import { useScene } from '../../SceneProvider';
+import icon from '../../assets/zone/circle.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     COLOR_SWATCHES,
@@ -18,14 +18,16 @@ import {
     DEFAULT_AOE_OPACITY,
     SELECTED_PROPS,
 } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { useScene } from '../../SceneProvider';
+import { usePanelDrag } from '../../usePanelDrag';
 import { setOrOmit } from '../../util';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { useShowHighlight } from '../highlight';
+import { MoveableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { MIN_RADIUS } from '../bounds';
+import { useShowHighlight } from '../highlight';
+import { useSpinChanged } from '../useSpinChanged';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 

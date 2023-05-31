@@ -25,7 +25,7 @@ const classNames = mergeStyleSets({
     } as IStyle,
 });
 
-export const DetailsItem: React.FunctionComponent<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
+export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
     const { dispatch } = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 

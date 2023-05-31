@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Portal } from 'react-konva-utils';
 import { LayerSelector } from './layers';
 
-export interface PortalProps {
+export interface PortalProps extends PropsWithChildren {
     isActive?: boolean;
 }
 
@@ -17,7 +17,7 @@ export const ActivePortal: React.FC<PortalProps> = ({ isActive, children }) => {
     );
 };
 
-export const ForegroundPortal: React.FC = ({ children }) => {
+export const ForegroundPortal: React.FC<PropsWithChildren> = ({ children }) => {
     return (
         <Portal selector={LayerSelector.Foreground} enabled>
             {children}
@@ -25,7 +25,7 @@ export const ForegroundPortal: React.FC = ({ children }) => {
     );
 };
 
-export const ControlsPortal: React.FC = ({ children }) => {
+export const ControlsPortal: React.FC<PropsWithChildren> = ({ children }) => {
     return (
         <Portal selector={LayerSelector.Controls} enabled>
             {children}

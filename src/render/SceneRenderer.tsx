@@ -1,23 +1,25 @@
 import { ThemeContext, useTheme } from '@fluentui/react';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { RefObject, useCallback, useContext, useRef } from 'react';
+import React, { PropsWithChildren, RefObject, useCallback, useContext, useRef } from 'react';
 import { Layer, Stage } from 'react-konva';
-import { getCanvasSize, getSceneCoord } from '../coord';
-import { DefaultCursorProvider } from '../cursor';
+import { DefaultCursorProvider } from '../DefaultCursorState';
+import { getDropAction } from '../DropHandler';
 import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
-import { getDropAction, usePanelDrag } from '../PanelDragProvider';
 import { SceneContext, useCurrentStep, useScene } from '../SceneProvider';
-import { SelectionContext, selectNewObjects, selectNone, useSelection } from '../SelectionProvider';
+import { SelectionContext } from '../SelectionProvider';
+import { getCanvasSize, getSceneCoord } from '../coord';
+import { selectNewObjects, selectNone, useSelection } from '../selection';
+import { usePanelDrag } from '../usePanelDrag';
 import { ArenaRenderer } from './ArenaRenderer';
 import { DrawTarget } from './DrawTarget';
-import { LayerName } from './layers';
 import { ObjectRenderer } from './ObjectRenderer';
-import { StageContext } from './StageProvider';
+import { StageContext } from './StageContext';
 import { TetherEditRenderer } from './TetherEditRenderer';
+import { LayerName } from './layers';
 
-export const SceneRenderer: React.FunctionComponent = () => {
+export const SceneRenderer: React.FC = () => {
     const theme = useTheme();
     const sceneBridge = useContext(SceneContext);
     const selectionBridge = useContext(SelectionContext);
@@ -40,7 +42,7 @@ export const SceneRenderer: React.FunctionComponent = () => {
         [setSelection],
     );
 
-    console.log(scene);
+    // console.log(scene);
 
     return (
         <DropTarget stageRef={stageRef}>
@@ -94,11 +96,11 @@ const SceneContents: React.FC = () => {
     );
 };
 
-interface DropTargetProps {
+interface DropTargetProps extends PropsWithChildren {
     stageRef: RefObject<Konva.Stage>;
 }
 
-const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, children }) => {
+const DropTarget: React.FC<DropTargetProps> = ({ stageRef, children }) => {
     const { scene, dispatch } = useScene();
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
@@ -128,7 +130,7 @@ const DropTarget: React.FunctionComponent<DropTargetProps> = ({ stageRef, childr
                 setSelection(selectNewObjects(scene, 1));
             }
         },
-        [scene, dispatch, setSelection, dragObject, setDragObject],
+        [scene, stageRef, dispatch, setSelection, dragObject, setDragObject],
     );
 
     return (

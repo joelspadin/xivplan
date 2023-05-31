@@ -1,25 +1,26 @@
 import { IStackTokens, Stack } from '@fluentui/react';
 import React, { useCallback, useMemo } from 'react';
 import { Group, Rect } from 'react-konva';
-import lineIcon from '../../assets/zone/line.png';
-import squareIcon from '../../assets/zone/square.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
-import { ObjectType, RectangleZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import lineIcon from '../../assets/zone/line.png';
+import squareIcon from '../../assets/zone/square.png';
+import { DetailsItem } from '../../panel/DetailsItem';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
+import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
+import { ObjectType, RectangleZone } from '../../scene';
+import { usePanelDrag } from '../../usePanelDrag';
 import { setOrOmit } from '../../util';
 import { ResizeableObjectProperties } from '../CommonProperties';
-import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
@@ -27,7 +28,7 @@ const NAME = 'Rectangle';
 
 const DEFAULT_SQUARE_SIZE = 150;
 
-export const ZoneSquare: React.FunctionComponent = () => {
+export const ZoneSquare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
@@ -51,7 +52,7 @@ export const ZoneSquare: React.FunctionComponent = () => {
 const DEFAULT_LINE_WIDTH = 50;
 const DEFAULT_LINE_HEIGHT = 250;
 
-export const ZoneLine: React.FunctionComponent = () => {
+export const ZoneLine: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon

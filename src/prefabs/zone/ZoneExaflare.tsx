@@ -5,13 +5,13 @@ import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/exaflare.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     COLOR_SWATCHES,
@@ -22,11 +22,13 @@ import {
 import { ExaflareZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { usePanelDrag } from '../../usePanelDrag';
 import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { MoveableObjectProperties } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useSpinChanged } from '../useSpinChanged';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -36,7 +38,7 @@ const DEFAULT_RADIUS = 50;
 const DEFAULT_LENGTH = 10;
 const MIN_LENGTH = 2;
 
-export const ZoneExaflare: React.FunctionComponent = () => {
+export const ZoneExaflare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

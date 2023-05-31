@@ -119,6 +119,7 @@ const getStepSelectStyles: IStyleFunction<Theme, IStepSelectStyles> = (theme) =>
 
 export const StepSelect: React.FC = () => {
     const { scene } = useScene();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const steps = useMemo(() => scene.steps.map((_, i) => i), [scene.steps.length]);
 
     const theme = useTheme();

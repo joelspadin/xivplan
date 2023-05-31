@@ -1,22 +1,23 @@
 import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/knockback.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 150;
 
-export const ZoneKnockback: React.FunctionComponent = () => {
+export const ZoneKnockback: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon

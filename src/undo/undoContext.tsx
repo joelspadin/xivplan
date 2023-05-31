@@ -1,7 +1,15 @@
-import React, { ComponentType, createContext, Dispatch, useCallback, useContext, useReducer } from 'react';
+import React, {
+    ComponentType,
+    createContext,
+    Dispatch,
+    PropsWithChildren,
+    useCallback,
+    useContext,
+    useReducer,
+} from 'react';
 import { createUndoReducer, redoAction, resetAction, undoAction, UndoRedoAction, UndoRedoState } from './undoReducer';
 
-export interface UndoProviderProps<S> {
+export interface UndoProviderProps<S> extends PropsWithChildren {
     initialState: S;
 }
 
@@ -12,7 +20,7 @@ export type UndoRedoFunc = {
 
 export type UndoContext<S, A> = [state: UndoRedoState<S>, dispatch: Dispatch<A | UndoRedoAction<S>>];
 
-export function createUndoContext<S, A>(
+export function createUndoContext<S, A extends object>(
     reducer: React.Reducer<S, A>,
     historyLimit = Infinity,
 ): {

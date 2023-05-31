@@ -1,24 +1,20 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
-import { getSceneCoord, rotateCoord } from './coord';
-import { copyObjects, getGroupCenter } from './copy';
-import { EditMode, useEditMode, useTetherConfig } from './EditModeProvider';
+import { EditMode } from './EditModeProvider';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
-import { makeTethers } from './prefabs/Tethers';
-import { useStage } from './render/StageProvider';
-import { isMoveable, isRotateable, MoveableObject, Scene, SceneObject, TetherType } from './scene';
-import { getObjectById, GroupMoveAction, SceneAction, useScene, useSceneUndoRedo } from './SceneProvider';
-import {
-    getSelectedObjects,
-    SceneSelection,
-    selectAll,
-    selectNewObjects,
-    selectNone,
-    useSelection,
-} from './SelectionProvider';
+import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
+import { SceneSelection } from './SelectionProvider';
+import { getSceneCoord, rotateCoord } from './coord';
+import { copyObjects, getGroupCenter } from './copy';
+import { makeTethers } from './prefabs/TetherConfig';
+import { useStage } from './render/stage';
+import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
+import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
+import { useEditMode } from './useEditMode';
+import { useTetherConfig } from './useTetherConfig';
 
 const CATEGORY_GENERAL = '1.General';
 const CATEGORY_HISTORY = '2.History';
@@ -218,10 +214,9 @@ function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rot
 }
 
 const EditActionHandler: React.FC = () => {
-    const [selection, setSelection] = useSelection();
+    const [selection] = useSelection();
     const { scene, step, dispatch } = useScene();
     const [editMode] = useEditMode();
-    const stage = useStage();
 
     const moveCallback = useCallback(
         (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
@@ -237,14 +232,14 @@ const EditActionHandler: React.FC = () => {
                         ...object,
                         x: object.x + (offset?.x ?? 0),
                         y: object.y + (offset?.y ?? 0),
-                    });
+                    } as SceneObject & MoveableObject);
                 }
             });
 
             dispatch({ type: 'update', value });
             e.preventDefault();
         },
-        [stage, scene, dispatch, selection, editMode],
+        [scene, dispatch, selection, editMode],
     );
 
     useHotkeys('up', '', '', moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
@@ -285,7 +280,7 @@ const EditActionHandler: React.FC = () => {
             dispatch({ type: 'update', value });
             e.preventDefault();
         },
-        [stage, scene, step, dispatch, selection, editMode],
+        [scene, step, dispatch, selection, editMode],
     );
 
     useHotkeys('ctrl+g', CATEGORY_EDIT, 'Rotate 90° counter-clockwise', rotateCallback(-90), [rotateCallback]);
@@ -297,7 +292,7 @@ const EditActionHandler: React.FC = () => {
             dispatch({ type, ids: [...selection] });
             e.preventDefault();
         },
-        [dispatch, selection, setSelection],
+        [dispatch, selection],
     );
 
     useHotkeys('pageup', CATEGORY_EDIT, 'Move layer up', orderCallback('moveUp'), [orderCallback]);

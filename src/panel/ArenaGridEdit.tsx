@@ -73,7 +73,7 @@ function didCustomRadialGridChange(grid: CustomRadialGrid, ringsText: string, sp
     );
 }
 
-export const ArenaGridEdit: React.FunctionComponent = () => {
+export const ArenaGridEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const grid = scene.arena.grid;
 

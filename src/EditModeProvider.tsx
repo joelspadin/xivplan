@@ -1,4 +1,4 @@
-import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
+import React, { createContext, Dispatch, PropsWithChildren, SetStateAction, useState } from 'react';
 import { COLOR_YELLOW } from './render/SceneTheme';
 import { TetherType } from './scene';
 
@@ -11,10 +11,6 @@ export enum EditMode {
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];
 
 export const EditModeContext = createContext<EditModeState>([EditMode.Normal, () => undefined]);
-
-export function useEditMode(): EditModeState {
-    return useContext(EditModeContext);
-}
 
 export interface DrawConfig {
     brushSize: number;
@@ -32,10 +28,6 @@ export type DrawConfigState = [DrawConfig, Dispatch<SetStateAction<DrawConfig>>]
 
 export const DrawConfigContext = createContext<DrawConfigState>([DEFAULT_DRAW_CONFIG, () => undefined]);
 
-export function useDrawConfig(): DrawConfigState {
-    return useContext(DrawConfigContext);
-}
-
 export interface TetherConfig {
     tether: TetherType;
 }
@@ -48,11 +40,7 @@ export type TetherConfigState = [TetherConfig, Dispatch<SetStateAction<TetherCon
 
 export const TetherConfigContext = createContext<TetherConfigState>([DEFAULT_TETHER_CONFIG, () => undefined]);
 
-export function useTetherConfig(): TetherConfigState {
-    return useContext(TetherConfigContext);
-}
-
-export const EditModeProvider: React.FC = ({ children }) => {
+export const EditModeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const editMode = useState<EditMode>(EditMode.Normal);
     const drawConfig = useState<DrawConfig>(DEFAULT_DRAW_CONFIG);
     const tetherConfig = useState<TetherConfig>(DEFAULT_TETHER_CONFIG);

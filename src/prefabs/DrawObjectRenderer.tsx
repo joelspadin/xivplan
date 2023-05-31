@@ -1,27 +1,23 @@
 import { Stack } from '@fluentui/react';
-import { LineConfig } from 'konva/lib/shapes/Line';
 import React, { useCallback, useMemo } from 'react';
 import { Group, Line } from 'react-konva';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { OpacitySlider } from '../OpacitySlider';
-import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
-import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
-import { COLOR_SWATCHES, HIGHLIGHT_WIDTH, SELECTED_PROPS } from '../render/SceneTheme';
-import { DrawObject, ObjectType, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { ResizeableObjectProperties, useSpinChanged } from './CommonProperties';
-import { useShowHighlight } from './highlight';
+import { DetailsItem } from '../panel/DetailsItem';
+import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { COLOR_SWATCHES, HIGHLIGHT_WIDTH, SELECTED_PROPS } from '../render/SceneTheme';
+import { LayerName } from '../render/layers';
+import { DrawObject, ObjectType, SceneObject } from '../scene';
+import { ResizeableObjectProperties } from './CommonProperties';
+import { DRAW_LINE_PROPS } from './DrawObjectStyles';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-
-export const DRAW_LINE_PROPS: LineConfig = {
-    lineCap: 'round',
-    tension: 0.25,
-};
+import { useShowHighlight } from './highlight';
+import { useSpinChanged } from './useSpinChanged';
 
 function getLinePoints(object: DrawObject) {
     const points: number[] = [];
@@ -33,7 +29,7 @@ function getLinePoints(object: DrawObject) {
     return points;
 }
 
-const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {
+export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
     const points = useMemo(() => getLinePoints(object), [object]);
 
@@ -63,13 +59,13 @@ const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => 
 
 registerRenderer<DrawObject>(ObjectType.Draw, LayerName.Default, DrawObjectRenderer);
 
-const DrawDetails: React.FC<ListComponentProps<DrawObject>> = ({ object, isNested }) => {
+export const DrawDetails: React.FC<ListComponentProps<DrawObject>> = ({ object, isNested }) => {
     return <DetailsItem name="Drawing" object={object} isNested={isNested} />;
 };
 
 registerListComponent<DrawObject>(ObjectType.Draw, DrawDetails);
 
-const DrawObjectEditControl: React.FC<PropertiesControlProps<DrawObject>> = ({ object }) => {
+export const DrawObjectEditControl: React.FC<PropertiesControlProps<DrawObject>> = ({ object }) => {
     const { dispatch } = useScene();
 
     const onColorChanged = useCallback(

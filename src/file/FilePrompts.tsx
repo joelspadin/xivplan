@@ -7,10 +7,7 @@ import {
     IDialogContentStyles,
     IDialogProps,
     PrimaryButton,
-    Theme,
-    ThemeProvider,
 } from '@fluentui/react';
-import reactModal from '@prezly/react-promise-modal';
 import React from 'react';
 
 const unsavedChangesContent: IDialogContentProps = {
@@ -35,16 +32,6 @@ export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ onCancel, onCo
     );
 };
 
-export async function confirmUnsavedChanges(theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <UnsavedChangesPrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} />
-            </ThemeProvider>
-        );
-    });
-}
-
 const overwriteContent: IDialogContentProps = {
     type: DialogType.normal,
     title: 'Overwrite file',
@@ -61,16 +48,6 @@ export const OverwriteFilePrompt: React.FC<FilePromptProps> = ({ onCancel, onCon
         </Dialog>
     );
 };
-
-export async function confirmOverwriteFile(theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <OverwriteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} />
-            </ThemeProvider>
-        );
-    });
-}
 
 interface DeleteFilePromptProps extends FilePromptProps {
     filename: string;
@@ -100,13 +77,3 @@ export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ onCancel, on
         </Dialog>
     );
 };
-
-export async function confirmDeleteFile(filename: string, theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <DeleteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} filename={filename} />
-            </ThemeProvider>
-        );
-    });
-}

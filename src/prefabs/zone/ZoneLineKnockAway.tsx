@@ -1,24 +1,25 @@
 import Konva from 'konva';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/line_knock_away.png';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
-import { useShowHighlight } from '../highlight';
+import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
+import { useShowHighlight } from '../highlight';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
 const DEFAULT_WIDTH = 80;
 const DEFAULT_HEIGHT = 250;
 
-export const ZoneLineKnockAway: React.FunctionComponent = () => {
+export const ZoneLineKnockAway: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

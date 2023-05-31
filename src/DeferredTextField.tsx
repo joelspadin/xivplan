@@ -23,6 +23,7 @@ export const DeferredTextField: React.FC<DeferredTextFieldProps> = ({ value, onC
         if (text !== value) {
             setText(value);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value, setText]);
 
     const deferOnChange = useCallback<ChangeHandler>((ev, newValue) => setText(newValue), [setText]);

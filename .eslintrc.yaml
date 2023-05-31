@@ -1,31 +1,42 @@
 root: true
-parser: '@typescript-eslint/parser'
-parserOptions:
-  ecmaVersion: 2021
-  sourceType: module
 env:
   browser: true
+  es2020: true
 
-plugins:
-  - '@typescript-eslint'
 extends:
   - 'eslint:recommended'
   - 'plugin:@typescript-eslint/recommended'
   - 'plugin:react/recommended'
-  - 'prettier'
+  - 'plugin:react-hooks/recommended'
+
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: latest
+  sourceType: module
+
+plugins:
+  - react
+  - react-refresh
+
 rules:
   '@typescript-eslint/naming-convention':
     - warn
     - selector: function
       format: [PascalCase, camelCase]
   '@typescript-eslint/semi': warn
+  react-refresh/only-export-components: warn
   curly: warn
   eqeqeq: warn
   no-empty-pattern: warn
   no-throw-literal: warn
   semi: 'off'
+
 overrides:
   - files: ['*.ts', '*.tsx']
     rules:
       no-undef: 'off'
       react/prop-types: 'off'
+
+settings:
+  react:
+    version: detect

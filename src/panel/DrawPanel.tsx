@@ -4,12 +4,14 @@ import React, { useCallback } from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { EditMode, useDrawConfig, useEditMode } from '../EditModeProvider';
+import { EditMode } from '../EditModeProvider';
 import { useHotkeys } from '../HotkeyHelpProvider';
 import { OpacitySlider } from '../OpacitySlider';
-import { useSpinChanged } from '../prefabs/CommonProperties';
 import '../prefabs/DrawObjectRenderer';
+import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { COLOR_SWATCHES } from '../render/SceneTheme';
+import { useDrawConfig } from '../useDrawConfig';
+import { useEditMode } from '../useEditMode';
 import { PANEL_PADDING } from './PanelStyles';
 
 const classNames = mergeStyleSets({

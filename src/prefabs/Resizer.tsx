@@ -2,9 +2,9 @@ import Konva from 'konva';
 import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useCallback, useEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
+import { useScene } from '../SceneProvider';
 import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
-import { useScene } from '../SceneProvider';
 import { clamp } from '../util';
 import { useShowResizer } from './highlight';
 
@@ -35,7 +35,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
     transformerProps,
     children,
 }) => {
-    const { scene, dispatch } = useScene();
+    const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -72,7 +72,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
         node.clearCache();
 
         dispatch({ type: 'update', value: { ...object, ...newProps } as SceneObject });
-    }, [object, minWidthRequired, minHeightRequired, scene, dispatch, nodeRef]);
+    }, [object, minWidthRequired, minHeightRequired, dispatch, nodeRef]);
 
     const boundBoxFunc = useCallback(
         (oldBox: Box, newBox: Box) => {

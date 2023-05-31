@@ -5,13 +5,13 @@ import { Circle, Group, Rect } from 'react-konva';
 import icon from '../../assets/zone/starburst.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     COLOR_SWATCHES,
@@ -22,10 +22,12 @@ import {
 import { ObjectType, StarburstZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { usePanelDrag } from '../../usePanelDrag';
 import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
+import { MoveableObjectProperties } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { useSpinChanged } from '../useSpinChanged';
 import { StarburstControlContainer } from './StarburstContainer';
 import { getZoneStyle } from './style';
 
@@ -38,7 +40,7 @@ const MIN_SPOKE_WIDTH = 10;
 const MIN_SPOKE_COUNT = 3;
 const MAX_SPOKE_COUNT = 16;
 
-export const ZoneStarburst: React.FunctionComponent = () => {
+export const ZoneStarburst: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon

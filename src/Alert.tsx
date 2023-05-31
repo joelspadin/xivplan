@@ -1,7 +1,7 @@
 import { classNamesFunction, Icon, IIconProps, IStyle, IStyleFunction, Text, Theme, useTheme } from '@fluentui/react';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-export interface INoticeProps {
+export interface INoticeProps extends PropsWithChildren {
     title?: string;
     iconProps?: IIconProps;
     className?: string;
@@ -14,7 +14,7 @@ interface INoticeStyles {
     message: IStyle;
 }
 
-export const Alert: React.FunctionComponent<INoticeProps> = ({ children, className, iconProps, title }) => {
+export const Alert: React.FC<INoticeProps> = ({ children, className, iconProps, title }) => {
     const theme = useTheme();
     const classNames = getClassNames(getStyles, theme);
 

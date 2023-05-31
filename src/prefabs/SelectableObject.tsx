@@ -1,11 +1,12 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { useCallback } from 'react';
+import React, { PropsWithChildren, useCallback } from 'react';
 import { Group } from 'react-konva';
-import { EditMode, useEditMode } from '../EditModeProvider';
+import { EditMode } from '../EditModeProvider';
 import { SceneObject } from '../scene';
-import { addSelection, selectSingle, toggleSelection, useSelection } from '../SelectionProvider';
+import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
+import { useEditMode } from '../useEditMode';
 
-export interface SelectableObjectProps {
+export interface SelectableObjectProps extends PropsWithChildren {
     object: SceneObject;
 }
 

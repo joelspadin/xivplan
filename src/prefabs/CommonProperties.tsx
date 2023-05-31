@@ -1,10 +1,11 @@
 import { IconButton, IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { DependencyList, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { DeferredTextField } from '../DeferredTextField';
 import { ImageObject, MoveableObject, ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { setOrOmit } from '../util';
+import { useSpinChanged } from './useSpinChanged';
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
@@ -18,24 +19,6 @@ const classNames = mergeStyleSets({
 
 export interface ObjectPropertiesProps<T> {
     object: T & UnknownObject;
-}
-
-export function useSpinChanged(
-    callback: (value: number) => void,
-    deps: DependencyList,
-): (event: React.SyntheticEvent<HTMLElement>, newValue?: string) => void {
-    return useCallback((ev, newValue) => {
-        if (newValue === undefined) {
-            return;
-        }
-
-        const value = parseInt(newValue);
-        if (isNaN(value)) {
-            return;
-        }
-
-        callback(value);
-    }, deps);
 }
 
 export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableObject>> = ({ object }) => {

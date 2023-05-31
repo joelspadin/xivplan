@@ -21,15 +21,15 @@ import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { getCanvasCoord } from '../coord';
-import { CursorGroup } from '../cursor';
-import { EditMode, useEditMode, useTetherConfig } from '../EditModeProvider';
+import { CursorGroup } from '../CursorGroup';
+import { EditMode } from '../EditModeProvider';
 import { OpacitySlider } from '../OpacitySlider';
-import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesPanel';
+import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
 import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRenderer';
+import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
-import { COLOR_FUSCHIA, COLOR_GREEN, COLOR_ORANGE, COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
+import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import {
     FakeCursorObject,
     isEnemy,
@@ -45,46 +45,17 @@ import {
     TetherType,
 } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
-import { selectNone, useIsSelected, useSelection } from '../SelectionProvider';
-import { combinations } from '../util';
+import { selectNone, useIsSelected, useSelection } from '../selection';
+import { useEditMode } from '../useEditMode';
+import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
-import { useSpinChanged } from './CommonProperties';
+import { MIN_TETHER_WIDTH } from './bounds';
 import { MagnetMinus, MagnetPlus } from './Magnets';
 import { PrefabIcon } from './PrefabIcon';
 import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
-
-const DEFAULT_WIDTH = 6;
-const DEFAULT_OPACITY = 80;
-
-const MIN_WIDTH = 2;
-
-interface TetherConfig {
-    name: string;
-    icon: string;
-    color: string;
-}
-
-const CONFIGS: Record<TetherType, TetherConfig> = {
-    [TetherType.Line]: { name: 'Tether', icon: 'tether.png', color: COLOR_ORANGE },
-    [TetherType.Close]: { name: 'Tether (stay together)', icon: 'tether_close.png', color: COLOR_GREEN },
-    [TetherType.Far]: { name: 'Tether (stay apart)', icon: 'tether_far.png', color: COLOR_FUSCHIA },
-    [TetherType.MinusMinus]: { name: 'Tether (−/−)', icon: 'tether_minus_minus.png', color: COLOR_ORANGE },
-    [TetherType.PlusMinus]: { name: 'Tether (+/−)', icon: 'tether_plus_minus.png', color: COLOR_ORANGE },
-    [TetherType.PlusPlus]: { name: 'Tether (+/+)', icon: 'tether_plus_plus.png', color: COLOR_ORANGE },
-};
-
-function getIconUrl(icon: string) {
-    return new URL(`../assets/tether/${icon}`, import.meta.url).toString();
-}
-
-function getName(tether: TetherType) {
-    return CONFIGS[tether].name;
-}
-
-function getIcon(tether: TetherType) {
-    return getIconUrl(CONFIGS[tether].icon);
-}
+import { getTetherIcon, getTetherName, makeTether } from './TetherConfig';
+import { useSpinChanged } from './useSpinChanged';
 
 interface TetherButtonProps {
     tether: TetherType;
@@ -107,13 +78,10 @@ const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
         }
     }, [checked, tether, setEditMode, setSelection, setTetherConfig]);
 
-    return <PrefabToggle name={getName(tether)} icon={getIcon(tether)} onClick={onClick} checked={checked} />;
+    return (
+        <PrefabToggle name={getTetherName(tether)} icon={getTetherIcon(tether)} onClick={onClick} checked={checked} />
+    );
 };
-
-function makeIcon(type: TetherType) {
-    // eslint-disable-next-line react/display-name
-    return () => <TetherButton tether={type} />;
-}
 
 const INVALID_START_POS: Vector2d = { x: -20, y: 0 };
 const INVALID_END_POS: Vector2d = { x: 20, y: 0 };
@@ -480,8 +448,8 @@ const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
             <Stack.Item>
                 <PrefabIcon
-                    icon={getIcon(object.tether)}
-                    name={getName(object.tether)}
+                    icon={getTetherIcon(object.tether)}
+                    name={getTetherName(object.tether)}
                     filter={filter}
                     shouldFadeIn={false}
                 />
@@ -505,10 +473,10 @@ const tetherOptions: IChoiceGroupOption[] = [
     TetherType.PlusMinus,
     TetherType.PlusPlus,
 ].map((tether) => {
-    const icon = getIcon(tether);
+    const icon = getTetherIcon(tether);
     return {
         key: tether,
-        text: getName(tether),
+        text: getTetherName(tether),
         imageSrc: icon,
         selectedImageSrc: icon,
     };
@@ -558,7 +526,7 @@ const TetherEditControl: React.FC<PropertiesControlProps<Tether>> = ({ object })
                 labelPosition={Position.top}
                 value={object.width.toString()}
                 onChange={onWidthChanged}
-                min={MIN_WIDTH}
+                min={MIN_TETHER_WIDTH}
                 step={2}
             />
         </Stack>
@@ -567,33 +535,9 @@ const TetherEditControl: React.FC<PropertiesControlProps<Tether>> = ({ object })
 
 registerPropertiesControl<Tether>(ObjectType.Tether, TetherEditControl);
 
-export const TetherLine = makeIcon(TetherType.Line);
-export const TetherClose = makeIcon(TetherType.Close);
-export const TetherFar = makeIcon(TetherType.Far);
-export const TetherMinusMinus = makeIcon(TetherType.MinusMinus);
-export const TetherPlusMinus = makeIcon(TetherType.PlusMinus);
-export const TetherPlusPlus = makeIcon(TetherType.PlusPlus);
-
-export function makeTether(startId: number, endId: number, tether = TetherType.Line): Omit<Tether, 'id'> {
-    return {
-        type: ObjectType.Tether,
-        tether,
-        startId,
-        endId,
-        width: DEFAULT_WIDTH,
-        color: CONFIGS[tether].color,
-        opacity: DEFAULT_OPACITY,
-    };
-}
-
-export function makeTethers(objects: readonly SceneObject[], tether = TetherType.Line): Omit<Tether, 'id'>[] {
-    const result: Omit<Tether, 'id'>[] = [];
-
-    for (const [start, end] of combinations(objects)) {
-        if (isMoveable(start) && isMoveable(end)) {
-            result.push(makeTether(start.id, end.id, tether));
-        }
-    }
-
-    return result;
-}
+export const TetherLine: React.FC = () => <TetherButton tether={TetherType.Line} />;
+export const TetherClose: React.FC = () => <TetherButton tether={TetherType.Close} />;
+export const TetherFar: React.FC = () => <TetherButton tether={TetherType.Far} />;
+export const TetherMinusMinus: React.FC = () => <TetherButton tether={TetherType.MinusMinus} />;
+export const TetherPlusMinus: React.FC = () => <TetherButton tether={TetherType.PlusMinus} />;
+export const TetherPlusPlus: React.FC = () => <TetherButton tether={TetherType.PlusPlus} />;

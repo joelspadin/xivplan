@@ -81,7 +81,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...pro
         (event: React.SyntheticEvent<HTMLElement>, newValue?: string) => {
             props.onChange?.(event, getChangeValue(newValue));
         },
-        [props.onChange],
+        [props],
     );
 
     return (

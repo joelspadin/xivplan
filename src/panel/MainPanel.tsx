@@ -1,6 +1,7 @@
 import { IPivotStyles, IStyle, mergeStyleSets, Pivot, PivotItem } from '@fluentui/react';
 import React, { useCallback } from 'react';
-import { EditMode, useEditMode } from '../EditModeProvider';
+import { EditMode } from '../EditModeProvider';
+import { useEditMode } from '../useEditMode';
 import { ArenaPanel } from './ArenaPanel';
 import { DrawPanel } from './DrawPanel';
 import { PANEL_WIDTH } from './PanelStyles';
@@ -29,7 +30,7 @@ const pivotStyles: Partial<IPivotStyles> = {
     },
 };
 
-export const MainPanel: React.FunctionComponent = () => {
+export const MainPanel: React.FC = () => {
     const [, setEditMode] = useEditMode();
 
     const onTabChanged = useCallback(

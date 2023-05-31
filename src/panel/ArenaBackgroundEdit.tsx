@@ -2,7 +2,7 @@ import React from 'react';
 import { DeferredTextField } from '../DeferredTextField';
 import { useScene } from '../SceneProvider';
 
-export const ArenaBackgroundEdit: React.FunctionComponent = () => {
+export const ArenaBackgroundEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     return (
         <DeferredTextField

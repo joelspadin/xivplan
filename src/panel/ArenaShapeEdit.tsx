@@ -1,7 +1,7 @@
 import { IChoiceGroupOption, IStackTokens, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import React from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { useSpinChanged } from '../prefabs/CommonProperties';
+import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { ArenaShape } from '../scene';
 import { useScene } from '../SceneProvider';
 
@@ -21,7 +21,7 @@ const arenaShapes: IChoiceGroupOption[] = [
     { key: ArenaShape.Rectangle, text: 'Rectangle', iconProps: { iconName: 'Checkbox' } },
 ];
 
-export const ArenaShapeEdit: React.FunctionComponent = () => {
+export const ArenaShapeEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 

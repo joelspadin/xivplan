@@ -1,7 +1,6 @@
 import { IButtonProps, IButtonStyles, IconButton, useTheme } from '@fluentui/react';
 import React, { useMemo } from 'react';
-
-export const PREFAB_ICON_SIZE = 32;
+import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
 export interface PrefabToggleProps extends IButtonProps {
     icon: string;
@@ -9,7 +8,7 @@ export interface PrefabToggleProps extends IButtonProps {
     checked?: boolean;
 }
 
-export const PrefabToggle: React.FunctionComponent<PrefabToggleProps> = ({ icon, name, checked, ...props }) => {
+export const PrefabToggle: React.FC<PrefabToggleProps> = ({ icon, name, checked, ...props }) => {
     const theme = useTheme();
 
     const buttonStyles = useMemo<IButtonStyles>(() => {

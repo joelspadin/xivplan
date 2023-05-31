@@ -1,7 +1,6 @@
 import { IImageProps, IImageStyles, Image } from '@fluentui/react';
 import React from 'react';
-
-export const PREFAB_ICON_SIZE = 32;
+import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
 const draggableProps: Partial<IImageStyles> = {
     root: {
@@ -16,7 +15,7 @@ export interface PrefabIconProps extends IImageProps {
     size?: number;
 }
 
-export const PrefabIcon: React.FunctionComponent<PrefabIconProps> = ({ icon, name, filter, size, ...props }) => {
+export const PrefabIcon: React.FC<PrefabIconProps> = ({ icon, name, filter, size, ...props }) => {
     return (
         <Image
             {...props}

@@ -24,12 +24,7 @@ export interface IExternalLinkProps extends ILinkProps {
 /**
  * Open a link in a new tab/window.
  */
-export const ExternalLink: React.FunctionComponent<IExternalLinkProps> = ({
-    children,
-    noIcon,
-    className,
-    ...props
-}) => {
+export const ExternalLink: React.FC<IExternalLinkProps> = ({ children, noIcon, className, ...props }) => {
     const classNames = getClassNames();
     className = `${className ?? ''} ${noIcon ? '' : classNames.link}`;
 

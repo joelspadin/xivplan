@@ -1,13 +1,15 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { useCallback } from 'react';
-import { CursorGroup } from '../cursor';
-import { EditMode, TetherConfig, useEditMode, useTetherConfig } from '../EditModeProvider';
-import { isMoveable, MoveableObject, Tether, UnknownObject } from '../scene';
+import React, { PropsWithChildren, useCallback } from 'react';
+import { CursorGroup } from '../CursorGroup';
+import { EditMode, TetherConfig } from '../EditModeProvider';
 import { useScene } from '../SceneProvider';
-import { getSelectedObjects, selectNone, selectSingle, useSelection } from '../SelectionProvider';
-import { makeTether } from './Tethers';
+import { MoveableObject, Tether, UnknownObject, isMoveable } from '../scene';
+import { getSelectedObjects, selectNone, selectSingle, useSelection } from '../selection';
+import { useEditMode } from '../useEditMode';
+import { useTetherConfig } from '../useTetherConfig';
+import { makeTether } from './TetherConfig';
 
-export interface TetherTargetProps {
+export interface TetherTargetProps extends PropsWithChildren {
     object: MoveableObject & UnknownObject;
 }
 

@@ -29,7 +29,10 @@ export type UndoRedoAction<S> = UndoAction | RedoAction | ResetAction<S>;
 
 export type UndoRedoReducer<S, A> = React.Reducer<UndoRedoState<S>, A | UndoRedoAction<S>>;
 
-export function createUndoReducer<S, A>(reducer: React.Reducer<S, A>, historyLimit = Infinity): UndoRedoReducer<S, A> {
+export function createUndoReducer<S, A extends object>(
+    reducer: React.Reducer<S, A>,
+    historyLimit = Infinity,
+): UndoRedoReducer<S, A | UndoRedoAction<S>> {
     return (state, action) => {
         if ('type' in action) {
             if (action.type === ActionTypes.Undo) {

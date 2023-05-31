@@ -1,21 +1,21 @@
 import React, { useCallback, useState } from 'react';
 import { Circle, Line } from 'react-konva';
+import { useScene } from '../SceneProvider';
 import { getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { CENTER_DOT_RADIUS } from '../render/SceneTheme';
-import { InnerRadiusObject, isRotateable, RadiusObject, SceneObject, UnknownObject } from '../scene';
-import { useScene } from '../SceneProvider';
+import { InnerRadiusObject, RadiusObject, SceneObject, UnknownObject, isRotateable } from '../scene';
 import { distance } from '../vector';
-import { MIN_RADIUS } from './bounds';
 import {
     CONTROL_POINT_BORDER_COLOR,
-    createControlPointManager,
     Handle,
     HandleFuncProps,
     HandleStyle,
+    createControlPointManager,
 } from './ControlPoint';
 import { DraggableObject } from './DraggableObject';
+import { MIN_RADIUS } from './bounds';
 import { useShowResizer } from './highlight';
 
 interface ControlPointProps {

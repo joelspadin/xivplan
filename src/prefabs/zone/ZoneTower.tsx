@@ -2,25 +2,27 @@ import { Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useCallback, useMemo } from 'react';
 import { Circle } from 'react-konva';
-import icon from '../../assets/zone/meteor_tower.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { OpacitySlider } from '../../OpacitySlider';
-import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
-import { CENTER_DOT_RADIUS, COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
-import { ObjectType, TowerZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { useShowHighlight } from '../highlight';
+import icon from '../../assets/zone/meteor_tower.png';
+import { DetailsItem } from '../../panel/DetailsItem';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
+import { CENTER_DOT_RADIUS, COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
+import { ObjectType, TowerZone } from '../../scene';
+import { usePanelDrag } from '../../usePanelDrag';
+import { MoveableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { MIN_RADIUS } from '../bounds';
+import { useShowHighlight } from '../highlight';
+import { useSpinChanged } from '../useSpinChanged';
 import { getZoneStyle } from './style';
 
 const DEFAULT_COLOR = '#bae3ff';
@@ -29,7 +31,7 @@ const DEFAULT_COUNT = 1;
 const MIN_COUNT = 1;
 const MAX_COUNT = 4;
 
-export const ZoneTower: React.FunctionComponent = () => {
+export const ZoneTower: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

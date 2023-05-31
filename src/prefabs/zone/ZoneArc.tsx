@@ -2,18 +2,19 @@ import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { ArcConfig } from 'konva/lib/shapes/Arc';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Arc, Circle, Group, Shape } from 'react-konva';
-import icon from '../../assets/zone/arc.png';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { OpacitySlider } from '../../OpacitySlider';
+import { useScene } from '../../SceneProvider';
+import { SpinButtonUnits } from '../../SpinButtonUnits';
+import icon from '../../assets/zone/arc.png';
 import { getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
-import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../../panel/ObjectList';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesPanel';
-import { getDragOffset, registerDropHandler, usePanelDrag } from '../../PanelDragProvider';
-import { LayerName } from '../../render/layers';
-import { registerRenderer, RendererProps } from '../../render/ObjectRenderer';
+import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import {
     CENTER_DOT_RADIUS,
@@ -22,17 +23,18 @@ import {
     DEFAULT_AOE_OPACITY,
     SELECTED_PROPS,
 } from '../../render/SceneTheme';
+import { LayerName } from '../../render/layers';
 import { ArcZone, ObjectType } from '../../scene';
-import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
+import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360, setOrOmit } from '../../util';
-import { distance, getIntersectionDistance, vecAtAngle, vecNormal, VEC_ZERO } from '../../vector';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties, useSpinChanged } from '../CommonProperties';
-import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
+import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
+import { MoveableObjectProperties } from '../CommonProperties';
+import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
-import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
+import { MIN_RADIUS } from '../bounds';
+import { useShowHighlight, useShowResizer } from '../highlight';
+import { useSpinChanged } from '../useSpinChanged';
 import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
@@ -46,7 +48,7 @@ const MAX_ANGLE = 360;
 
 const ICON_SIZE = 32;
 
-export const ZoneArc: React.FunctionComponent = () => {
+export const ZoneArc: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
     return (

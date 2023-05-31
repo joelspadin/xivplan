@@ -26,10 +26,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-async';
 import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
-import { useIsDirty, useSetSavedState } from '../DirtyProvider';
 import { openFile, saveFile } from '../file';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
-import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './FilePrompts';
+import { useIsDirty, useSetSavedState } from '../useIsDirty';
+import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
 import { deleteFileLocal, FileEntry, listLocalFiles } from './localFile';
 
 const classNames = mergeStyleSets({
@@ -183,7 +183,7 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
         loadScene(scene, source);
         setSavedState(scene);
         onDismiss?.();
-    }, [selection, files, isDirty, theme, onDismiss, useSetSavedState]);
+    }, [selection, files, isDirty, theme, loadScene, setSavedState, onDismiss]);
 
     if (isPending) {
         return <Spinner />;

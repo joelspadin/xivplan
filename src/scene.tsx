@@ -405,7 +405,7 @@ export const DEFAULT_CUSTOM_RECT_GRID: CustomRectangularGrid = {
 export const DEFAULT_CUSTOM_RADIAL_GRID: CustomRadialGrid = {
     type: GridType.CustomRadial,
     rings: [150, 450],
-    spokes: [0, 90, 180, 270],
+    spokes: [0, 45, 90, 135, 180, 215, 270, 315],
 };
 
 export const DEFAULT_ARENA_PADDING = 120;

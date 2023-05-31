@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
+import { PropsWithChildren } from 'react';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -149,7 +151,7 @@ const HISTORY_SIZE = 1000;
 
 const { UndoProvider, Context, usePresent, useUndoRedo, useReset } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
-export const SceneProvider: React.FunctionComponent = ({ children }) => {
+export const SceneProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return <UndoProvider initialState={INITIAL_STATE}>{children}</UndoProvider>;
 };
 
@@ -524,4 +526,6 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
         case 'update':
             return updateObjects(state, asArray(action.value));
     }
+
+    return state;
 }

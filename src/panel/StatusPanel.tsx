@@ -56,7 +56,7 @@ interface Page {
     Results: StatusItem[];
 }
 
-export const StatusPanel: React.FunctionComponent = () => {
+export const StatusPanel: React.FC = () => {
     return (
         <Pivot>
             <PivotItem headerText="Buffs/debuffs">
@@ -100,7 +100,7 @@ const fetchStatuses = async (search: string, signal: AbortSignal): Promise<Statu
     return items;
 };
 
-const StatusSearch: React.FunctionComponent = () => {
+const StatusSearch: React.FC = () => {
     const [controller, setController] = useState<AbortController>();
     const [filter, _setFilter] = useState('');
     const [debouncedFilter, setDebouncedFilter] = useState('');
@@ -151,7 +151,7 @@ const StatusSearch: React.FunctionComponent = () => {
     );
 };
 
-const SpecialStatus: React.FunctionComponent = () => {
+const SpecialStatus: React.FC = () => {
     return (
         <div className={classNames.panel}>
             <Section title="Eden">
