@@ -14,10 +14,10 @@ I do almost all content in this game without guides. You will probably see new r
 You may discuss the following content:
 
 * ✅ All content from Shadowbringers and earlier
-* ✅ Patch 6.0-6.3 extreme trials
+* ✅ Patch 6.0-6.4 extreme trials
 * ✅ Aglaia and Euphrosyne
-* ✅ Asphodelos and Abyssos normal
-* ✅ Savage 1st-8th circles
+* ✅ Normal raids
+* ✅ Savage raids 1st-8th circles
 * ✅ All ultimates (if I do these at all, I don't do them blind)
 
 Please do not discuss the following content:
