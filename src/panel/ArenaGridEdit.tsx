@@ -2,17 +2,19 @@ import { DefaultButton, IChoiceGroupOption, IStackTokens, Position, SpinButton, 
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
+import { useScene } from '../SceneProvider';
+import { SpinButtonUnits } from '../SpinButtonUnits';
 import {
-    CustomGrid,
-    DEFAULT_CUSTOM_GRID,
+    CustomRadialGrid,
+    CustomRectangularGrid,
+    DEFAULT_CUSTOM_RADIAL_GRID,
+    DEFAULT_CUSTOM_RECT_GRID,
     DEFAULT_RADIAL_GRID,
     DEFAULT_RECT_GRID,
     Grid,
     GridType,
     NO_GRID,
 } from '../scene';
-import { useScene } from '../SceneProvider';
-import { SpinButtonUnits } from '../SpinButtonUnits';
 
 const stackTokens: IStackTokens = {
     childrenGap: 10,
@@ -22,18 +24,28 @@ const gridShapes: IChoiceGroupOption[] = [
     { key: GridType.None, text: 'None', iconProps: { iconName: 'BorderDot' } },
     // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
     { key: GridType.Radial, text: 'Radial', iconProps: { iconName: 'CircleRing' } },
+    // TODO: use DynamicList whenever icon font gets fixed.
+    { key: GridType.CustomRadial, text: 'Custom Radial', iconProps: { iconName: 'ThreeQuarterCircle' } },
     // TODO: use BorderAll whenever icon font gets fixed.
     { key: GridType.Rectangular, text: 'Square', iconProps: { iconName: 'GridViewSmall' } },
     // TODO: use DynamicList whenever icon font gets fixed.
-    { key: GridType.Custom, text: 'Custom', iconProps: { iconName: 'TextField' } },
+    { key: GridType.CustomRectangular, text: 'Custom Square', iconProps: { iconName: 'FiveTileGrid' } },
 ];
 
 function formatCustomGridRows(grid: Grid) {
-    return grid.type === GridType.Custom ? grid.rows.join(', ') : '';
+    return grid.type === GridType.CustomRectangular ? grid.rows.join(', ') : '';
 }
 
 function formatCustomGridCols(grid: Grid) {
-    return grid.type === GridType.Custom ? grid.columns.join(', ') : '';
+    return grid.type === GridType.CustomRectangular ? grid.columns.join(', ') : '';
+}
+
+function formatCustomGridRings(grid: Grid) {
+    return grid.type === GridType.CustomRadial ? grid.rings.join(', ') : '';
+}
+
+function formatCustomGridSpokes(grid: Grid) {
+    return grid.type === GridType.CustomRadial ? grid.spokes.join(', ') : '';
 }
 
 function parseCustomGrid(text?: string): number[] {
@@ -47,10 +59,17 @@ function parseCustomGrid(text?: string): number[] {
         .filter((x) => !isNaN(x));
 }
 
-function didCustomGridChange(grid: CustomGrid, rowsText: string, colsText: string) {
+function didCustomRectGridChange(grid: CustomRectangularGrid, rowsText: string, colsText: string) {
     return (
         JSON.stringify(grid.rows) !== JSON.stringify(parseCustomGrid(rowsText)) ||
         JSON.stringify(grid.columns) !== JSON.stringify(parseCustomGrid(colsText))
+    );
+}
+
+function didCustomRadialGridChange(grid: CustomRadialGrid, ringsText: string, spokesText: string) {
+    return (
+        JSON.stringify(grid.rings) !== JSON.stringify(parseCustomGrid(ringsText)) ||
+        JSON.stringify(grid.spokes) !== JSON.stringify(parseCustomGrid(spokesText))
     );
 }
 
@@ -65,15 +84,39 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
         [dispatch],
     );
 
+    // TODO: refactor custom grids into their own components
     const [customRows, setCustomRows] = useState(formatCustomGridRows(grid));
     const [customCols, setCustomCols] = useState(formatCustomGridCols(grid));
+    const [customRings, setCustomRings] = useState(formatCustomGridRings(grid));
+    const [customSpokes, setCustomSpokes] = useState(formatCustomGridSpokes(grid));
 
     useEffect(() => {
-        if (grid.type === GridType.Custom && didCustomGridChange(grid, customRows, customCols)) {
-            setCustomRows(formatCustomGridRows(grid));
-            setCustomCols(formatCustomGridCols(grid));
+        switch (grid.type) {
+            case GridType.CustomRectangular:
+                if (didCustomRectGridChange(grid, customRows, customCols)) {
+                    setCustomRows(formatCustomGridRows(grid));
+                    setCustomCols(formatCustomGridCols(grid));
+                }
+                break;
+
+            case GridType.CustomRadial:
+                if (didCustomRadialGridChange(grid, customRings, customSpokes)) {
+                    setCustomRings(formatCustomGridRings(grid));
+                    setCustomSpokes(formatCustomGridSpokes(grid));
+                }
+                break;
         }
-    }, [grid, customRows, customCols, setCustomRows, setCustomCols]);
+    }, [
+        grid,
+        customRows,
+        customCols,
+        setCustomRows,
+        setCustomCols,
+        customRings,
+        customSpokes,
+        setCustomRings,
+        setCustomSpokes,
+    ]);
 
     const onTypeChange = useCallback(
         (option?: GridType) => {
@@ -90,14 +133,19 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                     setGrid(DEFAULT_RADIAL_GRID);
                     return;
 
-                case GridType.Custom:
-                    setGrid(DEFAULT_CUSTOM_GRID);
-                    setCustomRows(DEFAULT_CUSTOM_GRID.rows.join(', '));
-                    setCustomCols(DEFAULT_CUSTOM_GRID.columns.join(', '));
+                case GridType.CustomRectangular:
+                    setGrid(DEFAULT_CUSTOM_RECT_GRID);
+                    setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(', '));
+                    setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(', '));
                     return;
+
+                case GridType.CustomRadial:
+                    setGrid(DEFAULT_CUSTOM_RADIAL_GRID);
+                    setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(', '));
+                    setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(', '));
             }
         },
-        [setGrid],
+        [setGrid, setCustomRows, setCustomCols, setCustomRings, setCustomSpokes],
     );
 
     return (
@@ -173,7 +221,7 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                     </Stack>
                 </>
             )}
-            {grid.type === GridType.Custom && (
+            {grid.type === GridType.CustomRectangular && (
                 <>
                     <DeferredTextField
                         label="Row stops"
@@ -189,6 +237,26 @@ export const ArenaGridEdit: React.FunctionComponent = () => {
                         onChange={(newValue) => {
                             setCustomRows(newValue ?? '');
                             setGrid({ ...grid, columns: parseCustomGrid(newValue) });
+                        }}
+                    />
+                </>
+            )}
+            {grid.type === GridType.CustomRadial && (
+                <>
+                    <DeferredTextField
+                        label="Ring stops"
+                        value={customRings}
+                        onChange={(newValue) => {
+                            setCustomRows(newValue ?? '');
+                            setGrid({ ...grid, rings: parseCustomGrid(newValue) });
+                        }}
+                    />
+                    <DeferredTextField
+                        label="Spoke angles"
+                        value={customSpokes}
+                        onChange={(newValue) => {
+                            setCustomRows(newValue ?? '');
+                            setGrid({ ...grid, spokes: parseCustomGrid(newValue) });
                         }}
                     />
                 </>

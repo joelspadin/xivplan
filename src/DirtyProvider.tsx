@@ -1,15 +1,17 @@
 import { DefaultButton, Dialog, DialogFooter, DialogType, IDialogContentProps, PrimaryButton } from '@fluentui/react';
 import { Action } from 'history';
-import React, { createContext, Dispatch, useCallback, useContext, useState } from 'react';
+import React, { Dispatch, PropsWithChildren, createContext, useCallback, useContext, useState } from 'react';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
-import { Scene } from './scene';
 import { useScene } from './SceneProvider';
+import { Scene } from './scene';
 
 const DirtyContext = createContext(false);
 const SavedStateContext = createContext<Dispatch<Scene>>(() => undefined);
 
-export const DirtyProvider: React.FC = ({ children }) => {
+export interface DirtyProviderProps extends PropsWithChildren {}
+
+export const DirtyProvider: React.FC<DirtyProviderProps> = ({ children }) => {
     const { scene } = useScene();
     const [savedState, setSavedState] = useState<Scene>(scene);
     const isDirty = scene !== savedState;

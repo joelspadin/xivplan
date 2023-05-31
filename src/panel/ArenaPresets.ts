@@ -98,7 +98,7 @@ const ARENA_PRESET_EDEN_5: ArenaPreset = {
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
     grid: {
-        type: GridType.Custom,
+        type: GridType.CustomRectangular,
         rows: [-200, -100, 0, 100, 200],
         columns: [-150, -80, 80, 150],
     },
