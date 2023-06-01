@@ -117,14 +117,28 @@ const ARENA_PRESET_EDEN_12: ArenaPreset = {
     },
 };
 
-export const ARENA_PRESETS: ArenaPreset[] = [
-    ARENA_PRESET_3_3,
-    ARENA_PRESET_4_4,
-    ARENA_PRESET_5_5,
-    ARENA_PRESET_4_4_CIRCLE,
-    ARENA_PRESET_6_DIV_CIRCLE,
-    ARENA_PRESET_8_DIV_CIRCLE,
-    ARENA_PRESET_EDEN_2,
-    ARENA_PRESET_EDEN_5,
-    ARENA_PRESET_EDEN_12,
-];
+const ARENA_PRESET_PANDA_9: ArenaPreset = {
+    name: 'Anabaseios: The Ninth Circle',
+    shape: ArenaShape.Circle,
+    width: 650,
+    height: 650,
+    padding: DEFAULT_ARENA_PADDING - 20,
+    grid: {
+        type: GridType.CustomRadial,
+        rings: [125, 225],
+        spokes: [0, 45, 90, 135, 180, 225, 270, 315],
+    },
+};
+
+export const ARENA_PRESETS: Record<string, ArenaPreset[]> = {
+    General: [
+        ARENA_PRESET_3_3,
+        ARENA_PRESET_4_4,
+        ARENA_PRESET_5_5,
+        ARENA_PRESET_4_4_CIRCLE,
+        ARENA_PRESET_6_DIV_CIRCLE,
+        ARENA_PRESET_8_DIV_CIRCLE,
+    ],
+    Eden: [ARENA_PRESET_EDEN_2, ARENA_PRESET_EDEN_5, ARENA_PRESET_EDEN_12],
+    Pandæmonium: [ARENA_PRESET_PANDA_9],
+};

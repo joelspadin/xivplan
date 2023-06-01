@@ -7,10 +7,12 @@ import { DefaultCursorProvider } from '../DefaultCursorState';
 import { getDropAction } from '../DropHandler';
 import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
-import { SceneContext, useCurrentStep, useScene } from '../SceneProvider';
+import { EditorState, SceneAction, SceneContext, useCurrentStep, useScene } from '../SceneProvider';
 import { SelectionContext } from '../SelectionProvider';
 import { getCanvasSize, getSceneCoord } from '../coord';
+import { Scene } from '../scene';
 import { selectNewObjects, selectNone, useSelection } from '../selection';
+import { UndoContext } from '../undo/undoContext';
 import { usePanelDrag } from '../usePanelDrag';
 import { ArenaRenderer } from './ArenaRenderer';
 import { DrawTarget } from './DrawTarget';
@@ -66,6 +68,62 @@ export const SceneRenderer: React.FC = () => {
                 </StageContext.Provider>
             </Stage>
         </DropTarget>
+    );
+};
+
+export interface ScenePreviewProps {
+    scene: Scene;
+    stepIndex?: number;
+    width?: number;
+    height?: number;
+}
+
+export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, width, height }) => {
+    const theme = useTheme();
+    const size = getCanvasSize(scene);
+    let scale = 1;
+    let x = 0;
+    let y = 0;
+
+    if (width) {
+        scale = Math.min(scale, width / size.width);
+    }
+    if (height) {
+        scale = Math.min(scale, height / size.height);
+    }
+
+    size.width *= scale;
+    size.height *= scale;
+
+    if (width) {
+        x = (width - size.width) / 2;
+    }
+    if (height) {
+        y = (height - size.height) / 2;
+    }
+
+    const sceneContext: UndoContext<EditorState, SceneAction> = [
+        {
+            present: {
+                scene,
+                currentStep: stepIndex ?? 0,
+            },
+            past: [],
+            future: [],
+        },
+        () => undefined,
+    ];
+
+    return (
+        <Stage {...size} x={x} y={y} scaleX={scale} scaleY={scale}>
+            <DefaultCursorProvider>
+                <ThemeContext.Provider value={theme}>
+                    <SceneContext.Provider value={sceneContext}>
+                        <SceneContents />
+                    </SceneContext.Provider>
+                </ThemeContext.Provider>
+            </DefaultCursorProvider>
+        </Stage>
     );
 };
 

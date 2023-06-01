@@ -128,7 +128,7 @@ export interface LocalFileSource {
 
 export type FileSource = LocalFileSource;
 
-interface EditorState {
+export interface EditorState {
     scene: Scene;
     currentStep: number;
     source?: FileSource;
