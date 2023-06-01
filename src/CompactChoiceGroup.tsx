@@ -1,6 +1,7 @@
 import {
     ChoiceGroup,
     DefaultEffects,
+    IChoiceGroupOption,
     IChoiceGroupOptionProps,
     IChoiceGroupOptionStyleProps,
     IChoiceGroupOptionStyles,
@@ -62,7 +63,7 @@ const getStyles: (padding?: number) => IStyleFunction<IChoiceGroupOptionStylePro
         },
     });
 
-const onRenderField: IRenderFunction<IChoiceGroupOptionProps> = (props, defaultRender) => {
+const onRenderField: IRenderFunction<IChoiceGroupOption & IChoiceGroupOptionProps> = (props, defaultRender) => {
     if (!props || !defaultRender) {
         return null;
     }

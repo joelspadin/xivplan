@@ -1,4 +1,4 @@
-export function asArray<T>(x: T | readonly T[]): readonly T[] {
+export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x];
 }
 
@@ -60,13 +60,13 @@ export function mapSet<T, U>(set: ReadonlySet<T>, func: (item: T) => U): Set<U> 
     return new Set(mapIter(set, func));
 }
 
-export function omit<T, K extends keyof T>(obj: T, omitKey: K): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, omitKey: K): Omit<T, K> {
     return Object.fromEntries(Object.entries(obj).filter(([key]) => key !== omitKey)) as Omit<T, K>;
 }
 
 type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | undefined ? T : never;
 
-export function setOrOmit<T, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
+export function setOrOmit<T extends object, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
     if (value) {
         return { ...obj, [key]: value };
     }
