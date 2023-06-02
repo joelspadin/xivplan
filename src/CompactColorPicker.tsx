@@ -126,7 +126,11 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
                     directionalHint={DirectionalHint.bottomCenter}
                     setInitialFocus
                 >
-                    <ColorPicker color={color} onChange={(ev, color) => setPickerColor(color.str)} alphaType="none" />
+                    <ColorPicker
+                        color={pickerColor}
+                        onChange={(ev, color) => setPickerColor(color.str)}
+                        alphaType="none"
+                    />
                 </Callout>
             )}
         </div>
