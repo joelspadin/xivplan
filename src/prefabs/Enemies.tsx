@@ -53,7 +53,7 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
     // eslint-disable-next-line react/display-name
     return () => {
         const [, setDragObject] = usePanelDrag();
-        const iconUrl = new URL(`../assets/actor/${icon}`, import.meta.url).toString();
+        const iconUrl = `/actor/${icon}`;
 
         return (
             <PrefabIcon

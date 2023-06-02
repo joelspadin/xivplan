@@ -21,7 +21,7 @@ const CONFIGS: Record<TetherType, TetherConfig> = {
 };
 
 function getTetherIconUrl(icon: string) {
-    return new URL(`../assets/tether/${icon}`, import.meta.url).toString();
+    return new URL(`../assets/tether/${icon}`, import.meta.url).href;
 }
 
 export function getTetherName(tether: TetherType) {

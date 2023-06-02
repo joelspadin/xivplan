@@ -36,7 +36,7 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
     // eslint-disable-next-line react/display-name
     return () => {
         const [, setDragObject] = usePanelDrag();
-        const iconUrl = new URL(`../assets/marker/${icon}`, import.meta.url).toString();
+        const iconUrl = `/marker/${icon}`;
 
         return (
             <PrefabIcon

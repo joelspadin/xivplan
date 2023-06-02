@@ -95,7 +95,7 @@ function getJob(job: Job) {
 }
 
 function getIconUrl(icon: string) {
-    return new URL(`../assets/actor/${icon}`, import.meta.url).toString();
+    return `/actor/${icon}`;
 }
 
 function makeIcon(job: Job) {
