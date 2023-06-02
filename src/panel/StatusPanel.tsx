@@ -7,14 +7,14 @@ import {
     Pivot,
     PivotItem,
     ProgressIndicator,
-    TextField,
+    SearchBox,
 } from '@fluentui/react';
 import React, { useCallback, useState } from 'react';
 import { useAsync, useDebounce } from 'react-use';
 import { StatusEdenBlue, StatusEdenOrange, StatusEdenYellow } from '../prefabs/Status';
 import { StatusIcon } from '../prefabs/StatusIcon';
 import { PANEL_PADDING } from './PanelStyles';
-import { Section } from './Section';
+import { ObjectGroup, Section } from './Section';
 
 const classNames = mergeStyleSets({
     panel: {
@@ -22,8 +22,8 @@ const classNames = mergeStyleSets({
     } as IStyle,
     search: {
         marginTop: PANEL_PADDING,
-        paddingLeft: PANEL_PADDING,
-        paddingRight: PANEL_PADDING,
+        marginLeft: PANEL_PADDING,
+        marginRight: PANEL_PADDING,
     } as IStyle,
     list: {
         marginTop: PANEL_PADDING,
@@ -32,6 +32,12 @@ const classNames = mergeStyleSets({
         // TODO: is there a way to make this less terrible?
         maxHeight: 'calc(100vh - 44px - 44px - 48px - 61px - 8px - 8px)',
         overflow: 'auto',
+    } as IStyle,
+    listItem: {
+        width: 32,
+        height: 32,
+        float: 'left',
+        margin: 5,
     } as IStyle,
 });
 
@@ -57,10 +63,12 @@ interface Page {
 }
 
 export const StatusPanel: React.FC = () => {
+    const [filter, setFilter] = useState('');
+
     return (
         <Pivot>
-            <PivotItem headerText="Buffs/debuffs">
-                <StatusSearch />
+            <PivotItem headerText="Search">
+                <StatusSearch filter={filter} onFilterChanged={setFilter} />
             </PivotItem>
             <PivotItem headerText="Special markers">
                 <SpecialStatus />
@@ -75,7 +83,11 @@ const onRenderCell = (item?: StatusItem): JSX.Element | null => {
     if (!item) {
         return null;
     }
-    return <StatusIcon name={item.Name} icon={`https://xivapi.com${item.Icon}`} />;
+    return (
+        <div className={classNames.listItem}>
+            <StatusIcon name={item.Name} icon={`https://xivapi.com${item.Icon}`} />
+        </div>
+    );
 };
 
 const fetchStatuses = async (search: string, signal: AbortSignal): Promise<StatusItem[]> => {
@@ -100,17 +112,21 @@ const fetchStatuses = async (search: string, signal: AbortSignal): Promise<Statu
     return items;
 };
 
-const StatusSearch: React.FC = () => {
+interface StatusSearchProps {
+    filter: string;
+    onFilterChanged: React.Dispatch<string>;
+}
+
+const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) => {
     const [controller, setController] = useState<AbortController>();
-    const [filter, _setFilter] = useState('');
     const [debouncedFilter, setDebouncedFilter] = useState('');
 
     const setFilter = useCallback(
         (text?: string) => {
             controller?.abort();
-            _setFilter(text ?? '');
+            onFilterChanged(text ?? '');
         },
-        [controller, _setFilter],
+        [controller, onFilterChanged],
     );
 
     useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
@@ -131,21 +147,19 @@ const StatusSearch: React.FC = () => {
         }
     }, [debouncedFilter]);
 
-    const itemCount = items.value?.length ? ` (${items.value.length} results)` : '';
-
     return (
         <FocusZone direction={FocusZoneDirection.vertical}>
-            <TextField
-                label={`Status name${itemCount}`}
-                iconProps={{ iconName: 'Search' }}
-                onChange={(ev, text) => setFilter(text)}
+            <SearchBox
                 className={classNames.search}
+                placeholder="Status name"
+                value={filter}
+                onChange={(ev, text) => setFilter(text)}
             />
             <div className={classNames.list}>
                 <List items={items.value ?? []} onRenderCell={onRenderCell} />
 
                 {items.loading && <ProgressIndicator />}
-                {!items.loading && items.value?.length === 0 && <p>No results.</p>}
+                {!items.loading && filter && items.value?.length === 0 && <p>No results.</p>}
             </div>
         </FocusZone>
     );
@@ -155,9 +169,11 @@ const SpecialStatus: React.FC = () => {
     return (
         <div className={classNames.panel}>
             <Section title="Eden">
-                <StatusEdenYellow />
-                <StatusEdenOrange />
-                <StatusEdenBlue />
+                <ObjectGroup>
+                    <StatusEdenYellow />
+                    <StatusEdenOrange />
+                    <StatusEdenBlue />
+                </ObjectGroup>
             </Section>
         </div>
     );

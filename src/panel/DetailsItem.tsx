@@ -31,6 +31,8 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, co
 
     const filter = useMemo(() => (color ? getRecolorFilter(color) : undefined), [color]);
 
+    const size = isNested ? 20 : undefined;
+
     return (
         <Stack horizontal verticalAlign="center" tokens={stackTokens}>
             <Stack.Item>
@@ -40,7 +42,8 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, co
                         name={name}
                         filter={filter}
                         shouldFadeIn={false}
-                        size={isNested ? 20 : undefined}
+                        width={size}
+                        height={size}
                     />
                 )}
             </Stack.Item>

@@ -24,6 +24,7 @@ export enum ObjectType {
     Enemy = 'enemy',
     Exaflare = 'exaflare',
     Eye = 'eye',
+    Icon = 'icon',
     Knockback = 'knockback',
     LineKnockAway = 'lineKnockAway',
     LineKnockback = 'lineKnockback',
@@ -163,6 +164,13 @@ export interface TextObject extends MoveableObject, RotateableObject, SceneId {
 export const isText = makeObjectTest<TextObject>(ObjectType.Text);
 
 export type Marker = MarkerObject | ArrowObject | TextObject;
+
+export interface IconObject extends ImageObject, SceneId {
+    readonly type: ObjectType.Icon;
+    readonly name: string;
+}
+
+export const isIcon = makeObjectTest<IconObject>(ObjectType.Icon);
 
 export interface ActorStatus {
     readonly icon: string;
@@ -366,7 +374,7 @@ export function isRadiusObject<T>(object: T): object is RadiusObject & T {
     return radiusObj && typeof radiusObj.radius === 'number';
 }
 
-export type SceneObject = UnknownObject | Zone | Marker | Actor | Tether;
+export type SceneObject = UnknownObject | Zone | Marker | Actor | IconObject | Tether;
 
 export type SceneObjectWithoutId = Omit<SceneObject, 'id'> & { id?: number };
 

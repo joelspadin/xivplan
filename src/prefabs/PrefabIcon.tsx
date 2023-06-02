@@ -1,4 +1,4 @@
-import { IImageProps, IImageStyles, Image } from '@fluentui/react';
+import { IImageProps, IImageStyles, Image, ImageFit } from '@fluentui/react';
 import React from 'react';
 import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
@@ -12,17 +12,19 @@ export interface PrefabIconProps extends IImageProps {
     icon: string;
     name?: string;
     filter?: string;
-    size?: number;
+    width?: number;
+    height?: number;
 }
 
-export const PrefabIcon: React.FC<PrefabIconProps> = ({ icon, name, filter, size, ...props }) => {
+export const PrefabIcon: React.FC<PrefabIconProps> = ({ icon, name, filter, width, height, ...props }) => {
     return (
         <Image
             {...props}
+            imageFit={ImageFit.centerContain}
             src={icon}
             title={name}
-            width={size ?? PREFAB_ICON_SIZE}
-            height={size ?? PREFAB_ICON_SIZE}
+            width={width ?? PREFAB_ICON_SIZE}
+            height={height ?? PREFAB_ICON_SIZE}
             styles={props.draggable ? draggableProps : undefined}
             style={{ filter }}
         />
