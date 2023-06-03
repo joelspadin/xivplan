@@ -11,7 +11,47 @@ import {
 } from '@fluentui/react';
 import React, { useCallback, useState } from 'react';
 import { useAsync, useDebounce } from 'react-use';
-import { StatusEdenBlue, StatusEdenOrange, StatusEdenYellow } from '../prefabs/Status';
+import {
+    StatusAttack1,
+    StatusAttack2,
+    StatusAttack3,
+    StatusAttack4,
+    StatusAttack5,
+    StatusAttack6,
+    StatusAttack7,
+    StatusAttack8,
+    StatusBind1,
+    StatusBind2,
+    StatusBind3,
+    StatusBlueCircleTarget,
+    StatusCircle,
+    StatusCounter1,
+    StatusCounter2,
+    StatusCounter3,
+    StatusCounter4,
+    StatusCounter5,
+    StatusCounter6,
+    StatusCounter7,
+    StatusCounter8,
+    StatusCross,
+    StatusDice1,
+    StatusDice2,
+    StatusDice3,
+    StatusEdenBlue,
+    StatusEdenOrange,
+    StatusEdenYellow,
+    StatusGreenCircleTarget,
+    StatusGreenTarget,
+    StatusIgnore1,
+    StatusIgnore2,
+    StatusRedTarget,
+    StatusSquare,
+    StatusTriangle,
+    StatusUltimateCircle,
+    StatusUltimateCross,
+    StatusUltimateSquare,
+    StatusUltimateTriangle,
+} from '../prefabs/Status';
 import { StatusIcon } from '../prefabs/StatusIcon';
 import { PANEL_PADDING } from './PanelStyles';
 import { ObjectGroup, Section } from './Section';
@@ -67,11 +107,11 @@ export const StatusPanel: React.FC = () => {
 
     return (
         <Pivot>
-            <PivotItem headerText="Search">
-                <StatusSearch filter={filter} onFilterChanged={setFilter} />
-            </PivotItem>
-            <PivotItem headerText="Special markers">
+            <PivotItem headerText="Markers">
                 <SpecialStatus />
+            </PivotItem>
+            <PivotItem headerText="Status effects">
+                <StatusSearch filter={filter} onFilterChanged={setFilter} />
             </PivotItem>
         </Pivot>
     );
@@ -168,11 +208,65 @@ const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) 
 const SpecialStatus: React.FC = () => {
     return (
         <div className={classNames.panel}>
+            <Section title="General">
+                <ObjectGroup>
+                    <StatusAttack1 />
+                    <StatusAttack2 />
+                    <StatusAttack3 />
+                    <StatusAttack4 />
+                    <StatusAttack5 />
+                    <StatusAttack6 />
+                    <StatusAttack7 />
+                    <StatusAttack8 />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <StatusIgnore1 />
+                    <StatusIgnore2 />
+                    <StatusBind1 />
+                    <StatusBind2 />
+                    <StatusBind3 />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <StatusTriangle />
+                    <StatusCircle />
+                    <StatusCross />
+                    <StatusSquare />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <StatusCounter1 />
+                    <StatusCounter2 />
+                    <StatusCounter3 />
+                    <StatusCounter4 />
+                    <StatusCounter5 />
+                    <StatusCounter6 />
+                    <StatusCounter7 />
+                    <StatusCounter8 />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <StatusBlueCircleTarget />
+                    <StatusGreenCircleTarget />
+                    <StatusRedTarget />
+                    <StatusGreenTarget />
+                </ObjectGroup>
+                <ObjectGroup>
+                    <StatusDice1 />
+                    <StatusDice2 />
+                    <StatusDice3 />
+                </ObjectGroup>
+            </Section>
             <Section title="Eden">
                 <ObjectGroup>
                     <StatusEdenYellow />
                     <StatusEdenOrange />
                     <StatusEdenBlue />
+                </ObjectGroup>
+            </Section>
+            <Section title="Ultimate">
+                <ObjectGroup>
+                    <StatusUltimateTriangle />
+                    <StatusUltimateCircle />
+                    <StatusUltimateCross />
+                    <StatusUltimateSquare />
                 </ObjectGroup>
             </Section>
         </div>

@@ -52,3 +52,5 @@ so it is not well suited to quickly diagramming during raids.
 Undo/redo logic is based on [frontendphil/react-undo-redo](https://github.com/frontendphil/react-undo-redo)
 
 Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
+
+[Limit cut counter icons](https://magentalava.gumroad.com/l/limitcuticons) by yullanellis.

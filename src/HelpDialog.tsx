@@ -15,8 +15,8 @@ export const HelpDialog: React.FC<IModalProps> = (props) => {
                 <h3>Objects</h3>
                 <p>Drag objects onto the arena.</p>
 
-                <h3>Status</h3>
-                <p>Drag buffs and debuffs onto party members or enemies.</p>
+                <h3>Icons</h3>
+                <p>Drag markers and status effect icons onto the arena.</p>
 
                 <h3>Draw</h3>
                 <p>Draw freeform objects on the scene.</p>

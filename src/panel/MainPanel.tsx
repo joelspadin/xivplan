@@ -56,7 +56,7 @@ export const MainPanel: React.FC = () => {
             <PivotItem headerText="Objects" itemKey={Tabs.Objects}>
                 <PrefabsPanel />
             </PivotItem>
-            <PivotItem headerText="Status" itemKey={Tabs.Status}>
+            <PivotItem headerText="Icons" itemKey={Tabs.Status}>
                 <StatusPanel />
             </PivotItem>
             <PivotItem headerText="Draw" itemKey={Tabs.Draw}>

@@ -20,6 +20,12 @@ export const AboutDialog: React.FC<IModalProps> = (props) => {
             <h2>Credits</h2>
             <p>XIVPlan is © 2021 Joel Spadin.</p>
             <p>Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+            <p>
+                <ExternalLink href="https://magentalava.gumroad.com/l/limitcuticons">
+                    Limit cut counter icons
+                </ExternalLink>{' '}
+                by yullanellis.
+            </p>
         </BaseDialog>
     );
 };
