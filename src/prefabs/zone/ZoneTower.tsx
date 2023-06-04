@@ -1,35 +1,23 @@
-import { Position, SpinButton, Stack } from '@fluentui/react';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Circle } from 'react-konva';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
-import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
 import icon from '../../assets/zone/meteor_tower.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, COLOR_SWATCHES, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { ObjectType, TowerZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { MIN_RADIUS } from '../bounds';
 import { useShowHighlight } from '../highlight';
-import { useSpinChanged } from '../useSpinChanged';
 import { getZoneStyle } from './style';
 
 const DEFAULT_COLOR = '#bae3ff';
 const DEFAULT_RADIUS = 40;
 const DEFAULT_COUNT = 1;
-const MIN_COUNT = 1;
-const MAX_COUNT = 4;
 
 export const ZoneTower: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -164,63 +152,3 @@ const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, isNeste
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);
-
-const TowerEditControl: React.FC<PropertiesControlProps<TowerZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onCountChanged = useSpinChanged(
-        (count: number) => dispatch({ type: 'update', value: { ...object, count } }),
-        [dispatch, object],
-    );
-
-    const soakSuffix = object.count === 1 ? ' player' : ' players';
-
-    return (
-        <Stack>
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <SpinButton
-                label="Radius"
-                labelPosition={Position.top}
-                value={object.radius.toString()}
-                onChange={onRadiusChanged}
-                min={MIN_RADIUS}
-                step={5}
-            />
-            <SpinButtonUnits
-                label="Soak count"
-                labelPosition={Position.top}
-                value={object.count.toString()}
-                onChange={onCountChanged}
-                min={MIN_COUNT}
-                max={MAX_COUNT}
-                step={1}
-                suffix={soakSuffix}
-            />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<TowerZone>(ObjectType.Tower, TowerEditControl);

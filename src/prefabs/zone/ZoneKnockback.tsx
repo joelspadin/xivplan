@@ -116,5 +116,3 @@ const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, is
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);
-
-// Properties control registered in ZoneCircle.tsx

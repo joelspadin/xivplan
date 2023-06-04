@@ -153,5 +153,3 @@ const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNes
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);
-
-// Properties control registered in ZoneCircle.tsx

@@ -146,5 +146,3 @@ const LineStackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object,
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineStack, LineStackDetails);
-
-// Properties control registered in ZoneRectangle.tsx

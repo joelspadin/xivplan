@@ -1,13 +1,4 @@
-import {
-    IChoiceGroupOption,
-    IconButton,
-    IStackTokens,
-    IStyle,
-    mergeStyleSets,
-    Position,
-    SpinButton,
-    Stack,
-} from '@fluentui/react';
+import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
@@ -17,19 +8,14 @@ import * as React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { getRecolorFilter } from '../color';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { CompactColorPicker } from '../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { getCanvasCoord } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../EditModeProvider';
-import { OpacitySlider } from '../OpacitySlider';
 import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
-import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
+import { SELECTED_PROPS } from '../render/SceneTheme';
 import {
     FakeCursorObject,
     isEnemy,
@@ -49,13 +35,11 @@ import { selectNone, useIsSelected, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
 import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
-import { MIN_TETHER_WIDTH } from './bounds';
 import { MagnetMinus, MagnetPlus } from './Magnets';
 import { PrefabIcon } from './PrefabIcon';
 import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
 import { getTetherIcon, getTetherName, makeTether } from './TetherConfig';
-import { useSpinChanged } from './useSpinChanged';
 
 interface TetherButtonProps {
     tether: TetherType;
@@ -464,76 +448,6 @@ const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
 };
 
 registerListComponent<Tether>(ObjectType.Tether, TetherDetails);
-
-const tetherOptions: IChoiceGroupOption[] = [
-    TetherType.Line,
-    TetherType.Close,
-    TetherType.Far,
-    TetherType.MinusMinus,
-    TetherType.PlusMinus,
-    TetherType.PlusPlus,
-].map((tether) => {
-    const icon = getTetherIcon(tether);
-    return {
-        key: tether,
-        text: getTetherName(tether),
-        imageSrc: icon,
-        selectedImageSrc: icon,
-    };
-});
-
-const TetherEditControl: React.FC<PropertiesControlProps<Tether>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onTetherChanged = useCallback(
-        (tether: TetherType) => dispatch({ type: 'update', value: { ...object, tether } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onWidthChanged = useSpinChanged(
-        (width: number) => dispatch({ type: 'update', value: { ...object, width } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <CompactChoiceGroup
-                label="Tether type"
-                padding={4}
-                options={tetherOptions}
-                selectedKey={object.tether}
-                onChange={(e, option) => onTetherChanged(option?.key as TetherType)}
-            />
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <SpinButton
-                label="Width"
-                labelPosition={Position.top}
-                value={object.width.toString()}
-                onChange={onWidthChanged}
-                min={MIN_TETHER_WIDTH}
-                step={2}
-            />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<Tether>(ObjectType.Tether, TetherEditControl);
 
 export const TetherLine: React.FC = () => <TetherButton tether={TetherType.Line} />;
 export const TetherClose: React.FC = () => <TetherButton tether={TetherType.Close} />;

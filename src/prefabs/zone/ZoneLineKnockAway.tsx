@@ -150,5 +150,3 @@ const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ obj
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);
-
-// Properties control registered in ZoneRectangle.tsx

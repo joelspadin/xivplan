@@ -72,3 +72,12 @@ export function setOrOmit<T extends object, K extends keyof T>(obj: HasOptionalB
     }
     return omit(obj, key) as HasOptionalBool<T, K>;
 }
+
+export function commonValue<T, U>(objects: readonly T[], value: (object: T) => U): U | undefined {
+    if (objects[0] === undefined) {
+        return undefined;
+    }
+
+    const first = value(objects[0]);
+    return objects.every((obj) => value(obj) === first) ? first : undefined;
+}

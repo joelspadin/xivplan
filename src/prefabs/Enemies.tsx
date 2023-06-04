@@ -1,23 +1,14 @@
-import { IChoiceGroupOption, IIconStyles, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { CompactColorPicker } from '../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { DeferredTextField } from '../DeferredTextField';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
-import { useScene } from '../SceneProvider';
-import { SpinButtonUnits } from '../SpinButtonUnits';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
-    COLOR_SWATCHES,
     DEFAULT_ENEMY_COLOR,
     EnemyTheme,
     SELECTED_PROPS,
@@ -26,11 +17,9 @@ import {
 import { LayerName } from '../render/layers';
 import { EnemyObject, ObjectType } from '../scene';
 import { usePanelDrag } from '../usePanelDrag';
-import { MoveableObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
 import { useShowHighlight } from './highlight';
-import { useSpinChanged } from './useSpinChanged';
 
 const DEFAULT_SIZE = 32;
 
@@ -65,8 +54,9 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
                         object: {
                             type: ObjectType.Enemy,
                             icon: iconUrl,
-                            radius,
-                            rotation: hasDirection ? 0 : undefined,
+                            radius: radius,
+                            rotation: 0,
+                            omniDirection: !hasDirection,
                         },
                         offset: getDragOffset(e),
                     });
@@ -233,7 +223,7 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
 
             <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
 
-            {object.rotation === undefined ? (
+            {object.omniDirection ? (
                 <CircleRing radius={radius} theme={theme.enemy} color={object.color} isSelected={showHighlight} />
             ) : (
                 <DirectionalRing
@@ -280,102 +270,6 @@ const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, isNes
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const rotateIconStyle: IIconStyles = {
-    root: {
-        transform: 'rotate(135deg)',
-    },
-};
-
-enum RingStyle {
-    Directional = 'directional',
-    Omnidirectional = 'omnidirectional',
-}
-
-const directionalOptions: IChoiceGroupOption[] = [
-    // TODO: use CircleShape whenever icon font gets fixed.
-    { key: RingStyle.Omnidirectional, text: 'Omnidirectional', iconProps: { iconName: 'CircleRing' } },
-    {
-        key: RingStyle.Directional,
-        text: 'Directional',
-        iconProps: { iconName: 'ThreeQuarterCircle', styles: rotateIconStyle },
-    },
-];
-
-const EnemyEditControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onNameChanged = React.useCallback(
-        (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onDirectionalChanged = useCallback(
-        (option: RingStyle) => {
-            const rotation = option === RingStyle.Directional ? 0 : undefined;
-            dispatch({ type: 'update', value: { ...object, rotation } });
-        },
-        [dispatch, object],
-    );
-
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object],
-    );
-
-    const isDirectional = object.rotation !== undefined;
-    const directionalKey = isDirectional ? RingStyle.Directional : RingStyle.Omnidirectional;
-
-    return (
-        <Stack>
-            <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <MoveableObjectProperties object={object} />
-            <SpinButton
-                label="Radius"
-                labelPosition={Position.top}
-                value={object.radius.toString()}
-                onChange={onRadiusChanged}
-                min={10}
-                step={5}
-            />
-            <Stack horizontal verticalAlign="end" tokens={stackTokens}>
-                <CompactChoiceGroup
-                    label="Style"
-                    options={directionalOptions}
-                    selectedKey={directionalKey}
-                    onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
-                />
-                <SpinButtonUnits
-                    label="Rotation"
-                    disabled={!isDirectional}
-                    labelPosition={Position.top}
-                    value={object.rotation?.toString()}
-                    onChange={onRotationChanged}
-                    step={15}
-                    suffix="°"
-                />
-            </Stack>
-        </Stack>
-    );
-};
-
-registerPropertiesControl<EnemyObject>(ObjectType.Enemy, EnemyEditControl);
 
 export const EnemyCircle = makeIcon('Generic enemy', 'enemy_circle.png', SIZE_SMALL, false);
 export const EnemySmall = makeIcon('Small enemy', 'enemy_small.png', SIZE_SMALL);

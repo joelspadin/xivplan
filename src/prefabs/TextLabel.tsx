@@ -1,39 +1,28 @@
-import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import Konva from 'konva';
 import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { CompactColorPicker } from '../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { DeferredTextField } from '../DeferredTextField';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
-import { OpacitySlider } from '../OpacitySlider';
 import { useScene } from '../SceneProvider';
-import { SpinButtonUnits } from '../SpinButtonUnits';
 import icon from '../assets/marker/text.png';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
-import { ObjectType, SceneObject, TextObject } from '../scene';
+import { ObjectType, TextObject } from '../scene';
 import { usePanelDrag } from '../usePanelDrag';
-import { MoveableObjectProperties } from './CommonProperties';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
 import { useShowHighlight, useShowResizer } from './highlight';
-import { useSpinChanged } from './useSpinChanged';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
 const DEFAULT_TEXT_COLOR = '#ffffff';
 const DEFAULT_TEXT_OPACITY = 100;
 const DEFAULT_FONT_SIZE = 25;
-const MIN_FONT_SIZE = 15;
 
 export const TextLabel: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -263,91 +252,3 @@ const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, isNeste
 };
 
 registerListComponent<TextObject>(ObjectType.Text, TextDetails);
-
-const TEXT_COLOR_SWATCHES = [DEFAULT_TEXT_COLOR, '#000000', '#ff0000', '#00e622', '#ffc800'];
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const alignOptions: IChoiceGroupOption[] = [
-    { key: 'left', text: 'Align left', iconProps: { iconName: 'AlignLeft' } },
-    { key: 'center', text: 'Align center', iconProps: { iconName: 'AlignCenter' } },
-    { key: 'right', text: 'Align right', iconProps: { iconName: 'AlignRight' } },
-];
-
-const TextEditControl: React.FC<PropertiesControlProps<TextObject>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onFontSizeChanged = useSpinChanged(
-        (fontSize: number) => dispatch({ type: 'update', value: { ...object, fontSize } as SceneObject }),
-        [dispatch, object],
-    );
-
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) =>
-            dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } as SceneObject }),
-        [dispatch, object],
-    );
-
-    const onAlignChanged = useCallback(
-        (align: string) => dispatch({ type: 'update', value: { ...object, align } }),
-        [dispatch, object],
-    );
-
-    const onTextChanged = useCallback(
-        (text?: string) => dispatch({ type: 'update', value: { ...object, text: text ?? '' } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={TEXT_COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <Stack horizontal tokens={stackTokens}>
-                <SpinButton
-                    label="Font size"
-                    labelPosition={Position.top}
-                    value={object.fontSize.toString()}
-                    onChange={onFontSizeChanged}
-                    min={MIN_FONT_SIZE}
-                    step={5}
-                />
-                <CompactChoiceGroup
-                    label="Align"
-                    selectedKey={object.align}
-                    options={alignOptions}
-                    onChange={(e, option) => onAlignChanged(option?.key || DEFAULT_TEXT_ALIGN)}
-                />
-            </Stack>
-            <MoveableObjectProperties object={object} />
-            <SpinButtonUnits
-                label="Rotation"
-                labelPosition={Position.top}
-                value={object.rotation.toString()}
-                onChange={onRotationChanged}
-                step={15}
-                suffix="°"
-            />
-            <DeferredTextField label="Text" value={object.text} onChange={onTextChanged} multiline autoAdjustHeight />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<TextObject>(ObjectType.Text, TextEditControl);

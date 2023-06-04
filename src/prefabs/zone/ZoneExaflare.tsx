@@ -1,34 +1,18 @@
-import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import icon from '../../assets/zone/exaflare.png';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
-import {
-    CENTER_DOT_RADIUS,
-    COLOR_SWATCHES,
-    DEFAULT_AOE_COLOR,
-    DEFAULT_AOE_OPACITY,
-    SELECTED_PROPS,
-} from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
-import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { usePanelDrag } from '../../usePanelDrag';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useSpinChanged } from '../useSpinChanged';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -36,7 +20,6 @@ const NAME = 'Moving AOE';
 
 const DEFAULT_RADIUS = 50;
 const DEFAULT_LENGTH = 10;
-const MIN_LENGTH = 2;
 
 export const ZoneExaflare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -155,84 +138,3 @@ const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object, i
 };
 
 registerListComponent<ExaflareZone>(ObjectType.Exaflare, ExaflareDetails);
-
-const classNames = mergeStyleSets({
-    radiusRow: {
-        marginRight: 32 + 10,
-    } as IStyle,
-});
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const ExaflareEditControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onLengthChanged = useSpinChanged(
-        (length: number) => dispatch({ type: 'update', value: { ...object, length } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
-                <SpinButton
-                    label="Radius"
-                    labelPosition={Position.top}
-                    value={object.radius.toString()}
-                    onChange={onRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-                <SpinButton
-                    label="Length"
-                    labelPosition={Position.top}
-                    value={object.length.toString()}
-                    onChange={onLengthChanged}
-                    min={MIN_LENGTH}
-                    step={1}
-                />
-            </Stack>
-            <SpinButtonUnits
-                label="Rotation"
-                labelPosition={Position.top}
-                value={object.rotation.toString()}
-                onChange={onRotationChanged}
-                step={15}
-                suffix="°"
-            />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<ExaflareZone>(ObjectType.Exaflare, ExaflareEditControl);

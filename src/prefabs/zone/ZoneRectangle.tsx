@@ -1,27 +1,18 @@
-import { IStackTokens, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Group, Rect } from 'react-konva';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
-import { useScene } from '../../SceneProvider';
 import lineIcon from '../../assets/zone/line.png';
 import squareIcon from '../../assets/zone/square.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
-import { setOrOmit } from '../../util';
-import { ResizeableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { useShowHighlight } from '../highlight';
-import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const NAME = 'Rectangle';
@@ -128,63 +119,3 @@ const RectangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object,
 };
 
 registerListComponent<RectangleZone>(ObjectType.Rect, RectangleDetails);
-
-function supportsHollow(object: RectangleZone) {
-    return [ObjectType.Rect, ObjectType.Triangle, ObjectType.RightTriangle].includes(object.type);
-}
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const RectangleEditControl: React.FC<PropertiesControlProps<RectangleZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <Stack.Item grow>
-                    <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-                </Stack.Item>
-                {supportsHollow(object) && (
-                    <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
-                )}
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <ResizeableObjectProperties object={object} />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<RectangleZone>(
-    [
-        ObjectType.Rect,
-        ObjectType.LineStack,
-        ObjectType.LineKnockback,
-        ObjectType.LineKnockAway,
-        ObjectType.Triangle,
-        ObjectType.RightTriangle,
-    ],
-    RectangleEditControl,
-);

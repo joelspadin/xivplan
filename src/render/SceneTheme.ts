@@ -21,6 +21,11 @@ export const COLOR_WHITE = '#ffffff'; // white
 export const COLOR_BLACK = '#000000'; // black
 export const COLOR_GRID = '#6f5a48'; // grid
 
+export const COLOR_MARKER_RED = '#f13b66';
+export const COLOR_MARKER_YELLOW = '#e1dc5d';
+export const COLOR_MARKER_BLUE = '#65b3ea';
+export const COLOR_MARKER_PURPLE = '#e291e6';
+
 export const DEFAULT_AOE_COLOR = COLOR_ORANGE;
 
 export const DEFAULT_AOE_OPACITY = 35;

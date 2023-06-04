@@ -7,13 +7,13 @@ export interface SpinButtonUnitsProps extends ISpinButtonProps {
 
 const VALUE_REGEX = /^(-?\d+(\.\d+)?).*/;
 
-function getNumericPart(value: string): number | undefined {
+function getNumericPart(value: string): number {
     const match = value.match(VALUE_REGEX);
     if (match) {
         const numericValue = Number(match[1]);
-        return isNaN(numericValue) ? undefined : numericValue;
+        return isNaN(numericValue) ? 0 : numericValue;
     }
-    return undefined;
+    return 0;
 }
 
 function getChangeValue(value?: string): string | undefined {
@@ -21,18 +21,13 @@ function getChangeValue(value?: string): string | undefined {
         return undefined;
     }
 
-    const numericValue = getNumericPart(value);
-    if (numericValue !== undefined) {
-        return numericValue.toString();
-    }
-
-    return undefined;
+    return getNumericPart(value)?.toString();
 }
 
 export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...props }) => {
     const step = props.step ?? 1;
     const value = props.value ?? '0';
-    suffix = suffix ?? '';
+    suffix = !props.value ? '' : suffix ?? '';
 
     const clamp = useCallback(
         (value: number) => {
@@ -50,9 +45,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...pro
     const onIncrement = useCallback(
         (value: string) => {
             const numericValue = getNumericPart(value);
-            if (numericValue !== undefined) {
-                return clamp(numericValue + step).toString() + suffix;
-            }
+            return clamp(numericValue + step).toString() + suffix;
         },
         [step, suffix, clamp],
     );
@@ -60,9 +53,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...pro
     const onDecrement = useCallback(
         (value: string) => {
             const numericValue = getNumericPart(value);
-            if (numericValue !== undefined) {
-                return clamp(numericValue - step).toString() + suffix;
-            }
+            return clamp(numericValue - step).toString() + suffix;
         },
         [step, suffix, clamp],
     );
@@ -70,9 +61,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...pro
     const onValidate = useCallback(
         (value: string) => {
             const numericValue = getNumericPart(value);
-            if (numericValue !== undefined) {
-                return clamp(numericValue).toString() + suffix;
-            }
+            return clamp(numericValue).toString() + suffix;
         },
         [suffix, clamp],
     );

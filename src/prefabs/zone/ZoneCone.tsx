@@ -1,43 +1,32 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { WedgeConfig } from 'konva/lib/shapes/Wedge';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Shape, Wedge } from 'react-konva';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
 import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
 import icon from '../../assets/zone/cone.png';
 import { getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import { COLOR_SWATCHES, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { ConeZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, degtorad, mod360, setOrOmit } from '../../util';
+import { clamp, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
-import { MIN_RADIUS } from '../bounds';
+import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
-import { useSpinChanged } from '../useSpinChanged';
-import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const NAME = 'Cone';
 
 const DEFAULT_RADIUS = 150;
 const DEFAULT_ANGLE = 90;
-const MIN_ANGLE = 5;
-const MAX_ANGLE = 360;
 
 const ICON_SIZE = 32;
 
@@ -206,92 +195,6 @@ const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, isNested 
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);
 
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const ConeEditControl: React.FC<PropertiesControlProps<ConeZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onAngleChanged = useSpinChanged(
-        (coneAngle: number) => dispatch({ type: 'update', value: { ...object, coneAngle } }),
-        [dispatch, object],
-    );
-
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-                <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <Stack horizontal tokens={stackTokens}>
-                <SpinButton
-                    label="Radius"
-                    labelPosition={Position.top}
-                    value={object.radius.toString()}
-                    onChange={onRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-
-                <SpinButtonUnits
-                    label="Angle"
-                    labelPosition={Position.top}
-                    value={object.coneAngle.toString()}
-                    onChange={onAngleChanged}
-                    min={MIN_ANGLE}
-                    max={MAX_ANGLE}
-                    step={5}
-                    suffix="°"
-                />
-            </Stack>
-            <SpinButtonUnits
-                label="Rotation"
-                labelPosition={Position.top}
-                value={object.rotation.toString()}
-                onChange={onRotationChanged}
-                step={15}
-                suffix="°"
-            />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<ConeZone>(ObjectType.Cone, ConeEditControl);
-
 enum HandleId {
     Radius,
     Angle1,
@@ -336,7 +239,7 @@ function getConeAngle(object: ConeZone, { pointerPos, activeHandleId }: HandleFu
                 ROTATE_SNAP_DIVISION,
                 ROTATE_SNAP_TOLERANCE,
             );
-            return clamp(coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+            return clamp(coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }
         if (activeHandleId === HandleId.Angle2) {
             const coneAngle = snapAngle(
@@ -345,7 +248,7 @@ function getConeAngle(object: ConeZone, { pointerPos, activeHandleId }: HandleFu
                 ROTATE_SNAP_TOLERANCE,
             );
 
-            return clamp(-coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+            return clamp(-coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }
     }
 

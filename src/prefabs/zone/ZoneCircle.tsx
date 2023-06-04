@@ -1,34 +1,17 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Circle } from 'react-konva';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
-import { useScene } from '../../SceneProvider';
 import icon from '../../assets/zone/circle.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import {
-    CENTER_DOT_RADIUS,
-    COLOR_SWATCHES,
-    DEFAULT_AOE_COLOR,
-    DEFAULT_AOE_OPACITY,
-    SELECTED_PROPS,
-} from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
-import { setOrOmit } from '../../util';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { MIN_RADIUS } from '../bounds';
 import { useShowHighlight } from '../highlight';
-import { useSpinChanged } from '../useSpinChanged';
-import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const NAME = 'Circle';
@@ -107,76 +90,3 @@ const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNes
 };
 
 registerListComponent<CircleZone>(ObjectType.Circle, CircleDetails);
-
-function supportsHollow(object: CircleZone) {
-    return [ObjectType.Circle, ObjectType.RotateCW, ObjectType.RotateCCW].includes(object.type);
-}
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const CircleEditControl: React.FC<PropertiesControlProps<CircleZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <Stack.Item grow>
-                    <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-                </Stack.Item>
-                {supportsHollow(object) && (
-                    <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
-                )}
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <SpinButton
-                label="Radius"
-                labelPosition={Position.top}
-                value={object.radius.toString()}
-                onChange={onRadiusChanged}
-                min={MIN_RADIUS}
-                step={5}
-            />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<CircleZone>(
-    [
-        ObjectType.Circle,
-        ObjectType.Stack,
-        ObjectType.Proximity,
-        ObjectType.Knockback,
-        ObjectType.RotateCW,
-        ObjectType.RotateCCW,
-        ObjectType.Eye,
-    ],
-    CircleEditControl,
-);

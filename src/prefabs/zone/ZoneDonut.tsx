@@ -1,32 +1,17 @@
-import { IStackTokens, IStyle, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Circle, Ring } from 'react-konva';
 import icon from '../../assets/zone/donut.png';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
-import {
-    CENTER_DOT_RADIUS,
-    COLOR_SWATCHES,
-    DEFAULT_AOE_COLOR,
-    DEFAULT_AOE_OPACITY,
-    SELECTED_PROPS,
-} from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
-import { useScene } from '../../SceneProvider';
 import { usePanelDrag } from '../../usePanelDrag';
-import { MIN_RADIUS } from '../bounds';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useSpinChanged } from '../useSpinChanged';
 import { getZoneStyle } from './style';
 
 const NAME = 'Donut';
@@ -113,71 +98,3 @@ const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object, isNeste
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);
-
-const classNames = mergeStyleSets({
-    radiusRow: {
-        marginRight: 32 + 10,
-    } as IStyle,
-});
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const DonutEditControl: React.FC<PropertiesControlProps<DonutZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onInnerRadiusChanged = useSpinChanged(
-        (innerRadius: number) => dispatch({ type: 'update', value: { ...object, innerRadius } }),
-        [dispatch, object],
-    );
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <Stack horizontal tokens={stackTokens} className={classNames.radiusRow}>
-                <SpinButton
-                    label="Radius 1"
-                    labelPosition={Position.top}
-                    value={object.innerRadius.toString()}
-                    onChange={onInnerRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-                <SpinButton
-                    label="Radius 2"
-                    labelPosition={Position.top}
-                    value={object.radius.toString()}
-                    onChange={onRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-            </Stack>
-        </Stack>
-    );
-};
-
-registerPropertiesControl<DonutZone>([ObjectType.Donut], DonutEditControl);

@@ -1,36 +1,28 @@
-import { IChoiceGroupOption, IStackTokens, Stack } from '@fluentui/react';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { useCallback } from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { CompactColorPicker } from '../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { DeferredTextField } from '../DeferredTextField';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
-import { useScene } from '../SceneProvider';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
-import { SELECTED_PROPS } from '../render/SceneTheme';
+import {
+    COLOR_MARKER_BLUE,
+    COLOR_MARKER_PURPLE,
+    COLOR_MARKER_RED,
+    COLOR_MARKER_YELLOW,
+    SELECTED_PROPS,
+} from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { MarkerObject, ObjectType } from '../scene';
 import { usePanelDrag } from '../usePanelDrag';
-import { ImageObjectProperties } from './CommonProperties';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
 
 const DEFAULT_SIZE = 42;
 const ICON_RATIO = 32 / DEFAULT_SIZE;
-
-const COLOR_RED = '#f13b66';
-const COLOR_YELLOW = '#e1dc5d';
-const COLOR_BLUE = '#65b3ea';
-const COLOR_PURPLE = '#e291e6';
 
 function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color: string) {
     // eslint-disable-next-line react/display-name
@@ -68,7 +60,7 @@ registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
             name: '',
             image: '',
             shape: 'square',
-            color: COLOR_RED,
+            color: COLOR_MARKER_RED,
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
@@ -223,65 +215,11 @@ const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, isN
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);
 
-const shapeOptions: IChoiceGroupOption[] = [
-    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
-    { key: 'circle', text: 'Circle', iconProps: { iconName: 'CircleRing' } },
-    { key: 'square', text: 'Square', iconProps: { iconName: 'Checkbox' } },
-];
-
-const swatches = [COLOR_RED, COLOR_YELLOW, COLOR_BLUE, COLOR_PURPLE];
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const MarkerEditControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onNameChanged = useCallback(
-        (newName?: string) => dispatch({ type: 'update', value: { ...object, name: newName ?? '' } }),
-        [dispatch, object],
-    );
-
-    const onShapeChanged = useCallback(
-        (option?: IChoiceGroupOption) => {
-            const shape = (option?.key as 'circle' | 'square') ?? 'square';
-            dispatch({ type: 'update', value: { ...object, shape } });
-        },
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <DeferredTextField label="Name" value={object.name} onChange={onNameChanged} />
-
-            <Stack horizontal tokens={stackTokens}>
-                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-                <CompactChoiceGroup
-                    label="Shape"
-                    options={shapeOptions}
-                    selectedKey={object.shape}
-                    onChange={(ev, option) => onShapeChanged(option)}
-                />
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={swatches} onChange={onColorChanged} />
-            <ImageObjectProperties object={object} />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<MarkerObject>(ObjectType.Marker, MarkerEditControl);
-
-export const WaymarkA = makeIcon('Waymark A', 'waymark_a.png', 'circle', COLOR_RED);
-export const WaymarkB = makeIcon('Waymark B', 'waymark_b.png', 'circle', COLOR_YELLOW);
-export const WaymarkC = makeIcon('Waymark C', 'waymark_c.png', 'circle', COLOR_BLUE);
-export const WaymarkD = makeIcon('Waymark D', 'waymark_d.png', 'circle', COLOR_PURPLE);
-export const Waymark1 = makeIcon('Waymark 1', 'waymark_1.png', 'square', COLOR_RED);
-export const Waymark2 = makeIcon('Waymark 2', 'waymark_2.png', 'square', COLOR_YELLOW);
-export const Waymark3 = makeIcon('Waymark 3', 'waymark_3.png', 'square', COLOR_BLUE);
-export const Waymark4 = makeIcon('Waymark 4', 'waymark_4.png', 'square', COLOR_PURPLE);
+export const WaymarkA = makeIcon('Waymark A', 'waymark_a.png', 'circle', COLOR_MARKER_RED);
+export const WaymarkB = makeIcon('Waymark B', 'waymark_b.png', 'circle', COLOR_MARKER_YELLOW);
+export const WaymarkC = makeIcon('Waymark C', 'waymark_c.png', 'circle', COLOR_MARKER_BLUE);
+export const WaymarkD = makeIcon('Waymark D', 'waymark_d.png', 'circle', COLOR_MARKER_PURPLE);
+export const Waymark1 = makeIcon('Waymark 1', 'waymark_1.png', 'square', COLOR_MARKER_RED);
+export const Waymark2 = makeIcon('Waymark 2', 'waymark_2.png', 'square', COLOR_MARKER_YELLOW);
+export const Waymark3 = makeIcon('Waymark 3', 'waymark_3.png', 'square', COLOR_MARKER_BLUE);
+export const Waymark4 = makeIcon('Waymark 4', 'waymark_4.png', 'square', COLOR_MARKER_PURPLE);

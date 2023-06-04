@@ -194,5 +194,3 @@ const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, is
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);
-
-// Properties control registered in ZoneCircle.tsx

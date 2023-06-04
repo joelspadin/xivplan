@@ -12,6 +12,8 @@ const styles: Partial<ISliderStyles> = {
 };
 
 export const OpacitySlider: React.FC<ISliderProps> = (props) => {
+    const valueFormat: (x: number) => string = props.value === undefined ? () => '' : (x) => `${x}%`;
+
     return (
         <Slider
             label="Opacity"
@@ -19,7 +21,7 @@ export const OpacitySlider: React.FC<ISliderProps> = (props) => {
             max={100}
             step={5}
             ariaValueText={(x) => `${x} percent`}
-            valueFormat={(x) => `${x}%`}
+            valueFormat={valueFormat}
             styles={styles}
             {...props}
         />

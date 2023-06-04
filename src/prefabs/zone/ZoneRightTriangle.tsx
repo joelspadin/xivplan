@@ -111,5 +111,3 @@ const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ obj
 };
 
 registerListComponent<RectangleZone>(ObjectType.RightTriangle, RightTriangleDetails);
-
-// Properties control registered in ZoneRectangle.tsx

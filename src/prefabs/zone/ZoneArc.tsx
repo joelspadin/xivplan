@@ -1,41 +1,26 @@
-import { IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
 import { ArcConfig } from 'konva/lib/shapes/Arc';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Arc, Circle, Group, Shape } from 'react-konva';
-import { CompactColorPicker } from '../../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import { OpacitySlider } from '../../OpacitySlider';
 import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
 import icon from '../../assets/zone/arc.png';
 import { getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../../panel/PropertiesControlRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import {
-    CENTER_DOT_RADIUS,
-    COLOR_SWATCHES,
-    DEFAULT_AOE_COLOR,
-    DEFAULT_AOE_OPACITY,
-    SELECTED_PROPS,
-} from '../../render/SceneTheme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { ArcZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, degtorad, mod360, setOrOmit } from '../../util';
+import { clamp, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
-import { MoveableObjectProperties } from '../CommonProperties';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { PrefabIcon } from '../PrefabIcon';
-import { MIN_RADIUS } from '../bounds';
+import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
-import { useSpinChanged } from '../useSpinChanged';
-import { HollowToggle } from './HollowToggle';
 import { getZoneStyle } from './style';
 
 const NAME = 'Arc';
@@ -43,8 +28,6 @@ const NAME = 'Arc';
 const DEFAULT_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 75;
 const DEFAULT_ANGLE = 90;
-const MIN_ANGLE = 5;
-const MAX_ANGLE = 360;
 
 const ICON_SIZE = 32;
 
@@ -207,7 +190,7 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
 
 function stateChanged(object: ArcZone, state: ArcState) {
     return (
-        state.radius !== object.radius ||
+        state.radius !== object.innerRadius ||
         state.innerRadius !== object.innerRadius ||
         state.rotation !== object.rotation ||
         state.coneAngle !== object.coneAngle
@@ -268,108 +251,6 @@ const ArcDetails: React.FC<ListComponentProps<ArcZone>> = ({ object, isNested })
 };
 
 registerListComponent<ArcZone>(ObjectType.Arc, ArcDetails);
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const ArcEditControl: React.FC<PropertiesControlProps<ArcZone>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: { ...object, radius } }),
-        [dispatch, object],
-    );
-
-    const onInnerRadiusChanged = useSpinChanged(
-        (innerRadius: number) => dispatch({ type: 'update', value: { ...object, innerRadius } }),
-        [dispatch, object],
-    );
-
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onHollowChanged = useCallback(
-        (hollow: boolean) => dispatch({ type: 'update', value: setOrOmit(object, 'hollow', hollow) }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const onAngleChanged = useSpinChanged(
-        (coneAngle: number) => dispatch({ type: 'update', value: { ...object, coneAngle } }),
-        [dispatch, object],
-    );
-
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) => dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } }),
-        [dispatch, object],
-    );
-
-    return (
-        <Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-                <HollowToggle label="Style" checked={object.hollow} onChange={onHollowChanged} />
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <MoveableObjectProperties object={object} />
-            <Stack horizontal tokens={stackTokens}>
-                <SpinButton
-                    label="Radius 1"
-                    labelPosition={Position.top}
-                    value={object.innerRadius.toString()}
-                    onChange={onInnerRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-
-                <SpinButton
-                    label="Radius 2"
-                    labelPosition={Position.top}
-                    value={object.radius.toString()}
-                    onChange={onRadiusChanged}
-                    min={MIN_RADIUS}
-                    step={5}
-                />
-            </Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <SpinButtonUnits
-                    label="Rotation"
-                    labelPosition={Position.top}
-                    value={object.rotation.toString()}
-                    onChange={onRotationChanged}
-                    step={15}
-                    suffix="°"
-                />
-
-                <SpinButtonUnits
-                    label="Angle"
-                    labelPosition={Position.top}
-                    value={object.coneAngle.toString()}
-                    onChange={onAngleChanged}
-                    min={MIN_ANGLE}
-                    max={MAX_ANGLE}
-                    step={5}
-                    suffix="°"
-                />
-            </Stack>
-        </Stack>
-    );
-};
-
-registerPropertiesControl<ArcZone>(ObjectType.Arc, ArcEditControl);
 
 enum HandleId {
     Radius,
@@ -432,7 +313,7 @@ function getConeAngle(object: ArcZone, { pointerPos, activeHandleId }: HandleFun
                 ROTATE_SNAP_DIVISION,
                 ROTATE_SNAP_TOLERANCE,
             );
-            return clamp(coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+            return clamp(coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }
         if (activeHandleId === HandleId.Angle2) {
             const coneAngle = snapAngle(
@@ -441,7 +322,7 @@ function getConeAngle(object: ArcZone, { pointerPos, activeHandleId }: HandleFun
                 ROTATE_SNAP_TOLERANCE,
             );
 
-            return clamp(-coneAngle * 2, MIN_ANGLE, MAX_ANGLE);
+            return clamp(-coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }
     }
 

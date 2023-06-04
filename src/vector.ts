@@ -26,6 +26,10 @@ export function distance(a: Vector2d, b?: Vector2d): number {
 
 export function vecUnit(v: Vector2d): Vector2d {
     const d = distance(v);
+    if (d === 0) {
+        return v;
+    }
+
     return { x: v.x / d, y: v.y / d };
 }
 

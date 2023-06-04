@@ -112,5 +112,3 @@ const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNest
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);
-
-// Properties control registered in ZoneCircle.tsx

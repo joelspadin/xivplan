@@ -1,26 +1,18 @@
-import { IconButton, IStackTokens, Label, Stack } from '@fluentui/react';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
-import icon from '../assets/marker/arrow.png';
-import { CompactColorPicker } from '../CompactColorPicker';
-import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
-import { OpacitySlider } from '../OpacitySlider';
+import icon from '../assets/marker/arrow.png';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { PropertiesControlProps, registerPropertiesControl } from '../panel/PropertiesControlRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
-import { COLOR_SWATCHES, SELECTED_PROPS } from '../render/SceneTheme';
 import { ArrowObject, ObjectType } from '../scene';
-import { useScene } from '../SceneProvider';
 import { usePanelDrag } from '../usePanelDrag';
-import { setOrOmit } from '../util';
-import { ResizeableObjectProperties } from './CommonProperties';
-import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { useShowHighlight } from './highlight';
 
 // TODO: This would be a lot nicer if you could just click on start position
 // and drag to end position instead of having a set initial size/rotation.
@@ -122,59 +114,3 @@ const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ object, isNes
 };
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-const ArrowEditControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ object }) => {
-    const { dispatch } = useScene();
-
-    const onColorChanged = React.useCallback(
-        (color: string) => dispatch({ type: 'update', value: { ...object, color } }),
-        [dispatch, object],
-    );
-
-    const onToggleArrowBegin = React.useCallback(
-        () => dispatch({ type: 'update', value: setOrOmit(object, 'arrowBegin', !object.arrowBegin) }),
-        [dispatch, object],
-    );
-
-    const onToggleArrowEnd = React.useCallback(
-        () => dispatch({ type: 'update', value: setOrOmit(object, 'arrowEnd', !object.arrowEnd) }),
-        [dispatch, object],
-    );
-
-    const onOpacityChanged = React.useCallback(
-        (opacity: number) => {
-            if (opacity !== object.opacity) {
-                dispatch({ type: 'update', value: { ...object, opacity } });
-            }
-        },
-        [dispatch, object],
-    );
-
-    const arrowBeginIcon = object.arrowBegin ? 'TriangleSolidLeft12' : 'Remove';
-    const arrowEndIcon = object.arrowEnd ? 'TriangleSolidRight12' : 'Remove';
-
-    return (
-        <Stack>
-            <Stack horizontal tokens={stackTokens} verticalAlign="end">
-                <CompactColorPicker label="Color" color={object.color} onChange={onColorChanged} />
-
-                <Stack>
-                    <Label>Pointers</Label>
-                    <Stack horizontal>
-                        <IconButton iconProps={{ iconName: arrowBeginIcon }} onClick={onToggleArrowBegin} />
-                        <IconButton iconProps={{ iconName: arrowEndIcon }} onClick={onToggleArrowEnd} />
-                    </Stack>
-                </Stack>
-            </Stack>
-            <CompactSwatchColorPicker color={object.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <OpacitySlider value={object.opacity} onChange={onOpacityChanged} />
-            <ResizeableObjectProperties object={object} />
-        </Stack>
-    );
-};
-
-registerPropertiesControl<ArrowObject>(ObjectType.Arrow, ArrowEditControl);
