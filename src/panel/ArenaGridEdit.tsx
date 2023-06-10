@@ -159,16 +159,6 @@ export const ArenaGridEdit: React.FC = () => {
             {grid.type === GridType.Rectangular && (
                 <Stack horizontal tokens={stackTokens}>
                     <SpinButton
-                        label="Rows"
-                        labelPosition={Position.top}
-                        min={1}
-                        step={1}
-                        value={grid.rows.toString()}
-                        onChange={(ev, newValue) => {
-                            newValue && setGrid({ ...grid, rows: parseInt(newValue) });
-                        }}
-                    />
-                    <SpinButton
                         label="Columns"
                         labelPosition={Position.top}
                         min={1}
@@ -176,6 +166,16 @@ export const ArenaGridEdit: React.FC = () => {
                         value={grid.columns.toString()}
                         onChange={(ev, newValue) => {
                             newValue && setGrid({ ...grid, columns: parseInt(newValue) });
+                        }}
+                    />
+                    <SpinButton
+                        label="Rows"
+                        labelPosition={Position.top}
+                        min={1}
+                        step={1}
+                        value={grid.rows.toString()}
+                        onChange={(ev, newValue) => {
+                            newValue && setGrid({ ...grid, rows: parseInt(newValue) });
                         }}
                     />
                 </Stack>
