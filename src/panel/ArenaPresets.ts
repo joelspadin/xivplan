@@ -130,6 +130,29 @@ const ARENA_PRESET_PANDA_9: ArenaPreset = {
     },
 };
 
+const ARENA_PRESET_PANDA_10: ArenaPreset = {
+    name: 'Anabaseios: The Tenth Circle',
+    shape: ArenaShape.Rectangle,
+    width: 14 * 60,
+    height: 12 * 60,
+    padding: 50,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/p10.png',
+};
+
+const ARENA_PRESET_PANDA_10_CENTER: ArenaPreset = {
+    name: 'Anabaseios: The Tenth Circle (Center)',
+    shape: ArenaShape.Rectangle,
+    width: 6 * 80,
+    height: 8 * 80,
+    padding: DEFAULT_ARENA_PADDING - 20,
+    grid: {
+        type: GridType.Rectangular,
+        columns: 6,
+        rows: 8,
+    },
+};
+
 export const ARENA_PRESETS: Record<string, ArenaPreset[]> = {
     General: [
         ARENA_PRESET_3_3,
@@ -140,5 +163,5 @@ export const ARENA_PRESETS: Record<string, ArenaPreset[]> = {
         ARENA_PRESET_8_DIV_CIRCLE,
     ],
     Eden: [ARENA_PRESET_EDEN_2, ARENA_PRESET_EDEN_5, ARENA_PRESET_EDEN_12],
-    Pandæmonium: [ARENA_PRESET_PANDA_9],
+    Pandæmonium: [ARENA_PRESET_PANDA_9, ARENA_PRESET_PANDA_10, ARENA_PRESET_PANDA_10_CENTER],
 };
