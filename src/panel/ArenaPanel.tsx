@@ -4,6 +4,7 @@ import {
     DialogFooter,
     IModalProps,
     IModalStyles,
+    INavLink,
     INavLinkGroup,
     IStackTokens,
     IStyle,
@@ -21,12 +22,12 @@ import { useBoolean } from '@fluentui/react-hooks';
 import React, { MouseEventHandler, useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
+import { ARENA_PRESETS } from '../presets/ArenaPresets';
 import { ScenePreview } from '../render/SceneRenderer';
 import { ArenaPreset, Scene } from '../scene';
 import { useScene } from '../SceneProvider';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
-import { ARENA_PRESETS } from './ArenaPresets';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
 import { PANEL_PADDING } from './PanelStyles';
 
@@ -71,23 +72,35 @@ const SelectPresetButton: React.FC = () => {
     );
 };
 
+const KeySep = '#';
+
+function presetsToLinks(category: string, presets: Record<string, ArenaPreset[]>): INavLink[] {
+    return Object.keys(presets).map((key) => {
+        return { name: key, url: '', key: `${category}${KeySep}${key}` };
+    });
+}
+
+function getPresetsForKey(key: string | undefined) {
+    const [key1, key2] = key?.split(KeySep) ?? [];
+    return ARENA_PRESETS[key1 ?? '']?.[key2 ?? ''] ?? [];
+}
+
 const navLinkGroups: INavLinkGroup[] = [
-    {
-        links: Object.keys(ARENA_PRESETS).map((category) => {
-            return {
-                name: category,
-                url: '#',
-                key: category,
-            };
-        }),
-    },
+    ...Object.entries(ARENA_PRESETS).map(([key, value]) => {
+        return {
+            name: key,
+            links: presetsToLinks(key, value),
+        } as INavLinkGroup;
+    }),
 ];
 
 const PREVIEW_SIZE = 240;
 
+// TODO: limit nav height to ~80vh and scroll
+
 const SelectPresetDialog: React.FC<IModalProps> = (props) => {
     const { dispatch } = useScene();
-    const [category, setCategory] = useState('General');
+    const [key, setKey] = useState(navLinkGroups[0]?.links[0]?.key);
     const [selected, setSelected] = useState<ArenaPreset>();
 
     const applyPreset = useCallback(
@@ -110,24 +123,28 @@ const SelectPresetDialog: React.FC<IModalProps> = (props) => {
         [applyPreset, selected],
     );
 
-    const categoryPresets = ARENA_PRESETS[category] ?? [];
+    const presets = getPresetsForKey(key);
 
     return (
-        <BaseDialog headerText="Arena preset" {...props} dialogStyles={dialogStyles} styles={modalStyles}>
+        <BaseDialog headerText="Arena presets" {...props} dialogStyles={dialogStyles} styles={modalStyles}>
             <Stack horizontal tokens={{ childrenGap: 20 }}>
                 <Nav
                     groups={navLinkGroups}
-                    selectedKey={category}
+                    selectedKey={key}
                     onLinkClick={(ev, item) => {
                         if (item) {
-                            setCategory(item.name);
+                            if (item.links) {
+                                return;
+                            }
+
+                            setKey(item.key);
                             setSelected(undefined);
                         }
                     }}
                 />
                 <div>
                     <ul className={classNames.list}>
-                        {categoryPresets.map((preset) => (
+                        {presets?.map((preset) => (
                             <PresetItem
                                 key={preset.name}
                                 preset={preset}
@@ -192,6 +209,7 @@ const getPresetStyles: IStyleFunction<Theme, IPresetStyles> = (theme) => {
             borderColor: theme.palette.themePrimary,
         },
         header: {
+            textAlign: 'center',
             marginBottom: -10,
             paddingInlineStart: theme.spacing.s1,
             paddingInlineEnd: theme.spacing.s1,

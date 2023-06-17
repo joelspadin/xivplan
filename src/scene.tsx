@@ -96,6 +96,7 @@ export interface Arena {
     readonly padding: number;
     readonly grid: Grid;
     readonly backgroundImage?: string;
+    readonly backgroundOpacity?: number;
 }
 
 export interface ArenaPreset extends Arena {

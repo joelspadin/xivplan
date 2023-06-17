@@ -76,9 +76,10 @@ const BackgroundImage: React.FC = () => {
         return null;
     }
 
+    const opacity = scene.arena.backgroundOpacity ?? 100;
     const position = getCanvasArenaRect(scene);
 
-    return <Image image={image} {...position} />;
+    return <Image image={image} opacity={opacity / 100} {...position} />;
 };
 
 const BackgroundRenderer: React.FC = () => {

@@ -52,6 +52,11 @@ export interface SetArenaBackgroundAction {
     value: string | undefined;
 }
 
+export interface SetArenaBackgroundOpacityAction {
+    type: 'arenaBackgroundOpacity';
+    value: number;
+}
+
 export type ArenaAction =
     | SetArenaAction
     | SetArenaShapeAction
@@ -59,7 +64,8 @@ export type ArenaAction =
     | SetArenaHeightAction
     | SetArenaPaddingAction
     | SetArenaGridAction
-    | SetArenaBackgroundAction;
+    | SetArenaBackgroundAction
+    | SetArenaBackgroundOpacityAction;
 
 export interface ObjectUpdateAction {
     type: 'update';
@@ -501,6 +507,9 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'arenaBackground':
             return updateArena(state, { ...state.scene.arena, backgroundImage: action.value });
+
+        case 'arenaBackgroundOpacity':
+            return updateArena(state, { ...state.scene.arena, backgroundOpacity: action.value });
 
         case 'add':
             return addObjects(state, action.object);

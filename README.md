@@ -54,3 +54,5 @@ Undo/redo logic is based on [frontendphil/react-undo-redo](https://github.com/fr
 Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
 
 [Limit cut counter icons](https://magentalava.gumroad.com/l/limitcuticons) by yullanellis.
+
+Some [arena background images](https://github.com/kotarou3/ffxiv-arena-images) by kotarou3.

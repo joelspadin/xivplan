@@ -115,7 +115,7 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, wi
     ];
 
     return (
-        <Stage {...size} x={x} y={y} scaleX={scale} scaleY={scale}>
+        <Stage x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
             <DefaultCursorProvider>
                 <ThemeContext.Provider value={theme}>
                     <SceneContext.Provider value={sceneContext}>
