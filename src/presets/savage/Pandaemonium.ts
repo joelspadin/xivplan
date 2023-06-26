@@ -47,4 +47,14 @@ const PRESET_10_CENTER: ArenaPreset = {
     },
 };
 
-export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [PRESET_7, PRESET_9, PRESET_10, PRESET_10_CENTER];
+const PRESET_11: ArenaPreset = {
+    name: 'Anabaseios: The Eleventh Circle',
+    shape: ArenaShape.Circle,
+    width: 600,
+    height: 600,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/p11.png',
+};
+
+export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [PRESET_7, PRESET_9, PRESET_10, PRESET_10_CENTER, PRESET_11];
