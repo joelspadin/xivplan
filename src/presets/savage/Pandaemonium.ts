@@ -57,4 +57,55 @@ const PRESET_11: ArenaPreset = {
     backgroundImage: '/arena/p11.png',
 };
 
-export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [PRESET_7, PRESET_9, PRESET_10, PRESET_10_CENTER, PRESET_11];
+const PRESET_12: ArenaPreset = {
+    name: 'Anabaseios: The Twelfth Circle',
+    shape: ArenaShape.Rectangle,
+    width: 600,
+    height: 600,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: {
+        type: GridType.Rectangular,
+        rows: 4,
+        columns: 2,
+    },
+    backgroundImage: '/arena/p12.png',
+};
+
+const PRESET_12_CHECKERBOARD: ArenaPreset = {
+    name: 'Anabaseios: The Twelfth Circle (Checkerboard)',
+    shape: ArenaShape.Rectangle,
+    width: 600,
+    height: 600,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: {
+        type: GridType.Rectangular,
+        rows: 4,
+        columns: 2,
+    },
+    backgroundImage: '/arena/p12_checker.png',
+};
+
+const PRESET_12_CHECKERBOARD_2: ArenaPreset = {
+    name: 'Anabaseios: The Twelfth Circle (Checkerboard Mirror)',
+    shape: ArenaShape.Rectangle,
+    width: 600,
+    height: 600,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: {
+        type: GridType.Rectangular,
+        rows: 4,
+        columns: 2,
+    },
+    backgroundImage: '/arena/p12_checker2.png',
+};
+
+export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [
+    PRESET_7,
+    PRESET_9,
+    PRESET_10,
+    PRESET_10_CENTER,
+    PRESET_11,
+    PRESET_12,
+    PRESET_12_CHECKERBOARD,
+    PRESET_12_CHECKERBOARD_2,
+];
