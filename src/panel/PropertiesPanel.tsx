@@ -17,6 +17,7 @@ import {
     isMoveable,
     isNamed,
     isParty,
+    isPolygonZone,
     isRadiusObject,
     isResizable,
     isRotateable,
@@ -42,6 +43,7 @@ import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
 import { OpacityControl } from './properties/OpacityControl';
 import { PartyIconControl } from './properties/PartyControls';
+import { PolygonSidesControl } from './properties/PolygonControls';
 import { PositionControl } from './properties/PositionControl';
 import { InnerRadiusControl, RadiusControl } from './properties/RadiusControl';
 import { RotationControl } from './properties/RotationControl';
@@ -127,6 +129,7 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
+                <ControlCondition objects={objects} test={isPolygonZone} control={PolygonSidesControl} />
                 <ControlCondition
                     objects={objects}
                     test={(x) => isArcZone(x) || isConeZone(x)}

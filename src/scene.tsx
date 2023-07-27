@@ -31,6 +31,7 @@ export enum ObjectType {
     LineStack = 'lineStack',
     Marker = 'marker',
     Party = 'party',
+    Polygon = 'polygon',
     Proximity = 'proximity',
     Rect = 'rect',
     RightTriangle = 'rightTriangle',
@@ -255,6 +256,18 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.RightTriangle,
 );
 
+export interface PolygonZone
+    extends RadiusObject,
+        ColoredObject,
+        TransparentObject,
+        HollowObject,
+        RotateableObject,
+        SceneId {
+    readonly type: ObjectType.Polygon;
+    readonly sides: number;
+}
+export const isPolygonZone = makeObjectTest<PolygonZone>(ObjectType.Polygon);
+
 export interface ExaflareZone extends RadiusObject, RotateableObject, ColoredObject, TransparentObject, SceneId {
     readonly type: ObjectType.Exaflare;
     readonly length: number;
@@ -386,6 +399,7 @@ export const supportsHollow = makeObjectTest<HollowObject & UnknownObject>(
     ObjectType.Rect,
     ObjectType.Triangle,
     ObjectType.RightTriangle,
+    ObjectType.Polygon,
 );
 
 export type SceneObject = UnknownObject | Zone | Marker | Actor | IconObject | Tether;
