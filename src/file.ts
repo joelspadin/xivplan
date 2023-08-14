@@ -1,7 +1,7 @@
+import { FileSource, LocalFileSource } from './SceneProvider';
 import { openFileLocal, saveFileLocal } from './file/localFile';
 import { upgradeScene } from './file/upgrade';
 import { Scene } from './scene';
-import { FileSource, LocalFileSource } from './SceneProvider';
 
 export async function saveFile(scene: Readonly<Scene>, source: FileSource): Promise<void> {
     switch (source.type) {
@@ -20,6 +20,17 @@ async function openFileUnvalidated(source: LocalFileSource) {
         case 'local':
             return await openFileLocal(source.name);
     }
+}
+
+export function sceneToText(scene: Readonly<Scene>): string {
+    return btoa(JSON.stringify(scene));
+}
+
+export function textToScene(data: string): Scene {
+    const scene = JSON.parse(atob(data));
+    validateScene(scene);
+
+    return scene;
 }
 
 export function sceneToJson(scene: Readonly<Scene>): string {

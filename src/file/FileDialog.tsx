@@ -26,7 +26,7 @@ import React, { FormEvent, useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-async';
 import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
-import { openFile, saveFile } from '../file';
+import { openFile, saveFile, textToScene } from '../file';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
@@ -237,17 +237,12 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
             }
         }
 
-        // HACK: There has to be a better way to do this.
-        const [error, scene] = (() => {
-            try {
-                return [undefined, JSON.parse(atob(data))];
-            } catch (ex) {
-                return ['Invalid Import String', undefined];
-            }
-        })();
-
-        if (error) {
-            setError(error);
+        let scene;
+        try {
+            scene = await textToScene(data);
+        } catch (ex) {
+            console.log(ex);
+            setError('Invalid Import String');
             return;
         }
 
