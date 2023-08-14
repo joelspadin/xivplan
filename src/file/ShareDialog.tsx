@@ -3,6 +3,7 @@ import {
     IModalProps,
     IStyle,
     IStyleFunctionOrObject,
+    Label,
     Pivot,
     PivotItem,
     PrimaryButton,
@@ -10,7 +11,7 @@ import {
     Theme,
     mergeStyleSets,
 } from '@fluentui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { useScene } from '../SceneProvider';
 
@@ -50,18 +51,31 @@ const dialogStyles: IStyleFunctionOrObject<Theme, IBaseDialogStyles> = {
     },
 };
 
+const labelStyles = mergeStyleSets({
+    message: { transition: 'none', opacity: 1 } as IStyle,
+    hidden: { transition: 'opacity 0.5s ease-in-out', opacity: 0 } as IStyle,
+});
+
 const ShareText: React.FC = () => {
     const { scene } = useScene();
     const data = btoa(JSON.stringify(scene));
+    const [copyMessageVisible, setMessageVisibility] = useState(false);
+    const [timeout, setMessageTimeout] = useState<number>();
 
     const doCopyToClipboard = () => {
         navigator.clipboard.writeText(data);
+        setMessageVisibility(true);
+        clearTimeout(timeout);
+        setMessageTimeout(setTimeout(() => setMessageVisibility(false), 2000));
     };
+
+    const labelClasses = `${labelStyles.message} ${copyMessageVisible ? '' : labelStyles.hidden}`;
 
     return (
         <>
             <TextField multiline readOnly rows={7} value={data} />
             <DialogFooter className={classNames.footer}>
+                <Label className={labelClasses}>Successfully Copied</Label>
                 <PrimaryButton iconProps={copyIconProps} text="Copy to Clipboard" onClick={doCopyToClipboard} />
             </DialogFooter>
         </>
