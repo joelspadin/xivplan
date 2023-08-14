@@ -4,13 +4,14 @@ import React, { useCallback, useMemo } from 'react';
 import { useScene, useSceneUndoRedo } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
+import { ShareDialog } from './file/ShareDialog';
 import { useCommandBar } from './useCommandBar';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 
 export const MainCommandBar: React.FC = () => {
     const [openFileOpen, { setTrue: showOpenFile, setFalse: hideOpenFile }] = useBoolean(false);
     const [saveAsOpen, { setTrue: showSaveAs, setFalse: hideSaveAs }] = useBoolean(false);
-    // const [shareOpen, { setTrue: showShare, setFalse: hideShare }] = useBoolean(false);
+    const [shareOpen, { setTrue: showShare, setFalse: hideShare }] = useBoolean(false);
 
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
@@ -63,14 +64,14 @@ export const MainCommandBar: React.FC = () => {
                 disabled: !redo.isPossible,
                 onClick: redo,
             },
-            // {
-            //     key: 'share',
-            //     text: 'Share',
-            //     iconProps: { iconName: 'Share' },
-            //     onClick: showShare,
-            // },
+            {
+                key: 'share',
+                text: 'Share',
+                iconProps: { iconName: 'Share' },
+                onClick: showShare,
+            },
         ],
-        [save, isDirty, undo, redo, showOpenFile, showSaveAs],
+        [save, isDirty, undo, redo, showOpenFile, showSaveAs, showShare],
     );
 
     useCommandBar(<CommandBar items={items} />, [items]);
@@ -79,7 +80,7 @@ export const MainCommandBar: React.FC = () => {
         <>
             <OpenDialog isOpen={openFileOpen} onDismiss={hideOpenFile} />
             <SaveAsDialog isOpen={saveAsOpen} onDismiss={hideSaveAs} />
-            {/* <ShareDialog isOpen={shareOpen} onDismiss={hideShare} /> */}
+            <ShareDialog isOpen={shareOpen} onDismiss={hideShare} />
         </>
     );
 };

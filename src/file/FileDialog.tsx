@@ -22,7 +22,7 @@ import {
     useTheme,
 } from '@fluentui/react';
 import { useConst, useForceUpdate } from '@fluentui/react-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FormEvent, useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-async';
 import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
@@ -65,6 +65,9 @@ export const OpenDialog: React.FC<IModalProps> = (props) => {
                 {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
                     <p>TODO</p>
                 </PivotItem> */}
+                <PivotItem headerText="Import String" className={classNames.tab}>
+                    <ImportFromString onDismiss={props.onDismiss} />
+                </PivotItem>
             </Pivot>
         </BaseDialog>
     );
@@ -209,6 +212,79 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
             />
             <DialogFooter className={classNames.footer}>
                 <PrimaryButton text="Open" disabled={selection.count === 0} onClick={openCallback} />
+                <DefaultButton text="Cancel" onClick={onDismiss} />
+            </DialogFooter>
+        </>
+    );
+};
+
+const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
+    const loadScene = useLoadScene();
+    const setSavedState = useSetSavedState();
+    const isDirty = useIsDirty();
+    const theme = useTheme();
+    const [data, setData] = useState<string | undefined>('');
+    const [error, setError] = useState<string | undefined>('');
+
+    const importCallback = useCallback(async () => {
+        if (!data) {
+            return;
+        }
+
+        if (isDirty) {
+            if (!(await confirmUnsavedChanges(theme))) {
+                return;
+            }
+        }
+
+        // HACK: There has to be a better way to do this.
+        const [error, scene] = (() => {
+            try {
+                return [undefined, JSON.parse(atob(data))];
+            } catch (ex) {
+                return ['Invalid Import String', undefined];
+            }
+        })();
+
+        if (error) {
+            setError(error);
+            return;
+        }
+
+        loadScene(scene, undefined);
+        setSavedState(scene);
+        onDismiss?.();
+    }, [data, isDirty, theme, loadScene, setSavedState, onDismiss]);
+
+    const onKeyChange = useCallback(
+        (ev: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
+            setData(value);
+            setError(undefined);
+        },
+        [setError, setData],
+    );
+
+    const onKeyPress = useCallback(
+        (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            if (ev.key === 'Enter') {
+                importCallback();
+            }
+        },
+        [importCallback],
+    );
+
+    return (
+        <>
+            <TextField
+                label="Enter Import String"
+                multiline
+                rows={7}
+                onChange={onKeyChange}
+                onKeyPress={onKeyPress}
+                errorMessage={error}
+            />
+            <DialogFooter className={classNames.footer}>
+                <PrimaryButton text="Import" disabled={!data} onClick={importCallback} />
                 <DefaultButton text="Cancel" onClick={onDismiss} />
             </DialogFooter>
         </>
