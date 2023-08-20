@@ -7,12 +7,11 @@ import {
     Pivot,
     PivotItem,
     PrimaryButton,
-    Spinner,
     TextField,
     Theme,
     mergeStyleSets,
 } from '@fluentui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { useScene } from '../SceneProvider';
 import { sceneToText } from '../file';
@@ -60,25 +59,22 @@ const labelStyles = mergeStyleSets({
 
 const ShareText: React.FC = () => {
     const { scene } = useScene();
-    const [data, setData] = useState<string | undefined>(undefined);
+    const [data, setData] = useState<string>('');
     const [copyMessageVisible, setMessageVisibility] = useState(false);
-    const [timeout, setMessageTimeout] = useState<number>();
-
-    useEffect(() => {
-        (async () => setData(await sceneToText(scene)))();
-    }, [scene]);
+    const timerRef = useRef<number>();
 
     const doCopyToClipboard = () => {
-        navigator.clipboard.writeText(data || '');
+        navigator.clipboard.writeText(data);
         setMessageVisibility(true);
-        clearTimeout(timeout);
-        setMessageTimeout(setTimeout(() => setMessageVisibility(false), 2000));
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => setMessageVisibility(false), 2000);
     };
     const labelClasses = `${labelStyles.message} ${copyMessageVisible ? '' : labelStyles.hidden}`;
 
-    if (!data) {
-        return <Spinner />;
-    }
+    useEffect(() => {
+        setData(sceneToText(scene));
+        return () => clearTimeout(timerRef.current);
+    }, [scene]);
 
     return (
         <>

@@ -251,7 +251,7 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
         onDismiss?.();
     }, [data, isDirty, theme, loadScene, setSavedState, onDismiss]);
 
-    const onKeyChange = useCallback(
+    const onChange = useCallback(
         (ev: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
             setData(value);
             setError(undefined);
@@ -259,9 +259,10 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
         [setError, setData],
     );
 
-    const onKeyPress = useCallback(
+    const onKeyDown = useCallback(
         (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             if (ev.key === 'Enter') {
+                ev.preventDefault();
                 importCallback();
             }
         },
@@ -274,8 +275,8 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
                 label="Enter Plan Code"
                 multiline
                 rows={7}
-                onChange={onKeyChange}
-                onKeyPress={onKeyPress}
+                onChange={onChange}
+                onKeyDown={onKeyDown}
                 errorMessage={error}
             />
             <DialogFooter className={classNames.footer}>
