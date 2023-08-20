@@ -38,7 +38,7 @@ export const ShareDialog: React.FC<IModalProps> = (props) => {
     return (
         <BaseDialog headerText="Share" {...props} dialogStyles={dialogStyles}>
             <Pivot>
-                <PivotItem headerText="Export String" className={classNames.tab}>
+                <PivotItem headerText="Plan Code" className={classNames.tab}>
                     <ShareText />
                 </PivotItem>
             </Pivot>

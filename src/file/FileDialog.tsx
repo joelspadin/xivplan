@@ -65,7 +65,7 @@ export const OpenDialog: React.FC<IModalProps> = (props) => {
                 {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
                     <p>TODO</p>
                 </PivotItem> */}
-                <PivotItem headerText="Import String" className={classNames.tab}>
+                <PivotItem headerText="Plan Code" className={classNames.tab}>
                     <ImportFromString onDismiss={props.onDismiss} />
                 </PivotItem>
             </Pivot>
@@ -241,8 +241,8 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
         try {
             scene = await textToScene(data);
         } catch (ex) {
-            console.log(ex);
-            setError('Invalid Import String');
+            console.error(`Invalid Plan Code: ${ex}`);
+            setError('Invalid Plan Code');
             return;
         }
 
@@ -271,7 +271,7 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
     return (
         <>
             <TextField
-                label="Enter Import String"
+                label="Enter Plan Code"
                 multiline
                 rows={7}
                 onChange={onKeyChange}
