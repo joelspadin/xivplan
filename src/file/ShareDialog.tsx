@@ -11,7 +11,8 @@ import {
     Theme,
     mergeStyleSets,
 } from '@fluentui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useBoolean } from '@fluentui/react-hooks';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { useScene } from '../SceneProvider';
 import { sceneToText } from '../file';
@@ -59,20 +60,19 @@ const labelStyles = mergeStyleSets({
 
 const ShareText: React.FC = () => {
     const { scene } = useScene();
-    const [data, setData] = useState<string>('');
-    const [copyMessageVisible, setMessageVisibility] = useState(false);
+    const data = useMemo(() => sceneToText(scene), [scene]);
+    const [copyMessageVisible, setMessageVisibility] = useBoolean(false);
     const timerRef = useRef<number>();
 
     const doCopyToClipboard = () => {
         navigator.clipboard.writeText(data);
-        setMessageVisibility(true);
+        setMessageVisibility.setTrue();
         clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => setMessageVisibility(false), 2000);
+        timerRef.current = setTimeout(() => setMessageVisibility.setFalse(), 2000);
     };
     const labelClasses = `${labelStyles.message} ${copyMessageVisible ? '' : labelStyles.hidden}`;
 
     useEffect(() => {
-        setData(sceneToText(scene));
         return () => clearTimeout(timerRef.current);
     }, [scene]);
 
