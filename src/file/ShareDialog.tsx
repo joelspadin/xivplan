@@ -68,13 +68,13 @@ const ShareText: React.FC = () => {
         navigator.clipboard.writeText(data);
         setMessageVisibility.setTrue();
         clearTimeout(timerRef.current);
-        timerRef.current = setTimeout(() => setMessageVisibility.setFalse(), 2000);
+        timerRef.current = setTimeout(setMessageVisibility.setFalse, 2000);
     };
     const labelClasses = `${labelStyles.message} ${copyMessageVisible ? '' : labelStyles.hidden}`;
 
     useEffect(() => {
         return () => clearTimeout(timerRef.current);
-    }, [scene]);
+    }, []);
 
     return (
         <>
