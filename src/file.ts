@@ -1,7 +1,8 @@
+import { deflate, inflate } from 'pako';
+import { FileSource, LocalFileSource } from './SceneProvider';
 import { openFileLocal, saveFileLocal } from './file/localFile';
 import { upgradeScene } from './file/upgrade';
 import { Scene } from './scene';
-import { FileSource, LocalFileSource } from './SceneProvider';
 
 export async function saveFile(scene: Readonly<Scene>, source: FileSource): Promise<void> {
     switch (source.type) {
@@ -20,6 +21,19 @@ async function openFileUnvalidated(source: LocalFileSource) {
         case 'local':
             return await openFileLocal(source.name);
     }
+}
+
+export function sceneToText(scene: Readonly<Scene>): string {
+    const binaryData = deflate(JSON.stringify(scene));
+    return btoa(String.fromCharCode(...binaryData));
+}
+
+export function textToScene(data: string): Scene {
+    const binaryData = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
+    const scene = JSON.parse(String.fromCharCode(...inflate(binaryData)));
+
+    validateScene(scene);
+    return scene;
 }
 
 export function sceneToJson(scene: Readonly<Scene>): string {

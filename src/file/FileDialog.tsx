@@ -22,11 +22,11 @@ import {
     useTheme,
 } from '@fluentui/react';
 import { useConst, useForceUpdate } from '@fluentui/react-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FormEvent, useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-async';
 import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
-import { openFile, saveFile } from '../file';
+import { openFile, saveFile, textToScene } from '../file';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
@@ -65,6 +65,9 @@ export const OpenDialog: React.FC<IModalProps> = (props) => {
                 {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
                     <p>TODO</p>
                 </PivotItem> */}
+                <PivotItem headerText="Plan Code" className={classNames.tab}>
+                    <ImportFromString onDismiss={props.onDismiss} />
+                </PivotItem>
             </Pivot>
         </BaseDialog>
     );
@@ -209,6 +212,75 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
             />
             <DialogFooter className={classNames.footer}>
                 <PrimaryButton text="Open" disabled={selection.count === 0} onClick={openCallback} />
+                <DefaultButton text="Cancel" onClick={onDismiss} />
+            </DialogFooter>
+        </>
+    );
+};
+
+const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
+    const loadScene = useLoadScene();
+    const setSavedState = useSetSavedState();
+    const isDirty = useIsDirty();
+    const theme = useTheme();
+    const [data, setData] = useState<string | undefined>('');
+    const [error, setError] = useState<string | undefined>('');
+
+    const importCallback = useCallback(async () => {
+        if (!data) {
+            return;
+        }
+
+        if (isDirty) {
+            if (!(await confirmUnsavedChanges(theme))) {
+                return;
+            }
+        }
+
+        let scene;
+        try {
+            scene = await textToScene(data);
+        } catch (ex) {
+            console.error(`Invalid Plan Code: ${ex}`);
+            setError('Invalid Plan Code');
+            return;
+        }
+
+        loadScene(scene, undefined);
+        setSavedState(scene);
+        onDismiss?.();
+    }, [data, isDirty, theme, loadScene, setSavedState, onDismiss]);
+
+    const onChange = useCallback(
+        (ev: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
+            setData(value);
+            setError(undefined);
+        },
+        [setError, setData],
+    );
+
+    const onKeyDown = useCallback(
+        (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                importCallback();
+            }
+        },
+        [importCallback],
+    );
+
+    return (
+        <>
+            <TextField
+                label="Enter Plan Code"
+                multiline
+                rows={7}
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                errorMessage={error}
+            />
+            <DialogFooter className={classNames.footer}>
+                <PrimaryButton text="Import" disabled={!data} onClick={importCallback} />
                 <DefaultButton text="Cancel" onClick={onDismiss} />
             </DialogFooter>
         </>
