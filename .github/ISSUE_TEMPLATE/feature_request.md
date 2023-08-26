@@ -17,7 +17,7 @@ You may discuss the following content:
 * ✅ Patch 6.0-6.4 extreme trials
 * ✅ Aglaia and Euphrosyne
 * ✅ Normal raids
-* ✅ Savage raids 1st-9th circles
+* ✅ Savage raids 1st-11th circles and 12th circle first phase only
 * ✅ All ultimates (if I do these at all, I don't do them blind)
 
 Please do not discuss the following content:
