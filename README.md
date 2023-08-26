@@ -40,7 +40,7 @@ so it is not well suited to quickly diagramming during raids.
 | Create multiple steps                 | ✅     |
 | Save scenes to browser                | ✅     |
 | Save scenes to gist                   |        |
-| Share scenes                          |        |
+| Share scenes                          | ✅     |
 | Context menus                         |        |
 | Keyboard shortcut help                | ✅     |
 | Undo/redo                             | ✅     |
