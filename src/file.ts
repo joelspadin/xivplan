@@ -24,16 +24,13 @@ async function openFileUnvalidated(source: LocalFileSource) {
 }
 
 export function sceneToText(scene: Readonly<Scene>): string {
-    const binaryData = deflate(JSON.stringify(scene));
+    const binaryData = deflate(sceneToJson(scene));
     return btoa(String.fromCharCode(...binaryData));
 }
 
 export function textToScene(data: string): Scene {
     const binaryData = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
-    const scene = JSON.parse(String.fromCharCode(...inflate(binaryData)));
-
-    validateScene(scene);
-    return scene;
+    return jsonToScene(String.fromCharCode(...inflate(binaryData)));
 }
 
 export function sceneToJson(scene: Readonly<Scene>): string {
@@ -41,10 +38,10 @@ export function sceneToJson(scene: Readonly<Scene>): string {
 }
 
 export function jsonToScene(json: string): Scene {
-    const scene = JSON.parse(json);
-    validateScene(scene);
+    const scene = upgradeScene(JSON.parse(json));
 
-    return upgradeScene(scene);
+    validateScene(scene);
+    return scene;
 }
 
 function validateScene(obj: unknown): asserts obj is Scene {
