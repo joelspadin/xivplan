@@ -113,6 +113,20 @@ const PRESET_12_OCTAGON: ArenaPreset = {
     backgroundImage: '/arena/p12_octagon.png',
 };
 
+const PRESET_12_PHASE_2: ArenaPreset = {
+    name: 'Anabaseios: The Twelfth Circle (Phase 2)',
+    shape: ArenaShape.Rectangle,
+    width: 600,
+    height: 450,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: {
+        type: GridType.Rectangular,
+        rows: 3,
+        columns: 2,
+    },
+    backgroundImage: '/arena/p12-p2.png',
+};
+
 export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [
     PRESET_7,
     PRESET_9,
@@ -123,4 +137,5 @@ export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [
     PRESET_12_CHECKERBOARD,
     PRESET_12_CHECKERBOARD_2,
     PRESET_12_OCTAGON,
+    PRESET_12_PHASE_2,
 ];
