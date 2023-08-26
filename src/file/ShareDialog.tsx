@@ -4,8 +4,6 @@ import {
     IStyle,
     IStyleFunctionOrObject,
     Label,
-    Pivot,
-    PivotItem,
     PrimaryButton,
     TextField,
     Theme,
@@ -37,11 +35,7 @@ const copyIconProps = { iconName: 'Copy' };
 export const ShareDialog: React.FC<IModalProps> = (props) => {
     return (
         <BaseDialog headerText="Share" {...props} dialogStyles={dialogStyles}>
-            <Pivot>
-                <PivotItem headerText="Plan Code" className={classNames.tab}>
-                    <ShareText />
-                </PivotItem>
-            </Pivot>
+            <ShareText />
         </BaseDialog>
     );
 };
@@ -60,12 +54,15 @@ const labelStyles = mergeStyleSets({
 
 const ShareText: React.FC = () => {
     const { scene } = useScene();
-    const data = useMemo(() => sceneToText(scene), [scene]);
+    const url = useMemo(() => {
+        const data = encodeURIComponent(sceneToText(scene));
+        return `${location.protocol}//${location.host}${location.pathname}?plan=${data}`;
+    }, [scene]);
     const [copyMessageVisible, setMessageVisibility] = useBoolean(false);
     const timerRef = useRef<number>();
 
     const doCopyToClipboard = () => {
-        navigator.clipboard.writeText(data);
+        navigator.clipboard.writeText(url);
         setMessageVisibility.setTrue();
         clearTimeout(timerRef.current);
         timerRef.current = setTimeout(setMessageVisibility.setFalse, 2000);
@@ -78,10 +75,18 @@ const ShareText: React.FC = () => {
 
     return (
         <>
-            <TextField multiline readOnly rows={7} value={data} />
+            <div>
+                <p>Link to this plan:</p>
+                <TextField multiline readOnly rows={7} value={url} />
+                <p>
+                    If the link is too long for your browser to open, paste the text into{' '}
+                    <strong>Open &gt; Import Plan Link</strong> instead.
+                </p>
+            </div>
+
             <DialogFooter className={classNames.footer}>
                 <Label className={labelClasses}>Successfully Copied</Label>
-                <PrimaryButton iconProps={copyIconProps} text="Copy to Clipboard" onClick={doCopyToClipboard} />
+                <PrimaryButton iconProps={copyIconProps} text="Copy to clipboard" onClick={doCopyToClipboard} />
             </DialogFooter>
         </>
     );

@@ -148,17 +148,21 @@ function getCurrentStep(state: EditorState): SceneStep {
     return step;
 }
 
-const INITIAL_STATE: EditorState = {
-    scene: DEFAULT_SCENE,
-    currentStep: 0,
-};
-
 const HISTORY_SIZE = 1000;
 
 const { UndoProvider, Context, usePresent, useUndoRedo, useReset } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
-export const SceneProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    return <UndoProvider initialState={INITIAL_STATE}>{children}</UndoProvider>;
+export interface SceneProviderProps extends PropsWithChildren {
+    initialScene?: Scene;
+}
+
+export const SceneProvider: React.FC<SceneProviderProps> = ({ initialScene, children }) => {
+    const initialState: EditorState = {
+        scene: initialScene ?? DEFAULT_SCENE,
+        currentStep: 0,
+    };
+
+    return <UndoProvider initialState={initialState}>{children}</UndoProvider>;
 };
 
 export const SceneContext = Context;

@@ -27,6 +27,7 @@ import { useAsync } from 'react-async';
 import { useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { openFile, saveFile, textToScene } from '../file';
+import { Scene } from '../scene';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
@@ -65,7 +66,7 @@ export const OpenDialog: React.FC<IModalProps> = (props) => {
                 {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
                     <p>TODO</p>
                 </PivotItem> */}
-                <PivotItem headerText="Plan Code" className={classNames.tab}>
+                <PivotItem headerText="Import Plan Link" className={classNames.tab}>
                     <ImportFromString onDismiss={props.onDismiss} />
                 </PivotItem>
             </Pivot>
@@ -218,6 +219,17 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     );
 };
 
+function decodeScene(text: string): Scene {
+    try {
+        const url = new URL(text);
+        text = url.searchParams.get('plan') ?? '';
+    } catch {
+        text = decodeURIComponent(text);
+    }
+
+    return textToScene(text);
+}
+
 const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const loadScene = useLoadScene();
     const setSavedState = useSetSavedState();
@@ -237,12 +249,12 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
             }
         }
 
-        let scene;
+        let scene: Scene;
         try {
-            scene = await textToScene(data);
+            scene = decodeScene(data);
         } catch (ex) {
-            console.error(`Invalid Plan Code: ${ex}`);
-            setError('Invalid Plan Code');
+            console.error('Invalid plan data', ex);
+            setError('Invalid link');
             return;
         }
 
@@ -272,7 +284,7 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
     return (
         <>
             <TextField
-                label="Enter Plan Code"
+                label="Enter plan link"
                 multiline
                 rows={7}
                 onChange={onChange}

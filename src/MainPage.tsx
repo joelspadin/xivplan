@@ -1,13 +1,16 @@
 import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DirtyProvider } from './DirtyProvider';
 import { EditModeProvider } from './EditModeProvider';
+import { textToScene } from './file';
 import { RegularHotkeyHandler } from './HotkeyHandler';
 import { MainCommandBar } from './MainCommandBar';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
+import { Scene } from './scene';
 import { SceneProvider, useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
@@ -19,9 +22,25 @@ interface IContentStyles {
 
 const getClassNames = classNamesFunction<Theme, IContentStyles>();
 
+function getInitialScene(searchParams: URLSearchParams): Scene | undefined {
+    const data = searchParams.get('plan');
+    if (data) {
+        try {
+            return textToScene(data);
+        } catch (ex) {
+            console.error('Invalid plan data from URL', ex);
+        }
+    }
+
+    return undefined;
+}
+
 export const MainPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const initialScene = useMemo(() => getInitialScene(searchParams), [searchParams]);
+
     return (
-        <SceneProvider>
+        <SceneProvider initialScene={initialScene}>
             <DirtyProvider>
                 <EditModeProvider>
                     <SelectionProvider>
