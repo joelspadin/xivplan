@@ -119,7 +119,7 @@ const DrawTargetLayer: React.FC = () => {
         setIsDrawing(false);
 
         const object = getDrawObject(points, config);
-        if (object.points.length > 1) {
+        if (object.points.length > 2) {
             dispatch({ type: 'add', object });
             setSelection(selectNewObjects(scene, 1));
         }
