@@ -14,7 +14,7 @@ import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
 import { useStage } from './stage';
 
-const SIMPLIFY_THRESHOLD = 0.5;
+const SIMPLIFY_THRESHOLD = 2.0;
 const SIMPLIFY_HIGH_QUALITY = true;
 
 export const DrawTarget: React.FC = () => {
@@ -57,6 +57,8 @@ function getDrawObject(points: Vector2d[], config: DrawConfig): Omit<DrawObject,
         const py = height === 0 ? 0 : (point.y - y) / height;
         relativePoints.push(px, py);
     }
+
+    console.log('Simplified', points.length, simplified.length);
 
     return { type: ObjectType.Draw, points: relativePoints, x, y, width, height, rotation: 0, ...config };
 }
