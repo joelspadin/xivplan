@@ -32,6 +32,7 @@ import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
 import { deleteFileLocal, FileEntry, listLocalFiles } from './localFile';
+import { parseSceneLink } from './share';
 
 const classNames = mergeStyleSets({
     tab: {
@@ -219,15 +220,26 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     );
 };
 
-function decodeScene(text: string): Scene {
+function decodeScene(text: string): Scene | undefined {
+    text = decodeURIComponent(text);
+
     try {
-        const url = new URL(text);
-        text = url.searchParams.get('plan') ?? '';
-    } catch {
-        text = decodeURIComponent(text);
+        return parseSceneLink(new URL(text));
+    } catch (ex) {
+        if (!(ex instanceof TypeError)) {
+            console.error('Invalid plan data', ex);
+            return undefined;
+        }
     }
 
-    return textToScene(text);
+    // Not a URL. Try as plain data.
+    try {
+        return textToScene(text);
+    } catch (ex) {
+        console.error('Invalid plan data', ex);
+    }
+
+    return undefined;
 }
 
 const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
@@ -249,11 +261,8 @@ const ImportFromString: React.FC<SourceTabProps> = ({ onDismiss }) => {
             }
         }
 
-        let scene: Scene;
-        try {
-            scene = decodeScene(data);
-        } catch (ex) {
-            console.error('Invalid plan data', ex);
+        const scene = decodeScene(data);
+        if (!scene) {
             setError('Invalid link');
             return;
         }

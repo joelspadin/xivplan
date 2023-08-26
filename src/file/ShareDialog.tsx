@@ -56,7 +56,7 @@ const ShareText: React.FC = () => {
     const { scene } = useScene();
     const url = useMemo(() => {
         const data = sceneToText(scene);
-        return `${location.protocol}//${location.host}${location.pathname}?plan=${data}`;
+        return `${location.protocol}//${location.host}${location.pathname}#/plan/${data}`;
     }, [scene]);
     const [copyMessageVisible, setMessageVisibility] = useBoolean(false);
     const timerRef = useRef<number>();
