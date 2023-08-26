@@ -221,8 +221,6 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
 };
 
 function decodeScene(text: string): Scene | undefined {
-    text = decodeURIComponent(text);
-
     try {
         return parseSceneLink(new URL(text));
     } catch (ex) {
@@ -234,7 +232,7 @@ function decodeScene(text: string): Scene | undefined {
 
     // Not a URL. Try as plain data.
     try {
-        return textToScene(text);
+        return textToScene(decodeURIComponent(text));
     } catch (ex) {
         console.error('Invalid plan data', ex);
     }

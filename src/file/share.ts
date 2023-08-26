@@ -11,7 +11,7 @@ const PLAN_PREFIX = '#/plan/';
 function getPlanData(hash: string, searchParams?: URLSearchParams): string | undefined {
     // Current share links are formatted as /#/plan/<data>
     if (hash.startsWith(PLAN_PREFIX)) {
-        return hash.substring(PLAN_PREFIX.length);
+        return decodeURIComponent(hash.substring(PLAN_PREFIX.length));
     }
 
     // Previously, links were formatted as /?path=<data>
