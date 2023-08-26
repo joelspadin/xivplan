@@ -55,7 +55,7 @@ const labelStyles = mergeStyleSets({
 const ShareText: React.FC = () => {
     const { scene } = useScene();
     const url = useMemo(() => {
-        const data = encodeURIComponent(sceneToText(scene));
+        const data = sceneToText(scene);
         return `${location.protocol}//${location.host}${location.pathname}?plan=${data}`;
     }, [scene]);
     const [copyMessageVisible, setMessageVisibility] = useBoolean(false);

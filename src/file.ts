@@ -1,4 +1,6 @@
+import { Base64 } from 'js-base64';
 import { deflate, inflate } from 'pako';
+
 import { FileSource, LocalFileSource } from './SceneProvider';
 import { openFileLocal, saveFileLocal } from './file/localFile';
 import { upgradeScene } from './file/upgrade';
@@ -24,13 +26,15 @@ async function openFileUnvalidated(source: LocalFileSource) {
 }
 
 export function sceneToText(scene: Readonly<Scene>): string {
-    const binaryData = deflate(sceneToJson(scene));
-    return btoa(String.fromCharCode(...binaryData));
+    const compressed = deflate(sceneToJson(scene));
+
+    return Base64.fromUint8Array(compressed, true);
 }
 
 export function textToScene(data: string): Scene {
-    const binaryData = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
-    return jsonToScene(String.fromCharCode(...inflate(binaryData)));
+    const decompressed = inflate(Base64.toUint8Array(data));
+
+    return jsonToScene(new TextDecoder().decode(decompressed));
 }
 
 export function sceneToJson(scene: Readonly<Scene>): string {
