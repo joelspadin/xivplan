@@ -11,13 +11,7 @@ import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
 
 function getLinePoints(object: DrawObject) {
-    const points: number[] = [];
-
-    for (const p of object.points) {
-        points.push(p.x * object.width, -p.y * object.height);
-    }
-
-    return points;
+    return object.points.map((v, i) => v * (i % 2 === 0 ? object.width : -object.height));
 }
 
 export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {

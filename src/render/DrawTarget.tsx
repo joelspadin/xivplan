@@ -51,12 +51,12 @@ function getDrawObject(points: Vector2d[], config: DrawConfig): Omit<DrawObject,
     const x = bbox.left + width / 2;
     const y = bbox.bottom + height / 2;
 
-    const relativePoints = simplified.map((pos) => {
-        return {
-            x: width === 0 ? 0 : (pos.x - x) / width,
-            y: height === 0 ? 0 : (pos.y - y) / height,
-        };
-    });
+    const relativePoints: number[] = [];
+    for (const point of simplified) {
+        const px = width === 0 ? 0 : (point.x - x) / width;
+        const py = height === 0 ? 0 : (point.y - y) / height;
+        relativePoints.push(px, py);
+    }
 
     return { type: ObjectType.Draw, points: relativePoints, x, y, width, height, rotation: 0, ...config };
 }

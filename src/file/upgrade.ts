@@ -1,4 +1,5 @@
-import { EnemyObject, Scene, SceneObject, SceneStep, isEnemy } from '../scene';
+import { Vector2d } from 'konva/lib/types';
+import { DrawObject, EnemyObject, Scene, SceneObject, SceneStep, isDrawObject, isEnemy } from '../scene';
 
 export function upgradeScene(scene: Scene): Scene {
     return {
@@ -19,6 +20,10 @@ function upgradeObject(object: SceneObject): SceneObject {
         object = upgradeEnemy(object);
     }
 
+    if (isDrawObject(object)) {
+        object = upgradeDrawObject(object);
+    }
+
     return object;
 }
 
@@ -26,4 +31,26 @@ function upgradeEnemy(object: EnemyObject): SceneObject {
     // enemy was changed from { rotation?: number }
     // to { rotation: number, directional: boolean }
     return { ...object, rotation: object.rotation ?? 0, omniDirection: object.rotation === undefined };
+}
+
+interface DrawObjectV1 {
+    points: readonly Vector2d[];
+}
+
+function upgradeDrawObject(object: DrawObject): SceneObject {
+    // draw object was changed from { points: Vector2d[] }
+    // to { points: number[] }
+
+    if (typeof object.points[0] === 'object') {
+        const v1 = object as unknown as DrawObjectV1;
+
+        const points: number[] = [];
+        for (const point of v1.points) {
+            points.push(point.x, point.y);
+        }
+
+        return { ...object, points } as DrawObject;
+    }
+
+    return object;
 }
