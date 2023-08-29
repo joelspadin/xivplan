@@ -1,6 +1,8 @@
 import {
+    Dropdown,
     FocusZone,
     FocusZoneDirection,
+    IDropdownOption,
     IStyle,
     List,
     mergeStyleSets,
@@ -10,7 +12,7 @@ import {
     SearchBox,
 } from '@fluentui/react';
 import React, { useCallback, useState } from 'react';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import {
     StatusAttack1,
     StatusAttack2,
@@ -65,6 +67,11 @@ const classNames = mergeStyleSets({
         marginLeft: PANEL_PADDING,
         marginRight: PANEL_PADDING,
     } as IStyle,
+    language: {
+        marginTop: PANEL_PADDING,
+        marginLeft: PANEL_PADDING,
+        marginRight: PANEL_PADDING,
+    } as IStyle,
     list: {
         marginTop: PANEL_PADDING,
         paddingLeft: PANEL_PADDING,
@@ -102,6 +109,8 @@ interface Page {
     Results: StatusItem[];
 }
 
+type Language = 'en' | 'ja' | 'de' | 'fr';
+
 export const StatusPanel: React.FC = () => {
     const [filter, setFilter] = useState('');
 
@@ -130,13 +139,14 @@ const onRenderCell = (item?: StatusItem): JSX.Element | null => {
     );
 };
 
-const fetchStatuses = async (search: string, signal: AbortSignal): Promise<StatusItem[]> => {
+const fetchStatuses = async (search: string, signal: AbortSignal, language: Language = 'en'): Promise<StatusItem[]> => {
     const items: StatusItem[] = [];
 
     let pageIndex: number | null = 1;
 
     do {
         const params = new URLSearchParams({
+            language,
             indexes: 'Status',
             string: search,
             page: pageIndex.toString(),
@@ -152,6 +162,13 @@ const fetchStatuses = async (search: string, signal: AbortSignal): Promise<Statu
     return items;
 };
 
+const LANGUAGE_OPTIONS: IDropdownOption[] = [
+    { key: 'ja', text: '日本語' },
+    { key: 'en', text: 'English' },
+    { key: 'fr', text: 'Français' },
+    { key: 'de', text: 'Deutch' },
+];
+
 interface StatusSearchProps {
     filter: string;
     onFilterChanged: React.Dispatch<string>;
@@ -160,6 +177,7 @@ interface StatusSearchProps {
 const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) => {
     const [controller, setController] = useState<AbortController>();
     const [debouncedFilter, setDebouncedFilter] = useState('');
+    const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
 
     const setFilter = useCallback(
         (text?: string) => {
@@ -180,7 +198,7 @@ const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) 
         setController(controller);
 
         try {
-            return fetchStatuses(debouncedFilter, controller.signal);
+            return fetchStatuses(debouncedFilter, controller.signal, language);
         } catch (ex) {
             console.warn(ex);
             return [];
@@ -189,12 +207,20 @@ const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) 
 
     return (
         <FocusZone direction={FocusZoneDirection.vertical}>
+            <Dropdown
+                label="Language"
+                className={classNames.language}
+                options={LANGUAGE_OPTIONS}
+                selectedKey={language}
+                onChange={(ev, option) => option && setLanguage(option.key as Language)}
+            />
             <SearchBox
                 className={classNames.search}
                 placeholder="Status name"
                 value={filter}
                 onChange={(ev, text) => setFilter(text)}
             />
+
             <div className={classNames.list}>
                 <List items={items.value ?? []} onRenderCell={onRenderCell} />
 
