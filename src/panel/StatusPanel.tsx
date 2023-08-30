@@ -36,6 +36,7 @@ import {
     StatusCounter7,
     StatusCounter8,
     StatusCross,
+    StatusCrosshairs,
     StatusDice1,
     StatusDice2,
     StatusDice3,
@@ -258,6 +259,8 @@ const SpecialStatus: React.FC = () => {
                     <StatusCross />
                     <StatusSquare />
                 </ObjectGroup>
+            </Section>
+            <Section title="Counters">
                 <ObjectGroup>
                     <StatusCounter1 />
                     <StatusCounter2 />
@@ -268,31 +271,32 @@ const SpecialStatus: React.FC = () => {
                     <StatusCounter7 />
                     <StatusCounter8 />
                 </ObjectGroup>
+            </Section>
+            <Section title="Target indicators">
                 <ObjectGroup>
                     <StatusBlueCircleTarget />
                     <StatusGreenCircleTarget />
+                    <StatusCrosshairs />
                     <StatusRedTarget />
                     <StatusGreenTarget />
                 </ObjectGroup>
                 <ObjectGroup>
-                    <StatusDice1 />
-                    <StatusDice2 />
-                    <StatusDice3 />
+                    <StatusUltimateTriangle />
+                    <StatusUltimateCircle />
+                    <StatusUltimateCross />
+                    <StatusUltimateSquare />
                 </ObjectGroup>
-            </Section>
-            <Section title="Eden">
                 <ObjectGroup>
                     <StatusEdenYellow />
                     <StatusEdenOrange />
                     <StatusEdenBlue />
                 </ObjectGroup>
             </Section>
-            <Section title="Ultimate">
+            <Section title="Status effects">
                 <ObjectGroup>
-                    <StatusUltimateTriangle />
-                    <StatusUltimateCircle />
-                    <StatusUltimateCross />
-                    <StatusUltimateSquare />
+                    <StatusDice1 />
+                    <StatusDice2 />
+                    <StatusDice3 />
                 </ObjectGroup>
             </Section>
         </div>

@@ -40,6 +40,7 @@ export const StatusRedTarget = makeIcon('Target', 'red_target.png');
 export const StatusGreenTarget = makeIcon('Target', 'green_target.png');
 export const StatusBlueCircleTarget = makeIcon('Target', 'blue_circle.png');
 export const StatusGreenCircleTarget = makeIcon('Target', 'green_circle.png');
+export const StatusCrosshairs = makeIcon('Target', 'crosshairs.png');
 
 export const StatusDice1 = makeIcon('Acceleration Bomb 1', 'dice1.png');
 export const StatusDice2 = makeIcon('Acceleration Bomb 2', 'dice2.png');
