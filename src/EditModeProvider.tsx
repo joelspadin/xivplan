@@ -1,12 +1,7 @@
 import React, { createContext, Dispatch, PropsWithChildren, SetStateAction, useState } from 'react';
+import { EditMode } from './editMode';
 import { COLOR_YELLOW } from './render/SceneTheme';
 import { TetherType } from './scene';
-
-export enum EditMode {
-    Normal = 'normal',
-    Draw = 'draw',
-    Tether = 'tether',
-}
 
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];
 

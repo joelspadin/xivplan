@@ -1,6 +1,6 @@
 import { IPivotStyles, IStyle, mergeStyleSets, Pivot, PivotItem } from '@fluentui/react';
 import React, { useCallback } from 'react';
-import { EditMode } from '../EditModeProvider';
+import { EditMode } from '../editMode';
 import { useEditMode } from '../useEditMode';
 import { ArenaPanel } from './ArenaPanel';
 import { DrawPanel } from './DrawPanel';

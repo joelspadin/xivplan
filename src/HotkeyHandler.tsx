@@ -1,7 +1,6 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
-import { EditMode } from './EditModeProvider';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
 import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
@@ -9,6 +8,7 @@ import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo
 import { SceneSelection } from './SelectionProvider';
 import { getSceneCoord, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
+import { EditMode } from './editMode';
 import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
@@ -47,7 +47,8 @@ function pasteObjects(
     objects: readonly SceneObject[],
     centerOnMouse = true,
 ): void {
-    const newCenter = centerOnMouse ? getSceneCoord(scene, stage.getRelativePointerPosition()) : undefined;
+    const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
+    const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
     const newObjects = copyObjects(scene, objects, newCenter);
 
     if (newObjects.length) {

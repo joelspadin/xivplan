@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
-import { EditMode } from './EditModeProvider';
 import { PanelDragContext, PanelDragObject, PanelDragState } from './PanelDragProvider';
+import { EditMode } from './editMode';
 import { useEditMode } from './useEditMode';
 
 export function usePanelDrag(): PanelDragState {

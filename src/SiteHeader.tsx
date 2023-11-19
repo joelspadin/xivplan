@@ -20,11 +20,11 @@ import { HelpContext } from './HelpProvider';
 import logoUrl from './logo.svg';
 import { DarkModeContext } from './ThemeProvider';
 
-export const SiteHeaderHeight = 48;
+const HEADER_HEIGHT = 48;
 
 const classNames = mergeStyleSets({
     root: {
-        minHeight: SiteHeaderHeight,
+        minHeight: HEADER_HEIGHT,
     } as IStyle,
     brand: {
         textDecoration: 'none',
@@ -39,7 +39,7 @@ const classNames = mergeStyleSets({
         display: 'block',
     } as IStyle,
     title: {
-        lineHeight: SiteHeaderHeight,
+        lineHeight: HEADER_HEIGHT,
         fontWeight: 600,
     } as IStyle,
     commandBar: {

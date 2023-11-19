@@ -1,6 +1,6 @@
 import { classNamesFunction, IStyle, mergeStyleSets, Theme, useTheme } from '@fluentui/react';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import React, { useCallback } from 'react';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
 import { makeClassName, reversed } from '../util';

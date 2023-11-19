@@ -10,7 +10,7 @@ import { Arrow, Circle, Group, Line } from 'react-konva';
 import { getRecolorFilter } from '../color';
 import { getCanvasCoord } from '../coord';
 import { CursorGroup } from '../CursorGroup';
-import { EditMode } from '../EditModeProvider';
+import { EditMode } from '../editMode';
 import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';

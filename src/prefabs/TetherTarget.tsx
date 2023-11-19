@@ -1,8 +1,9 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { PropsWithChildren, useCallback } from 'react';
 import { CursorGroup } from '../CursorGroup';
-import { EditMode, TetherConfig } from '../EditModeProvider';
+import { TetherConfig } from '../EditModeProvider';
 import { useScene } from '../SceneProvider';
+import { EditMode } from '../editMode';
 import { MoveableObject, Tether, UnknownObject, isMoveable } from '../scene';
 import { getSelectedObjects, selectNone, selectSingle, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';

@@ -1,10 +1,10 @@
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Group } from 'react-konva';
-import { EditMode } from '../EditModeProvider';
 import { useScene } from '../SceneProvider';
 import { getPointerPosition } from '../coord';
 import { useDefaultCursor } from '../cursor';
+import { EditMode } from '../editMode';
 import { TetherToCursor, TetherToCursorProps } from '../prefabs/Tethers';
 import { isMoveable } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';

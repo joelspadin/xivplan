@@ -1,4 +1,4 @@
-import { EditMode } from '../EditModeProvider';
+import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
 import { useSelection } from '../selection';
 import { SceneSelection } from '../SelectionProvider';

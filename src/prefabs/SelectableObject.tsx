@@ -1,7 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { PropsWithChildren, useCallback } from 'react';
 import { Group } from 'react-konva';
-import { EditMode } from '../EditModeProvider';
+import { EditMode } from '../editMode';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
