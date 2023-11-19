@@ -1,4 +1,5 @@
 import { Vector2d } from 'konva/lib/types';
+import { DEFAULT_ENEMY_OPACITY } from '../render/SceneTheme';
 import { DrawObject, EnemyObject, Scene, SceneObject, SceneStep, isDrawObject, isEnemy } from '../scene';
 
 export function upgradeScene(scene: Scene): Scene {
@@ -29,8 +30,13 @@ function upgradeObject(object: SceneObject): SceneObject {
 
 function upgradeEnemy(object: EnemyObject): SceneObject {
     // enemy was changed from { rotation?: number }
-    // to { rotation: number, directional: boolean }
-    return { ...object, rotation: object.rotation ?? 0, omniDirection: object.rotation === undefined };
+    // to { rotation: number, directional: boolean, opacity: number }
+    return {
+        ...object,
+        rotation: object.rotation ?? 0,
+        omniDirection: object.omniDirection ?? object.rotation === undefined,
+        opacity: object.opacity ?? DEFAULT_ENEMY_OPACITY,
+    };
 }
 
 interface DrawObjectV1 {

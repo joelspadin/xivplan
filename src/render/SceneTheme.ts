@@ -47,6 +47,7 @@ export const COLOR_SWATCHES = [
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';
+export const DEFAULT_ENEMY_OPACITY = 65;
 
 export const HIGHLIGHT_COLOR = '#fff';
 export const HIGHLIGHT_WIDTH = 1.5;
@@ -73,8 +74,6 @@ export interface GridTheme {
 }
 
 export interface EnemyTheme {
-    opacity: number;
-    ringShadowOpacity: number;
     text: Partial<Konva.TextConfig>;
 }
 
@@ -98,8 +97,6 @@ const SCENE_THEME = {
         strokeWidth: 1,
     },
     enemy: {
-        opacity: 0.75,
-        ringShadowOpacity: 0.5,
         text: {
             fill: ARENA_TEXT_COLOR,
             stroke: ARENA_BACKGROUND_COLOR,

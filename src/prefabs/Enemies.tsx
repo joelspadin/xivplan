@@ -10,7 +10,7 @@ import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
-    EnemyTheme,
+    DEFAULT_ENEMY_OPACITY,
     SELECTED_PROPS,
     useSceneTheme,
 } from '../render/SceneTheme';
@@ -74,6 +74,7 @@ registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
             icon: '',
             name: '',
             color: DEFAULT_ENEMY_COLOR,
+            opacity: DEFAULT_ENEMY_OPACITY,
             radius: DEFAULT_SIZE,
             status: [],
             ...object,
@@ -86,7 +87,6 @@ interface RingProps extends ShapeConfig {
     name?: string;
     radius: number;
     color: string;
-    theme: EnemyTheme;
     isSelected?: boolean;
 }
 
@@ -120,7 +120,7 @@ function getInnerRadius(radius: number) {
     return Math.min(radius - 4, radius * INNER_RADIUS_RATIO);
 }
 
-function getShapeProps(theme: EnemyTheme, color: string, radius: number, strokeRatio: number, minStroke: number) {
+function getShapeProps(color: string, radius: number, strokeRatio: number, minStroke: number) {
     const strokeWidth = Math.max(minStroke, radius * strokeRatio);
     const shadowBlur = Math.max(SHADOW_BLUR_MIN, radius * SHADOW_BLUR_RATIO);
 
@@ -129,20 +129,20 @@ function getShapeProps(theme: EnemyTheme, color: string, radius: number, strokeR
         strokeWidth: strokeWidth,
         shadowColor: color,
         shadowBlur: shadowBlur,
-        shadowOpacity: theme.ringShadowOpacity,
+        shadowOpacity: 0.5,
     };
 }
 
-const CircleRing: React.FC<RingProps> = ({ radius, theme, color, isSelected, ...props }) => {
+const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, ...props }) => {
     const innerRadius = getInnerRadius(radius);
-    const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
-    const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
+    const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
 
     return (
         <>
             {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Group opacity={theme.opacity} {...props}>
+            <Group opacity={opacity} {...props}>
                 <Circle {...outerProps} radius={radius} />
                 <Circle {...innerProps} radius={innerRadius} />
             </Group>
@@ -157,28 +157,28 @@ interface DirectionalRingProps extends RingProps {
 
 const DirectionalRing: React.FC<DirectionalRingProps> = ({
     radius,
-    theme,
     color,
+    opacity,
     rotation,
     isSelected,
     groupRef,
     ...props
 }) => {
     const innerRadius = getInnerRadius(radius);
-    const outerProps = getShapeProps(theme, color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
-    const innerProps = getShapeProps(theme, color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
+    const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const arrowScale = radius / 32;
 
     // Cache so overlapping shapes with opacity appear as one object.
     useEffect(() => {
         groupRef.current?.cache();
-    }, [radius, theme, color, groupRef]);
+    }, [radius, color, groupRef]);
 
     return (
         <>
             {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Group opacity={theme.opacity} ref={groupRef} rotation={rotation} {...props}>
+            <Group opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
                 <Arc
                     {...outerProps}
@@ -224,13 +224,18 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
             <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
 
             {object.omniDirection ? (
-                <CircleRing radius={radius} theme={theme.enemy} color={object.color} isSelected={showHighlight} />
+                <CircleRing
+                    radius={radius}
+                    color={object.color}
+                    opacity={object.opacity / 100}
+                    isSelected={showHighlight}
+                />
             ) : (
                 <DirectionalRing
                     radius={radius}
                     rotation={rotation}
-                    theme={theme.enemy}
                     color={object.color}
+                    opacity={object.opacity / 100}
                     isSelected={showHighlight}
                     groupRef={groupRef}
                 />

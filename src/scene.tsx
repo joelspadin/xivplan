@@ -185,7 +185,13 @@ export interface PartyObject extends ImageObject, NamedObject, SceneId {
 }
 export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
-export interface EnemyObject extends RadiusObject, RotateableObject, NamedObject, ColoredObject, SceneId {
+export interface EnemyObject
+    extends RadiusObject,
+        RotateableObject,
+        NamedObject,
+        ColoredObject,
+        TransparentObject,
+        SceneId {
     readonly type: ObjectType.Enemy;
     readonly icon: string;
     readonly omniDirection: boolean;
