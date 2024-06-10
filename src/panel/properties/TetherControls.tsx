@@ -51,9 +51,8 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
 
     const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
 
-    const onWidthChanged = useSpinChanged(
-        (width: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
-        [dispatch, objects],
+    const onWidthChanged = useSpinChanged((width: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
     );
 
     return (

@@ -12,9 +12,8 @@ export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> 
 
     const spokes = useMemo(() => commonValue(objects, (obj) => obj.sides), [objects]);
 
-    const onSidesChanged = useSpinChanged(
-        (sides: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, sides })) }),
-        [dispatch, objects],
+    const onSidesChanged = useSpinChanged((sides: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, sides })) }),
     );
 
     return (

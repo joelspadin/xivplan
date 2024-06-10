@@ -12,9 +12,8 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
     const radius = useMemo(() => commonValue(objects, (obj) => obj.radius), [objects]);
     const hasInnerRadius = useMemo(() => objects[0] && isInnerRadiusObject(objects[0]), [objects]);
 
-    const onRadiusChanged = useSpinChanged(
-        (radius: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, radius })) }),
-        [dispatch, objects],
+    const onRadiusChanged = useSpinChanged((radius: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, radius })) }),
     );
 
     const label = hasInnerRadius ? 'Radius 1' : 'Radius';
@@ -42,9 +41,8 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
 
     const innerRadius = useMemo(() => commonValue(objects, (obj) => obj.innerRadius), [objects]);
 
-    const onInnerRadiusChanged = useSpinChanged(
-        (innerRadius: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, innerRadius })) }),
-        [dispatch, objects],
+    const onInnerRadiusChanged = useSpinChanged((innerRadius: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, innerRadius })) }),
     );
 
     return (

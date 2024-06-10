@@ -25,9 +25,9 @@ export const ArenaShapeEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 
-    const onWidthChanged = useSpinChanged((value) => dispatch({ type: 'arenaWidth', value }), [dispatch]);
-    const onHeightChanged = useSpinChanged((value) => dispatch({ type: 'arenaHeight', value }), [dispatch]);
-    const onPaddingChanged = useSpinChanged((value) => dispatch({ type: 'arenaPadding', value }), [dispatch]);
+    const onWidthChanged = useSpinChanged((value) => dispatch({ type: 'arenaWidth', value }));
+    const onHeightChanged = useSpinChanged((value) => dispatch({ type: 'arenaHeight', value }));
+    const onPaddingChanged = useSpinChanged((value) => dispatch({ type: 'arenaPadding', value }));
 
     return (
         <Stack tokens={stackTokens}>

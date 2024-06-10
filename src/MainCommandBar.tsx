@@ -1,7 +1,7 @@
 import { CommandBar, ICommandBarItemProps } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import React, { useCallback, useMemo } from 'react';
-import { useScene, useSceneUndoRedo } from './SceneProvider';
+import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialog } from './file/ShareDialog';
@@ -16,6 +16,7 @@ export const MainCommandBar: React.FC = () => {
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
     const [undo, redo] = useSceneUndoRedo();
+    const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const { scene, source } = useScene();
 
     const save = useCallback(async () => {
@@ -54,14 +55,14 @@ export const MainCommandBar: React.FC = () => {
                 key: 'undo',
                 text: 'Undo',
                 iconProps: { iconName: 'Undo' },
-                disabled: !undo.isPossible,
+                disabled: !undoPossible,
                 onClick: undo,
             },
             {
                 key: 'redo',
                 text: 'Redo',
                 iconProps: { iconName: 'Redo' },
-                disabled: !redo.isPossible,
+                disabled: !redoPossible,
                 onClick: redo,
             },
             {
@@ -71,10 +72,11 @@ export const MainCommandBar: React.FC = () => {
                 onClick: showShare,
             },
         ],
-        [save, isDirty, undo, redo, showOpenFile, showSaveAs, showShare],
+        [save, isDirty, undo, redo, undoPossible, redoPossible, showOpenFile, showSaveAs, showShare],
     );
 
-    useCommandBar(<CommandBar items={items} />, [items]);
+    const commandBar = useMemo(() => <CommandBar items={items} />, [items]);
+    useCommandBar(commandBar);
 
     return (
         <>

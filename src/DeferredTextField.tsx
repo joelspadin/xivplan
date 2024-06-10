@@ -1,4 +1,5 @@
 import { ITextFieldProps, TextField } from '@fluentui/react';
+import { useEventCallback } from '@fluentui/react-hooks';
 import React, { FocusEventHandler, KeyboardEventHandler, useCallback, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 
@@ -19,12 +20,15 @@ export interface DeferredTextFieldProps extends Omit<ITextFieldProps, 'onChange'
 export const DeferredTextField: React.FC<DeferredTextFieldProps> = ({ value, onChange, ...props }) => {
     const [text, setText] = useState(value);
 
+    const didTextChange = useEventCallback((oldValue?: string) => {
+        return text !== oldValue;
+    });
+
     useEffect(() => {
-        if (text !== value) {
+        if (didTextChange(value)) {
             setText(value);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value, setText]);
+    }, [didTextChange, value, setText]);
 
     const deferOnChange = useCallback<ChangeHandler>((ev, newValue) => setText(newValue), [setText]);
 
@@ -37,7 +41,7 @@ export const DeferredTextField: React.FC<DeferredTextFieldProps> = ({ value, onC
         [value, onChange],
     );
 
-    const onKeyPress = useCallback<KeyHandler>(
+    const onKeyUp = useCallback<KeyHandler>(
         (ev) => {
             if (ev.key === 'Enter') {
                 notifyChanged(text);
@@ -55,5 +59,5 @@ export const DeferredTextField: React.FC<DeferredTextFieldProps> = ({ value, onC
         return cancel;
     });
 
-    return <TextField value={text} onChange={deferOnChange} onKeyPress={onKeyPress} onBlur={onBlur} {...props} />;
+    return <TextField value={text} onChange={deferOnChange} onKeyUp={onKeyUp} onBlur={onBlur} {...props} />;
 };

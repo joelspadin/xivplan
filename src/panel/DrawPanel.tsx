@@ -48,10 +48,7 @@ export const DrawPanel: React.FC = () => {
         [config, setConfig],
     );
 
-    const onSizeChanged = useSpinChanged(
-        (brushSize: number) => setConfig({ ...config, brushSize }),
-        [config, setConfig],
-    );
+    const onSizeChanged = useSpinChanged((brushSize: number) => setConfig({ ...config, brushSize }));
 
     const modeHotkey = useCallback(
         (mode: EditMode) => (e: KeyboardEvent) => {

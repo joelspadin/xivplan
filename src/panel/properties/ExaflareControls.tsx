@@ -19,9 +19,8 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
 
     const length = useMemo(() => commonValue(objects, (obj) => obj.length), [objects]);
 
-    const onLengthChanged = useSpinChanged(
-        (length: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
-        [dispatch, objects],
+    const onLengthChanged = useSpinChanged((length: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
     );
 
     return (

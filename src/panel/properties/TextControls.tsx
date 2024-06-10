@@ -25,9 +25,8 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
     const fontSize = useMemo(() => commonValue(objects, (obj) => obj.fontSize), [objects]);
     const align = useMemo(() => commonValue(objects, (obj) => obj.align), [objects]);
 
-    const onFontSizeChanged = useSpinChanged(
-        (fontSize: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
-        [dispatch, objects],
+    const onFontSizeChanged = useSpinChanged((fontSize: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
     );
 
     const onAlignChanged = useCallback(

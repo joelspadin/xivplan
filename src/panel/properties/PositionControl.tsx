@@ -22,13 +22,11 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         [dispatch, objects, pinned],
     );
 
-    const onXChanged = useSpinChanged(
-        (x: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, x })) }),
-        [dispatch, objects],
+    const onXChanged = useSpinChanged((x: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, x })) }),
     );
-    const onYChanged = useSpinChanged(
-        (y: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
-        [dispatch, objects],
+    const onYChanged = useSpinChanged((y: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
 
     const iconName = pinned === undefined ? 'Unlock' : pinned ? 'LockSolid' : 'UnlockSolid';

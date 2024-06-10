@@ -16,6 +16,7 @@ parserOptions:
 
 plugins:
   - react
+  - react-compiler
   - react-refresh
 
 rules:
@@ -24,6 +25,7 @@ rules:
     - selector: function
       format: [PascalCase, camelCase]
   '@typescript-eslint/semi': warn
+  react-compiler/react-compiler: warn
   react-refresh/only-export-components: warn
   curly: warn
   eqeqeq: warn

@@ -19,9 +19,8 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
 
     const coneAngle = useMemo(() => commonValue(objects, (obj) => obj.coneAngle), [objects]);
 
-    const onAngleChanged = useSpinChanged(
-        (coneAngle: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, coneAngle })) }),
-        [dispatch, objects],
+    const onAngleChanged = useSpinChanged((coneAngle: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, coneAngle })) }),
     );
 
     return (

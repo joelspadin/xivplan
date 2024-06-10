@@ -150,7 +150,10 @@ function getCurrentStep(state: EditorState): SceneStep {
 
 const HISTORY_SIZE = 1000;
 
-const { UndoProvider, Context, usePresent, useUndoRedo, useReset } = createUndoContext(sceneReducer, HISTORY_SIZE);
+const { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset } = createUndoContext(
+    sceneReducer,
+    HISTORY_SIZE,
+);
 
 export interface SceneProviderProps extends PropsWithChildren {
     initialScene?: Scene;
@@ -193,6 +196,7 @@ export function useCurrentStep(): SceneStep {
 }
 
 export const useSceneUndoRedo = useUndoRedo;
+export const useSceneUndoRedoPossible = useUndoRedoPossible;
 
 export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
     const reset = useReset();

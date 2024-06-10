@@ -113,10 +113,14 @@ const RectangularBackground: React.FC = () => {
     const theme = useSceneTheme();
 
     // Align to pixel makes the rectangle one pixel wider than intended.
-    position.width -= 1;
-    position.height -= 1;
+    const alignedPosition = {
+        x: position.x,
+        y: position.y,
+        width: position.width - 1,
+        height: position.height - 1,
+    };
 
-    return <Rect {...position} {...theme.arena} {...SHADOW} {...ALIGN_TO_PIXEL} />;
+    return <Rect {...alignedPosition} {...theme.arena} {...SHADOW} {...ALIGN_TO_PIXEL} />;
 };
 
 const GridRenderer: React.FC = () => {

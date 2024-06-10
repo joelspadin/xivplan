@@ -11,9 +11,8 @@ export const DrawObjectBrushControl: React.FC<PropertiesControlProps<DrawObject>
 
     const brushSize = useMemo(() => commonValue(objects, (obj) => obj.brushSize), [objects]);
 
-    const onSizeChanged = useSpinChanged(
-        (brushSize: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, brushSize })) }),
-        [dispatch, objects],
+    const onSizeChanged = useSpinChanged((brushSize: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, brushSize })) }),
     );
     return (
         <BrushSizeControl

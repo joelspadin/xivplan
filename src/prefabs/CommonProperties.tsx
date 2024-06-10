@@ -29,13 +29,11 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
         [dispatch, object],
     );
 
-    const onXChanged = useSpinChanged(
-        (x: number) => dispatch({ type: 'update', value: { ...object, x } as SceneObject }),
-        [dispatch, object],
+    const onXChanged = useSpinChanged((x: number) =>
+        dispatch({ type: 'update', value: { ...object, x } as SceneObject }),
     );
-    const onYChanged = useSpinChanged(
-        (y: number) => dispatch({ type: 'update', value: { ...object, y } as SceneObject }),
-        [dispatch, object],
+    const onYChanged = useSpinChanged((y: number) =>
+        dispatch({ type: 'update', value: { ...object, y } as SceneObject }),
     );
 
     const iconName = object.pinned ? 'LockSolid' : 'UnlockSolid';
@@ -71,18 +69,14 @@ export const MoveableObjectProperties: React.FC<ObjectPropertiesProps<MoveableOb
 export const ResizeableObjectProperties: React.FC<ObjectPropertiesProps<ResizeableObject>> = ({ object }) => {
     const { dispatch } = useScene();
 
-    const onWidthChanged = useSpinChanged(
-        (width: number) => dispatch({ type: 'update', value: { ...object, width } as SceneObject }),
-        [dispatch, object],
+    const onWidthChanged = useSpinChanged((width: number) =>
+        dispatch({ type: 'update', value: { ...object, width } as SceneObject }),
     );
-    const onHeightChanged = useSpinChanged(
-        (height: number) => dispatch({ type: 'update', value: { ...object, height } as SceneObject }),
-        [dispatch, object],
+    const onHeightChanged = useSpinChanged((height: number) =>
+        dispatch({ type: 'update', value: { ...object, height } as SceneObject }),
     );
-    const onRotationChanged = useSpinChanged(
-        (rotation: number) =>
-            dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } as SceneObject }),
-        [dispatch, object],
+    const onRotationChanged = useSpinChanged((rotation: number) =>
+        dispatch({ type: 'update', value: { ...object, rotation: rotation % 360 } as SceneObject }),
     );
 
     return (

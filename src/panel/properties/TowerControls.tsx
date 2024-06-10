@@ -15,9 +15,8 @@ export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({
 
     const count = useMemo(() => commonValue(objects, (obj) => obj.count), [objects]);
 
-    const onCountChanged = useSpinChanged(
-        (count: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) }),
-        [dispatch, objects],
+    const onCountChanged = useSpinChanged((count: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) }),
     );
 
     const soakSuffix = count === 1 ? ' player' : ' players';

@@ -22,13 +22,11 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
     const height = useMemo(() => commonValue(objects, (obj) => obj.height), [objects]);
 
-    const onWidthChanged = useSpinChanged(
-        (width: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
-        [dispatch, objects],
+    const onWidthChanged = useSpinChanged((width: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
     );
-    const onHeightChanged = useSpinChanged(
-        (height: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, height })) }),
-        [dispatch, objects],
+    const onHeightChanged = useSpinChanged((height: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, height })) }),
     );
 
     return (

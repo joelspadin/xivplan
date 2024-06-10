@@ -13,10 +13,7 @@ export interface UndoProviderProps<S> extends PropsWithChildren {
     initialState: S;
 }
 
-export type UndoRedoFunc = {
-    (): void;
-    isPossible: boolean;
-};
+export type UndoRedoFunc = () => void;
 
 export type UndoContext<S, A> = [state: UndoRedoState<S>, dispatch: Dispatch<A | UndoRedoAction<S>>];
 
@@ -28,6 +25,7 @@ export function createUndoContext<S, A extends object>(
     Context: React.Context<UndoContext<S, A>>;
     usePresent: () => [state: S, dispatch: Dispatch<A>];
     useUndoRedo: () => [undo: UndoRedoFunc, redo: UndoRedoFunc];
+    useUndoRedoPossible: () => [undoPossible: boolean, redoPossible: boolean];
     useReset: () => Dispatch<S>;
 } {
     const Context = createContext<UndoContext<S, A>>([
@@ -64,15 +62,20 @@ export function createUndoContext<S, A extends object>(
     }
 
     function useUndoRedo(): [undo: UndoRedoFunc, redo: UndoRedoFunc] {
-        const [state, dispatch] = useContext(Context);
+        const [, dispatch] = useContext(Context);
 
         const undo = useCallback(() => dispatch(undoAction()), [dispatch]) as UndoRedoFunc;
-        undo.isPossible = state.past.length > 0;
-
         const redo = useCallback(() => dispatch(redoAction()), [dispatch]) as UndoRedoFunc;
-        redo.isPossible = state.future.length > 0;
 
         return [undo, redo];
+    }
+
+    function useUndoRedoPossible(): [undoPossible: boolean, redoPossible: boolean] {
+        const [state] = useContext(Context);
+        const undoPossible = state.past.length > 0;
+        const redoPossible = state.future.length > 0;
+
+        return [undoPossible, redoPossible];
     }
 
     function useReset(): Dispatch<S> {
@@ -81,5 +84,5 @@ export function createUndoContext<S, A extends object>(
         return useCallback((state: S) => dispatch(resetAction(state)), [dispatch]);
     }
 
-    return { UndoProvider, Context, usePresent, useUndoRedo, useReset };
+    return { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset };
 }

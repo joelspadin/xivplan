@@ -21,9 +21,8 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
 
     const spokeWidth = useMemo(() => commonValue(objects, (obj) => obj.spokeWidth), [objects]);
 
-    const onSpokeWidthChanged = useSpinChanged(
-        (spokeWidth: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokeWidth })) }),
-        [dispatch, objects],
+    const onSpokeWidthChanged = useSpinChanged((spokeWidth: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokeWidth })) }),
     );
 
     return (
@@ -44,9 +43,8 @@ export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<Starbur
 
     const spokes = useMemo(() => commonValue(objects, (obj) => obj.spokes), [objects]);
 
-    const onSpokesChanged = useSpinChanged(
-        (spokes: number) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokes })) }),
-        [dispatch, objects],
+    const onSpokesChanged = useSpinChanged((spokes: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokes })) }),
     );
 
     return (
