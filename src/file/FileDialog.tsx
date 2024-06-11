@@ -61,11 +61,8 @@ export const OpenDialog: React.FC<IModalProps> = (props) => {
         <BaseDialog headerText="Open File" {...props} dialogStyles={dialogStyles}>
             <Pivot>
                 <PivotItem headerText="Browser Storage" className={classNames.tab}>
-                    <OpenLocalFile onDismiss={props.onDismiss} />
+                    <OpenBrowserStorage onDismiss={props.onDismiss} />
                 </PivotItem>
-                {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
-                    <p>TODO</p>
-                </PivotItem> */}
                 <PivotItem headerText="Import Plan Link" className={classNames.tab}>
                     <ImportFromString onDismiss={props.onDismiss} />
                 </PivotItem>
@@ -79,11 +76,11 @@ export const SaveAsDialog: React.FC<IModalProps> = (props) => {
         <BaseDialog headerText="Save As" {...props} dialogStyles={dialogStyles}>
             <Pivot>
                 <PivotItem headerText="Browser Storage" className={classNames.tab}>
+                    <SaveBrowserStorage onDismiss={props.onDismiss} />
+                </PivotItem>
+                <PivotItem headerText="Local File" className={classNames.tab}>
                     <SaveLocalFile onDismiss={props.onDismiss} />
                 </PivotItem>
-                {/* <PivotItem headerText="GitHub Gist" className={classNames.tab}>
-                    <p>TODO</p>
-                </PivotItem> */}
             </Pivot>
         </BaseDialog>
     );
@@ -154,7 +151,7 @@ const listStyles: Partial<IDetailsListStyles> = {
     },
 };
 
-const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
+const OpenBrowserStorage: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const loadScene = useLoadScene();
     const setSavedState = useSetSavedState();
     const isDirty = useIsDirty();
@@ -309,7 +306,7 @@ function getInitialName(source: FileSource | undefined) {
     return source?.type === 'local' ? source.name : undefined;
 }
 
-const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
+const SaveBrowserStorage: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const setSavedState = useSetSavedState();
     const files = useAsync(listLocalFiles);
     const { scene, source, dispatch } = useScene();
@@ -358,13 +355,41 @@ const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
                     label="File name"
                     value={name}
                     onChange={(e, v) => setName(v)}
-                    onKeyPress={onKeyPress}
+                    onKeyUp={onKeyPress}
                     errorMessage={alreadyExists ? 'A file with this name already exists.' : undefined}
                 />
             </div>
 
             <DialogFooter className={classNames.footer}>
                 <PrimaryButton text="Save" disabled={!canSave} onClick={save} />
+                <DefaultButton text="Cancel" onClick={onDismiss} />
+            </DialogFooter>
+        </>
+    );
+};
+
+const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
+    const { scene } = useScene();
+
+    const json = useMemo(() => JSON.stringify(scene), [scene]);
+
+    const save = useCallback(() => {
+        const blob = new Blob([json], { type: 'application/json' });
+        window.open(URL.createObjectURL(blob));
+    }, [json]);
+
+    return (
+        <>
+            <div className={classNames.form}>
+                <p>Work in progress!</p>
+                <p>Click the &quot;Save&quot; button to open the JSON for this plan in a new tab.</p>
+                <p>
+                    Eventually, this tab will use the browser file system access API (if supported) to save to a local
+                    file on your PC.
+                </p>
+            </div>
+            <DialogFooter className={classNames.footer}>
+                <PrimaryButton text="Save" onClick={save} />
                 <DefaultButton text="Cancel" onClick={onDismiss} />
             </DialogFooter>
         </>

@@ -24,3 +24,22 @@ root.render(
         </BrowserRouter>
     </React.StrictMode>,
 );
+
+// TODO: move this somewhere better
+declare global {
+    interface LaunchParams {
+        readonly files: FileSystemFileHandle[];
+    }
+
+    interface Window {
+        launchQueue?: {
+            setConsumer(callback: (params: LaunchParams) => void): void;
+        };
+    }
+}
+
+if ('launchQueue' in window) {
+    window.launchQueue?.setConsumer((params) => {
+        console.log('Launched with files', params);
+    });
+}
