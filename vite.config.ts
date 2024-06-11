@@ -16,6 +16,7 @@ export default defineConfig({
                 short_name: 'XIVPlan',
                 description: 'FFXIV raid planner',
                 display: 'standalone',
+                theme_color: '#1e1e1e',
                 icons: [
                     {
                         src: 'pwa-64x64.png',
