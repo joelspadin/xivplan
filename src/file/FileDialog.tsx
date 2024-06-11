@@ -23,8 +23,7 @@ import {
 } from '@fluentui/react';
 import { useConst, useForceUpdate } from '@fluentui/react-hooks';
 import React, { FormEvent, useCallback, useMemo, useState } from 'react';
-import { useAsync } from 'react-async';
-import { useCounter } from 'react-use';
+import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
 import { openFile, saveFile, textToScene } from '../file';
 import { Scene } from '../scene';
@@ -162,7 +161,7 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const theme = useTheme();
 
     const [counter, { inc: reloadFiles }] = useCounter();
-    const { data: files, error, isPending } = useAsync(listLocalFiles, { watch: counter });
+    const { value: files, error, loading } = useAsync(listLocalFiles, [counter]);
 
     const columns = useMemo(() => getOpenFileColumns(theme, reloadFiles), [theme, reloadFiles]);
 
@@ -190,7 +189,7 @@ const OpenLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
         onDismiss?.();
     }, [selection, files, isDirty, theme, loadScene, setSavedState, onDismiss]);
 
-    if (isPending) {
+    if (loading) {
         return <Spinner />;
     }
     if (error) {
@@ -317,10 +316,10 @@ const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const [name, setName] = useState(getInitialName(source));
     const theme = useTheme();
 
-    const alreadyExists = useMemo(() => files.data?.some((f) => f.name === name), [files.data, name]);
-    const canSave = !!name && !files.isPending;
+    const alreadyExists = useMemo(() => files.value?.some((f) => f.name === name), [files.value, name]);
+    const canSave = !!name && !files.loading;
 
-    const saveCallback = useCallback(async () => {
+    const [saveState, save] = useAsyncFn(async () => {
         if (!canSave) {
             return;
         }
@@ -342,15 +341,13 @@ const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
     const onKeyPress = useCallback(
         (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             if (ev.key === 'Enter') {
-                saveCallback();
+                save();
             }
         },
-        [saveCallback],
+        [save],
     );
 
-    const save = useAsync({ deferFn: saveCallback });
-
-    if (save.isPending) {
+    if (saveState.loading) {
         return <Spinner />;
     }
 
@@ -367,7 +364,7 @@ const SaveLocalFile: React.FC<SourceTabProps> = ({ onDismiss }) => {
             </div>
 
             <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Save" disabled={!canSave} onClick={save.run} />
+                <PrimaryButton text="Save" disabled={!canSave} onClick={save} />
                 <DefaultButton text="Cancel" onClick={onDismiss} />
             </DialogFooter>
         </>

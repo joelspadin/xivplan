@@ -20,7 +20,6 @@
     "localforage": "^1.10.0",
     "pako": "^2.1.0",
     "react": "^18.3.1",
-    "react-async": "^10.0.1",
     "react-dom": "^18.3.1",
     "react-hotkeys-hook": "^4.5.0",
     "react-konva": "^18.2.10",
