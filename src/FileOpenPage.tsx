@@ -1,4 +1,5 @@
-import { DefaultButton, MessageBar, MessageBarType, Stack } from '@fluentui/react';
+import { MessageBar, MessageBarType, Stack } from '@fluentui/react';
+import { Button } from '@fluentui/react-components';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoadScene } from './SceneProvider';
@@ -64,7 +65,7 @@ export const FileOpenPage: React.FC = () => {
                     {error}
                 </MessageBar>
             )}
-            <DefaultButton text="Return" onClick={navigateToMainPage} />
+            <Button onClick={navigateToMainPage}>Return</Button>
         </Stack>
     );
 };

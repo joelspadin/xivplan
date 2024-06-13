@@ -18,6 +18,7 @@ import {
     Theme,
     useTheme,
 } from '@fluentui/react';
+import { Button } from '@fluentui/react-components';
 import { useBoolean } from '@fluentui/react-hooks';
 import React, { MouseEventHandler, useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -66,7 +67,7 @@ const SelectPresetButton: React.FC = () => {
 
     return (
         <>
-            <DefaultButton text="Select preset" onClick={showDialog} />
+            <Button onClick={showDialog}>Select preset</Button>
             <SelectPresetDialog isOpen={isOpen} onDismiss={hideDialog} />
         </>
     );

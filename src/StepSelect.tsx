@@ -1,142 +1,91 @@
-import {
-    classNamesFunction,
-    DefaultButton,
-    IButtonStyles,
-    IconButton,
-    IStyle,
-    IStyleFunction,
-    Stack,
-    Theme,
-    useTheme,
-} from '@fluentui/react';
-import React, { useMemo } from 'react';
+import { Button, makeStyles, SelectTabData, SelectTabEvent, Tab, TabList } from '@fluentui/react-components';
+import { AddFilled, bundleIcon, DeleteFilled, DeleteRegular } from '@fluentui/react-icons';
+import React, { useCallback, useMemo } from 'react';
 import { useScene } from './SceneProvider';
 
-const getButtonStyles: IStyleFunction<Theme, IButtonStyles> = (theme) => {
-    return {
-        root: {
-            padding: 0,
-            minWidth: 32,
-            borderColor: theme.palette.neutralTertiaryAlt,
-        },
-        rootChecked: {
-            borderColor: theme.palette.themeDark,
-            backgroundColor: theme.palette.themeLighter,
-        },
-        rootCheckedHovered: {
-            backgroundColor: theme.palette.themeLight,
-        },
-    };
-};
+function getStepText(index: number) {
+    return (index + 1).toString();
+}
+
+const useClasses = makeStyles({
+    root: {
+        display: 'flex',
+        flexFlow: 'row',
+        columnGap: '8px',
+        padding: '0px 4px 4px 4px',
+    },
+    tab: {
+        minWidth: '24px',
+    },
+});
 
 interface StepButtonProps {
     index: number;
 }
 
 const StepButton: React.FC<StepButtonProps> = ({ index }) => {
-    const { stepIndex, dispatch } = useScene();
-
-    const checked = index === stepIndex;
-    const stepText = (index + 1).toString();
-
-    const theme = useTheme();
-    const buttonStyles = useMemo(() => getButtonStyles(theme), [theme]);
+    const classes = useClasses();
+    const stepText = getStepText(index);
 
     return (
-        <DefaultButton
-            text={stepText}
-            title={`Step ${stepText}`}
-            checked={checked}
-            onClick={() => dispatch({ type: 'setStep', index })}
-            styles={buttonStyles}
-        />
+        <Tab value={index} title={`Step ${stepText}`}>
+            <div className={classes.tab}>{stepText}</div>
+        </Tab>
     );
 };
 
 const AddStepButton: React.FC = () => {
     const { dispatch } = useScene();
 
-    const theme = useTheme();
-    const buttonStyles = useMemo(() => getButtonStyles(theme), [theme]);
-
     return (
-        <IconButton
+        <Button
+            icon={<AddFilled />}
+            appearance="subtle"
             title="Add new step"
-            iconProps={{ iconName: 'Add' }}
             onClick={() => dispatch({ type: 'addStep' })}
-            styles={buttonStyles}
         />
     );
 };
+
+const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
 const RemoveStepButton: React.FC = () => {
     const { scene, stepIndex, dispatch } = useScene();
-
-    const theme = useTheme();
-    const buttonStyles = useMemo(() => getButtonStyles(theme), [theme]);
+    const stepText = getStepText(stepIndex);
 
     return (
-        <IconButton
-            title="Delete current step"
-            iconProps={{ iconName: 'Delete' }}
+        <Button
+            icon={<DeleteIcon />}
+            appearance="subtle"
+            title={`Delete step ${stepText}`}
             disabled={scene.steps.length < 2}
             onClick={() => dispatch({ type: 'removeStep', index: stepIndex })}
-            styles={buttonStyles}
         />
     );
 };
 
-const BUTTON_SPACING = 4;
-
-interface IStepSelectStyles {
-    root: IStyle;
-}
-
-const getClassNames = classNamesFunction<Theme, IStepSelectStyles>();
-
-const getStepSelectStyles: IStyleFunction<Theme, IStepSelectStyles> = (theme) => {
-    return {
-        root: {
-            gridArea: 'steps',
-            backgroundColor: theme.palette.neutralLighterAlt,
-            padding: 4,
-
-            ul: {
-                display: 'flex',
-                flexFlow: 'row wrap',
-
-                margin: 0,
-                padding: 0,
-            } as IStyle,
-
-            li: {
-                listStyle: 'none',
-                margin: BUTTON_SPACING / 2,
-            } as IStyle,
-        } as IStyle,
-    };
-};
-
 export const StepSelect: React.FC = () => {
-    const { scene } = useScene();
+    const classes = useClasses();
+    const { scene, stepIndex, dispatch } = useScene();
     const steps = useMemo(() => scene.steps.map((_, i) => i), [scene.steps]);
 
-    const theme = useTheme();
-    const classNames = getClassNames(getStepSelectStyles, theme);
+    const handleTabSelect = useCallback(
+        (event: SelectTabEvent, data: SelectTabData) => {
+            const index = data.value as number;
+            dispatch({ type: 'setStep', index });
+        },
+        [dispatch],
+    );
 
     return (
-        <Stack horizontal tokens={{ childrenGap: BUTTON_SPACING }} className={classNames.root}>
-            <ul>
+        <div className={classes.root}>
+            <TabList size="small" selectedValue={stepIndex} appearance="subtle" onTabSelect={handleTabSelect}>
                 {steps.map((i) => (
-                    <li key={i}>
-                        <StepButton index={i} />
-                    </li>
+                    <StepButton key={i} index={i} />
                 ))}
-            </ul>
-            <Stack horizontal tokens={{ childrenGap: BUTTON_SPACING }}>
-                <AddStepButton />
-                <RemoveStepButton />
-            </Stack>
-        </Stack>
+            </TabList>
+            <AddStepButton />
+            <RemoveStepButton />
+        </div>
     );
 };

@@ -1,4 +1,5 @@
-import { DefaultButton, IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { Button } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
@@ -217,7 +218,7 @@ export const ArenaGridEdit: React.FC = () => {
                                 setGrid({ ...grid, startAngle: parseInt(newValue ?? '0') });
                             }}
                         />
-                        <DefaultButton text="Reset" onClick={() => setGrid({ ...grid, startAngle: undefined })} />
+                        <Button onClick={() => setGrid({ ...grid, startAngle: undefined })}>Reset</Button>
                     </Stack>
                 </>
             )}
