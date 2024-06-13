@@ -1,10 +1,22 @@
 import { classNamesFunction, Theme, useTheme } from '@fluentui/react';
 import { IStyle } from '@fluentui/style-utilities';
-import React, { PropsWithChildren } from 'react';
-import { Outlet, Route, Routes } from 'react-router-dom';
+import React, { PropsWithChildren, useMemo } from 'react';
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    Outlet,
+    Route,
+    RouterProvider,
+    useLocation,
+    useSearchParams,
+} from 'react-router-dom';
 import { CommandBarProvider } from './CommandBarProvider';
+import { DirtyProvider } from './DirtyProvider';
+import { parseSceneLink } from './file/share';
+import { FileOpenPage } from './FileOpenPage';
 import { HelpProvider } from './HelpProvider';
 import { MainPage } from './MainPage';
+import { SceneProvider } from './SceneProvider';
 import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 
@@ -40,10 +52,25 @@ function getStyles(theme: Theme): IAppStyles {
 }
 
 export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
+    const [searchParams] = useSearchParams();
+    const { hash } = useLocation();
+
+    const sceneFromLink = useMemo(() => {
+        try {
+            return parseSceneLink(hash, searchParams);
+        } catch (ex) {
+            console.error('Invalid plan data from URL', ex);
+        }
+    }, [hash, searchParams]);
+
     return (
         <ThemeProvider>
             <HelpProvider>
-                <CommandBarProvider>{children}</CommandBarProvider>
+                <CommandBarProvider>
+                    <SceneProvider initialScene={sceneFromLink}>
+                        <DirtyProvider>{children}</DirtyProvider>
+                    </SceneProvider>
+                </CommandBarProvider>
             </HelpProvider>
         </ThemeProvider>
     );
@@ -54,21 +81,24 @@ const Layout: React.FC = () => {
     const classNames = getClassNames(getStyles, theme);
 
     return (
-        <div className={classNames.root}>
-            <SiteHeader className={classNames.header} />
-            <Outlet />
-        </div>
+        <BaseProviders>
+            <div className={classNames.root}>
+                <SiteHeader className={classNames.header} />
+                <Outlet />
+            </div>
+        </BaseProviders>
     );
 };
 
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path="/" element={<Layout />}>
+            <Route index element={<MainPage />} />
+            <Route path="open" element={<FileOpenPage />} />
+        </Route>,
+    ),
+);
+
 export const App: React.FC = () => {
-    return (
-        <BaseProviders>
-            <Routes>
-                <Route path="/" element={<Layout />}>
-                    <Route index element={<MainPage />} />
-                </Route>
-            </Routes>
-        </BaseProviders>
-    );
+    return <RouterProvider router={router} />;
 };

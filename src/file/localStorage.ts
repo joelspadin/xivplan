@@ -15,7 +15,7 @@ const metadata = localforage.createInstance({
     storeName: 'meta',
 });
 
-export async function saveFileLocal(scene: Readonly<Scene>, name: string): Promise<void> {
+export async function saveFileLocalStorage(scene: Readonly<Scene>, name: string): Promise<void> {
     const meta: FileMetadata = {
         timestamp: new Date().toISOString(),
     };
@@ -24,7 +24,7 @@ export async function saveFileLocal(scene: Readonly<Scene>, name: string): Promi
     await metadata.setItem(name, meta);
 }
 
-export async function openFileLocal(name: string): Promise<Scene> {
+export async function openFileLocalStorage(name: string): Promise<Scene> {
     const scene = await files.getItem<Scene>(name);
     if (!scene) {
         throw new Error(`Failed to open file "${name}"`);
@@ -32,11 +32,11 @@ export async function openFileLocal(name: string): Promise<Scene> {
     return scene;
 }
 
-export async function deleteFileLocal(name: string): Promise<void> {
+export async function deleteFileLocalStorage(name: string): Promise<void> {
     await files.removeItem(name);
 }
 
-export interface FileEntry {
+export interface LocalStorageFileInfo {
     name: string;
     lastEdited?: Date;
 }
@@ -45,8 +45,8 @@ export interface FileEntry {
  * @returns A list of files in browser storage, sorted with the most recently
  * modified files first.
  */
-export async function listLocalFiles(): Promise<FileEntry[]> {
-    const entries: FileEntry[] = [];
+export async function listLocalStorageFiles(): Promise<LocalStorageFileInfo[]> {
+    const entries: LocalStorageFileInfo[] = [];
     const keys = await files.keys();
 
     for (const key of keys) {

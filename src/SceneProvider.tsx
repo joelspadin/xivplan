@@ -15,6 +15,7 @@ import {
     Tether,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
+import { useSetSavedState } from './useIsDirty';
 import { asArray, clamp } from './util';
 
 export interface SetArenaAction {
@@ -127,12 +128,18 @@ export interface SetSourceAction {
 
 export type SceneAction = ArenaAction | ObjectAction | StepAction | SetSourceAction;
 
-export interface LocalFileSource {
+export interface LocalStorageFileSource {
     type: 'local';
     name: string;
 }
 
-export type FileSource = LocalFileSource;
+export interface FileSystemFileSource {
+    type: 'fs';
+    name: string;
+    handle: FileSystemFileHandle;
+}
+
+export type FileSource = LocalStorageFileSource | FileSystemFileSource;
 
 export interface EditorState {
     scene: Scene;
@@ -200,7 +207,15 @@ export const useSceneUndoRedoPossible = useUndoRedoPossible;
 
 export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
     const reset = useReset();
-    return (scene: Scene, source?: FileSource) => reset({ scene, source, currentStep: 0 });
+    const setSavedState = useSetSavedState();
+
+    return React.useCallback(
+        (scene: Scene, source?: FileSource) => {
+            reset({ scene, source, currentStep: 0 });
+            setSavedState(scene);
+        },
+        [reset, setSavedState],
+    );
 }
 
 export function getObjectById(scene: Scene, id: number): SceneObject | undefined {

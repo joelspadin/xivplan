@@ -1,15 +1,21 @@
 import { Base64 } from 'js-base64';
 import { deflate, inflate } from 'pako';
 
-import { FileSource, LocalFileSource } from './SceneProvider';
-import { openFileLocal, saveFileLocal } from './file/localFile';
+import { FileSource } from './SceneProvider';
+import { openFileFs, saveFileFs } from './file/filesystem';
+import { openFileLocalStorage, saveFileLocalStorage } from './file/localStorage';
 import { upgradeScene } from './file/upgrade';
 import { Scene } from './scene';
 
 export async function saveFile(scene: Readonly<Scene>, source: FileSource): Promise<void> {
     switch (source.type) {
         case 'local':
-            await saveFileLocal(scene, source.name);
+            await saveFileLocalStorage(scene, source.name);
+            break;
+
+        case 'fs':
+            await saveFileFs(scene, source.handle);
+            break;
     }
 }
 
@@ -18,10 +24,13 @@ export async function openFile(source: FileSource): Promise<Scene> {
     return upgradeScene(scene);
 }
 
-async function openFileUnvalidated(source: LocalFileSource) {
+async function openFileUnvalidated(source: FileSource) {
     switch (source.type) {
         case 'local':
-            return await openFileLocal(source.name);
+            return await openFileLocalStorage(source.name);
+
+        case 'fs':
+            return await openFileFs(source.handle);
     }
 }
 

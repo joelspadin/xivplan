@@ -1,16 +1,13 @@
 import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
-import React, { useEffect, useMemo } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
-import { DirtyProvider } from './DirtyProvider';
+import React, { useEffect } from 'react';
 import { EditModeProvider } from './EditModeProvider';
-import { parseSceneLink } from './file/share';
 import { RegularHotkeyHandler } from './HotkeyHandler';
 import { MainCommandBar } from './MainCommandBar';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
 import { SceneRenderer } from './render/SceneRenderer';
-import { SceneProvider, useScene } from './SceneProvider';
+import { useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
 import { useIsDirty } from './useIsDirty';
@@ -21,28 +18,14 @@ interface IContentStyles {
 const getClassNames = classNamesFunction<Theme, IContentStyles>();
 
 export const MainPage: React.FC = () => {
-    const [searchParams] = useSearchParams();
-    const { hash } = useLocation();
-    const initialScene = useMemo(() => {
-        try {
-            return parseSceneLink(hash, searchParams);
-        } catch (ex) {
-            console.error('Invalid plan data from URL', ex);
-        }
-    }, [hash, searchParams]);
-
     return (
-        <SceneProvider initialScene={initialScene}>
-            <DirtyProvider>
-                <EditModeProvider>
-                    <SelectionProvider>
-                        <PanelDragProvider>
-                            <MainPageContent />
-                        </PanelDragProvider>
-                    </SelectionProvider>
-                </EditModeProvider>
-            </DirtyProvider>
-        </SceneProvider>
+        <EditModeProvider>
+            <SelectionProvider>
+                <PanelDragProvider>
+                    <MainPageContent />
+                </PanelDragProvider>
+            </SelectionProvider>
+        </EditModeProvider>
     );
 };
 

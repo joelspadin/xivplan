@@ -42,7 +42,7 @@ export default defineConfig({
                 ],
                 file_handlers: [
                     {
-                        action: '/',
+                        action: '/open',
                         accept: {
                             'application/vnd.xivplan.plan+json': ['.xivplan'],
                         },
