@@ -1,4 +1,3 @@
-import { IToggleStyles } from '@fluentui/react';
 import { Link, Switch, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import React, { HTMLAttributes, useContext } from 'react';
 import { AboutDialog } from './AboutDialog';
@@ -10,14 +9,7 @@ import logoUrl from './logo.svg';
 
 const HEADER_HEIGHT = '48px';
 
-const toggleStyles: Partial<IToggleStyles> = {
-    root: { marginBottom: 0 },
-    label: {
-        paddingTop: 4,
-    },
-};
-
-const useClasses = makeStyles({
+const useStyles = makeStyles({
     root: {
         display: 'flex',
         flexFlow: 'row',
@@ -59,8 +51,8 @@ const useClasses = makeStyles({
 });
 
 export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
-    const classes = useClasses();
-    const [, { setTrue: showHelp }] = useContext(HelpContext);
+    const classes = useStyles();
+    const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
     const [commands] = useContext(CommandBarContext);
 
@@ -74,7 +66,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
             </div>
             <div className={classes.commandBar}>{commands}</div>
 
-            <Link onClick={showHelp} className={classes.link}>
+            <Link onClick={() => setHelpOpen(true)} className={classes.link}>
                 Help
             </Link>
             <AboutDialog className={classes.link} />

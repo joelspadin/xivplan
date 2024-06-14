@@ -65,7 +65,10 @@ export const darkTheme = createTheme({
 export const lightTheme2: Theme = {
     ...webLightTheme,
     colorSubtleBackgroundHover: '#e8d7c0',
+    colorNeutralBackground1: '#fdebd1',
     colorNeutralBackground2: '#f6e4cc',
+    colorNeutralBackground6: '#e8d7c0',
+    colorNeutralStencil1: '#d8c9b3',
 };
 
 export const darkTheme2 = webDarkTheme;

@@ -1,8 +1,5 @@
-import { IStyle, IStyleFunctionOrObject } from '@fluentui/merge-styles';
-import { useTheme } from '@fluentui/react';
-import { Theme } from '@fluentui/theme';
-import { classNamesFunction } from '@fluentui/utilities';
-import React from 'react';
+import { makeStyles, tokens, typographyStyles } from '@fluentui/react-components';
+import React, { useMemo } from 'react';
 
 export interface HotkeysProps {
     keys: string;
@@ -10,20 +7,24 @@ export interface HotkeysProps {
 }
 
 function formatKey(key: string) {
-    return key.substr(0, 1).toUpperCase() + key.substr(1);
+    return key.substring(0, 1).toUpperCase() + key.substring(1);
 }
 
 export const HotkeyName: React.FC<HotkeysProps> = ({ keys, suffix }) => {
-    const theme = useTheme();
-    const classNames = getClassNames(getStyles, theme);
-
-    const parts = keys === '+' ? ['+'] : keys.split('+');
+    const classes = useStyles();
+    const parts = useMemo(() => {
+        return keys === '+' ? ['+'] : keys.split('+');
+    }, [keys]);
 
     return (
-        <span className={classNames.root}>
+        <span className={classes.root}>
             {parts.map((k, i) => {
                 const isLast = i === parts.length - 1;
-                const item = <kbd key={i}>{formatKey(k)}</kbd>;
+                const item = (
+                    <kbd key={i} className={classes.key}>
+                        {formatKey(k)}
+                    </kbd>
+                );
 
                 return isLast ? item : <React.Fragment key={i}>{item}+</React.Fragment>;
             })}
@@ -32,40 +33,29 @@ export const HotkeyName: React.FC<HotkeysProps> = ({ keys, suffix }) => {
     );
 };
 
-interface IHotkeysStyles {
-    root: IStyle;
-}
-
-const getClassNames = classNamesFunction<Theme, IHotkeysStyles>();
-
-const getStyles: IStyleFunctionOrObject<Theme, IHotkeysStyles> = (theme) => {
-    return {
-        root: {
-            display: 'inline-flex',
-            flexFlow: 'row',
-            alignItems: 'center',
-            whiteSpace: 'nowrap',
-
-            kbd: [
-                theme.fonts.small,
-                {
-                    display: 'inline-block',
-                    padding: '3px 5px',
-                    margin: '0 2px',
-                    verticalAlign: 'middle',
-                    lineHeight: 11,
-                    background: theme.palette.neutralLight,
-                    border: `1px solid ${theme.palette.neutralQuaternaryAlt}`,
-                    borderRadius: 3,
-                    boxShadow: `inset 0 -1px ${theme.palette.neutralLighter}`,
-                    ':first-child': {
-                        marginLeft: 0,
-                    },
-                    ':last-child': {
-                        marginRight: 0,
-                    },
-                },
-            ] as IStyle,
+const useStyles = makeStyles({
+    root: {
+        display: 'inline-flex',
+        flexFlow: 'row',
+        alignItems: 'center',
+        whiteSpace: 'nowrap',
+    },
+    key: {
+        ...typographyStyles.caption1,
+        display: 'inline-block',
+        padding: '3px 5px',
+        margin: '0 2px',
+        verticalAlign: 'middle',
+        lineHeight: '11px',
+        background: tokens.colorNeutralBackground6,
+        border: `1px solid ${tokens.colorNeutralStencil1}`,
+        borderRadius: '4px',
+        boxShadow: `inset 0 -1px ${tokens.colorNeutralBackground2}`,
+        ':first-child': {
+            marginLeft: 0,
         },
-    };
-};
+        ':last-child': {
+            marginRight: 0,
+        },
+    },
+});

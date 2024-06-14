@@ -1,15 +1,11 @@
-import { IUseBooleanCallbacks, useBoolean } from '@fluentui/react-hooks';
-import React, { PropsWithChildren, createContext } from 'react';
+import React, { Dispatch, PropsWithChildren, SetStateAction, createContext, useState } from 'react';
 
-export type HelpState = [boolean, IUseBooleanCallbacks];
+export type HelpState = [boolean, Dispatch<SetStateAction<boolean>>];
 
-export const HelpContext = createContext<HelpState>([
-    false,
-    { setFalse: () => undefined, setTrue: () => undefined, toggle: () => undefined },
-]);
+export const HelpContext = createContext<HelpState>([false, () => {}]);
 
 export const HelpProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const context = useBoolean(false);
+    const context = useState(false);
 
     return <HelpContext.Provider value={context}>{children}</HelpContext.Provider>;
 };

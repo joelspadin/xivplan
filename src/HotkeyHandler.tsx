@@ -305,20 +305,20 @@ const EditActionHandler: React.FC = () => {
 };
 
 const HelpHandler: React.FC = () => {
-    const [isOpen, { setTrue: showHelp, setFalse: hideHelp }] = useContext(HelpContext);
+    const [open, setOpen] = useContext(HelpContext);
 
     useHotkeys(
         'f1',
         CATEGORY_GENERAL,
         'Open help',
         (e) => {
-            showHelp();
+            setOpen(true);
             e.preventDefault();
         },
-        [showHelp],
+        [setOpen],
     );
 
-    return <HelpDialog isOpen={isOpen} onDismiss={hideHelp} />;
+    return <HelpDialog open={open} onOpenChange={(ev, data) => setOpen(data.open)} />;
 };
 
 const DrawModeHandler: React.FC = () => {

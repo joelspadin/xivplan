@@ -7,7 +7,7 @@ function getStepText(index: number) {
     return (index + 1).toString();
 }
 
-const useClasses = makeStyles({
+const useStyles = makeStyles({
     root: {
         display: 'flex',
         flexFlow: 'row',
@@ -25,7 +25,7 @@ interface StepButtonProps {
 }
 
 const StepButton: React.FC<StepButtonProps> = ({ index }) => {
-    const classes = useClasses();
+    const classes = useStyles();
     const stepText = getStepText(index);
 
     return (
@@ -66,7 +66,7 @@ const RemoveStepButton: React.FC = () => {
 };
 
 export const StepSelect: React.FC = () => {
-    const classes = useClasses();
+    const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
     const steps = useMemo(() => scene.steps.map((_, i) => i), [scene.steps]);
 

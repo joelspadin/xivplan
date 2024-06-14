@@ -2,7 +2,7 @@ import { Link, makeStyles } from '@fluentui/react-components';
 import { NavigateExternalInlineIcon } from '@fluentui/react-icons-mdl2';
 import React, { AnchorHTMLAttributes } from 'react';
 
-const useClasses = makeStyles({
+const useStyles = makeStyles({
     external: {
         paddingInlineStart: '1px',
         verticalAlign: 'top',
@@ -18,7 +18,7 @@ export interface ExternalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElemen
  * Open a link in a new tab/window.
  */
 export const ExternalLink: React.FC<ExternalLinkProps> = ({ children, noIcon, ...props }) => {
-    const classes = useClasses();
+    const classes = useStyles();
 
     return (
         <Link target="_blank" rel="noreferrer" {...props}>
