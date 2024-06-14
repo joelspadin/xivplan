@@ -1,4 +1,4 @@
-import { Button, makeStyles, SelectTabData, SelectTabEvent, Tab, TabList } from '@fluentui/react-components';
+import { Button, makeStyles, SelectTabData, SelectTabEvent, Tab, TabList, tokens } from '@fluentui/react-components';
 import { AddFilled, bundleIcon, DeleteFilled, DeleteRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from './SceneProvider';
@@ -12,10 +12,11 @@ const useClasses = makeStyles({
         display: 'flex',
         flexFlow: 'row',
         columnGap: '8px',
-        padding: '0px 4px 4px 4px',
+        padding: '4px',
+        backgroundColor: tokens.colorNeutralBackground2,
     },
     tab: {
-        minWidth: '24px',
+        minWidth: '16px',
     },
 });
 

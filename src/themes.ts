@@ -1,4 +1,5 @@
 import { createTheme, DefaultPalette } from '@fluentui/react';
+import { Theme, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 
 export const lightTheme = createTheme({
     palette: {
@@ -60,3 +61,11 @@ export const darkTheme = createTheme({
     },
     isInverted: true,
 });
+
+export const lightTheme2: Theme = {
+    ...webLightTheme,
+    colorSubtleBackgroundHover: '#e8d7c0',
+    colorNeutralBackground2: '#f6e4cc',
+};
+
+export const darkTheme2 = webDarkTheme;

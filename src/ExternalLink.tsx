@@ -1,36 +1,29 @@
-import { getIcon, ILinkProps, Link, memoizeFunction, mergeStyleSets } from '@fluentui/react';
-import React from 'react';
+import { Link, makeStyles } from '@fluentui/react-components';
+import { NavigateExternalInlineIcon } from '@fluentui/react-icons-mdl2';
+import React, { AnchorHTMLAttributes } from 'react';
 
-const getClassNames = memoizeFunction(() => {
-    const icon = getIcon('NavigateExternalInline');
-
-    return mergeStyleSets({
-        link: {
-            display: 'inline-block',
-            '::after': {
-                fontFamily: icon?.subset.fontFace?.fontFamily,
-                content: `"${icon?.code}"`,
-                display: 'inline-block',
-                paddingInlineStart: 1,
-            },
-        },
-    });
+const useClasses = makeStyles({
+    external: {
+        paddingInlineStart: '1px',
+        verticalAlign: 'top',
+        marginTop: '1px',
+    },
 });
 
-export interface IExternalLinkProps extends ILinkProps {
+export interface ExternalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
     noIcon?: boolean;
 }
 
 /**
  * Open a link in a new tab/window.
  */
-export const ExternalLink: React.FC<IExternalLinkProps> = ({ children, noIcon, className, ...props }) => {
-    const classNames = getClassNames();
-    className = `${className ?? ''} ${noIcon ? '' : classNames.link}`;
+export const ExternalLink: React.FC<ExternalLinkProps> = ({ children, noIcon, ...props }) => {
+    const classes = useClasses();
 
     return (
-        <Link target="_blank" rel="noreferrer" className={className} {...props}>
+        <Link target="_blank" rel="noreferrer" {...props}>
             {children}
+            {noIcon || <NavigateExternalInlineIcon className={classes.external} />}
         </Link>
     );
 };
