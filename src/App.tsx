@@ -10,7 +10,6 @@ import {
     useLocation,
     useSearchParams,
 } from 'react-router-dom';
-import { CommandBarProvider } from './CommandBarProvider';
 import { DirtyProvider } from './DirtyProvider';
 import { parseSceneLink } from './file/share';
 import { FileOpenPage } from './FileOpenPage';
@@ -19,6 +18,7 @@ import { MainPage } from './MainPage';
 import { SceneProvider } from './SceneProvider';
 import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
+import { ToolbarProvider } from './ToolbarProvider';
 
 interface IAppStyles {
     root: IStyle;
@@ -66,11 +66,11 @@ export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
     return (
         <ThemeProvider>
             <HelpProvider>
-                <CommandBarProvider>
+                <ToolbarProvider>
                     <SceneProvider initialScene={sceneFromLink}>
                         <DirtyProvider>{children}</DirtyProvider>
                     </SceneProvider>
-                </CommandBarProvider>
+                </ToolbarProvider>
             </HelpProvider>
         </ThemeProvider>
     );

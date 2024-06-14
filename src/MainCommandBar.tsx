@@ -1,12 +1,30 @@
-import { CommandBar, ICommandBarItemProps } from '@fluentui/react';
+import {
+    Menu,
+    MenuButtonProps,
+    MenuItem,
+    MenuList,
+    MenuPopover,
+    MenuTrigger,
+    SplitButton,
+    Toolbar,
+    ToolbarButton,
+} from '@fluentui/react-components';
 import { useBoolean } from '@fluentui/react-hooks';
-import React, { useCallback, useMemo } from 'react';
+import {
+    ArrowRedoRegular,
+    ArrowUndoRegular,
+    OpenRegular,
+    SaveEditRegular,
+    SaveRegular,
+    ShareRegular,
+} from '@fluentui/react-icons';
+import React, { useCallback } from 'react';
 import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialog } from './file/ShareDialog';
-import { useCommandBar } from './useCommandBar';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
+import { useToolbar } from './useToolbar';
 
 export const MainCommandBar: React.FC = () => {
     const [openFileOpen, { setTrue: showOpenFile, setFalse: hideOpenFile }] = useBoolean(false);
@@ -28,55 +46,57 @@ export const MainCommandBar: React.FC = () => {
         }
     }, [scene, source, setSavedState, showSaveAs]);
 
-    const items = useMemo<ICommandBarItemProps[]>(
-        () => [
-            {
-                key: 'open',
-                text: 'Open',
-                iconProps: { iconName: 'OpenFile' },
-                onClick: showOpenFile,
-            },
-            {
-                key: 'save',
-                text: 'Save',
-                iconProps: { iconName: 'Save' },
-                primaryDisabled: !isDirty,
-                onClick: () => {
-                    save();
-                },
-                split: true,
-                subMenuProps: {
-                    items: [
-                        { key: 'saveAs', text: 'Save as...', iconProps: { iconName: 'SaveAs' }, onClick: showSaveAs },
-                    ],
-                },
-            },
-            {
-                key: 'undo',
-                text: 'Undo',
-                iconProps: { iconName: 'Undo' },
-                disabled: !undoPossible,
-                onClick: undo,
-            },
-            {
-                key: 'redo',
-                text: 'Redo',
-                iconProps: { iconName: 'Redo' },
-                disabled: !redoPossible,
-                onClick: redo,
-            },
-            {
-                key: 'share',
-                text: 'Share',
-                iconProps: { iconName: 'Share' },
-                onClick: showShare,
-            },
-        ],
-        [save, isDirty, undo, redo, undoPossible, redoPossible, showOpenFile, showSaveAs, showShare],
+    const saveButton = (
+        <Menu positioning="below-end">
+            <MenuTrigger disableButtonEnhancement>
+                {(triggerProps: MenuButtonProps) => (
+                    <SplitButton
+                        menuButton={triggerProps}
+                        primaryActionButton={{ onClick: save, disabled: !isDirty }}
+                        icon={<SaveRegular />}
+                        appearance="subtle"
+                    >
+                        Save
+                    </SplitButton>
+                )}
+            </MenuTrigger>
+
+            <MenuPopover>
+                <MenuList>
+                    <MenuItem icon={<SaveEditRegular />} onClick={showSaveAs}>
+                        Save as...
+                    </MenuItem>
+                </MenuList>
+            </MenuPopover>
+        </Menu>
     );
 
-    const commandBar = useMemo(() => <CommandBar items={items} />, [items]);
-    useCommandBar(commandBar);
+    const saveAsButton = (
+        <ToolbarButton icon={<SaveEditRegular />} onClick={showSaveAs}>
+            Save as
+        </ToolbarButton>
+    );
+
+    const toolbar = (
+        <Toolbar>
+            {/* <ToolbarButton icon={<NewRegular />}>New</ToolbarButton> */}
+            <ToolbarButton icon={<OpenRegular />} onClick={showOpenFile}>
+                Open
+            </ToolbarButton>
+            {source ? saveButton : saveAsButton}
+            <ToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
+                Undo
+            </ToolbarButton>
+            <ToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
+                Redo
+            </ToolbarButton>
+            <ToolbarButton icon={<ShareRegular />} onClick={showShare}>
+                Share
+            </ToolbarButton>
+        </Toolbar>
+    );
+
+    useToolbar(toolbar);
 
     return (
         <>

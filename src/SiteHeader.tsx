@@ -1,10 +1,10 @@
 import { Link, Switch, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import React, { HTMLAttributes, useContext } from 'react';
 import { AboutDialog } from './AboutDialog';
-import { CommandBarContext } from './CommandBarProvider';
 import { ExternalLink } from './ExternalLink';
 import { HelpContext } from './HelpProvider';
 import { DarkModeContext } from './ThemeProvider';
+import { ToolbarContext } from './ToolbarProvider';
 import logoUrl from './logo.svg';
 
 const HEADER_HEIGHT = '48px';
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
     commandBar: {
         // TODO: should probably tie this to panel width
         // TODO: handle small windows more gracefully
-        marginLeft: '106px',
+        marginLeft: '122px',
         flexGrow: 1,
     },
     link: {
@@ -54,7 +54,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
     const classes = useStyles();
     const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
-    const [commands] = useContext(CommandBarContext);
+    const [commands] = useContext(ToolbarContext);
 
     return (
         <header className={mergeClasses(classes.root, className)} {...props}>

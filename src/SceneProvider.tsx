@@ -121,6 +121,8 @@ export interface RemoveStepAction {
 }
 
 export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction;
+
+// TODO: the source should be separate from the undo history
 export interface SetSourceAction {
     type: 'setSource';
     source: FileSource | undefined;

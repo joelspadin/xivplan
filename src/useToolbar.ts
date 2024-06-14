@@ -1,8 +1,8 @@
 import { ReactNode, useContext, useEffect } from 'react';
-import { CommandBarContext } from './CommandBarProvider';
+import { ToolbarContext } from './ToolbarProvider';
 
-export function useCommandBar(element: ReactNode): void {
-    const [, dispatch] = useContext(CommandBarContext);
+export function useToolbar(element: ReactNode): void {
+    const [, dispatch] = useContext(ToolbarContext);
 
     useEffect(() => {
         dispatch(element);
