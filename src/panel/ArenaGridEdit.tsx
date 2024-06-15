@@ -1,9 +1,10 @@
 import { IChoiceGroupOption } from '@fluentui/react';
-import { Button, Field, SpinButton } from '@fluentui/react-components';
+import { Button, Field } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
 import { useScene } from '../SceneProvider';
+import { SpinButton } from '../SpinButton';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import {
     CustomRadialGrid,
@@ -160,6 +161,7 @@ export const ArenaGridEdit: React.FC = () => {
                     <Field label="Columns">
                         <SpinButton
                             min={1}
+                            max={100}
                             step={1}
                             value={grid.columns}
                             onChange={(ev, data) => {
@@ -170,6 +172,7 @@ export const ArenaGridEdit: React.FC = () => {
                     <Field label="Rows">
                         <SpinButton
                             min={1}
+                            max={100}
                             step={1}
                             value={grid.rows}
                             onChange={(ev, data) => {
@@ -185,6 +188,7 @@ export const ArenaGridEdit: React.FC = () => {
                         <Field label="Spokes">
                             <SpinButton
                                 min={1}
+                                max={360}
                                 step={1}
                                 value={grid.angularDivs}
                                 onChange={(ev, data) => {
@@ -195,6 +199,7 @@ export const ArenaGridEdit: React.FC = () => {
                         <Field label="Rings">
                             <SpinButton
                                 min={1}
+                                max={100}
                                 step={1}
                                 value={grid.radialDivs}
                                 onChange={(ev, data) => {

@@ -1,7 +1,8 @@
-import { Field, SpinButton, ToggleButton, Tooltip } from '@fluentui/react-components';
+import { Field, ToggleButton, Tooltip } from '@fluentui/react-components';
 import { LockClosedRegular, LockMultipleRegular, LockOpenRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { MoveableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
@@ -35,10 +36,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         <>
             <div className={classes.row}>
                 <Field label="X">
-                    <SpinButton value={x ?? 0} displayValue={x?.toString() ?? ''} onChange={onXChanged} step={10} />
+                    <SpinButton value={x} onChange={onXChanged} step={10} />
                 </Field>
                 <Field label="Y">
-                    <SpinButton value={y ?? 0} displayValue={y?.toString() ?? ''} onChange={onYChanged} step={10} />
+                    <SpinButton value={y} onChange={onYChanged} step={10} />
                 </Field>
                 <Tooltip content={tooltip} relationship="label" withArrow>
                     <ToggleButton checked={pinned} onClick={onTogglePinned} icon={icon} />

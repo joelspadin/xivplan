@@ -1,8 +1,9 @@
 import { IChoiceGroupOption } from '@fluentui/react';
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { useScene } from '../SceneProvider';
+import { SpinButton } from '../SpinButton';
 import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { ArenaShape } from '../scene';
 import { useControlStyles } from '../useControlStyles';
@@ -35,15 +36,15 @@ export const ArenaShapeEdit: React.FC = () => {
                     }}
                 />
                 <Field label="Padding" className={classes.cell}>
-                    <SpinButton min={20} step={10} value={padding} onChange={onPaddingChanged} />
+                    <SpinButton min={20} max={500} step={10} value={padding} onChange={onPaddingChanged} />
                 </Field>
             </div>
             <div className={classes.row}>
                 <Field label="Width">
-                    <SpinButton min={50} step={50} value={width} onChange={onWidthChanged} />
+                    <SpinButton min={50} max={2000} step={50} value={width} onChange={onWidthChanged} />
                 </Field>
                 <Field label="Height">
-                    <SpinButton min={50} step={50} value={height} onChange={onHeightChanged} />
+                    <SpinButton min={50} max={2000} step={50} value={height} onChange={onHeightChanged} />
                 </Field>
             </div>
         </div>

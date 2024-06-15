@@ -1,7 +1,7 @@
 import { SpinButton, SpinButtonChangeEvent, SpinButtonOnChangeData, SpinButtonProps } from '@fluentui/react-components';
 import React, { useCallback } from 'react';
 
-export interface SpinButtonUnitsProps extends SpinButtonProps {
+export interface SpinButtonUnitsProps extends Omit<SpinButtonProps, 'displayValue'> {
     suffix?: string;
 }
 
@@ -16,6 +16,10 @@ function getNumericPart(displayValue: string): number {
     return 0;
 }
 
+/**
+ * Wrapper around SpinButton which displays nothing instead of NaN if value == undefined,
+ * properly handles direct data entry, and adds a unit suffix to the display value.
+ */
 export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ value, suffix, onChange, ...props }) => {
     const displayValue = value === undefined ? '' : `${value}${suffix}`;
 
@@ -25,9 +29,8 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ value, suffix,
                 let value = getNumericPart(data.displayValue);
 
                 if (value !== undefined) {
-                    if (props.step !== undefined) {
-                        value = Math.round(value / props.step) * props.step;
-                    }
+                    value = Math.round(value);
+
                     if (props.min !== undefined) {
                         value = Math.max(value, props.min);
                     }
@@ -41,7 +44,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ value, suffix,
 
             onChange?.(event, data);
         },
-        [onChange, props.min, props.max, props.step],
+        [onChange, props.min, props.max],
     );
 
     return <SpinButton {...props} value={value ?? 0} displayValue={displayValue} onChange={wrappedOnChange} />;

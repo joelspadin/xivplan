@@ -1,6 +1,7 @@
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { InnerRadiusObject, RadiusObject, isInnerRadiusObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
@@ -21,13 +22,7 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
 
     return (
         <Field label={label}>
-            <SpinButton
-                value={radius ?? 0}
-                displayValue={radius?.toString() ?? ''}
-                onChange={onRadiusChanged}
-                min={10}
-                step={5}
-            />
+            <SpinButton value={radius} onChange={onRadiusChanged} min={10} step={5} />
         </Field>
     );
 };
@@ -44,13 +39,7 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
 
     return (
         <Field label="Radius 2" className={classes.rightGap}>
-            <SpinButton
-                value={innerRadius ?? 0}
-                displayValue={innerRadius?.toString() ?? ''}
-                onChange={onInnerRadiusChanged}
-                min={10}
-                step={5}
-            />
+            <SpinButton value={innerRadius} onChange={onInnerRadiusChanged} min={10} step={5} />
         </Field>
     );
 };

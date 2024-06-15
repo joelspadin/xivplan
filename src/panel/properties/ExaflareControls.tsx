@@ -1,6 +1,7 @@
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { ExaflareZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
@@ -21,13 +22,7 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
 
     return (
         <Field label="Length" className={classes.rightGap}>
-            <SpinButton
-                value={length ?? 0}
-                displayValue={length?.toString() ?? ''}
-                onChange={onLengthChanged}
-                min={MIN_LENGTH}
-                step={1}
-            />
+            <SpinButton value={length} onChange={onLengthChanged} min={MIN_LENGTH} step={1} />
         </Field>
     );
 };

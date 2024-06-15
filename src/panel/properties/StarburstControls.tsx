@@ -1,6 +1,7 @@
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { StarburstZone } from '../../scene';
@@ -23,13 +24,7 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
 
     return (
         <Field label="Spoke width" className={classes.rightGap}>
-            <SpinButton
-                value={spokeWidth ?? 0}
-                displayValue={spokeWidth?.toString() ?? ''}
-                onChange={onSpokeWidthChanged}
-                min={MIN_STARBURST_SPOKE_WIDTH}
-                step={5}
-            />
+            <SpinButton value={spokeWidth} onChange={onSpokeWidthChanged} min={MIN_STARBURST_SPOKE_WIDTH} step={5} />
         </Field>
     );
 };
@@ -47,8 +42,7 @@ export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<Starbur
     return (
         <Field label="Spokes" className={classes.rightGap}>
             <SpinButton
-                value={spokes ?? 0}
-                displayValue={spokes?.toString() ?? ''}
+                value={spokes}
                 onChange={onSpokesChanged}
                 min={MIN_SPOKE_COUNT}
                 max={MAX_SPOKE_COUNT}

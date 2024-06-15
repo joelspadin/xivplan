@@ -1,7 +1,8 @@
 import { Stack } from '@fluentui/react';
-import { Field, makeStyles, SpinButton, SpinButtonProps, tokens } from '@fluentui/react-components';
+import { Field, makeStyles, SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { ARENA_BACKGROUND_COLOR } from './render/SceneTheme';
+import { SpinButton } from './SpinButton';
 import { useControlStyles } from './useControlStyles';
 
 const BOX_SIZE = 30;
@@ -21,7 +22,7 @@ export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opaci
     return (
         <div className={controlClasses.row}>
             <Field label="Brush size">
-                <SpinButton value={size} displayValue={value?.toString() ?? ''} min={2} step={2} {...props} />
+                <SpinButton value={value} min={2} step={2} {...props} />
             </Field>
             <Stack.Item>
                 <div className={classes.container}>

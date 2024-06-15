@@ -1,9 +1,10 @@
 import { IChoiceGroupOption } from '@fluentui/react';
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { DeferredTextField } from '../../DeferredTextField';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { TextObject } from '../../scene';
@@ -40,13 +41,7 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
     return (
         <div className={classes.row}>
             <Field label="Font size">
-                <SpinButton
-                    value={fontSize ?? 0}
-                    displayValue={fontSize?.toString() ?? ''}
-                    onChange={onFontSizeChanged}
-                    min={MIN_FONT_SIZE}
-                    step={5}
-                />
+                <SpinButton value={fontSize} onChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
             </Field>
             <CompactChoiceGroup
                 label="Align"

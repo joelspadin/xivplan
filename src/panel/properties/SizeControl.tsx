@@ -1,6 +1,7 @@
-import { Field, SpinButton, mergeClasses } from '@fluentui/react-components';
+import { Field, mergeClasses } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { ResizeableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
@@ -24,22 +25,10 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>
             <Field label="Width">
-                <SpinButton
-                    value={width ?? 0}
-                    displayValue={width?.toString() ?? ''}
-                    onChange={onWidthChanged}
-                    min={20}
-                    step={10}
-                />
+                <SpinButton value={width} onChange={onWidthChanged} min={20} step={10} />
             </Field>
             <Field label="Height">
-                <SpinButton
-                    value={height ?? 0}
-                    displayValue={height?.toString() ?? ''}
-                    onChange={onHeightChanged}
-                    min={20}
-                    step={10}
-                />
+                <SpinButton value={height} onChange={onHeightChanged} min={20} step={10} />
             </Field>
         </div>
     );

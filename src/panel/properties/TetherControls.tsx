@@ -1,8 +1,9 @@
 import { IChoiceGroupOption } from '@fluentui/react';
-import { Field, SpinButton } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
+import { SpinButton } from '../../SpinButton';
 import { getTetherIcon, getTetherName } from '../../prefabs/TetherConfig';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -61,13 +62,7 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
     return (
         <div className={classes.row}>
             <Field label="Width">
-                <SpinButton
-                    value={width ?? 0}
-                    displayValue={width?.toString() ?? ''}
-                    onChange={onWidthChanged}
-                    min={MIN_TETHER_WIDTH}
-                    step={2}
-                />
+                <SpinButton value={width} onChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
             </Field>
         </div>
     );
