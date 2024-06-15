@@ -5,31 +5,23 @@ import {
     MenuList,
     MenuPopover,
     MenuTrigger,
-    SplitButton,
     Toolbar,
-    ToolbarButton,
+    ToolbarDivider,
 } from '@fluentui/react-components';
 import { useBoolean } from '@fluentui/react-hooks';
-import {
-    ArrowRedoRegular,
-    ArrowUndoRegular,
-    OpenRegular,
-    SaveEditRegular,
-    SaveRegular,
-    ShareRegular,
-} from '@fluentui/react-icons';
+import { ArrowRedoRegular, ArrowUndoRegular, OpenRegular, SaveEditRegular, SaveRegular } from '@fluentui/react-icons';
 import React, { useCallback } from 'react';
+import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
-import { ShareDialog } from './file/ShareDialog';
+import { ShareDialogButton } from './file/ShareDialogButton';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 import { useToolbar } from './useToolbar';
 
-export const MainCommandBar: React.FC = () => {
+export const MailToolbar: React.FC = () => {
     const [openFileOpen, { setTrue: showOpenFile, setFalse: hideOpenFile }] = useBoolean(false);
     const [saveAsOpen, { setTrue: showSaveAs, setFalse: hideSaveAs }] = useBoolean(false);
-    const [shareOpen, { setTrue: showShare, setFalse: hideShare }] = useBoolean(false);
 
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
@@ -41,26 +33,23 @@ export const MainCommandBar: React.FC = () => {
         if (source) {
             await saveFile(scene, source);
             setSavedState(scene);
-        } else {
-            showSaveAs();
         }
-    }, [scene, source, setSavedState, showSaveAs]);
+    }, [scene, source, setSavedState]);
 
     const saveButton = (
         <Menu positioning="below-end">
             <MenuTrigger disableButtonEnhancement>
                 {(triggerProps: MenuButtonProps) => (
-                    <SplitButton
+                    <CollapsableSplitButton
                         menuButton={triggerProps}
                         primaryActionButton={{ onClick: save, disabled: !isDirty }}
                         icon={<SaveRegular />}
                         appearance="subtle"
                     >
                         Save
-                    </SplitButton>
+                    </CollapsableSplitButton>
                 )}
             </MenuTrigger>
-
             <MenuPopover>
                 <MenuList>
                     <MenuItem icon={<SaveEditRegular />} onClick={showSaveAs}>
@@ -72,27 +61,30 @@ export const MainCommandBar: React.FC = () => {
     );
 
     const saveAsButton = (
-        <ToolbarButton icon={<SaveEditRegular />} onClick={showSaveAs}>
+        <CollapsableToolbarButton icon={<SaveEditRegular />} onClick={showSaveAs}>
             Save as
-        </ToolbarButton>
+        </CollapsableToolbarButton>
     );
 
     const toolbar = (
         <Toolbar>
-            {/* <ToolbarButton icon={<NewRegular />}>New</ToolbarButton> */}
-            <ToolbarButton icon={<OpenRegular />} onClick={showOpenFile}>
+            {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
+            <CollapsableToolbarButton icon={<OpenRegular />} onClick={showOpenFile}>
                 Open
-            </ToolbarButton>
+            </CollapsableToolbarButton>
+
             {source ? saveButton : saveAsButton}
-            <ToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
+
+            <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
                 Undo
-            </ToolbarButton>
-            <ToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
+            </CollapsableToolbarButton>
+            <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
                 Redo
-            </ToolbarButton>
-            <ToolbarButton icon={<ShareRegular />} onClick={showShare}>
-                Share
-            </ToolbarButton>
+            </CollapsableToolbarButton>
+
+            <ToolbarDivider />
+
+            <ShareDialogButton>Share</ShareDialogButton>
         </Toolbar>
     );
 
@@ -102,7 +94,6 @@ export const MainCommandBar: React.FC = () => {
         <>
             <OpenDialog isOpen={openFileOpen} onDismiss={hideOpenFile} />
             <SaveAsDialog isOpen={saveAsOpen} onDismiss={hideSaveAs} />
-            <ShareDialog isOpen={shareOpen} onDismiss={hideShare} />
         </>
     );
 };

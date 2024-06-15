@@ -2,7 +2,7 @@ import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
 import React, { useEffect } from 'react';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
-import { MainCommandBar } from './MainCommandBar';
+import { MailToolbar } from './MainToolbar';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
@@ -46,7 +46,7 @@ const MainPageContent: React.FC = () => {
     return (
         <>
             <RegularHotkeyHandler />
-            <MainCommandBar />
+            <MailToolbar />
 
             <MainPanel />
 
