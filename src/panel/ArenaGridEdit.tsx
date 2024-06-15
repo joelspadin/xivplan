@@ -1,5 +1,5 @@
-import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import { Button, Field } from '@fluentui/react-components';
+import { IChoiceGroupOption } from '@fluentui/react';
+import { Button, Field, SpinButton } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
@@ -16,10 +16,7 @@ import {
     GridType,
     NO_GRID,
 } from '../scene';
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
+import { useControlStyles } from '../useControlStyles';
 
 const gridShapes: IChoiceGroupOption[] = [
     { key: GridType.None, text: 'None', iconProps: { iconName: 'BorderDot' } },
@@ -75,6 +72,7 @@ function didCustomRadialGridChange(grid: CustomRadialGrid, ringsText: string, sp
 }
 
 export const ArenaGridEdit: React.FC = () => {
+    const classes = useControlStyles();
     const { scene, dispatch } = useScene();
     const grid = scene.arena.grid;
 
@@ -150,7 +148,7 @@ export const ArenaGridEdit: React.FC = () => {
     );
 
     return (
-        <Stack tokens={stackTokens}>
+        <div className={classes.column}>
             <CompactChoiceGroup
                 label="Grid type"
                 options={gridShapes}
@@ -158,54 +156,54 @@ export const ArenaGridEdit: React.FC = () => {
                 onChange={(e, option) => onTypeChange(option?.key as GridType)}
             />
             {grid.type === GridType.Rectangular && (
-                <Stack horizontal tokens={stackTokens}>
-                    <SpinButton
-                        label="Columns"
-                        labelPosition={Position.top}
-                        min={1}
-                        step={1}
-                        value={grid.columns.toString()}
-                        onChange={(ev, newValue) => {
-                            newValue && setGrid({ ...grid, columns: parseInt(newValue) });
-                        }}
-                    />
-                    <SpinButton
-                        label="Rows"
-                        labelPosition={Position.top}
-                        min={1}
-                        step={1}
-                        value={grid.rows.toString()}
-                        onChange={(ev, newValue) => {
-                            newValue && setGrid({ ...grid, rows: parseInt(newValue) });
-                        }}
-                    />
-                </Stack>
+                <div className={classes.row}>
+                    <Field label="Columns">
+                        <SpinButton
+                            min={1}
+                            step={1}
+                            value={grid.columns}
+                            onChange={(ev, data) => {
+                                data.value && setGrid({ ...grid, columns: data.value });
+                            }}
+                        />
+                    </Field>
+                    <Field label="Rows">
+                        <SpinButton
+                            min={1}
+                            step={1}
+                            value={grid.rows}
+                            onChange={(ev, data) => {
+                                data.value && setGrid({ ...grid, rows: data.value });
+                            }}
+                        />
+                    </Field>
+                </div>
             )}
             {grid.type === GridType.Radial && (
                 <>
-                    <Stack horizontal tokens={stackTokens}>
-                        <SpinButton
-                            label="Spokes"
-                            labelPosition={Position.top}
-                            min={1}
-                            step={1}
-                            value={grid.angularDivs.toString()}
-                            onChange={(ev, newValue) => {
-                                newValue && setGrid({ ...grid, angularDivs: parseInt(newValue) });
-                            }}
-                        />
-                        <SpinButton
-                            label="Rings"
-                            labelPosition={Position.top}
-                            min={1}
-                            step={1}
-                            value={grid.radialDivs.toString()}
-                            onChange={(ev, newValue) => {
-                                newValue && setGrid({ ...grid, radialDivs: parseInt(newValue) });
-                            }}
-                        />
-                    </Stack>
-                    <Stack horizontal verticalAlign="end" tokens={stackTokens}>
+                    <div className={classes.row}>
+                        <Field label="Spokes">
+                            <SpinButton
+                                min={1}
+                                step={1}
+                                value={grid.angularDivs}
+                                onChange={(ev, data) => {
+                                    data.value && setGrid({ ...grid, angularDivs: data.value });
+                                }}
+                            />
+                        </Field>
+                        <Field label="Rings">
+                            <SpinButton
+                                min={1}
+                                step={1}
+                                value={grid.radialDivs}
+                                onChange={(ev, data) => {
+                                    data.value && setGrid({ ...grid, radialDivs: data.value });
+                                }}
+                            />
+                        </Field>
+                    </div>
+                    <div className={classes.row}>
                         <Field label="Rotation">
                             <SpinButtonUnits
                                 min={-180}
@@ -221,7 +219,7 @@ export const ArenaGridEdit: React.FC = () => {
                             />
                         </Field>
                         <Button onClick={() => setGrid({ ...grid, startAngle: undefined })}>Reset</Button>
-                    </Stack>
+                    </div>
                 </>
             )}
             {grid.type === GridType.CustomRectangular && (
@@ -264,6 +262,6 @@ export const ArenaGridEdit: React.FC = () => {
                     />
                 </>
             )}
-        </Stack>
+        </div>
     );
 };

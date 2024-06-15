@@ -1,19 +1,11 @@
-import { IChoiceGroupOption, IStackTokens, mergeStyleSets, Position, SpinButton, Stack } from '@fluentui/react';
+import { IChoiceGroupOption } from '@fluentui/react';
+import { Field, SpinButton } from '@fluentui/react-components';
 import React from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { useSpinChanged } from '../prefabs/useSpinChanged';
-import { ArenaShape } from '../scene';
 import { useScene } from '../SceneProvider';
-
-const classNames = mergeStyleSets({
-    fullCell: {
-        width: '100%',
-    },
-});
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
+import { useSpinChanged2 } from '../prefabs/useSpinChanged';
+import { ArenaShape } from '../scene';
+import { useControlStyles } from '../useControlStyles';
 
 const arenaShapes: IChoiceGroupOption[] = [
     // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
@@ -22,53 +14,38 @@ const arenaShapes: IChoiceGroupOption[] = [
 ];
 
 export const ArenaShapeEdit: React.FC = () => {
+    const classes = useControlStyles();
     const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 
-    const onWidthChanged = useSpinChanged((value) => dispatch({ type: 'arenaWidth', value }));
-    const onHeightChanged = useSpinChanged((value) => dispatch({ type: 'arenaHeight', value }));
-    const onPaddingChanged = useSpinChanged((value) => dispatch({ type: 'arenaPadding', value }));
+    const onWidthChanged = useSpinChanged2((value) => dispatch({ type: 'arenaWidth', value }));
+    const onHeightChanged = useSpinChanged2((value) => dispatch({ type: 'arenaHeight', value }));
+    const onPaddingChanged = useSpinChanged2((value) => dispatch({ type: 'arenaPadding', value }));
 
     return (
-        <Stack tokens={stackTokens}>
-            <Stack horizontal tokens={stackTokens}>
-                <Stack.Item className={classNames.fullCell}>
-                    <CompactChoiceGroup
-                        label="Arena shape"
-                        options={arenaShapes}
-                        selectedKey={shape}
-                        onChange={(ev, option) => {
-                            option && dispatch({ type: 'arenaShape', value: option.key as ArenaShape });
-                        }}
-                    />
-                </Stack.Item>
-                <SpinButton
-                    label="Padding"
-                    labelPosition={Position.top}
-                    min={20}
-                    step={10}
-                    value={padding.toString()}
-                    onChange={onPaddingChanged}
+        <div className={classes.column}>
+            <div className={classes.row}>
+                <CompactChoiceGroup
+                    className={classes.cell}
+                    label="Arena shape"
+                    options={arenaShapes}
+                    selectedKey={shape}
+                    onChange={(ev, option) => {
+                        option && dispatch({ type: 'arenaShape', value: option.key as ArenaShape });
+                    }}
                 />
-            </Stack>
-            <Stack horizontal tokens={stackTokens}>
-                <SpinButton
-                    label="Width"
-                    labelPosition={Position.top}
-                    min={50}
-                    step={50}
-                    value={width.toString()}
-                    onChange={onWidthChanged}
-                />
-                <SpinButton
-                    label="Height"
-                    labelPosition={Position.top}
-                    min={50}
-                    step={50}
-                    value={height.toString()}
-                    onChange={onHeightChanged}
-                />
-            </Stack>
-        </Stack>
+                <Field label="Padding" className={classes.cell}>
+                    <SpinButton min={20} step={10} value={padding} onChange={onPaddingChanged} />
+                </Field>
+            </div>
+            <div className={classes.row}>
+                <Field label="Width">
+                    <SpinButton min={50} step={50} value={width} onChange={onWidthChanged} />
+                </Field>
+                <Field label="Height">
+                    <SpinButton min={50} step={50} value={height} onChange={onHeightChanged} />
+                </Field>
+            </div>
+        </div>
     );
 };

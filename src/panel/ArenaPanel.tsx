@@ -20,6 +20,7 @@ import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
 import { ScenePreview } from '../render/SceneRenderer';
 import { ArenaPreset, Scene } from '../scene';
+import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
@@ -27,9 +28,10 @@ import { PANEL_PADDING } from './PanelStyles';
 
 export const ArenaPanel: React.FC = () => {
     const classes = useStyles();
+    const controlClasses = useControlStyles();
 
     return (
-        <div className={classes.panel}>
+        <div className={mergeClasses(classes.panel, controlClasses.column)}>
             <ArenaShapeEdit />
             <ArenaGridEdit />
             <ArenaBackgroundEdit />
@@ -179,9 +181,6 @@ const PresetItem: React.FC<PresetItemProps> = ({ preset, selected, onClick, onDo
 
 const useStyles = makeStyles({
     panel: {
-        display: 'flex',
-        flexFlow: 'column',
-        rowGap: tokens.spacingVerticalM,
         padding: `${PANEL_PADDING}px`,
     },
 
