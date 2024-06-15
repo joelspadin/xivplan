@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE } from '../../prefabs/bounds';
-import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
+import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { ArcZone, ConeZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
@@ -15,7 +15,7 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
 
     const coneAngle = useMemo(() => commonValue(objects, (obj) => obj.coneAngle), [objects]);
 
-    const onAngleChanged = useSpinChanged2((coneAngle: number) =>
+    const onAngleChanged = useSpinChanged((coneAngle: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, coneAngle })) }),
     );
 

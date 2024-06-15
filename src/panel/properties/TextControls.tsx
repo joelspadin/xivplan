@@ -5,7 +5,7 @@ import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { DeferredTextField } from '../../DeferredTextField';
 import { useScene } from '../../SceneProvider';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
-import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
+import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { TextObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
@@ -24,7 +24,7 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
     const fontSize = useMemo(() => commonValue(objects, (obj) => obj.fontSize), [objects]);
     const align = useMemo(() => commonValue(objects, (obj) => obj.align), [objects]);
 
-    const onFontSizeChanged = useSpinChanged2((fontSize: number) =>
+    const onFontSizeChanged = useSpinChanged((fontSize: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
     );
 

@@ -1,6 +1,11 @@
 import { makeStyles, tokens } from '@fluentui/react-components';
+import { PANEL_PADDING } from './panel/PanelStyles';
 
 export const useControlStyles = makeStyles({
+    panel: {
+        padding: `${PANEL_PADDING}px`,
+    },
+
     column: {
         display: 'flex',
         flexFlow: 'column',
@@ -21,5 +26,9 @@ export const useControlStyles = makeStyles({
 
     cell: {
         flex: 1,
+    },
+
+    grow: {
+        flexGrow: 1,
     },
 });

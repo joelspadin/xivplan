@@ -8,7 +8,7 @@ import { useHotkeys } from '../HotkeyHelpProvider';
 import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
-import { useSpinChanged2 } from '../prefabs/useSpinChanged';
+import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { COLOR_SWATCHES } from '../render/SceneTheme';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
@@ -48,7 +48,7 @@ export const DrawPanel: React.FC = () => {
         [config, setConfig],
     );
 
-    const onSizeChanged = useSpinChanged2((brushSize: number) => setConfig({ ...config, brushSize }));
+    const onSizeChanged = useSpinChanged((brushSize: number) => setConfig({ ...config, brushSize }));
 
     const modeHotkey = useCallback(
         (mode: EditMode) => (e: KeyboardEvent) => {

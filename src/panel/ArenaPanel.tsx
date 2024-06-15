@@ -24,14 +24,12 @@ import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
-import { PANEL_PADDING } from './PanelStyles';
 
 export const ArenaPanel: React.FC = () => {
-    const classes = useStyles();
-    const controlClasses = useControlStyles();
+    const classes = useControlStyles();
 
     return (
-        <div className={mergeClasses(classes.panel, controlClasses.column)}>
+        <div className={mergeClasses(classes.panel, classes.column)}>
             <ArenaShapeEdit />
             <ArenaGridEdit />
             <ArenaBackgroundEdit />
@@ -180,10 +178,6 @@ const PresetItem: React.FC<PresetItemProps> = ({ preset, selected, onClick, onDo
 };
 
 const useStyles = makeStyles({
-    panel: {
-        padding: `${PANEL_PADDING}px`,
-    },
-
     dialogSurface: {
         maxWidth: '1080px',
 

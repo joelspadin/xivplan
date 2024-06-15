@@ -1,8 +1,9 @@
-import { IStyle, Position, SpinButton, mergeStyleSets } from '@fluentui/react';
+import { Field, SpinButton } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { InnerRadiusObject, RadiusObject, isInnerRadiusObject } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
@@ -19,24 +20,20 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
     const label = hasInnerRadius ? 'Radius 1' : 'Radius';
 
     return (
-        <SpinButton
-            label={label}
-            labelPosition={Position.top}
-            value={radius?.toString() ?? ''}
-            onChange={onRadiusChanged}
-            min={10}
-            step={5}
-        />
+        <Field label={label}>
+            <SpinButton
+                value={radius ?? 0}
+                displayValue={radius?.toString() ?? ''}
+                onChange={onRadiusChanged}
+                min={10}
+                step={5}
+            />
+        </Field>
     );
 };
 
-const classNames = mergeStyleSets({
-    padded: {
-        marginRight: 32 + 10,
-    } as IStyle,
-});
-
 export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const innerRadius = useMemo(() => commonValue(objects, (obj) => obj.innerRadius), [objects]);
@@ -46,14 +43,14 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
     );
 
     return (
-        <SpinButton
-            className={classNames.padded}
-            label="Radius 2"
-            labelPosition={Position.top}
-            value={innerRadius?.toString() ?? ''}
-            onChange={onInnerRadiusChanged}
-            min={10}
-            step={5}
-        />
+        <Field label="Radius 2" className={classes.rightGap}>
+            <SpinButton
+                value={innerRadius ?? 0}
+                displayValue={innerRadius?.toString() ?? ''}
+                onChange={onInnerRadiusChanged}
+                min={10}
+                step={5}
+            />
+        </Field>
     );
 };

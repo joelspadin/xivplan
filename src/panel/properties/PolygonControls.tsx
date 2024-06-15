@@ -1,4 +1,4 @@
-import { Position, SpinButton } from '@fluentui/react';
+import { Field, SpinButton } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { MAX_POLYGON_SIDES, MIN_POLYGON_SIDES } from '../../prefabs/bounds';
@@ -17,14 +17,15 @@ export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> 
     );
 
     return (
-        <SpinButton
-            label={'Sides'}
-            labelPosition={Position.top}
-            value={spokes?.toString() ?? ''}
-            onChange={onSidesChanged}
-            min={MIN_POLYGON_SIDES}
-            max={MAX_POLYGON_SIDES}
-            step={1}
-        />
+        <Field label="Sides">
+            <SpinButton
+                value={spokes ?? 0}
+                displayValue={spokes?.toString() ?? ''}
+                onChange={onSidesChanged}
+                min={MIN_POLYGON_SIDES}
+                max={MAX_POLYGON_SIDES}
+                step={1}
+            />
+        </Field>
     );
 };

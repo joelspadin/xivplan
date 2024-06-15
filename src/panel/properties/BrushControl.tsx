@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { BrushSizeControl } from '../../BrushSizeControl';
 import { useScene } from '../../SceneProvider';
-import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
+import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { DrawObject } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
@@ -11,7 +11,7 @@ export const DrawObjectBrushControl: React.FC<PropertiesControlProps<DrawObject>
 
     const brushSize = useMemo(() => commonValue(objects, (obj) => obj.brushSize), [objects]);
 
-    const onSizeChanged = useSpinChanged2((brushSize: number) =>
+    const onSizeChanged = useSpinChanged((brushSize: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, brushSize })) }),
     );
     return (

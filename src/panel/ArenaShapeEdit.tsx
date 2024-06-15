@@ -3,7 +3,7 @@ import { Field, SpinButton } from '@fluentui/react-components';
 import React from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { useScene } from '../SceneProvider';
-import { useSpinChanged2 } from '../prefabs/useSpinChanged';
+import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { ArenaShape } from '../scene';
 import { useControlStyles } from '../useControlStyles';
 
@@ -18,9 +18,9 @@ export const ArenaShapeEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 
-    const onWidthChanged = useSpinChanged2((value) => dispatch({ type: 'arenaWidth', value }));
-    const onHeightChanged = useSpinChanged2((value) => dispatch({ type: 'arenaHeight', value }));
-    const onPaddingChanged = useSpinChanged2((value) => dispatch({ type: 'arenaPadding', value }));
+    const onWidthChanged = useSpinChanged((value) => dispatch({ type: 'arenaWidth', value }));
+    const onHeightChanged = useSpinChanged((value) => dispatch({ type: 'arenaHeight', value }));
+    const onPaddingChanged = useSpinChanged((value) => dispatch({ type: 'arenaPadding', value }));
 
     return (
         <div className={classes.column}>

@@ -5,7 +5,7 @@ import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
 import { getTetherIcon, getTetherName } from '../../prefabs/TetherConfig';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
-import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
+import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { Tether, TetherType } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
@@ -54,7 +54,7 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
 
     const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
 
-    const onWidthChanged = useSpinChanged2((width: number) =>
+    const onWidthChanged = useSpinChanged((width: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
     );
 

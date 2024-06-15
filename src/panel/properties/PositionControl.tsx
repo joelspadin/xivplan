@@ -2,7 +2,7 @@ import { Field, SpinButton, ToggleButton, Tooltip } from '@fluentui/react-compon
 import { LockClosedRegular, LockMultipleRegular, LockOpenRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
-import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
+import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { MoveableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue, setOrOmit } from '../../util';
@@ -21,10 +21,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         [dispatch, objects, pinned],
     );
 
-    const onXChanged = useSpinChanged2((x: number) =>
+    const onXChanged = useSpinChanged((x: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, x })) }),
     );
-    const onYChanged = useSpinChanged2((y: number) =>
+    const onYChanged = useSpinChanged((y: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
 

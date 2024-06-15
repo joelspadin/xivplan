@@ -1,4 +1,4 @@
-import { IStackTokens, IStyle, Stack, mergeStyleSets } from '@fluentui/react';
+import { mergeClasses } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useCurrentStep } from '../SceneProvider';
 import {
@@ -29,7 +29,7 @@ import {
     supportsHollow,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
-import { PANEL_PADDING } from './PanelStyles';
+import { useControlStyles } from '../useControlStyles';
 import { PropertiesControlProps } from './PropertiesControl';
 import { ArrowPointersControl } from './properties/ArrowControls';
 import { DrawObjectBrushControl } from './properties/BrushControl';
@@ -53,15 +53,11 @@ import { TetherTypeControl, TetherWidthControl } from './properties/TetherContro
 import { TextStyleControl, TextValueControl } from './properties/TextControls';
 import { TowerCountControl } from './properties/TowerControls';
 
-const classNames = mergeStyleSets({
-    root: {
-        padding: PANEL_PADDING,
-    } as IStyle,
-});
-
 export const PropertiesPanel: React.FC = () => {
+    const classes = useControlStyles();
+
     return (
-        <div className={classNames.root}>
+        <div className={mergeClasses(classes.panel, classes.column)}>
             <Controls />
         </div>
     );
@@ -81,11 +77,8 @@ const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, cont
     return isValid ? <Control objects={objects} /> : null;
 };
 
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
 const Controls: React.FC = () => {
+    const classes = useControlStyles();
     const [selection] = useSelection();
     const step = useCurrentStep();
 
@@ -101,14 +94,14 @@ const Controls: React.FC = () => {
 
             {/* Style */}
             <ControlCondition objects={objects} test={isTether} control={TetherTypeControl} />
-            <Stack horizontal tokens={stackTokens}>
-                <Stack.Item grow>
+            <div className={classes.row}>
+                <div className={classes.grow}>
                     <ControlCondition objects={objects} test={isColored} control={ColorControl} />
-                </Stack.Item>
+                </div>
                 <ControlCondition objects={objects} test={isArrow} control={ArrowPointersControl} />
                 <ControlCondition objects={objects} test={supportsHollow} control={HollowControl} />
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />
-            </Stack>
+            </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />
             <ControlCondition objects={objects} test={isTransparent} control={OpacityControl} />
             <ControlCondition objects={objects} test={isDrawObject} control={DrawObjectBrushControl} />
@@ -119,13 +112,13 @@ const Controls: React.FC = () => {
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
             <ControlCondition objects={objects} test={isResizable} control={SizeControl} />
 
-            <Stack horizontal tokens={stackTokens}>
+            <div className={classes.row}>
                 <ControlCondition objects={objects} test={isRadiusObject} control={RadiusControl} />
                 <ControlCondition objects={objects} test={isInnerRadiusObject} control={InnerRadiusControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareLengthControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
-            </Stack>
-            <Stack horizontal tokens={stackTokens}>
+            </div>
+            <div className={classes.row}>
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
@@ -135,7 +128,7 @@ const Controls: React.FC = () => {
                     test={(x) => isArcZone(x) || isConeZone(x)}
                     control={ConeAngleControl}
                 />
-            </Stack>
+            </div>
 
             {/* Special options */}
             <ControlCondition objects={objects} test={isParty} control={PartyIconControl} />
