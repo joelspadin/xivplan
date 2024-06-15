@@ -1,16 +1,15 @@
-import { IStackTokens, IconButton, Position, SpinButton, Stack } from '@fluentui/react';
+import { Field, SpinButton, ToggleButton, Tooltip } from '@fluentui/react-components';
+import { LockClosedRegular, LockMultipleRegular, LockOpenRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
+import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
 import { MoveableObject } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue, setOrOmit } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
 export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const x = useMemo(() => commonValue(objects, (obj) => obj.x), [objects]);
@@ -22,40 +21,29 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         [dispatch, objects, pinned],
     );
 
-    const onXChanged = useSpinChanged((x: number) =>
+    const onXChanged = useSpinChanged2((x: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, x })) }),
     );
-    const onYChanged = useSpinChanged((y: number) =>
+    const onYChanged = useSpinChanged2((y: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
 
-    const iconName = pinned === undefined ? 'Unlock' : pinned ? 'LockSolid' : 'UnlockSolid';
+    const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
+    const tooltip = pinned ? 'Unlock position' : 'Lock position';
 
     return (
         <>
-            <Stack horizontal tokens={stackTokens} verticalAlign="end">
-                <SpinButton
-                    label="X"
-                    labelPosition={Position.top}
-                    value={x?.toString() ?? ''}
-                    onChange={onXChanged}
-                    step={10}
-                />
-                <SpinButton
-                    label="Y"
-                    labelPosition={Position.top}
-                    value={y?.toString() ?? ''}
-                    onChange={onYChanged}
-                    step={10}
-                />
-                <IconButton
-                    iconProps={{ iconName }}
-                    toggle
-                    checked={pinned}
-                    onClick={onTogglePinned}
-                    title="Lock object"
-                />
-            </Stack>
+            <div className={classes.row}>
+                <Field label="X">
+                    <SpinButton value={x ?? 0} displayValue={x?.toString() ?? ''} onChange={onXChanged} step={10} />
+                </Field>
+                <Field label="Y">
+                    <SpinButton value={y ?? 0} displayValue={y?.toString() ?? ''} onChange={onYChanged} step={10} />
+                </Field>
+                <Tooltip content={tooltip} relationship="label" withArrow>
+                    <ToggleButton checked={pinned} onClick={onTogglePinned} icon={icon} />
+                </Tooltip>
+            </div>
         </>
     );
 };

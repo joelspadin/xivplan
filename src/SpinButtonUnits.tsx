@@ -16,8 +16,8 @@ function getNumericPart(displayValue: string): number {
     return 0;
 }
 
-export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, onChange, ...props }) => {
-    const displayValue = `${props.value}${suffix}`;
+export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ value, suffix, onChange, ...props }) => {
+    const displayValue = value === undefined ? '' : `${value}${suffix}`;
 
     const wrappedOnChange = useCallback(
         (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
@@ -44,5 +44,5 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, onChan
         [onChange, props.min, props.max, props.step],
     );
 
-    return <SpinButton {...props} displayValue={displayValue} onChange={wrappedOnChange} />;
+    return <SpinButton {...props} value={value ?? 0} displayValue={displayValue} onChange={wrappedOnChange} />;
 };

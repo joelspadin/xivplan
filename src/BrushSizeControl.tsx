@@ -11,17 +11,17 @@ export interface BrushSizeControlProps extends SpinButtonProps {
     opacity: number;
 }
 
-export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opacity, ...props }) => {
+export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opacity, value, ...props }) => {
     const classes = useStyles();
     const controlClasses = useControlStyles();
 
-    const size = props.value ?? 0;
+    const size = value ?? 0;
     const pos = Math.max(BOX_SIZE / 2, size / 2);
 
     return (
         <div className={controlClasses.row}>
             <Field label="Brush size">
-                <SpinButton min={2} step={2} {...props} />
+                <SpinButton value={size} displayValue={value?.toString() ?? ''} min={2} step={2} {...props} />
             </Field>
             <Stack.Item>
                 <div className={classes.container}>

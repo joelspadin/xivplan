@@ -4,7 +4,12 @@ export const useControlStyles = makeStyles({
     row: {
         display: 'flex',
         flexFlow: 'row',
-        gap: tokens.spacingHorizontalM,
         alignItems: 'end',
+        gap: tokens.spacingHorizontalS,
+        marginBottom: tokens.spacingVerticalXS,
+    },
+
+    rightGap: {
+        marginRight: '40px',
     },
 });

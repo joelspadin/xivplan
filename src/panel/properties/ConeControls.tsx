@@ -1,15 +1,16 @@
-import { Field, makeStyles } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE } from '../../prefabs/bounds';
 import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
 import { ArcZone, ConeZone } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZone>> = ({ objects }) => {
-    const classes = useStyles();
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const coneAngle = useMemo(() => commonValue(objects, (obj) => obj.coneAngle), [objects]);
@@ -19,7 +20,7 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
     );
 
     return (
-        <Field label="Angle" className={classes.padded}>
+        <Field label="Angle" className={classes.rightGap}>
             <SpinButtonUnits
                 value={coneAngle}
                 onChange={onAngleChanged}
@@ -31,9 +32,3 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
         </Field>
     );
 };
-
-const useStyles = makeStyles({
-    padded: {
-        marginRight: '42px',
-    },
-});
