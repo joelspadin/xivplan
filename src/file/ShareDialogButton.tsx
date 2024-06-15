@@ -11,7 +11,6 @@ import {
     Textarea,
     Toast,
     ToastTitle,
-    makeStyles,
     useToastController,
 } from '@fluentui/react-components';
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
@@ -29,7 +28,6 @@ export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }
     const { scene } = useScene();
     const { dispatchToast } = useToastController();
     const url = useMemo(() => getSceneUrl(scene), [scene]);
-    const classes = useStyles();
 
     // TODO: create toast when copy button is clicked. Anchor toast to dialog?
 
@@ -49,12 +47,7 @@ export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }
                     <DialogTitle>Share</DialogTitle>
                     <DialogContent>
                         <Field label="Link to this plan">
-                            <Textarea
-                                value={url}
-                                contentEditable={false}
-                                appearance="filled-darker-shadow"
-                                className={classes.textarea}
-                            />
+                            <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
                         </Field>
                         <p>
                             If the link is too long for your browser to open, paste the text into{' '}
@@ -83,12 +76,6 @@ const CopySuccessToast = () => {
         </Toast>
     );
 };
-
-const useStyles = makeStyles({
-    textarea: {
-        minHeight: '10em',
-    },
-});
 
 function getSceneUrl(scene: Scene) {
     const data = sceneToText(scene);

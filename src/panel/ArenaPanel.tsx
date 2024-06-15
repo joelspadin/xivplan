@@ -202,7 +202,7 @@ const useStyles = makeStyles({
         flexFlow: 'row',
 
         height: '80vh',
-        paddingBottom: tokens.spacingVerticalL,
+        paddingBottom: tokens.spacingVerticalS,
     },
 
     nav: {

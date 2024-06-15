@@ -1,79 +1,66 @@
 import {
-    ConstrainMode,
-    DefaultButton,
-    DetailsList,
-    DetailsListLayoutMode,
-    DialogFooter,
-    IColumn,
-    IconButton,
-    PrimaryButton,
-    Selection,
-    SelectionMode,
+    Button,
+    DataGrid,
+    DataGridBody,
+    DataGridCell,
+    DataGridCellFocusMode,
+    DataGridHeader,
+    DataGridHeaderCell,
+    DataGridProps,
+    DataGridRow,
+    DialogTrigger,
+    Field,
+    Input,
     Spinner,
-    TextField,
-    Theme,
-    useTheme,
-} from '@fluentui/react';
-import { useConst, useForceUpdate } from '@fluentui/react-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+    TableColumnDefinition,
+    TableColumnId,
+    TableRowId,
+    Tooltip,
+    createTableColumn,
+    makeStyles,
+} from '@fluentui/react-components';
+import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
+import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
+import { useDialogActions } from '../useDialogActions';
+import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
-import { FileDialogTabProps, classNames, listStyles } from './FileDialogCommon';
-import { confirmDeleteFile, confirmOverwriteFile, confirmUnsavedChanges } from './confirm';
+import { useConfirmDeleteFile, useConfirmOverwriteFile, useConfirmUnsavedChanges } from './confirm';
 import { LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
 
-const getOpenFileColumns = (theme: Theme, reloadFiles: () => void) =>
-    [
-        {
-            key: 'name',
-            name: 'Name',
-            fieldName: 'name',
-            minWidth: 200,
-        },
-        {
-            key: 'modified',
-            name: 'Date modified',
-            fieldName: 'lastModified',
-            minWidth: 200,
-            onRender: (item: LocalStorageFileInfo) => item.lastEdited?.toLocaleString(),
-        },
-        {
-            key: 'delete',
-            name: '',
-            minWidth: 32,
-            onRender: (item: LocalStorageFileInfo) => (
-                <IconButton
-                    className={classNames.listButton}
-                    iconProps={{ iconName: 'Delete' }}
-                    onClick={async () => {
-                        if (await confirmDeleteFile(item.name, theme)) {
-                            await deleteFileLocalStorage(item.name);
-                            reloadFiles();
-                        }
-                    }}
-                />
-            ),
-        },
-    ] as IColumn[];
+const getCellFocusMode = (columnId: TableColumnId): DataGridCellFocusMode => {
+    switch (columnId) {
+        case 'delete':
+            return 'none';
+        default:
+            return 'cell';
+    }
+};
 
-export const OpenLocalStorage: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
-    const loadScene = useLoadScene();
+const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
+
+export const OpenLocalStorage: React.FC = () => {
+    const classes = useStyles();
     const isDirty = useIsDirty();
-    const theme = useTheme();
+    const loadScene = useLoadScene();
+    const dismissDialog = useDismissDialog();
+
+    const [confirmUnsavedChanges, renderModal1] = useConfirmUnsavedChanges();
+    const [confirmDeleteFile, renderModal2] = useConfirmDeleteFile();
+
+    const [selectedRows, setSelectedRows] = useState(new Set<TableRowId>());
+    const onSelectionChange: DataGridProps['onSelectionChange'] = (ev, data) => {
+        setSelectedRows(data.selectedItems);
+    };
 
     const [counter, { inc: reloadFiles }] = useCounter();
-    const { value: files, error, loading } = useAsync(listLocalStorageFiles, [counter]);
-
-    const columns = useMemo(() => getOpenFileColumns(theme, reloadFiles), [theme, reloadFiles]);
-
-    const forceUpdate = useForceUpdate();
-    const selection = useConst(() => new Selection({ onSelectionChanged: forceUpdate }));
+    const files = useAsync(listLocalStorageFiles, [counter]);
 
     const loadSceneFromStorage = useCallback(
-        async (name: string) => {
-            if (isDirty && !(await confirmUnsavedChanges(theme))) {
+        async (event: MouseEvent<HTMLElement>, name: string) => {
+            if (isDirty && !(await confirmUnsavedChanges())) {
                 return;
             }
 
@@ -81,125 +68,214 @@ export const OpenLocalStorage: React.FC<FileDialogTabProps> = ({ onDismiss }) =>
             const scene = await openFile(source);
 
             loadScene(scene, source);
-            onDismiss?.();
+            dismissDialog(event);
         },
-        [theme, isDirty, loadScene, onDismiss],
+        [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
     );
 
-    const itemInvokedCallback = useCallback(
-        async (item?: LocalStorageFileInfo) => {
-            if (item) {
-                loadSceneFromStorage(item.name);
+    const openCallback = useCallback(
+        async (event: MouseEvent<HTMLElement>) => {
+            const [name] = selectedRows;
+            if (name) {
+                await loadSceneFromStorage(event, name as string);
             }
         },
-        [loadSceneFromStorage],
+        [selectedRows, loadSceneFromStorage],
     );
 
-    const openCallback = useCallback(async () => {
-        const index = selection.getSelectedIndices()[0] ?? 0;
-        const name = files?.[index]?.name;
-        if (!name) {
-            return;
-        }
+    const deleteFile = useCallback(
+        async (item: LocalStorageFileInfo) => {
+            if (await confirmDeleteFile(item.name)) {
+                await deleteFileLocalStorage(item.name);
+                reloadFiles();
+            }
+        },
+        [reloadFiles, confirmDeleteFile],
+    );
 
-        await loadSceneFromStorage(name);
-    }, [selection, files, loadSceneFromStorage]);
+    useDialogActions(
+        <>
+            <Button appearance="primary" disabled={selectedRows.size === 0} onClick={openCallback}>
+                Open
+            </Button>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
+    );
 
-    if (loading) {
+    const columns = useMemo<TableColumnDefinition<LocalStorageFileInfo>[]>(
+        () => [
+            createTableColumn<LocalStorageFileInfo>({
+                columnId: 'name',
+                compare: (a, b) => a.name.localeCompare(b.name),
+                renderHeaderCell: () => 'Name',
+                renderCell: (item) => item.name,
+            }),
+            createTableColumn<LocalStorageFileInfo>({
+                columnId: 'lastUpdate',
+                compare: (a, b) => {
+                    const time1 = a.lastEdited?.getTime() ?? 0;
+                    const time2 = b.lastEdited?.getTime() ?? 0;
+                    return time1 - time2;
+                },
+                renderHeaderCell: () => 'Last updated',
+                renderCell: (item) => item.lastEdited?.toLocaleString(),
+            }),
+            createTableColumn<LocalStorageFileInfo>({
+                columnId: 'delete',
+                renderHeaderCell: () => 'Actions',
+                renderCell: (item) => {
+                    return (
+                        <>
+                            <Tooltip
+                                content={`Delete ${item.name}`}
+                                appearance="inverted"
+                                relationship="label"
+                                withArrow
+                            >
+                                <Button
+                                    appearance="subtle"
+                                    aria-label="Delete"
+                                    icon={<DeleteIcon />}
+                                    onClick={() => deleteFile(item)}
+                                />
+                            </Tooltip>
+                        </>
+                    );
+                },
+            }),
+        ],
+        [deleteFile],
+    );
+
+    if (files.loading) {
         return <Spinner />;
     }
-    if (error) {
-        return <p>{error.message}</p>;
-    }
-    if (!files) {
-        return null;
+    if (files.error) {
+        return <p>{files.error.message}</p>;
     }
 
-    // TODO: selection broke after updating libraries. Can't figure out why.
-    // Just replace this with Fluent UI 9 DataGrid/Table?
+    // TODO: virtualize datagrid?
+    // https://react.fluentui.dev/?path=/docs/components-datagrid--default#virtualization
     return (
         <>
-            <DetailsList
+            <DataGrid
+                items={files.value ?? []}
                 columns={columns}
-                items={files}
-                layoutMode={DetailsListLayoutMode.fixedColumns}
-                constrainMode={ConstrainMode.unconstrained}
-                selectionMode={SelectionMode.single}
-                selection={selection}
-                onItemInvoked={itemInvokedCallback}
-                styles={listStyles}
-                compact
-            />
-            <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Open" disabled={selection.count === 0} onClick={openCallback} />
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
+                getRowId={(item: LocalStorageFileInfo) => item.name}
+                size="small"
+                selectionMode="single"
+                selectedItems={selectedRows}
+                onSelectionChange={onSelectionChange}
+                subtleSelection
+                sortable
+            >
+                <DataGridHeader>
+                    <DataGridRow>
+                        {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
+                    </DataGridRow>
+                </DataGridHeader>
+                <DataGridBody<LocalStorageFileInfo> className={classes.fileList}>
+                    {({ item, rowId }) => (
+                        <DataGridRow<LocalStorageFileInfo>
+                            key={rowId}
+                            selectionCell={{ radioIndicator: { 'aria-label': 'Select row' } }}
+                            onDoubleClick={(ev: MouseEvent<HTMLElement>) => loadSceneFromStorage(ev, rowId as string)}
+                        >
+                            {({ renderCell, columnId }) => (
+                                <DataGridCell focusMode={getCellFocusMode(columnId)}>{renderCell(item)}</DataGridCell>
+                            )}
+                        </DataGridRow>
+                    )}
+                </DataGridBody>
+            </DataGrid>
+
+            {renderModal1()}
+            {renderModal2()}
         </>
     );
 };
 
 function getInitialName(source: FileSource | undefined) {
-    return source?.type === 'local' ? source.name : undefined;
+    return source?.type === 'local' ? source.name : '';
 }
 
-export const SaveBrowserStorage: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
+export const SaveLocalStorage: React.FC = () => {
     const setSavedState = useSetSavedState();
+    const dismissDialog = useDismissDialog();
     const files = useAsync(listLocalStorageFiles);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+
     const { scene, source, dispatch } = useScene();
     const [name, setName] = useState(getInitialName(source));
-    const theme = useTheme();
+    const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 
-    const alreadyExists = useMemo(() => files.value?.some((f) => f.name === name), [files.value, name]);
-    const canSave = !!name && !files.loading;
+    const alreadyExists = useMemo(() => files.value?.some((f) => f.name === name?.trim()), [files.value, name]);
+    const canSave = !!name?.trim() && !files.loading;
 
-    const [saveState, save] = useAsyncFn(async () => {
-        if (!canSave) {
-            return;
-        }
-
-        if (alreadyExists) {
-            if (!(await confirmOverwriteFile(theme))) {
+    const [, save] = useAsyncFn(
+        async (event: MouseEvent<HTMLElement>) => {
+            if (!canSave) {
                 return;
             }
-        }
 
-        const source: FileSource = { type: 'local', name };
-        await saveFile(scene, source);
+            const source: FileSource = { type: 'local', name: name.trim() };
 
-        dispatch({ type: 'setSource', source });
-        setSavedState(scene);
-        onDismiss?.();
-    }, [scene, name, canSave, alreadyExists, theme, dispatch, onDismiss, setSavedState]);
-
-    const onKeyPress = useCallback(
-        (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-            if (ev.key === 'Enter') {
-                save();
+            if (alreadyExists && !(await confirmOverwriteFile(source.name))) {
+                return;
             }
+
+            await saveFile(scene, source);
+
+            dispatch({ type: 'setSource', source });
+            setSavedState(scene);
+            dismissDialog(event);
         },
-        [save],
+        [scene, name, canSave, alreadyExists, dispatch, dismissDialog, setSavedState, confirmOverwriteFile],
     );
 
-    if (saveState.loading) {
-        return <Spinner />;
-    }
+    const onKeyUp = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            saveButtonRef.current?.click();
+        }
+    }, []);
+
+    useDialogActions(
+        <>
+            <Button ref={saveButtonRef} appearance="primary" disabled={!canSave} onClick={save}>
+                Save as
+            </Button>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
+    );
 
     return (
         <>
-            <div className={classNames.form}>
-                <TextField
-                    label="File name"
+            <Field
+                label="File name"
+                validationState={alreadyExists ? 'error' : 'none'}
+                validationMessage={alreadyExists ? 'A file with this name already exists' : undefined}
+            >
+                <Input
+                    type="text"
+                    autoFocus
                     value={name}
-                    onChange={(e, v) => setName(v)}
-                    onKeyUp={onKeyPress}
-                    errorMessage={alreadyExists ? 'A file with this name already exists.' : undefined}
+                    onChange={(ev, data) => setName(data.value)}
+                    onKeyUp={onKeyUp}
                 />
-            </div>
+            </Field>
 
-            <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Save" disabled={!canSave} onClick={save} />
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
+            {renderModal()}
         </>
     );
 };
+
+const useStyles = makeStyles({
+    fileList: {
+        maxHeight: '40vh',
+        overflowY: 'auto',
+    },
+});

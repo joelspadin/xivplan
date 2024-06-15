@@ -1,73 +1,81 @@
-import { DefaultButton, DialogFooter, PrimaryButton, TextField, useTheme } from '@fluentui/react';
-import React, { FormEvent, useCallback, useState } from 'react';
+import { Button, DialogTrigger, Field, Textarea, TextareaOnChangeData } from '@fluentui/react-components';
+import React, { ChangeEvent, MouseEvent, useCallback, useRef, useState } from 'react';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
 import { Scene } from '../scene';
+import { useDialogActions } from '../useDialogActions';
+import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty } from '../useIsDirty';
-import { FileDialogTabProps, classNames } from './FileDialogCommon';
-import { confirmUnsavedChanges } from './confirm';
+import { useConfirmUnsavedChanges } from './confirm';
 import { parseSceneLink } from './share';
 
-export const ImportFromString: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
-    const loadScene = useLoadScene();
+export const ImportFromString: React.FC = () => {
     const isDirty = useIsDirty();
-    const theme = useTheme();
+    const loadScene = useLoadScene();
+    const dismissDialog = useDismissDialog();
+    const importButtonRef = useRef<HTMLButtonElement>(null);
+
+    const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
     const [data, setData] = useState<string | undefined>('');
     const [error, setError] = useState<string | undefined>('');
 
-    const importCallback = useCallback(async () => {
-        if (!data) {
-            return;
-        }
-
-        if (isDirty) {
-            if (!(await confirmUnsavedChanges(theme))) {
+    const importCallback = useCallback(
+        async (event: MouseEvent<HTMLElement>) => {
+            if (!data) {
                 return;
             }
-        }
 
-        const scene = decodeScene(data);
-        if (!scene) {
-            setError('Invalid link');
-            return;
-        }
+            if (isDirty) {
+                if (!(await confirmUnsavedChanges())) {
+                    return;
+                }
+            }
 
-        loadScene(scene);
-        onDismiss?.();
-    }, [data, isDirty, theme, loadScene, onDismiss]);
+            const scene = decodeScene(data);
+            if (!scene) {
+                setError('Invalid link');
+                return;
+            }
+
+            loadScene(scene);
+            dismissDialog(event);
+        },
+        [data, isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
+    );
 
     const onChange = useCallback(
-        (ev: FormEvent<HTMLInputElement | HTMLTextAreaElement>, value?: string) => {
-            setData(value);
+        (ev: ChangeEvent<HTMLTextAreaElement>, data: TextareaOnChangeData) => {
+            setData(data.value);
             setError(undefined);
         },
         [setError, setData],
     );
 
-    const onKeyDown = useCallback(
-        (ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-            if (ev.key === 'Enter') {
-                ev.preventDefault();
-                importCallback();
-            }
-        },
-        [importCallback],
+    const onKeyUp = useCallback((ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            importButtonRef.current?.click();
+        }
+    }, []);
+
+    useDialogActions(
+        <>
+            <Button ref={importButtonRef} appearance="primary" disabled={!data} onClick={importCallback}>
+                Import
+            </Button>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
     );
 
     return (
         <>
-            <TextField
-                label="Enter plan link"
-                multiline
-                rows={6}
-                onChange={onChange}
-                onKeyDown={onKeyDown}
-                errorMessage={error}
-            />
-            <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Import" disabled={!data} onClick={importCallback} />
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
+            <Field label="Enter plan link" validationState={error ? 'error' : 'none'} validationMessage={error}>
+                <Textarea rows={4} onChange={onChange} onKeyUp={onKeyUp} />
+            </Field>
+
+            {renderModal()}
         </>
     );
 };

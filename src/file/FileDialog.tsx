@@ -1,61 +1,105 @@
-import { IModalProps, IStyleFunctionOrObject, Pivot, PivotItem, Theme } from '@fluentui/react';
-import React from 'react';
-import { BaseDialog, IBaseDialogStyles } from '../BaseDialog';
-import { classNames } from './FileDialogCommon';
+import {
+    Dialog,
+    DialogBody,
+    DialogContent,
+    DialogProps,
+    DialogSurface,
+    DialogTitle,
+    Tab,
+    TabList,
+    TabValue,
+    makeStyles,
+    tokens,
+} from '@fluentui/react-components';
+import React, { useState } from 'react';
+import { DialogActionsPortal, DialogActionsPortalProvider } from '../DialogActionsPortal';
 import { FileSystemNotSupportedMessage, OpenFileSystem, SaveFileSystem } from './FileDialogFileSystem';
-import { OpenLocalStorage, SaveBrowserStorage } from './FileDialogLocalStorage';
+import { OpenLocalStorage, SaveLocalStorage } from './FileDialogLocalStorage';
 import { ImportFromString } from './FileDialogShare';
 import { supportsFs } from './filesystem';
 
-export const OpenDialog: React.FC<IModalProps> = (props) => {
+export type OpenDialogProps = Omit<DialogProps, 'children'>;
+
+export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
+    const classes = useStyles();
+    const [tab, setTab] = useState<TabValue>(supportsFs ? 'file' : 'localStorage');
+
     return (
-        <BaseDialog headerText="Open File" {...props} dialogStyles={dialogStyles}>
-            <Pivot>
-                {supportsFs && (
-                    <PivotItem headerText="Local File" className={classNames.tab}>
-                        <OpenFileSystem onDismiss={props.onDismiss} />
-                    </PivotItem>
-                )}
-                <PivotItem headerText="Browser Storage" className={classNames.tab}>
-                    <OpenLocalStorage onDismiss={props.onDismiss} />
-                </PivotItem>
-                <PivotItem headerText="Import Plan Link" className={classNames.tab}>
-                    <ImportFromString onDismiss={props.onDismiss} />
-                </PivotItem>
-                {!supportsFs && (
-                    <PivotItem headerText="Local File" className={classNames.tab}>
-                        <FileSystemNotSupportedMessage />
-                    </PivotItem>
-                )}
-            </Pivot>
-        </BaseDialog>
+        <DialogActionsPortalProvider>
+            <Dialog {...props}>
+                <DialogSurface>
+                    <DialogBody>
+                        <DialogTitle>Open file</DialogTitle>
+                        <DialogContent className={classes.openContent}>
+                            <TabList
+                                size="small"
+                                className={classes.tabs}
+                                selectedValue={tab}
+                                onTabSelect={(ev, data) => setTab(data.value)}
+                            >
+                                {supportsFs && <Tab value="file">Local file</Tab>}
+                                <Tab value="localStorage">Browser storage</Tab>
+                                <Tab value="import">Import plan link</Tab>
+                                {!supportsFs && <Tab value="fileUnsupported">Local file</Tab>}
+                            </TabList>
+                            {tab === 'file' && <OpenFileSystem />}
+                            {tab === 'localStorage' && <OpenLocalStorage />}
+                            {tab === 'import' && <ImportFromString />}
+                            {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage />}
+                        </DialogContent>
+                        <DialogActionsPortal />
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+        </DialogActionsPortalProvider>
     );
 };
 
-export const SaveAsDialog: React.FC<IModalProps> = (props) => {
+export type SaveAsDialogProps = Omit<DialogProps, 'children'>;
+
+export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
+    const classes = useStyles();
+    const [tab, setTab] = useState<TabValue>(supportsFs ? 'file' : 'localStorage');
+
     return (
-        <BaseDialog headerText="Save As" {...props} dialogStyles={dialogStyles}>
-            <Pivot>
-                {supportsFs && (
-                    <PivotItem headerText="Local File" className={classNames.tab}>
-                        <SaveFileSystem onDismiss={props.onDismiss} />
-                    </PivotItem>
-                )}
-                <PivotItem headerText="Browser Storage" className={classNames.tab}>
-                    <SaveBrowserStorage onDismiss={props.onDismiss} />
-                </PivotItem>
-                {!supportsFs && (
-                    <PivotItem headerText="Local File" className={classNames.tab}>
-                        <FileSystemNotSupportedMessage />
-                    </PivotItem>
-                )}
-            </Pivot>
-        </BaseDialog>
+        <DialogActionsPortalProvider>
+            <Dialog {...props}>
+                <DialogSurface>
+                    <DialogBody>
+                        <DialogTitle>Save file</DialogTitle>
+                        <DialogContent className={classes.saveContent}>
+                            <TabList
+                                size="small"
+                                className={classes.tabs}
+                                selectedValue={tab}
+                                onTabSelect={(ev, data) => setTab(data.value)}
+                            >
+                                {supportsFs && <Tab value="file">Local file</Tab>}
+                                <Tab value="localStorage">Browser storage</Tab>
+                                {!supportsFs && <Tab value="fileUnsupported">Local file</Tab>}
+                            </TabList>
+                            {tab === 'file' && <SaveFileSystem />}
+                            {tab === 'localStorage' && <SaveLocalStorage />}
+                            {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage />}
+                        </DialogContent>
+                        <DialogActionsPortal />
+                    </DialogBody>
+                </DialogSurface>
+            </Dialog>
+        </DialogActionsPortalProvider>
     );
 };
 
-const dialogStyles: IStyleFunctionOrObject<Theme, IBaseDialogStyles> = {
-    body: {
-        minWidth: 500,
+const useStyles = makeStyles({
+    openContent: {
+        minHeight: '200px',
     },
-};
+
+    saveContent: {
+        minHeight: '130px',
+    },
+
+    tabs: {
+        marginBottom: tokens.spacingVerticalM,
+    },
+});

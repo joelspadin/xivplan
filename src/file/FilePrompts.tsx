@@ -1,79 +1,77 @@
 import {
-    DefaultButton,
+    Button,
     Dialog,
-    DialogFooter,
-    DialogType,
-    IDialogContentProps,
-    IDialogContentStyles,
-    IDialogProps,
-    PrimaryButton,
-} from '@fluentui/react';
-import React from 'react';
+    DialogActions,
+    DialogBody,
+    DialogContent,
+    DialogProps,
+    DialogSurface,
+    DialogTitle,
+    DialogTrigger,
+} from '@fluentui/react-components';
+import React, { useId } from 'react';
+import { useAsyncModalResolveCallback } from '../useAsyncModal';
 
-const unsavedChangesContent: IDialogContentProps = {
-    type: DialogType.normal,
-    title: 'Unsaved changes',
-    subText: 'Are you sure you want to open a file? Your unsaved changes will be lost.',
-};
-
-export interface FilePromptProps extends IDialogProps {
-    onConfirm?: () => void;
-    onCancel?: () => void;
+export interface FilePromptProps extends Omit<DialogProps, 'children'> {
+    resolve(result: boolean): void;
 }
 
-export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ onCancel, onConfirm, ...props }) => {
-    return (
-        <Dialog dialogContentProps={unsavedChangesContent} onDismiss={onCancel} {...props}>
-            <DialogFooter>
-                <PrimaryButton text="Open file" onClick={onConfirm} />
-                <DefaultButton text="Cancel" onClick={onCancel} />
-            </DialogFooter>
-        </Dialog>
-    );
-};
-
-const overwriteContent: IDialogContentProps = {
-    type: DialogType.normal,
-    title: 'Overwrite file',
-    subText: 'A file with this name already exists. Overwrite it?',
-};
-
-export const OverwriteFilePrompt: React.FC<FilePromptProps> = ({ onCancel, onConfirm, ...props }) => {
-    return (
-        <Dialog dialogContentProps={overwriteContent} onDismiss={onCancel} {...props}>
-            <DialogFooter>
-                <PrimaryButton text="Overwrite" onClick={onConfirm} />
-                <DefaultButton text="Cancel" onClick={onCancel} />
-            </DialogFooter>
-        </Dialog>
-    );
-};
-
-interface DeleteFilePromptProps extends FilePromptProps {
+export interface OverwriteFilePromptProps extends FilePromptProps {
     filename: string;
 }
 
-const deleteContentStyles: Partial<IDialogContentStyles> = {
-    title: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-};
-
-export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ onCancel, onConfirm, filename, ...props }) => {
-    const deleteContent: IDialogContentProps = {
-        type: DialogType.normal,
-        title: `Delete ${filename}`,
-        subText: `Are you sure you want to delete this file?`,
-        styles: deleteContentStyles,
-    };
+export const OverwriteFilePrompt: React.FC<OverwriteFilePromptProps> = ({ resolve, filename, ...props }) => {
+    const confirmId = useId();
+    const onOpenChange = useAsyncModalResolveCallback(confirmId, resolve);
 
     return (
-        <Dialog dialogContentProps={deleteContent} onDismiss={onCancel} {...props}>
-            <DialogFooter>
-                <PrimaryButton text="Delete" onClick={onConfirm} />
-                <DefaultButton text="Cancel" onClick={onCancel} />
-            </DialogFooter>
+        <Dialog {...props} onOpenChange={onOpenChange}>
+            <DialogSurface>
+                <DialogBody>
+                    <DialogTitle>Overwrite {filename}</DialogTitle>
+                    <DialogContent>A file with this name already exists. Overwrite it?</DialogContent>
+                    <DialogActions>
+                        <DialogTrigger>
+                            <Button id={confirmId} appearance="primary">
+                                Overwrite
+                            </Button>
+                        </DialogTrigger>
+                        <DialogTrigger>
+                            <Button>Cancel</Button>
+                        </DialogTrigger>
+                    </DialogActions>
+                </DialogBody>
+            </DialogSurface>
+        </Dialog>
+    );
+};
+
+export interface DeleteFilePromptProps extends FilePromptProps {
+    filename: string;
+}
+
+export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ resolve, filename, ...props }) => {
+    const confirmId = useId();
+    const onOpenChange = useAsyncModalResolveCallback(confirmId, resolve);
+
+    return (
+        <Dialog {...props} onOpenChange={onOpenChange}>
+            <DialogSurface>
+                <DialogBody>
+                    <DialogTitle>Delete {filename}</DialogTitle>
+                    <DialogContent>Are you sure you want to delete this file?</DialogContent>
+                    <DialogActions>
+                        <DialogTrigger>
+                            <Button id={confirmId} appearance="primary">
+                                Delete
+                            </Button>
+                        </DialogTrigger>
+                        <DialogTrigger>
+                            <Button>Cancel</Button>
+                        </DialogTrigger>
+                    </DialogActions>
+                </DialogBody>
+            </DialogSurface>
         </Dialog>
     );
 };

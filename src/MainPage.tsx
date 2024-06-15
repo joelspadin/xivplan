@@ -2,7 +2,7 @@ import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
 import React, { useEffect } from 'react';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
-import { MailToolbar } from './MainToolbar';
+import { MainToolbar } from './MainToolbar';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { PanelDragProvider } from './PanelDragProvider';
@@ -46,8 +46,9 @@ const MainPageContent: React.FC = () => {
     return (
         <>
             <RegularHotkeyHandler />
-            <MailToolbar />
+            <MainToolbar />
 
+            {/* TODO: make panel collapsable */}
             <MainPanel />
 
             <StepSelect />
@@ -56,6 +57,7 @@ const MainPageContent: React.FC = () => {
                 <SceneRenderer />
             </div>
 
+            {/* TODO: make panel collapsable */}
             <DetailsPanel />
         </>
     );

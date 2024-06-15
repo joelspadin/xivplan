@@ -8,10 +8,10 @@ import {
     Toolbar,
     ToolbarDivider,
 } from '@fluentui/react-components';
-import { useBoolean } from '@fluentui/react-hooks';
 import { ArrowRedoRegular, ArrowUndoRegular, OpenRegular, SaveEditRegular, SaveRegular } from '@fluentui/react-icons';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
+import { useHotkeys } from './HotkeyHelpProvider';
 import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
@@ -19,9 +19,9 @@ import { ShareDialogButton } from './file/ShareDialogButton';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 import { useToolbar } from './useToolbar';
 
-export const MailToolbar: React.FC = () => {
-    const [openFileOpen, { setTrue: showOpenFile, setFalse: hideOpenFile }] = useBoolean(false);
-    const [saveAsOpen, { setTrue: showSaveAs, setFalse: hideSaveAs }] = useBoolean(false);
+export const MainToolbar: React.FC = () => {
+    const [openFileOpen, setOpenFileOpen] = useState(false);
+    const [saveAsOpen, setSaveAsOpen] = useState(false);
 
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
@@ -30,11 +30,44 @@ export const MailToolbar: React.FC = () => {
     const { scene, source } = useScene();
 
     const save = useCallback(async () => {
-        if (source) {
+        if (!source) {
+            setSaveAsOpen(true);
+        } else if (isDirty) {
             await saveFile(scene, source);
             setSavedState(scene);
         }
-    }, [scene, source, setSavedState]);
+    }, [scene, source, isDirty, setSavedState, setSaveAsOpen]);
+
+    useHotkeys(
+        'ctrl+o',
+        '2.File',
+        'Open',
+        (e) => {
+            setOpenFileOpen(true);
+            e.preventDefault();
+        },
+        [setOpenFileOpen],
+    );
+    useHotkeys(
+        'ctrl+s',
+        '2.File',
+        'Save',
+        (e) => {
+            save();
+            e.preventDefault();
+        },
+        [save],
+    );
+    useHotkeys(
+        'ctrl+shift+s',
+        '2.File',
+        'Save as',
+        (e) => {
+            setSaveAsOpen(true);
+            e.preventDefault();
+        },
+        [setSaveAsOpen],
+    );
 
     const saveButton = (
         <Menu positioning="below-end">
@@ -52,7 +85,7 @@ export const MailToolbar: React.FC = () => {
             </MenuTrigger>
             <MenuPopover>
                 <MenuList>
-                    <MenuItem icon={<SaveEditRegular />} onClick={showSaveAs}>
+                    <MenuItem icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
                         Save as...
                     </MenuItem>
                 </MenuList>
@@ -61,7 +94,7 @@ export const MailToolbar: React.FC = () => {
     );
 
     const saveAsButton = (
-        <CollapsableToolbarButton icon={<SaveEditRegular />} onClick={showSaveAs}>
+        <CollapsableToolbarButton icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
             Save as
         </CollapsableToolbarButton>
     );
@@ -69,7 +102,7 @@ export const MailToolbar: React.FC = () => {
     const toolbar = (
         <Toolbar>
             {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
-            <CollapsableToolbarButton icon={<OpenRegular />} onClick={showOpenFile}>
+            <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
                 Open
             </CollapsableToolbarButton>
 
@@ -92,8 +125,8 @@ export const MailToolbar: React.FC = () => {
 
     return (
         <>
-            <OpenDialog isOpen={openFileOpen} onDismiss={hideOpenFile} />
-            <SaveAsDialog isOpen={saveAsOpen} onDismiss={hideSaveAs} />
+            <OpenDialog open={openFileOpen} onOpenChange={(ev, data) => setOpenFileOpen(data.open)} />
+            <SaveAsDialog open={saveAsOpen} onOpenChange={(ev, data) => setSaveAsOpen(data.open)} />
         </>
     );
 };

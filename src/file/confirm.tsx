@@ -1,34 +1,22 @@
-import { Theme, ThemeProvider } from '@fluentui/react';
-import reactModal from '@prezly/react-promise-modal';
 import React from 'react';
-import { DeleteFilePrompt, OverwriteFilePrompt, UnsavedChangesPrompt } from './FilePrompts';
+import { useAsyncModal } from '../useAsyncModal';
+import { DeleteFilePrompt, OverwriteFilePrompt } from './FilePrompts';
+import { UnsavedChangesPrompt } from './UnsavedChangesPrompt';
 
-export async function confirmUnsavedChanges(theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <UnsavedChangesPrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} />
-            </ThemeProvider>
-        );
+export function useConfirmUnsavedChanges() {
+    return useAsyncModal((resolve, props) => {
+        return <UnsavedChangesPrompt resolve={resolve} {...props} />;
     });
 }
 
-export async function confirmOverwriteFile(theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <OverwriteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} />
-            </ThemeProvider>
-        );
+export function useConfirmOverwriteFile() {
+    return useAsyncModal<string>((resolve, props, filename) => {
+        return <OverwriteFilePrompt resolve={resolve} filename={filename} {...props} />;
     });
 }
 
-export async function confirmDeleteFile(filename: string, theme?: Theme): Promise<boolean | undefined> {
-    return await reactModal(({ show, onSubmit, onDismiss }) => {
-        return (
-            <ThemeProvider theme={theme}>
-                <DeleteFilePrompt hidden={!show} onConfirm={onSubmit} onCancel={onDismiss} filename={filename} />
-            </ThemeProvider>
-        );
+export function useConfirmDeleteFile() {
+    return useAsyncModal<string>((resolve, props, filename) => {
+        return <DeleteFilePrompt resolve={resolve} filename={filename} {...props} />;
     });
 }

@@ -1,12 +1,13 @@
-import { DefaultButton, DialogFooter, IStackTokens, PrimaryButton, Spinner, Stack, useTheme } from '@fluentui/react';
-import React, { useCallback } from 'react';
+import { Button, DialogTrigger, Spinner, makeStyles, tokens } from '@fluentui/react-components';
+import React, { MouseEvent, useCallback } from 'react';
 import { useAsync, useCounter } from 'react-use';
 import { ExternalLink } from '../ExternalLink';
 import { useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
+import { useDialogActions } from '../useDialogActions';
+import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
-import { FileDialogTabProps, classNames } from './FileDialogCommon';
-import { confirmUnsavedChanges } from './confirm';
+import { useConfirmUnsavedChanges } from './confirm';
 import {
     addRecentFile,
     getFileSource,
@@ -17,21 +18,19 @@ import {
     showSavePlanPicker,
 } from './filesystem';
 
-const stackTokens: IStackTokens = {
-    childrenGap: 8,
-};
-
-export const OpenFileSystem: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
-    const theme = useTheme();
+export const OpenFileSystem: React.FC = () => {
+    const classes = useStyles();
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
+    const dismissDialog = useDismissDialog();
+    const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
 
     const [counter, { inc: reloadFolder }] = useCounter();
     const planFolder = useAsync(getPlanFolder, [counter]);
 
     const loadSceneFromFile = useCallback(
-        async (handle: FileSystemFileHandle) => {
-            if (isDirty && !(await confirmUnsavedChanges(theme))) {
+        async (event: MouseEvent<HTMLButtonElement>, handle: FileSystemFileHandle) => {
+            if (isDirty && !(await confirmUnsavedChanges())) {
                 return;
             }
 
@@ -39,9 +38,9 @@ export const OpenFileSystem: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
             const scene = await openFile(source);
 
             loadScene(scene, source);
-            onDismiss?.();
+            dismissDialog(event);
         },
-        [theme, isDirty, loadScene, onDismiss],
+        [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
     );
 
     const pickFolder = useCallback(async () => {
@@ -52,65 +51,95 @@ export const OpenFileSystem: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
         }
     }, [reloadFolder]);
 
-    const pickFile = useCallback(async () => {
-        const handle = await showOpenPlanPicker();
-        if (handle) {
-            await loadSceneFromFile(handle);
-        }
-    }, [loadSceneFromFile]);
+    const pickFile = useCallback(
+        async (event: MouseEvent<HTMLButtonElement>) => {
+            const handle = await showOpenPlanPicker();
+            if (handle) {
+                await loadSceneFromFile(event, handle);
+            }
+        },
+        [loadSceneFromFile],
+    );
+
+    useDialogActions(
+        <>
+            <Button appearance="primary" disabled>
+                Open
+            </Button>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
+    );
 
     return (
         <>
-            <div className={classNames.form}>
-                <Stack horizontal tokens={stackTokens} horizontalAlign="space-between">
-                    <DefaultButton text="Open file" onClick={pickFile} />
-                    <DefaultButton text="Browse folder" onClick={pickFolder} />
-                </Stack>
+            <div className={classes.root}>
+                <div className={classes.topBar}>
+                    <Button onClick={pickFile}>Open file</Button>
+                    <Button onClick={pickFolder}>Browser folder</Button>
+                </div>
                 {planFolder.loading ? <Spinner /> : <FileBrowser root={planFolder.value} />}
             </div>
-            <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Open" disabled />
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
+            {renderModal()}
         </>
     );
 };
 
-export const SaveFileSystem: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
+export const SaveFileSystem: React.FC = () => {
     const setSavedState = useSetSavedState();
+    const dismissDialog = useDismissDialog();
     const { scene, source, dispatch } = useScene();
 
     const currentName = source?.name;
 
-    const save = useCallback(async () => {
-        const handle = await showSavePlanPicker(currentName);
-        if (!handle) {
-            return;
-        }
+    const save = useCallback(
+        async (event: MouseEvent<HTMLButtonElement>) => {
+            const handle = await showSavePlanPicker(currentName);
+            if (!handle) {
+                return;
+            }
 
-        const source = await getFileSource(handle);
-        await saveFile(scene, source);
-        await addRecentFile(handle);
+            const source = await getFileSource(handle);
+            await saveFile(scene, source);
+            await addRecentFile(handle);
 
-        dispatch({ type: 'setSource', source });
-        setSavedState(scene);
-        onDismiss?.();
-    }, [scene, currentName, dispatch, onDismiss, setSavedState]);
+            dispatch({ type: 'setSource', source });
+            setSavedState(scene);
+            dismissDialog(event);
+        },
+        [scene, currentName, dispatch, setSavedState, dismissDialog],
+    );
+
+    useDialogActions(
+        <>
+            <Button appearance="primary" onClick={save}>
+                Save as
+            </Button>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
+    );
 
     return (
         <>
-            <div className={classNames.form}>
+            <div>
                 <p>Click &quot;Save as&quot; below to save the plan to your computer.</p>
             </div>
-            <DialogFooter className={classNames.footer}>
-                <PrimaryButton text="Save as" onClick={save} />
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
         </>
     );
 };
 
-export const FileSystemNotSupportedMessage: React.FC<FileDialogTabProps> = ({ onDismiss }) => {
+export const FileSystemNotSupportedMessage: React.FC = () => {
+    useDialogActions(
+        <>
+            <DialogTrigger>
+                <Button>Cancel</Button>
+            </DialogTrigger>
+        </>,
+    );
+
     return (
         <>
             <div>
@@ -121,9 +150,6 @@ export const FileSystemNotSupportedMessage: React.FC<FileDialogTabProps> = ({ on
                     <ExternalLink href="https://www.google.com/chrome/">Chrome</ExternalLink>.
                 </p>
             </div>
-            <DialogFooter className={classNames.footer}>
-                <DefaultButton text="Cancel" onClick={onDismiss} />
-            </DialogFooter>
         </>
     );
 };
@@ -144,3 +170,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ root }) => {
         </>
     );
 };
+
+const useStyles = makeStyles({
+    root: {
+        marginTop: tokens.spacingVerticalM,
+    },
+
+    topBar: {
+        display: 'flex',
+        flexFlow: 'row',
+        justifyContent: 'space-between',
+    },
+});

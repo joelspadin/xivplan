@@ -22,7 +22,7 @@ const CATEGORY_SELECTION = '3.Selection';
 const CATEGORY_EDIT = '4.Edit';
 const CATEGORY_TETHER = '5.Tether';
 const CATEGORY_DRAW = '6.Draw';
-const CATEGORY_STEPS = '7.Steos';
+const CATEGORY_STEPS = '7.Steps';
 
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
@@ -310,7 +310,7 @@ const HelpHandler: React.FC = () => {
     useHotkeys(
         'f1',
         CATEGORY_GENERAL,
-        'Open help',
+        'Help',
         (e) => {
             setOpen(true);
             e.preventDefault();
