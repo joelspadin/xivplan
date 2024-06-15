@@ -1,6 +1,15 @@
-import { DefaultButton, Dialog, DialogFooter, DialogType, IDialogContentProps, PrimaryButton } from '@fluentui/react';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogProps,
+    DialogSurface,
+    DialogTitle,
+    DialogTrigger,
+} from '@fluentui/react-components';
 import { Action } from 'history';
-import React, { Dispatch, PropsWithChildren, createContext, useCallback, useState } from 'react';
+import React, { Dispatch, PropsWithChildren, createContext, useCallback, useId, useState } from 'react';
 import { Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
 import { useScene } from './SceneProvider';
@@ -27,12 +36,6 @@ export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
 const NAV_LOCK_MESSAGE = 'Are you sure you want to leave? Your unsaved changes will be lost.';
 
-const dialogContent: IDialogContentProps = {
-    type: DialogType.normal,
-    title: 'Unsaved changes',
-    subText: NAV_LOCK_MESSAGE,
-};
-
 interface NavLockProps {
     locked: boolean;
 }
@@ -42,9 +45,12 @@ interface NextLocation {
     action: Action;
 }
 
+type OpenChangeEventHandler = Required<DialogProps>['onOpenChange'];
+
 const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
     useBeforeUnload(locked, NAV_LOCK_MESSAGE);
 
+    const confirmId = useId();
     const navigate = useNavigate();
     // const currentLocation = useLocation();
 
@@ -92,19 +98,38 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
         }
     }, [nextLocation, setShowDialog, navigate]);
 
+    const onOpenChange = useCallback<OpenChangeEventHandler>(
+        (ev, data) => {
+            if (!data.open) {
+                const target = ev.target as HTMLElement;
+                if (target.id === confirmId) {
+                    onConfirmNavigate();
+                } else {
+                    onCancelNavigate();
+                }
+            }
+        },
+        [confirmId, onConfirmNavigate, onCancelNavigate],
+    );
+
     return (
         <>
             {/* <Prompt when={locked && !nextLocation} message={onPrompt} /> */}
-            <Dialog
-                hidden={!showDialog}
-                dialogContentProps={dialogContent}
-                modalProps={{ isBlocking: true }}
-                onDismiss={onCancelNavigate}
-            >
-                <DialogFooter>
-                    <PrimaryButton text="Leave page" onClick={onConfirmNavigate} />
-                    <DefaultButton text="Stay on page" onClick={onCancelNavigate} />
-                </DialogFooter>
+            <Dialog open={showDialog} onOpenChange={onOpenChange}>
+                <DialogSurface>
+                    <DialogTitle>Unsaved changes</DialogTitle>
+                    <DialogContent>{NAV_LOCK_MESSAGE}</DialogContent>
+                    <DialogActions>
+                        <DialogTrigger>
+                            <Button id={confirmId} appearance="primary">
+                                Leave page
+                            </Button>
+                        </DialogTrigger>
+                        <DialogTrigger>
+                            <Button>Stay on page</Button>
+                        </DialogTrigger>
+                    </DialogActions>
+                </DialogSurface>
             </Dialog>
         </>
     );
