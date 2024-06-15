@@ -1,17 +1,15 @@
-import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
+import { IChoiceGroupOption } from '@fluentui/react';
+import { Field, SpinButton } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { DeferredTextField } from '../../DeferredTextField';
 import { useScene } from '../../SceneProvider';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
+import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
 import { TextObject } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
 
 const alignOptions: IChoiceGroupOption[] = [
     { key: 'left', text: 'Align left', iconProps: { iconName: 'AlignLeft' } },
@@ -20,12 +18,13 @@ const alignOptions: IChoiceGroupOption[] = [
 ];
 
 export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const fontSize = useMemo(() => commonValue(objects, (obj) => obj.fontSize), [objects]);
     const align = useMemo(() => commonValue(objects, (obj) => obj.align), [objects]);
 
-    const onFontSizeChanged = useSpinChanged((fontSize: number) =>
+    const onFontSizeChanged = useSpinChanged2((fontSize: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
     );
 
@@ -39,22 +38,23 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
     );
 
     return (
-        <Stack horizontal tokens={stackTokens}>
-            <SpinButton
-                label="Font size"
-                labelPosition={Position.top}
-                value={fontSize?.toString() ?? ''}
-                onChange={onFontSizeChanged}
-                min={MIN_FONT_SIZE}
-                step={5}
-            />
+        <div className={classes.row}>
+            <Field label="Font size">
+                <SpinButton
+                    value={fontSize ?? 0}
+                    displayValue={fontSize?.toString() ?? ''}
+                    onChange={onFontSizeChanged}
+                    min={MIN_FONT_SIZE}
+                    step={5}
+                />
+            </Field>
             <CompactChoiceGroup
                 label="Align"
                 selectedKey={align}
                 options={alignOptions}
                 onChange={(e, option) => onAlignChanged(option?.key)}
             />
-        </Stack>
+        </div>
     );
 };
 
