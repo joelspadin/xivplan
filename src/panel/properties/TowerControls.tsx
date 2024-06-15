@@ -1,8 +1,8 @@
-import { Position } from '@fluentui/react';
+import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
+import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
 import { TowerZone } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
@@ -15,22 +15,22 @@ export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({
 
     const count = useMemo(() => commonValue(objects, (obj) => obj.count), [objects]);
 
-    const onCountChanged = useSpinChanged((count: number) =>
+    const onCountChanged = useSpinChanged2((count: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) }),
     );
 
     const soakSuffix = count === 1 ? ' player' : ' players';
 
     return (
-        <SpinButtonUnits
-            label="Soak count"
-            labelPosition={Position.top}
-            value={count?.toString() ?? ''}
-            onChange={onCountChanged}
-            min={MIN_COUNT}
-            max={MAX_COUNT}
-            step={1}
-            suffix={soakSuffix}
-        />
+        <Field label="Soak count">
+            <SpinButtonUnits
+                value={count}
+                onChange={onCountChanged}
+                min={MIN_COUNT}
+                max={MAX_COUNT}
+                step={1}
+                suffix={soakSuffix}
+            />
+        </Field>
     );
 };

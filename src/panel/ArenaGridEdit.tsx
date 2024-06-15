@@ -1,5 +1,5 @@
 import { IChoiceGroupOption, IStackTokens, Position, SpinButton, Stack } from '@fluentui/react';
-import { Button } from '@fluentui/react-components';
+import { Button, Field } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredTextField } from '../DeferredTextField';
@@ -206,18 +206,20 @@ export const ArenaGridEdit: React.FC = () => {
                         />
                     </Stack>
                     <Stack horizontal verticalAlign="end" tokens={stackTokens}>
-                        <SpinButtonUnits
-                            label="Rotation"
-                            labelPosition={Position.top}
-                            min={-180}
-                            max={180}
-                            step={5}
-                            suffix="°"
-                            value={grid.startAngle?.toString() ?? '0'}
-                            onChange={(ev, newValue) => {
-                                setGrid({ ...grid, startAngle: parseInt(newValue ?? '0') });
-                            }}
-                        />
+                        <Field label="Rotation">
+                            <SpinButtonUnits
+                                min={-180}
+                                max={180}
+                                step={5}
+                                suffix="°"
+                                value={grid.startAngle}
+                                onChange={(ev, data) => {
+                                    if (typeof data.value === 'number') {
+                                        setGrid({ ...grid, startAngle: data.value });
+                                    }
+                                }}
+                            />
+                        </Field>
                         <Button onClick={() => setGrid({ ...grid, startAngle: undefined })}>Reset</Button>
                     </Stack>
                 </>

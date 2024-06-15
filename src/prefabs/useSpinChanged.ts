@@ -1,3 +1,4 @@
+import { SpinButtonChangeEvent, SpinButtonOnChangeData } from '@fluentui/react-components';
 import { useEventCallback } from '@fluentui/react-hooks';
 import React from 'react';
 
@@ -16,4 +17,12 @@ export function useSpinChanged(
 
         callback(value);
     });
+}
+
+export function useSpinChanged2(callback: (value: number) => void) {
+    return (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
+        if (typeof data.value === 'number') {
+            callback(data.value);
+        }
+    };
 }

@@ -1,14 +1,14 @@
-import { ISpinButtonProps, SpinButton } from '@fluentui/react';
+import { SpinButton, SpinButtonChangeEvent, SpinButtonOnChangeData, SpinButtonProps } from '@fluentui/react-components';
 import React, { useCallback } from 'react';
 
-export interface SpinButtonUnitsProps extends ISpinButtonProps {
+export interface SpinButtonUnitsProps extends SpinButtonProps {
     suffix?: string;
 }
 
 const VALUE_REGEX = /^(-?\d+(\.\d+)?).*/;
 
-function getNumericPart(value: string): number {
-    const match = value.match(VALUE_REGEX);
+function getNumericPart(displayValue: string): number {
+    const match = displayValue.match(VALUE_REGEX);
     if (match) {
         const numericValue = Number(match[1]);
         return isNaN(numericValue) ? 0 : numericValue;
@@ -16,71 +16,33 @@ function getNumericPart(value: string): number {
     return 0;
 }
 
-function getChangeValue(value?: string): string | undefined {
-    if (value === undefined) {
-        return undefined;
-    }
+export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, onChange, ...props }) => {
+    const displayValue = `${props.value}${suffix}`;
 
-    return getNumericPart(value)?.toString();
-}
+    const wrappedOnChange = useCallback(
+        (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
+            if (data.value === undefined && data.displayValue) {
+                let value = getNumericPart(data.displayValue);
 
-export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({ suffix, ...props }) => {
-    const step = props.step ?? 1;
-    const value = props.value ?? '0';
-    suffix = !props.value ? '' : suffix ?? '';
+                if (value !== undefined) {
+                    if (props.step !== undefined) {
+                        value = Math.round(value / props.step) * props.step;
+                    }
+                    if (props.min !== undefined) {
+                        value = Math.max(value, props.min);
+                    }
+                    if (props.max !== undefined) {
+                        value = Math.min(value, props.max);
+                    }
+                }
 
-    const clamp = useCallback(
-        (value: number) => {
-            if (props.min !== undefined) {
-                value = Math.max(value, props.min);
+                data.value = value;
             }
-            if (props.max !== undefined) {
-                value = Math.min(value, props.max);
-            }
-            return value;
+
+            onChange?.(event, data);
         },
-        [props.min, props.max],
+        [onChange, props.min, props.max, props.step],
     );
 
-    const onIncrement = useCallback(
-        (value: string) => {
-            const numericValue = getNumericPart(value);
-            return clamp(numericValue + step).toString() + suffix;
-        },
-        [step, suffix, clamp],
-    );
-
-    const onDecrement = useCallback(
-        (value: string) => {
-            const numericValue = getNumericPart(value);
-            return clamp(numericValue - step).toString() + suffix;
-        },
-        [step, suffix, clamp],
-    );
-
-    const onValidate = useCallback(
-        (value: string) => {
-            const numericValue = getNumericPart(value);
-            return clamp(numericValue).toString() + suffix;
-        },
-        [suffix, clamp],
-    );
-
-    const onChange = useCallback(
-        (event: React.SyntheticEvent<HTMLElement>, newValue?: string) => {
-            props.onChange?.(event, getChangeValue(newValue));
-        },
-        [props],
-    );
-
-    return (
-        <SpinButton
-            {...props}
-            value={value + suffix}
-            onIncrement={onIncrement}
-            onDecrement={onDecrement}
-            onValidate={onValidate}
-            onChange={onChange}
-        />
-    );
+    return <SpinButton {...props} displayValue={displayValue} onChange={wrappedOnChange} />;
 };
