@@ -1,4 +1,4 @@
-import { getColorFromString, updateA, updateSV } from '@fluentui/react';
+import Color from 'colorjs.io';
 
 function getStrokeWidth(size: number) {
     return Math.max(2, Math.min(4, size / 100));
@@ -11,36 +11,35 @@ export function getZoneStyle(
     hollow = false,
 ): { fill: string; stroke: string; strokeWidth: number } {
     const strokeWidth = getStrokeWidth(size);
-    const c = getColorFromString(color);
+    const c = new Color(color);
 
-    if (!c) {
-        return { fill: color, stroke: color, strokeWidth };
-    }
+    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
+    const fill = c.clone();
+    fill.alpha = hollow ? 0 : opacity / 100;
+    const fillStr = fill.display();
 
-    const fill = updateA(c, hollow ? 0 : opacity).str;
-    const stroke = updateA(c, opacity * 2).str;
+    const stroke = c.clone();
+    stroke.alpha = opacity / 50;
+    const strokeStr = stroke.display();
 
-    return { fill, stroke, strokeWidth };
+    return { fill: fillStr, stroke: strokeStr, strokeWidth };
 }
 
 export function getArrowStyle(color: string, opacity: number): { fill: string } {
-    const c = getColorFromString(color);
+    const c = new Color(color);
 
-    if (!c) {
-        return { fill: color };
-    }
+    const fill = c.to('hsv').set({ s: (s) => s - 10, v: (v) => v + 20 });
+    fill.alpha = opacity / 100;
+    const fillStr = fill.display();
 
-    const bright = updateSV(c, c.s - 10, c.v + 20);
-    const fill = updateA(bright, opacity).str;
-
-    return { fill };
+    return { fill: fillStr };
 }
 
 export function getShadowColor(color: string): string | undefined {
-    const c = getColorFromString(color);
-    if (!c) {
-        return undefined;
-    }
+    const c = new Color(color);
 
-    return updateSV(c, c.s - 10, 30).str;
+    return c
+        .to('hsv')
+        .set({ s: (s) => s - 10, v: 30 })
+        .display();
 }

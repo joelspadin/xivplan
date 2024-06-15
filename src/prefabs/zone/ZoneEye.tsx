@@ -1,4 +1,4 @@
-import { getColorFromString, updateA, updateSV } from '@fluentui/react';
+import Color from 'colorjs.io';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useEffect, useMemo, useRef } from 'react';
@@ -54,48 +54,65 @@ registerDropHandler<CircleZone>(ObjectType.Eye, (object, position) => {
 });
 
 function getIrisGradient(color: string) {
-    const c = getColorFromString(color);
-    if (!c) {
-        return [0, color];
-    }
+    const c = new Color(color);
 
     const eye = '#ffffff';
-    const inside = updateA(c, 0.8).str;
-    const middle = updateA(updateSV(c, c.s, c.v - 40), 0).str;
-    const edge = updateA(c, 0).str;
 
-    return [0, eye, 0.1, eye, 0.14, inside, 0.18, middle, 1, edge];
+    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
+    const inside = c.clone();
+    inside.alpha = 0.8;
+    const insideStr = inside.display();
+
+    const middle = c.to('hsv');
+    middle.alpha = 0;
+    middle.v -= 40;
+    const middleStr = middle.display();
+
+    const edge = c.clone();
+    edge.alpha = 0;
+    const edgeStr = edge.display();
+
+    return [0, eye, 0.1, eye, 0.14, insideStr, 0.18, middleStr, 1, edgeStr];
 }
 
 function getEyeGradient(color: string) {
-    const c = getColorFromString(color);
-    if (!c) {
-        return [0, color];
-    }
+    const c = new Color(color);
 
-    const inside = c.str;
-    const middle = updateSV(c, c.s, c.v - 40).str;
-    const edge = updateSV(c, c.s, c.v - 80).str;
+    const inside = c.toString();
+    const middle = c
+        .to('hsv')
+        .set({ v: (v) => v - 40 })
+        .display();
+    const edge = c
+        .to('hsv')
+        .set({ v: (v) => v - 80 })
+        .display();
 
     return [0.14, inside, 0.18, middle, 1, edge];
 }
 
 function getHighlightColor(color: string) {
-    const c = getColorFromString(color);
-    if (!c) {
-        return color;
-    }
+    const c = new Color(color);
 
-    return updateSV(c, c.s - 30, c.v + 30).str;
+    return c
+        .to('hsv')
+        .set({
+            s: (s) => s - 30,
+            v: (v) => v + 10,
+        })
+        .display();
 }
 
 function getStrokeColor(color: string) {
-    const c = getColorFromString(color);
-    if (!c) {
-        return color;
-    }
+    const c = new Color(color);
 
-    return updateA(updateSV(c, c.s, c.v - 80), 50).str;
+    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
+    c.alpha = 0.5;
+
+    return c
+        .to('hsv')
+        .set({ v: (v) => v - 80 })
+        .display();
 }
 
 const OUTER_EYE_PATH = 'M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z';

@@ -1,4 +1,4 @@
-import { getColorFromString, updateA } from '@fluentui/react';
+import Color from 'colorjs.io';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
@@ -105,15 +105,18 @@ const SCALE1 = 1;
 const SCALE2 = 2;
 
 function getGradient(color: string, opacity: number) {
-    const c = getColorFromString(color);
-    if (!c) {
-        return [0, color];
-    }
+    const c = new Color(color);
 
-    const center = updateA(c, opacity).str;
-    const edge = updateA(c, 5).str;
+    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
+    const center = c.clone();
+    center.alpha = opacity / 100;
+    const centerStr = center.display();
 
-    return [0, center, 1, edge];
+    const edge = c.clone();
+    edge.alpha = 0.05;
+    const edgeStr = edge.display();
+
+    return [0, centerStr, 1, edgeStr];
 }
 
 function getShadowOffset(i: number): ShapeConfig {
