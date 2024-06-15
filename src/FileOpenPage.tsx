@@ -1,5 +1,4 @@
-import { MessageBar, MessageBarType, Stack } from '@fluentui/react';
-import { Button } from '@fluentui/react-components';
+import { Button, makeStyles, tokens } from '@fluentui/react-components';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoadScene } from './SceneProvider';
@@ -15,9 +14,10 @@ function isFile(handle: FileSystemHandle): handle is FileSystemFileHandle {
  * then opens it.
  */
 export const FileOpenPage: React.FC = () => {
-    const [error, setError] = useState<ReactNode>();
+    const classes = useStyles();
     const navigate = useNavigate();
     const loadScene = useLoadScene();
+    const [error, setError] = useState<ReactNode>();
 
     const navigateToMainPage = useCallback(() => {
         navigate('/', { replace: true });
@@ -59,13 +59,26 @@ export const FileOpenPage: React.FC = () => {
     }, [loadScene, navigateToMainPage, setError]);
 
     return (
-        <Stack tokens={{ padding: 20, childrenGap: 20 }} horizontalAlign="start">
-            {error && (
-                <MessageBar messageBarType={MessageBarType.error} delayedRender={false}>
-                    {error}
-                </MessageBar>
-            )}
+        <div className={classes.root}>
+            {error && <div className={classes.error}>{error}</div>}
             <Button onClick={navigateToMainPage}>Return</Button>
-        </Stack>
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    root: {
+        display: 'flex',
+        flexFlow: 'column',
+        alignItems: 'start',
+        gap: tokens.spacingVerticalL,
+        padding: tokens.spacingVerticalL,
+    },
+
+    error: {
+        color: tokens.colorStatusDangerForeground2,
+        backgroundColor: tokens.colorStatusDangerBackground2,
+        borderRadius: tokens.borderRadiusMedium,
+        padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
+    },
+});
