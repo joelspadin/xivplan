@@ -1,62 +1,46 @@
-import {
-    classNamesFunction,
-    ISpinButtonProps,
-    IStackTokens,
-    IStyle,
-    Position,
-    SpinButton,
-    Stack,
-    Theme,
-    useTheme,
-} from '@fluentui/react';
+import { Stack } from '@fluentui/react';
+import { Field, makeStyles, SpinButton, SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { ARENA_BACKGROUND_COLOR } from './render/SceneTheme';
-
-const stackTokens: IStackTokens = {
-    childrenGap: 10,
-};
-
-interface IContentStyles {
-    container: IStyle;
-    brush: IStyle;
-}
-
-const getClassNames = classNamesFunction<Theme, IContentStyles>();
+import { useControlStyles } from './useControlStyles';
 
 const BOX_SIZE = 30;
 
-export interface BrushSizeControlProps extends ISpinButtonProps {
+export interface BrushSizeControlProps extends SpinButtonProps {
     color: string;
     opacity: number;
 }
 
 export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opacity, ...props }) => {
-    const theme = useTheme();
-    const classNames = getClassNames(() => {
-        return {
-            container: {
-                width: BOX_SIZE,
-                height: BOX_SIZE,
-                background: ARENA_BACKGROUND_COLOR,
-                border: `1px solid ${theme.semanticColors.inputBorder}`,
-                overflow: 'hidden',
-            },
-        };
-    });
+    const classes = useStyles();
+    const controlClasses = useControlStyles();
 
-    const size = parseInt(props.value ?? '0');
+    const size = props.value ?? 0;
     const pos = Math.max(BOX_SIZE / 2, size / 2);
 
     return (
-        <Stack horizontal tokens={stackTokens} verticalAlign="end">
-            <SpinButton label="Brush size" labelPosition={Position.top} min={2} step={2} {...props} />
+        <div className={controlClasses.row}>
+            <Field label="Brush size">
+                <SpinButton min={2} step={2} {...props} />
+            </Field>
             <Stack.Item>
-                <div className={classNames.container}>
+                <div className={classes.container}>
                     <svg width={BOX_SIZE} height={BOX_SIZE}>
                         <circle cx={pos} cy={pos} r={size / 2} fill={color} opacity={opacity / 100} />
                     </svg>
                 </div>
             </Stack.Item>
-        </Stack>
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    container: {
+        width: `${BOX_SIZE}px`,
+        height: `${BOX_SIZE}px`,
+        background: ARENA_BACKGROUND_COLOR,
+        border: `1px solid ${tokens.colorNeutralStroke1}`,
+        borderRadius: tokens.borderRadiusMedium,
+        overflow: 'hidden',
+    },
+});
