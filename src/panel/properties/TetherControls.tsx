@@ -1,11 +1,13 @@
-import { IChoiceGroupOption, Position, SpinButton } from '@fluentui/react';
+import { IChoiceGroupOption } from '@fluentui/react';
+import { Field, SpinButton } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
 import { getTetherIcon, getTetherName } from '../../prefabs/TetherConfig';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
+import { useSpinChanged2 } from '../../prefabs/useSpinChanged';
 import { Tether, TetherType } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
@@ -47,22 +49,26 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
 };
 
 export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
 
-    const onWidthChanged = useSpinChanged((width: number) =>
+    const onWidthChanged = useSpinChanged2((width: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
     );
 
     return (
-        <SpinButton
-            label="Width"
-            labelPosition={Position.top}
-            value={width?.toString() ?? ''}
-            onChange={onWidthChanged}
-            min={MIN_TETHER_WIDTH}
-            step={2}
-        />
+        <div className={classes.row}>
+            <Field label="Width">
+                <SpinButton
+                    value={width ?? 0}
+                    displayValue={width?.toString() ?? ''}
+                    onChange={onWidthChanged}
+                    min={MIN_TETHER_WIDTH}
+                    step={2}
+                />
+            </Field>
+        </div>
     );
 };
