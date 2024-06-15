@@ -1,4 +1,4 @@
-import { classNamesFunction, IStyle, Theme, useTheme } from '@fluentui/react';
+import { makeStyles, tokens } from '@fluentui/react-components';
 import React, { useEffect } from 'react';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
@@ -11,11 +11,6 @@ import { useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
 import { useIsDirty } from './useIsDirty';
-
-interface IContentStyles {
-    stage: IStyle;
-}
-const getClassNames = classNamesFunction<Theme, IContentStyles>();
 
 export const MainPage: React.FC = () => {
     return (
@@ -30,18 +25,9 @@ export const MainPage: React.FC = () => {
 };
 
 const MainPageContent: React.FC = () => {
+    const classes = useStyles();
+
     usePageTitle();
-    const theme = useTheme();
-    const classNames = getClassNames(() => {
-        return {
-            stage: {
-                gridArea: 'content',
-                overflow: 'auto',
-                backgroundColor: theme.palette.neutralLighter,
-                minWidth: 400,
-            },
-        };
-    }, theme);
 
     return (
         <>
@@ -53,7 +39,7 @@ const MainPageContent: React.FC = () => {
 
             <StepSelect />
 
-            <div className={classNames.stage}>
+            <div className={classes.stage}>
                 <SceneRenderer />
             </div>
 
@@ -75,3 +61,12 @@ function usePageTitle() {
         document.title = `${name}${flag}`;
     }, [source, isDirty]);
 }
+
+const useStyles = makeStyles({
+    stage: {
+        gridArea: 'content',
+        overflow: 'auto',
+        backgroundColor: tokens.colorNeutralBackground1,
+        minWidth: '400px',
+    },
+});
