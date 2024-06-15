@@ -9,6 +9,7 @@ function getStepText(index: number) {
 
 const useStyles = makeStyles({
     root: {
+        gridArea: 'steps',
         display: 'flex',
         flexFlow: 'row',
         columnGap: '8px',
