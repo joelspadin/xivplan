@@ -220,7 +220,7 @@ const useStyles = makeStyles({
         flexFlow: 'row wrap',
         alignItems: 'start',
         alignContent: 'start',
-        justifyContent: 'space-between',
+        justifyContent: 'start',
 
         width: '100%',
         gap: '20px',
