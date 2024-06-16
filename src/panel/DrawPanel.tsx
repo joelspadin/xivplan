@@ -1,5 +1,5 @@
-import { IStyle, mergeStyleSets } from '@fluentui/merge-styles';
 import { ChoiceGroup, IChoiceGroupOption } from '@fluentui/react';
+import { mergeClasses } from '@fluentui/react-components';
 import React, { useCallback } from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -10,15 +10,9 @@ import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
 import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { COLOR_SWATCHES } from '../render/SceneTheme';
+import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
-import { PANEL_PADDING } from './PanelStyles';
-
-const classNames = mergeStyleSets({
-    root: {
-        padding: PANEL_PADDING,
-    } as IStyle,
-});
 
 const modeOptions: IChoiceGroupOption[] = [
     {
@@ -34,10 +28,11 @@ const modeOptions: IChoiceGroupOption[] = [
 ];
 
 export const DrawPanel: React.FC = () => {
+    const classes = useControlStyles();
     const [editMode, setEditMode] = useEditMode();
     const [config, setConfig] = useDrawConfig();
 
-    const onColorChanged = useCallback((color: string) => setConfig({ ...config, color }), [config, setConfig]);
+    const setColor = useCallback((color: string) => setConfig({ ...config, color }), [config, setConfig]);
 
     const setOpacity = useCallback(
         (opacity: number) => {
@@ -62,15 +57,20 @@ export const DrawPanel: React.FC = () => {
     useHotkeys('d', '', '', modeHotkey(EditMode.Draw), [editMode]);
 
     return (
-        <div className={classNames.root}>
+        <div className={mergeClasses(classes.panel, classes.column)}>
+            {/* TODO: replace with segmented button (after implementing it) */}
             <ChoiceGroup
                 label="Tool"
                 options={modeOptions}
                 selectedKey={editMode}
                 onChange={(e, option) => setEditMode(option?.key as EditMode)}
             />
-            <CompactColorPicker label="Color" color={config.color} onChange={onColorChanged} />
-            <CompactSwatchColorPicker color={config.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
+            <CompactColorPicker label="Color" color={config.color} onChange={setColor} debounceTime={0} />
+            <CompactSwatchColorPicker
+                swatches={COLOR_SWATCHES}
+                selectedValue={config.color}
+                onSelectionChange={(ev, data) => setColor(data.selectedSwatch)}
+            />
             <OpacitySlider value={config.opacity} onChange={(ev, data) => setOpacity(data.value)} />
             <BrushSizeControl
                 value={config.brushSize}

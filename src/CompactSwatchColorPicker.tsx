@@ -1,49 +1,34 @@
-import { IColorCellProps, ISwatchColorPickerProps, ISwatchColorPickerStyles, SwatchColorPicker } from '@fluentui/react';
-import React, { useCallback, useMemo } from 'react';
+import {
+    ColorSwatchProps,
+    SwatchPicker,
+    SwatchPickerProps,
+    makeStyles,
+    mergeClasses,
+    renderSwatchPickerGrid,
+    tokens,
+} from '@fluentui/react-components';
+import React from 'react';
 
-export interface CompactSwatchColorPickerProps extends Omit<Partial<ISwatchColorPickerProps>, 'onChange'> {
-    color: string;
-    swatches: string[];
-    onChange?: (color: string) => void;
+export interface CompactSwatchColorPickerProps extends Omit<SwatchPickerProps, 'children'> {
+    swatches: ColorSwatchProps[];
 }
 
-const swatchStyles: Partial<ISwatchColorPickerStyles> = {
-    root: {
-        marginTop: 5,
-        marginBottom: 0,
-    },
-};
-
 export const CompactSwatchColorPicker: React.FC<CompactSwatchColorPickerProps> = ({
-    color,
     swatches,
-    onChange,
+    className,
     ...props
 }) => {
-    const swatchCells: IColorCellProps[] | undefined = useMemo(() => {
-        return swatches.map((s) => ({ id: s, color: s } as IColorCellProps));
-    }, [swatches]);
-
-    const onColorSwatchChanged = useCallback(
-        (color: string | undefined) => {
-            if (color) {
-                onChange?.(color);
-            }
-        },
-        [onChange],
-    );
+    const classes = useStyles();
 
     return (
-        <SwatchColorPicker
-            {...props}
-            columnCount={7}
-            colorCells={swatchCells}
-            cellShape="square"
-            cellWidth={22}
-            cellHeight={22}
-            selectedId={color}
-            onChange={(ev, id, color) => onColorSwatchChanged(color)}
-            styles={swatchStyles}
-        />
+        <SwatchPicker size="medium" layout="grid" className={mergeClasses(classes.root, className)} {...props}>
+            {renderSwatchPickerGrid({ items: swatches, columnCount: 8 })}
+        </SwatchPicker>
     );
 };
+
+const useStyles = makeStyles({
+    root: {
+        marginLeft: tokens.spacingHorizontalXXS,
+    },
+});

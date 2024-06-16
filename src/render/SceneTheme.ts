@@ -1,3 +1,4 @@
+import { ColorSwatchProps } from '@fluentui/react-components';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 
@@ -29,21 +30,26 @@ export const COLOR_MARKER_PURPLE = '#e291e6';
 export const DEFAULT_AOE_COLOR = COLOR_ORANGE;
 
 export const DEFAULT_AOE_OPACITY = 35;
-export const COLOR_SWATCHES = [
-    COLOR_RED,
-    COLOR_ORANGE,
-    COLOR_YELLOW,
-    COLOR_GREEN,
-    COLOR_CYAN,
-    COLOR_BLUE,
-    COLOR_VIOLET,
-    COLOR_PINK,
-    COLOR_FUSCHIA,
-    COLOR_BLUE_WHITE,
-    COLOR_DARK_PURPLE,
-    COLOR_WHITE,
-    COLOR_BLACK,
-    COLOR_GRID,
+
+export function makeColorSwatch(color: string, label: string): ColorSwatchProps {
+    return { color, value: color, 'aria-label': label };
+}
+
+export const COLOR_SWATCHES: ColorSwatchProps[] = [
+    makeColorSwatch(COLOR_RED, 'red'),
+    makeColorSwatch(COLOR_ORANGE, 'orange'),
+    makeColorSwatch(COLOR_YELLOW, 'yellow'),
+    makeColorSwatch(COLOR_GREEN, 'green'),
+    makeColorSwatch(COLOR_CYAN, 'cyan'),
+    makeColorSwatch(COLOR_BLUE, 'blue'),
+    makeColorSwatch(COLOR_VIOLET, 'violet'),
+    makeColorSwatch(COLOR_PINK, 'pink'),
+    makeColorSwatch(COLOR_FUSCHIA, 'fuschia'),
+    makeColorSwatch(COLOR_BLUE_WHITE, 'blueish-white'),
+    makeColorSwatch(COLOR_DARK_PURPLE, 'dark-purple'),
+    makeColorSwatch(COLOR_WHITE, 'white'),
+    makeColorSwatch(COLOR_BLACK, 'black'),
+    makeColorSwatch(COLOR_GRID, 'brown'),
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';

@@ -8,6 +8,7 @@ import {
     COLOR_MARKER_RED,
     COLOR_MARKER_YELLOW,
     COLOR_SWATCHES,
+    makeColorSwatch,
 } from '../../render/SceneTheme';
 import { ColoredObject, isMarker } from '../../scene';
 import { commonValue } from '../../util';
@@ -26,7 +27,12 @@ export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ 
     return <CompactColorPicker label="Color" color={color ?? ''} onChange={onColorChanged} />;
 };
 
-const MARKER_SWATCHES = [COLOR_MARKER_RED, COLOR_MARKER_YELLOW, COLOR_MARKER_BLUE, COLOR_MARKER_PURPLE];
+const MARKER_SWATCHES = [
+    makeColorSwatch(COLOR_MARKER_RED, 'red'),
+    makeColorSwatch(COLOR_MARKER_YELLOW, 'yellow'),
+    makeColorSwatch(COLOR_MARKER_BLUE, 'blue'),
+    makeColorSwatch(COLOR_MARKER_PURPLE, 'purple'),
+];
 
 export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
     const { dispatch } = useScene();
@@ -40,10 +46,16 @@ export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>>
         return COLOR_SWATCHES;
     }, [objects]);
 
-    const onColorChanged = useCallback(
+    const setColor = useCallback(
         (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) }),
         [dispatch, objects],
     );
 
-    return <CompactSwatchColorPicker color={color ?? ''} swatches={swatches} onChange={onColorChanged} />;
+    return (
+        <CompactSwatchColorPicker
+            swatches={swatches}
+            selectedValue={color ?? ''}
+            onSelectionChange={(ev, data) => setColor(data.selectedSwatch)}
+        />
+    );
 };

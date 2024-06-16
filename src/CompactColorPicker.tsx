@@ -13,15 +13,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { DeferredInput } from './DeferredInput';
 
-const DEBOUNCE_TIME = 1000;
+const DEFAULT_DEBOUNCE_TIME = 1000;
 
 export interface CompactColorPickerProps {
+    debounceTime?: number;
     label?: string;
     color: string;
     onChange?: (color: string) => void;
 }
 
-export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, onChange, label }) => {
+export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ debounceTime, color, onChange, label }) => {
+    debounceTime = debounceTime ?? DEFAULT_DEBOUNCE_TIME;
+
     const classes = useStyles();
 
     const notifyChanged = useCallback(
@@ -34,7 +37,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
     );
 
     const [pickerColor, setPickerColor] = useState(color);
-    const [, cancel] = useDebounce(() => notifyChanged(pickerColor), DEBOUNCE_TIME, [pickerColor]);
+    const [, cancel] = useDebounce(() => notifyChanged(pickerColor), debounceTime, [pickerColor]);
 
     useEffect(() => {
         return cancel;
