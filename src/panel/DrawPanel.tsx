@@ -39,7 +39,7 @@ export const DrawPanel: React.FC = () => {
 
     const onColorChanged = useCallback((color: string) => setConfig({ ...config, color }), [config, setConfig]);
 
-    const onOpacityChanged = React.useCallback(
+    const setOpacity = useCallback(
         (opacity: number) => {
             if (opacity !== config.opacity) {
                 setConfig({ ...config, opacity });
@@ -71,7 +71,7 @@ export const DrawPanel: React.FC = () => {
             />
             <CompactColorPicker label="Color" color={config.color} onChange={onColorChanged} />
             <CompactSwatchColorPicker color={config.color} swatches={COLOR_SWATCHES} onChange={onColorChanged} />
-            <OpacitySlider value={config.opacity} onChange={onOpacityChanged} />
+            <OpacitySlider value={config.opacity} onChange={(ev, data) => setOpacity(data.value)} />
             <BrushSizeControl
                 value={config.brushSize}
                 color={config.color}

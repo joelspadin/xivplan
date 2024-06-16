@@ -18,8 +18,8 @@ export const ArenaBackgroundEdit: React.FC = () => {
                 <OpacitySlider
                     label="Background image opacity"
                     value={scene.arena.backgroundOpacity ?? 100}
-                    onChange={(value) => {
-                        dispatch({ type: 'arenaBackgroundOpacity', value });
+                    onChange={(ev, data) => {
+                        dispatch({ type: 'arenaBackgroundOpacity', value: data.value });
                     }}
                 />
             )}

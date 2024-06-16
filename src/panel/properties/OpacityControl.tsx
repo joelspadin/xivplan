@@ -10,7 +10,7 @@ export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>>
 
     const opacity = useMemo(() => commonValue(objects, (obj) => obj.opacity), [objects]);
 
-    const onOpacityChanged = useCallback(
+    const setOpacity = useCallback(
         (newOpacity: number) => {
             if (newOpacity !== opacity) {
                 dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, opacity: newOpacity })) });
@@ -19,5 +19,5 @@ export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>>
         [dispatch, objects, opacity],
     );
 
-    return <OpacitySlider value={opacity} onChange={onOpacityChanged} />;
+    return <OpacitySlider value={opacity} onChange={(ev, data) => setOpacity(data.value)} />;
 };

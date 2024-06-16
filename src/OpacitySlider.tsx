@@ -1,4 +1,5 @@
-import { ISliderProps, ISliderStyles, Slider } from '@fluentui/react';
+import { ISliderStyles } from '@fluentui/react';
+import { Field, Label, Slider, SliderProps, makeStyles, tokens } from '@fluentui/react-components';
 import React from 'react';
 
 const styles: Partial<ISliderStyles> = {
@@ -11,19 +12,48 @@ const styles: Partial<ISliderStyles> = {
     },
 };
 
-export const OpacitySlider: React.FC<ISliderProps> = (props) => {
-    const valueFormat: (x: number) => string = props.value === undefined ? () => '' : (x) => `${x}%`;
+export interface OpacitySliderProps extends SliderProps {
+    label?: string;
+}
+
+export const OpacitySlider: React.FC<OpacitySliderProps> = ({ label, ...props }) => {
+    const classes = useStyles();
+
+    const valueText = props.value === undefined ? '' : `${props.value}%`;
+    const ariaValueText = props.value === undefined ? '' : `${props.value} percent`;
 
     return (
-        <Slider
-            label="Opacity"
-            min={5}
-            max={100}
-            step={5}
-            ariaValueText={(x) => `${x} percent`}
-            valueFormat={valueFormat}
-            styles={styles}
-            {...props}
-        />
+        <Field label={label ?? 'Opacity'}>
+            <div className={classes.wrapper}>
+                <Slider
+                    min={5}
+                    max={100}
+                    step={5}
+                    aria-valuetext={ariaValueText}
+                    className={classes.slider}
+                    {...props}
+                />
+                <Label aria-hidden className={classes.valueLabel}>
+                    {valueText}
+                </Label>
+            </div>
+        </Field>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: tokens.spacingHorizontalS,
+    },
+
+    slider: {
+        flexGrow: 1,
+    },
+
+    valueLabel: {
+        width: `40px`,
+        whiteSpace: 'nowrap',
+    },
+});
