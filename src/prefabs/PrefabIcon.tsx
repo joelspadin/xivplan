@@ -1,14 +1,8 @@
-import { IImageProps, IImageStyles, Image, ImageFit } from '@fluentui/react';
-import React from 'react';
+import { Image, ImageProps, makeStyles, mergeClasses } from '@fluentui/react-components';
+import React, { CSSProperties, useMemo } from 'react';
 import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
-const draggableProps: Partial<IImageStyles> = {
-    root: {
-        cursor: 'grab',
-    },
-};
-
-export interface PrefabIconProps extends IImageProps {
+export interface PrefabIconProps extends Omit<ImageProps, 'width' | 'height'> {
     icon: string;
     name?: string;
     filter?: string;
@@ -16,17 +10,26 @@ export interface PrefabIconProps extends IImageProps {
     height?: number;
 }
 
-export const PrefabIcon: React.FC<PrefabIconProps> = ({ icon, name, filter, width, height, ...props }) => {
+export const PrefabIcon: React.FC<PrefabIconProps> = ({ icon, name, filter, width, height, draggable, ...props }) => {
+    const classes = useStyles();
+
+    const style = useMemo<CSSProperties>(() => {
+        return {
+            width: width ?? PREFAB_ICON_SIZE,
+            height: height ?? PREFAB_ICON_SIZE,
+            filter,
+        };
+    }, [width, height, filter]);
+
     return (
-        <Image
-            {...props}
-            imageFit={ImageFit.centerContain}
-            src={icon}
-            title={name}
-            width={width ?? PREFAB_ICON_SIZE}
-            height={height ?? PREFAB_ICON_SIZE}
-            styles={props.draggable ? draggableProps : undefined}
-            style={{ filter }}
-        />
+        <div draggable={draggable} style={style} className={mergeClasses(draggable && classes.draggable)}>
+            <Image {...props} fit="contain" src={icon} title={name} />
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    draggable: {
+        cursor: 'grab',
+    },
+});
