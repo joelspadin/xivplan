@@ -6,7 +6,7 @@ import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
-import { SELECTED_PROPS } from '../render/SceneTheme';
+import { COLOR_RED, SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { ArrowObject, ObjectType } from '../scene';
 import { usePanelDrag } from '../usePanelDrag';
@@ -19,9 +19,9 @@ import { useShowHighlight } from './highlight';
 
 const NAME = 'Arrow';
 
-const DEFAULT_ARROW_WIDTH = 20;
+const DEFAULT_ARROW_WIDTH = 30;
 const DEFAULT_ARROW_HEIGHT = 150;
-const DEFAULT_ARROW_COLOR = '#000000';
+const DEFAULT_ARROW_COLOR = COLOR_RED;
 const DEFAULT_ARROW_OPACITY = 100;
 
 const ICON = <ArrowUpRegular />;
