@@ -1,4 +1,3 @@
-import { Stack } from '@fluentui/react';
 import { Field, makeStyles, SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { ARENA_BACKGROUND_COLOR } from './render/SceneTheme';
@@ -24,13 +23,12 @@ export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opaci
             <Field label="Brush size">
                 <SpinButton value={value} min={2} step={2} {...props} />
             </Field>
-            <Stack.Item>
-                <div className={classes.container}>
-                    <svg width={BOX_SIZE} height={BOX_SIZE}>
-                        <circle cx={pos} cy={pos} r={size / 2} fill={color} opacity={opacity / 100} />
-                    </svg>
-                </div>
-            </Stack.Item>
+
+            <div className={classes.container}>
+                <svg width={BOX_SIZE} height={BOX_SIZE}>
+                    <circle cx={pos} cy={pos} r={size / 2} fill={color} opacity={opacity / 100} />
+                </svg>
+            </div>
         </div>
     );
 };
