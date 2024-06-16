@@ -2,7 +2,7 @@ import { IChoiceGroupOption } from '@fluentui/react';
 import { Button, Field } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useState } from 'react';
 import { CompactChoiceGroup } from '../CompactChoiceGroup';
-import { DeferredTextField } from '../DeferredTextField';
+import { DeferredInput } from '../DeferredInput';
 import { useScene } from '../SceneProvider';
 import { SpinButton } from '../SpinButton';
 import { SpinButtonUnits } from '../SpinButtonUnits';
@@ -32,19 +32,19 @@ const gridShapes: IChoiceGroupOption[] = [
 ];
 
 function formatCustomGridRows(grid: Grid) {
-    return grid.type === GridType.CustomRectangular ? grid.rows.join(', ') : '';
+    return grid.type === GridType.CustomRectangular ? grid.rows.join(' ') : '';
 }
 
 function formatCustomGridCols(grid: Grid) {
-    return grid.type === GridType.CustomRectangular ? grid.columns.join(', ') : '';
+    return grid.type === GridType.CustomRectangular ? grid.columns.join(' ') : '';
 }
 
 function formatCustomGridRings(grid: Grid) {
-    return grid.type === GridType.CustomRadial ? grid.rings.join(', ') : '';
+    return grid.type === GridType.CustomRadial ? grid.rings.join(' ') : '';
 }
 
 function formatCustomGridSpokes(grid: Grid) {
-    return grid.type === GridType.CustomRadial ? grid.spokes.join(', ') : '';
+    return grid.type === GridType.CustomRadial ? grid.spokes.join(' ') : '';
 }
 
 function parseCustomGrid(text?: string): number[] {
@@ -53,7 +53,7 @@ function parseCustomGrid(text?: string): number[] {
     }
 
     return text
-        .split(',')
+        .split(/[,\s]/)
         .map((x) => parseInt(x))
         .filter((x) => !isNaN(x));
 }
@@ -135,14 +135,14 @@ export const ArenaGridEdit: React.FC = () => {
 
                 case GridType.CustomRectangular:
                     setGrid(DEFAULT_CUSTOM_RECT_GRID);
-                    setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(', '));
-                    setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(', '));
+                    setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(' '));
+                    setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(' '));
                     return;
 
                 case GridType.CustomRadial:
                     setGrid(DEFAULT_CUSTOM_RADIAL_GRID);
-                    setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(', '));
-                    setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(', '));
+                    setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(' '));
+                    setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(' '));
             }
         },
         [setGrid, setCustomRows, setCustomCols, setCustomRings, setCustomSpokes],
@@ -229,42 +229,46 @@ export const ArenaGridEdit: React.FC = () => {
             )}
             {grid.type === GridType.CustomRectangular && (
                 <>
-                    <DeferredTextField
-                        label="Row stops"
-                        value={customRows}
-                        onChange={(newValue) => {
-                            setCustomRows(newValue ?? '');
-                            setGrid({ ...grid, rows: parseCustomGrid(newValue) });
-                        }}
-                    />
-                    <DeferredTextField
-                        label="Column stops"
-                        value={customCols}
-                        onChange={(newValue) => {
-                            setCustomRows(newValue ?? '');
-                            setGrid({ ...grid, columns: parseCustomGrid(newValue) });
-                        }}
-                    />
+                    <Field label="Row stops">
+                        <DeferredInput
+                            value={customRows}
+                            onChange={(ev, data) => {
+                                setCustomRows(data.value);
+                                setGrid({ ...grid, rows: parseCustomGrid(data.value) });
+                            }}
+                        />
+                    </Field>
+                    <Field label="Column stops">
+                        <DeferredInput
+                            value={customCols}
+                            onChange={(ev, data) => {
+                                setCustomCols(data.value);
+                                setGrid({ ...grid, columns: parseCustomGrid(data.value) });
+                            }}
+                        />
+                    </Field>
                 </>
             )}
             {grid.type === GridType.CustomRadial && (
                 <>
-                    <DeferredTextField
-                        label="Ring stops"
-                        value={customRings}
-                        onChange={(newValue) => {
-                            setCustomRows(newValue ?? '');
-                            setGrid({ ...grid, rings: parseCustomGrid(newValue) });
-                        }}
-                    />
-                    <DeferredTextField
-                        label="Spoke angles"
-                        value={customSpokes}
-                        onChange={(newValue) => {
-                            setCustomRows(newValue ?? '');
-                            setGrid({ ...grid, spokes: parseCustomGrid(newValue) });
-                        }}
-                    />
+                    <Field label="Ring stops">
+                        <DeferredInput
+                            value={customRings}
+                            onChange={(ev, data) => {
+                                setCustomRings(data.value);
+                                setGrid({ ...grid, rings: parseCustomGrid(data.value) });
+                            }}
+                        />
+                    </Field>
+                    <Field label="Spoke angles">
+                        <DeferredInput
+                            value={customSpokes}
+                            onChange={(ev, data) => {
+                                setCustomSpokes(data.value);
+                                setGrid({ ...grid, spokes: parseCustomGrid(data.value) });
+                            }}
+                        />
+                    </Field>
                 </>
             )}
         </div>

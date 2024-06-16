@@ -18,6 +18,10 @@ export const useControlStyles = makeStyles({
         alignItems: 'end',
         gap: tokens.spacingHorizontalS,
         boxSizing: 'border-box',
+
+        ':empty': {
+            display: 'none',
+        },
     },
 
     rightGap: {

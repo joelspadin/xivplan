@@ -1,29 +1,19 @@
+import { ColorPicker } from '@fluentui/react';
 import {
-    Callout,
-    classNamesFunction,
-    ColorPicker,
-    DirectionalHint,
-    FontWeights,
-    getColorFromString,
-    IStyle,
-    Stack,
-    Theme,
-    useTheme,
-} from '@fluentui/react';
-import { useBoolean, useId } from '@fluentui/react-hooks';
+    ColorSwatch,
+    Field,
+    Popover,
+    PopoverSurface,
+    PopoverTrigger,
+    makeStyles,
+    tokens,
+} from '@fluentui/react-components';
+import Color from 'colorjs.io';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
-import { DeferredTextField } from './DeferredTextField';
+import { DeferredInput } from './DeferredInput';
 
-const DEBOUNCE_TIME = 500;
-
-interface IColorPickerStyles {
-    callout: IStyle;
-    colorBox: IStyle;
-    label: IStyle;
-}
-
-const getClassNames = classNamesFunction<Theme, IColorPickerStyles>();
+const DEBOUNCE_TIME = 1000;
 
 export interface CompactColorPickerProps {
     label?: string;
@@ -32,44 +22,7 @@ export interface CompactColorPickerProps {
 }
 
 export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, onChange, label }) => {
-    const theme = useTheme();
-    const classNames = getClassNames(() => {
-        return {
-            colorBox: {
-                display: 'inline-block',
-                userSelect: 'none',
-                cursor: 'pointer',
-                width: 22,
-                height: 22,
-                padding: 0,
-                marginLeft: 5,
-                marginRight: 10,
-                marginTop: 5,
-                marginBottom: 5,
-                boxSizing: 'border-box',
-                borderRadius: 0,
-                borderWidth: 1,
-                borderStyle: 'solid',
-                borderColor: theme.semanticColors.inputBorder,
-
-                ':hover': {
-                    borderWidth: 1,
-                    borderColor: theme.palette.neutralSecondary,
-                    boxShadow: `inset 0 0 0 1px ${theme.palette.neutralLight}`,
-                    padding: 3,
-                    backgroundColor: theme.semanticColors.bodyBackground,
-                } as IStyle,
-            },
-            label: [
-                theme.fonts.medium,
-                {
-                    padding: '5px 0',
-                    fontWeight: FontWeights.semibold,
-                    display: 'inline-block',
-                },
-            ],
-        };
-    }, theme);
+    const classes = useStyles();
 
     const notifyChanged = useCallback(
         (newColor: string) => {
@@ -85,17 +38,16 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
 
     useEffect(() => {
         return cancel;
-    });
+    }, [cancel]);
 
-    const [isCalloutVisible, { setTrue: showCallout, setFalse: hideCallout }] = useBoolean(false);
-    const buttonId = useId('color-box');
-
-    const onColorTextChanged = useCallback(
-        (text: string | undefined) => {
-            if (text) {
-                const color = getColorFromString(text);
-                if (color) {
-                    notifyChanged(color.str);
+    const setColorText = useCallback(
+        (text: string) => {
+            try {
+                const color = new Color(text);
+                notifyChanged(color.to('srgb').toString({ format: 'hex' }));
+            } catch (ex) {
+                if (!(ex instanceof TypeError)) {
+                    console.error(ex);
                 }
             }
         },
@@ -103,36 +55,49 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({ color, o
     );
 
     return (
-        <div>
-            {label && <label className={classNames.label}>{label}</label>}
-            <Stack horizontal verticalAlign="center">
-                <Stack.Item onClick={showCallout}>
-                    <button type="button" id={buttonId} className={classNames.colorBox}>
-                        <svg viewBox="0 0 20 20" fill={color} focusable={false}>
-                            <rect width="100%" height="100%" />
-                        </svg>
-                    </button>
-                </Stack.Item>
-                <Stack.Item grow>
-                    <DeferredTextField title="Color" value={color} onChange={onColorTextChanged} />
-                </Stack.Item>
-            </Stack>
-            {isCalloutVisible && (
-                <Callout
-                    className={classNames.callout}
-                    gapSpace={0}
-                    target={`#${buttonId}`}
-                    onDismiss={hideCallout}
-                    directionalHint={DirectionalHint.bottomCenter}
-                    setInitialFocus
-                >
-                    <ColorPicker
-                        color={pickerColor}
-                        onChange={(ev, color) => setPickerColor(color.str)}
-                        alphaType="none"
+        <>
+            <Field label={label} className={classes.field}>
+                <div className={classes.wrapper}>
+                    <Popover size="small" appearance="inverted" withArrow>
+                        <PopoverTrigger>
+                            <ColorSwatch size="small" color={color || '#000'} value={color} />
+                        </PopoverTrigger>
+                        <PopoverSurface tabIndex={-1}>
+                            {/* TODO: migrate ColorPicker once a replacement exists */}
+                            <ColorPicker
+                                color={pickerColor}
+                                onChange={(ev, color) => setPickerColor(color.str)}
+                                alphaType="none"
+                            />
+                        </PopoverSurface>
+                    </Popover>
+                    <DeferredInput
+                        className={classes.input}
+                        value={color}
+                        onChange={(ev, data) => setColorText(data.value)}
                     />
-                </Callout>
-            )}
-        </div>
+                </div>
+            </Field>
+        </>
     );
 };
+
+const useStyles = makeStyles({
+    field: {
+        flex: 1,
+    },
+
+    wrapper: {
+        display: 'flex',
+        flexFlow: 'row',
+        alignItems: 'center',
+        gap: tokens.spacingHorizontalS,
+        marginInlineStart: tokens.spacingHorizontalXS,
+    },
+
+    input: {
+        minWidth: 'auto',
+        width: 0,
+        flex: 1,
+    },
+});

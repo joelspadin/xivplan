@@ -95,9 +95,7 @@ const Controls: React.FC = () => {
             {/* Style */}
             <ControlCondition objects={objects} test={isTether} control={TetherTypeControl} />
             <div className={classes.row}>
-                <div className={classes.grow}>
-                    <ControlCondition objects={objects} test={isColored} control={ColorControl} />
-                </div>
+                <ControlCondition objects={objects} test={isColored} control={ColorControl} />
                 <ControlCondition objects={objects} test={isArrow} control={ArrowPointersControl} />
                 <ControlCondition objects={objects} test={supportsHollow} control={HollowControl} />
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />

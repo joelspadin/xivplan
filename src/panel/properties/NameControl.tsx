@@ -1,5 +1,6 @@
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
-import { DeferredTextField } from '../../DeferredTextField';
+import { DeferredInput } from '../../DeferredInput';
 import { useScene } from '../../SceneProvider';
 import { NamedObject } from '../../scene';
 import { commonValue } from '../../util';
@@ -10,11 +11,14 @@ export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ obj
 
     const name = useMemo(() => commonValue(objects, (obj) => obj.name), [objects]);
 
-    const onNameChanged = useCallback(
-        (name: string | undefined) =>
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name: name ?? '' })) }),
+    const setName = useCallback(
+        (name: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name })) }),
         [dispatch, objects],
     );
 
-    return <DeferredTextField label="Name" value={name} onChange={onNameChanged} />;
+    return (
+        <Field label="Name">
+            <DeferredInput value={name ?? ''} onChange={(ev, data) => setName(data.value)} />
+        </Field>
+    );
 };
