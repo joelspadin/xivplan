@@ -1,31 +1,21 @@
-import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
-import React, { useMemo } from 'react';
+import { IconButton } from '@fluentui/react';
+import { makeStyles, tokens } from '@fluentui/react-components';
+import React, { ReactNode, useMemo } from 'react';
+import { useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
 import { SceneObject } from '../scene';
-import { useScene } from '../SceneProvider';
-
-const stackTokens: IStackTokens = {
-    childrenGap: 8,
-};
 
 export interface DetailsItemProps {
     object: SceneObject;
-    icon?: string;
+    icon?: string | ReactNode;
     color?: string;
     name: string;
     isNested?: boolean;
 }
 
-const classNames = mergeStyleSets({
-    name: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    } as IStyle,
-});
-
 export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
+    const classes = useStyles();
     const { dispatch } = useScene();
     const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
@@ -34,23 +24,26 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, co
     const size = isNested ? 20 : undefined;
 
     return (
-        <Stack horizontal verticalAlign="center" tokens={stackTokens}>
-            <Stack.Item>
-                {icon && (
-                    <PrefabIcon
-                        icon={icon}
-                        name={name}
-                        filter={filter}
-                        shouldFadeIn={false}
-                        width={size}
-                        height={size}
-                    />
-                )}
-            </Stack.Item>
-            <Stack.Item grow className={classNames.name}>
-                {name}
-            </Stack.Item>
+        <div className={classes.wrapper}>
+            <div>{icon && <PrefabIcon icon={icon} name={name} filter={filter} width={size} height={size} />}</div>
+            <div className={classes.name}>{name}</div>
             {!isNested && <IconButton iconProps={{ iconName: 'Delete' }} onClick={onDelete} />}
-        </Stack>
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        display: 'flex',
+        flexFlow: 'row',
+        alignItems: 'center',
+        gap: tokens.spacingHorizontalS,
+    },
+
+    name: {
+        flexGrow: 1,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+});

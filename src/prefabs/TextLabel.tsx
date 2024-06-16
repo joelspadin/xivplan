@@ -1,10 +1,10 @@
 import { useBoolean } from '@fluentui/react-hooks';
+import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
-import icon from '../assets/marker/text.png';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -24,6 +24,8 @@ const DEFAULT_TEXT_COLOR = '#ffffff';
 const DEFAULT_TEXT_OPACITY = 100;
 const DEFAULT_FONT_SIZE = 25;
 
+const ICON = <DrawTextRegular />;
+
 export const TextLabel: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
@@ -31,7 +33,7 @@ export const TextLabel: React.FC = () => {
         <PrefabIcon
             draggable
             name="Text"
-            icon={icon}
+            icon={ICON}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -248,7 +250,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
 registerRenderer<TextObject>(ObjectType.Text, LayerName.Foreground, TextRenderer);
 
 const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name={object.text} object={object} isNested={isNested} />;
+    return <DetailsItem icon={ICON} name={object.text} object={object} isNested={isNested} />;
 };
 
 registerListComponent<TextObject>(ObjectType.Text, TextDetails);

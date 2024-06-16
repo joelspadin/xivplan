@@ -1,8 +1,8 @@
+import { ArrowUpRegular } from '@fluentui/react-icons';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
-import icon from '../assets/marker/arrow.png';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -24,6 +24,8 @@ const DEFAULT_ARROW_HEIGHT = 150;
 const DEFAULT_ARROW_COLOR = '#000000';
 const DEFAULT_ARROW_OPACITY = 100;
 
+const ICON = <ArrowUpRegular />;
+
 export const MarkerArrow: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
 
@@ -31,7 +33,7 @@ export const MarkerArrow: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={ICON}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -110,7 +112,7 @@ registerRenderer<ArrowObject>(ObjectType.Arrow, LayerName.Default, ArrowRenderer
 
 const ArrowDetails: React.FC<ListComponentProps<ArrowObject>> = ({ object, isNested }) => {
     // TODO: color filter icon?
-    return <DetailsItem icon={icon} name={NAME} object={object} isNested={isNested} />;
+    return <DetailsItem icon={ICON} name={NAME} object={object} isNested={isNested} />;
 };
 
 registerListComponent<ArrowObject>(ObjectType.Arrow, ArrowDetails);
