@@ -124,47 +124,55 @@ export const PrefabsPanel: React.FC = () => {
             <Section title="Party">
                 <ObjectGroup>
                     <PartyAny />
-                    <PartyTank />
-                    <PartyHealer />
-                    <PartyDps />
                 </ObjectGroup>
-                <ObjectGroup>
-                    <PartyMagicRanged />
-                    <PartyPhysicalRanged />
-                    <PartyRanged />
-                    <PartyMelee />
-                </ObjectGroup>
-            </Section>
-            <Section>
+
                 <ObjectGroup>
                     <PartyPaladin />
                     <PartyWarrior />
                     <PartyDarkKnight />
                     <PartyGunbreaker />
+                    <PartyTank />
                 </ObjectGroup>
+
                 <ObjectGroup>
                     <PartyWhiteMage />
                     <PartyScholar />
                     <PartyAstrologian />
                     <PartySage />
+                    <PartyHealer />
                 </ObjectGroup>
+
+                <ObjectGroup>
+                    <PartyNinja />
+                    {/* TODO: Viper */}
+                    <PartyDps />
+                </ObjectGroup>
+
                 <ObjectGroup>
                     <PartyMonk />
                     <PartyDragoon />
-                    <PartyNinja />
                     <PartySamurai />
                     <PartyReaper />
+                    <PartyMelee />
                 </ObjectGroup>
+
+                <ObjectGroup>
+                    <PartyBlackMage />
+                    <PartySummoner />
+                    <PartyRedMage />
+                    {/* TODO: Pictomancer */}
+                    <PartyMagicRanged />
+                </ObjectGroup>
+
                 <ObjectGroup>
                     <PartyBard />
                     <PartyMachinist />
                     <PartyDancer />
-
-                    <PartyBlackMage />
-                    <PartySummoner />
-                    <PartyRedMage />
+                    <PartyPhysicalRanged />
+                    <PartyRanged />
                 </ObjectGroup>
             </Section>
+
             <Section title="Enemies">
                 <ObjectGroup>
                     <EnemyCircle />

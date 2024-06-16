@@ -7,11 +7,12 @@ import { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
     [Job.RoleAny, Job.RoleTank, Job.RoleHealer, Job.RoleDps],
-    [Job.RoleMagicRanged, Job.RolePhysicalRanged, Job.RoleRanged, Job.RoleMelee],
+    [Job.RoleMelee, Job.RoleRanged, Job.RoleMagicRanged, Job.RolePhysicalRanged],
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
-    [Job.Monk, Job.Dragoon, Job.Ninja, Job.Samurai, Job.Reaper],
-    [Job.Bard, Job.Machinist, Job.Dancer, Job.BlackMage, Job.Summoner, Job.RedMage],
+    [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja], // TODO: add Viper
+    [Job.BlackMage, Job.Summoner, Job.RedMage], // TODO: add Pictomancer
+    [Job.Bard, Job.Machinist, Job.Dancer],
 ].map((row) => row.map((job) => getJob(job)));
 
 const buttonStyles: IButtonStyles = {
