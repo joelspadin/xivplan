@@ -67,6 +67,7 @@ export const lightTheme2: Theme = {
     colorSubtleBackgroundHover: '#e8d7c0',
     colorNeutralBackground1: '#fdebd1',
     colorNeutralBackground2: '#f6e4cc',
+    colorNeutralBackground3: '#f2e0c9',
     colorNeutralBackground6: '#e8d7c0',
     colorNeutralStencil1: '#d8c9b3',
 };
