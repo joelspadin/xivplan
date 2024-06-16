@@ -14,7 +14,7 @@ import {
     tokens,
     typographyStyles,
 } from '@fluentui/react-components';
-import React, { MouseEventHandler, useCallback, useState } from 'react';
+import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
@@ -67,8 +67,28 @@ const PREVIEW_SIZE = 240;
 
 const SelectPresetButton: React.FC = () => {
     const classes = useStyles();
-    const { dispatch } = useScene();
     const [open, setOpen] = useState(false);
+
+    return (
+        <Dialog open={open} onOpenChange={(ev, data) => setOpen(data.open)}>
+            <DialogTrigger>
+                <Button>Select preset</Button>
+            </DialogTrigger>
+            <DialogSurface className={classes.dialogSurface}>
+                <PresetsDialogBody setOpen={setOpen} />
+            </DialogSurface>
+        </Dialog>
+    );
+};
+
+interface PresetsDialogBodyProps {
+    setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
+    const classes = useStyles();
+    const { dispatch } = useScene();
+
     const [key, setKey] = useState(navLinkGroups[0]?.links[0]?.key);
     const [selected, setSelected] = useState<ArenaPreset>();
 
@@ -95,57 +115,46 @@ const SelectPresetButton: React.FC = () => {
     const presets = getPresetsForKey(key);
 
     return (
-        <Dialog open={open} onOpenChange={(ev, data) => setOpen(data.open)}>
-            <DialogTrigger>
-                <Button>Select preset</Button>
-            </DialogTrigger>
-            <DialogSurface className={classes.dialogSurface}>
-                <DialogBody>
-                    <DialogTitle>Arena presets</DialogTitle>
-                    <DialogContent className={classes.dialogContent}>
-                        <div className={classes.nav}>
-                            <Nav
-                                groups={navLinkGroups}
-                                selectedKey={key}
-                                onLinkClick={(ev, item) => {
-                                    if (item) {
-                                        if (item.links) {
-                                            return;
-                                        }
+        <DialogBody>
+            <DialogTitle>Arena presets</DialogTitle>
+            <DialogContent className={classes.dialogContent}>
+                <div className={classes.nav}>
+                    <Nav
+                        groups={navLinkGroups}
+                        selectedKey={key}
+                        onLinkClick={(ev, item) => {
+                            if (item) {
+                                if (item.links) {
+                                    return;
+                                }
 
-                                        setKey(item.key);
-                                        setSelected(undefined);
-                                    }
-                                }}
-                            />
-                        </div>
-                        <ul className={classes.presetList}>
-                            {presets?.map((preset) => (
-                                <PresetItem
-                                    key={preset.name}
-                                    preset={preset}
-                                    selected={preset === selected}
-                                    onClick={() => setSelected(preset)}
-                                    onDoubleClick={() => applyPreset(preset)}
-                                />
-                            ))}
-                        </ul>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            appearance="primary"
-                            disabled={!selected}
-                            onClick={() => selected && applyPreset(selected)}
-                        >
-                            Select preset
-                        </Button>
-                        <DialogTrigger>
-                            <Button>Cancel</Button>
-                        </DialogTrigger>
-                    </DialogActions>
-                </DialogBody>
-            </DialogSurface>
-        </Dialog>
+                                setKey(item.key);
+                                setSelected(undefined);
+                            }
+                        }}
+                    />
+                </div>
+                <ul className={classes.presetList}>
+                    {presets?.map((preset) => (
+                        <PresetItem
+                            key={preset.name}
+                            preset={preset}
+                            selected={preset === selected}
+                            onClick={() => setSelected(preset)}
+                            onDoubleClick={() => applyPreset(preset)}
+                        />
+                    ))}
+                </ul>
+            </DialogContent>
+            <DialogActions>
+                <Button appearance="primary" disabled={!selected} onClick={() => selected && applyPreset(selected)}>
+                    Select preset
+                </Button>
+                <DialogTrigger>
+                    <Button>Cancel</Button>
+                </DialogTrigger>
+            </DialogActions>
+        </DialogBody>
     );
 };
 

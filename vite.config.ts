@@ -1,9 +1,26 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { UserConfig, defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
+const isProduction = process.env.NODE_ENV === 'production';
+
+let devOptions: Partial<UserConfig> | undefined;
+if (!isProduction) {
+    devOptions = {
+        esbuild: {
+            minifyIdentifiers: false,
+        },
+        resolve: {
+            alias: {
+                'react-dom$': 'react-dom/profiling',
+            },
+        },
+    };
+}
+
 export default defineConfig({
+    ...devOptions,
     plugins: [
         react(),
         VitePWA({

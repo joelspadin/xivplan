@@ -9,7 +9,7 @@ import {
     ToolbarDivider,
 } from '@fluentui/react-components';
 import { ArrowRedoRegular, ArrowUndoRegular, OpenRegular, SaveEditRegular, SaveRegular } from '@fluentui/react-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { useHotkeys } from './HotkeyHelpProvider';
 import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
@@ -69,57 +69,59 @@ export const MainToolbar: React.FC = () => {
         [setSaveAsOpen],
     );
 
-    const saveButton = (
-        <Menu positioning="below-end">
-            <MenuTrigger disableButtonEnhancement>
-                {(triggerProps: MenuButtonProps) => (
-                    <CollapsableSplitButton
-                        menuButton={triggerProps}
-                        primaryActionButton={{ onClick: save, disabled: !isDirty }}
-                        icon={<SaveRegular />}
-                        appearance="subtle"
-                    >
-                        Save
-                    </CollapsableSplitButton>
-                )}
-            </MenuTrigger>
-            <MenuPopover>
-                <MenuList>
-                    <MenuItem icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
-                        Save as...
-                    </MenuItem>
-                </MenuList>
-            </MenuPopover>
-        </Menu>
-    );
+    const toolbar = useMemo(() => {
+        const saveButton = (
+            <Menu positioning="below-end">
+                <MenuTrigger disableButtonEnhancement>
+                    {(triggerProps: MenuButtonProps) => (
+                        <CollapsableSplitButton
+                            menuButton={triggerProps}
+                            primaryActionButton={{ onClick: save, disabled: !isDirty }}
+                            icon={<SaveRegular />}
+                            appearance="subtle"
+                        >
+                            Save
+                        </CollapsableSplitButton>
+                    )}
+                </MenuTrigger>
+                <MenuPopover>
+                    <MenuList>
+                        <MenuItem icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
+                            Save as...
+                        </MenuItem>
+                    </MenuList>
+                </MenuPopover>
+            </Menu>
+        );
 
-    const saveAsButton = (
-        <CollapsableToolbarButton icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
-            Save as
-        </CollapsableToolbarButton>
-    );
-
-    const toolbar = (
-        <Toolbar>
-            {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
-            <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
-                Open
+        const saveAsButton = (
+            <CollapsableToolbarButton icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
+                Save as
             </CollapsableToolbarButton>
+        );
 
-            {source ? saveButton : saveAsButton}
+        return (
+            <Toolbar>
+                {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
+                <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
+                    Open
+                </CollapsableToolbarButton>
 
-            <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
-                Undo
-            </CollapsableToolbarButton>
-            <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
-                Redo
-            </CollapsableToolbarButton>
+                {source ? saveButton : saveAsButton}
 
-            <ToolbarDivider />
+                <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
+                    Undo
+                </CollapsableToolbarButton>
+                <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
+                    Redo
+                </CollapsableToolbarButton>
 
-            <ShareDialogButton>Share</ShareDialogButton>
-        </Toolbar>
-    );
+                <ToolbarDivider />
+
+                <ShareDialogButton>Share</ShareDialogButton>
+            </Toolbar>
+        );
+    }, [source, isDirty, undoPossible, redoPossible, undo, redo, save, setOpenFileOpen]);
 
     useToolbar(toolbar);
 

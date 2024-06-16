@@ -25,17 +25,6 @@ export interface ShareDialogButtonProps {
 }
 
 export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }) => {
-    const { scene } = useScene();
-    const { dispatchToast } = useToastController();
-    const url = useMemo(() => getSceneUrl(scene), [scene]);
-
-    // TODO: create toast when copy button is clicked. Anchor toast to dialog?
-
-    const copyToClipboard = useCallback(async () => {
-        await navigator.clipboard.writeText(url);
-        dispatchToast(<CopySuccessToast />, { intent: 'success' });
-    }, [url, dispatchToast]);
-
     return (
         <Dialog>
             <DialogTrigger>
@@ -43,29 +32,44 @@ export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }
             </DialogTrigger>
 
             <DialogSurface>
-                <DialogBody>
-                    <DialogTitle>Share</DialogTitle>
-                    <DialogContent>
-                        <Field label="Link to this plan">
-                            <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
-                        </Field>
-                        <p>
-                            If the link is too long for your browser to open, paste the text into{' '}
-                            <strong>Open &gt; Import Plan Link</strong> instead.
-                        </p>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button appearance="primary" icon={<CopyRegular />} onClick={copyToClipboard}>
-                            Copy to clipboard
-                        </Button>
-
-                        <DialogTrigger disableButtonEnhancement>
-                            <Button>Close</Button>
-                        </DialogTrigger>
-                    </DialogActions>
-                </DialogBody>
+                <ShareDialogBody />
             </DialogSurface>
         </Dialog>
+    );
+};
+
+const ShareDialogBody: React.FC = () => {
+    const { scene } = useScene();
+    const { dispatchToast } = useToastController();
+    const url = useMemo(() => getSceneUrl(scene), [scene]);
+
+    const copyToClipboard = useCallback(async () => {
+        await navigator.clipboard.writeText(url);
+        dispatchToast(<CopySuccessToast />, { intent: 'success' });
+    }, [url, dispatchToast]);
+
+    return (
+        <DialogBody>
+            <DialogTitle>Share</DialogTitle>
+            <DialogContent>
+                <Field label="Link to this plan">
+                    <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
+                </Field>
+                <p>
+                    If the link is too long for your browser to open, paste the text into{' '}
+                    <strong>Open &gt; Import Plan Link</strong> instead.
+                </p>
+            </DialogContent>
+            <DialogActions>
+                <Button appearance="primary" icon={<CopyRegular />} onClick={copyToClipboard}>
+                    Copy to clipboard
+                </Button>
+
+                <DialogTrigger disableButtonEnhancement>
+                    <Button>Close</Button>
+                </DialogTrigger>
+            </DialogActions>
+        </DialogBody>
     );
 };
 
