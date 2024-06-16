@@ -1,75 +1,13 @@
-import {
-    DefaultFontStyles,
-    FontWeights,
-    IPivotStyles,
-    IStyle,
-    mergeStyleSets,
-    Pivot,
-    PivotItem,
-    Separator,
-    Stack,
-} from '@fluentui/react';
-import React from 'react';
+import { Divider, makeStyles, Tab, TabList, typographyStyles } from '@fluentui/react-components';
+import React, { useState } from 'react';
 import { useMedia } from 'react-use';
+import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING, PANEL_WIDTH } from './PanelStyles';
 import { PropertiesPanel } from './PropertiesPanel';
 import { SceneObjectsPanel } from './SceneObjectsPanel';
 
-const enum Tabs {
-    Properties = 'props',
-    Layers = 'layers',
-}
-
 const PROPERTIES_TITLE = 'Properties';
 const OBJECTS_TITLE = 'Scene';
-
-const headerStyle: IStyle[] = [
-    DefaultFontStyles.mediumPlus,
-    {
-        fontWeight: FontWeights.semibold,
-        paddingLeft: PANEL_PADDING,
-        paddingRight: PANEL_PADDING,
-    },
-];
-
-const classNames = mergeStyleSets({
-    wrapper: {
-        gridArea: 'right-panel',
-        flexShrink: '0 !important',
-        width: PANEL_WIDTH,
-    } as IStyle,
-
-    widePanel: {
-        gridArea: 'right-panel',
-        flexShrink: '0 !important',
-        height: '100%',
-        header: headerStyle,
-        section: {
-            width: PANEL_WIDTH,
-            display: 'flex',
-            flexFlow: 'column',
-        } as IStyle,
-    } as IStyle,
-
-    tallPanel: {
-        gridArea: 'right-panel',
-        flexShrink: '0 !important',
-        height: '100%',
-        width: PANEL_WIDTH,
-        header: headerStyle,
-    } as IStyle,
-
-    scrollable: {
-        overflow: 'auto',
-    } as IStyle,
-});
-
-const pivotStyles: Partial<IPivotStyles> = {
-    itemContainer: {
-        maxHeight: 'calc(100% - 44px)',
-        overflow: 'auto',
-    },
-};
 
 export const DetailsPanel: React.FC = () => {
     const isWide = useMedia(`(min-width: 1700px)`);
@@ -87,48 +25,103 @@ export const DetailsPanel: React.FC = () => {
 };
 
 const WideDetailsPanel: React.FC = () => {
+    const classes = useStyles();
+    const controlClasses = useControlStyles();
+
     return (
-        <Stack horizontal className={classNames.widePanel}>
-            <section>
-                <header>{PROPERTIES_TITLE}</header>
-                <div className={classNames.scrollable}>
+        <div className={classes.widePanel}>
+            <section className={classes.section}>
+                <header className={classes.header}>{PROPERTIES_TITLE}</header>
+                <div className={classes.scrollable}>
                     <PropertiesPanel />
                 </div>
             </section>
-            <Separator vertical />
-            <section>
-                <header>{OBJECTS_TITLE}</header>
-                <div className={classNames.scrollable}>
+
+            <Divider inset vertical className={controlClasses.divider} />
+
+            <section className={classes.section}>
+                <header className={classes.header}>{OBJECTS_TITLE}</header>
+                <div className={classes.scrollable}>
                     <SceneObjectsPanel />
                 </div>
             </section>
-        </Stack>
+        </div>
     );
 };
 
 const TallDetailsPanel: React.FC = () => {
+    const classes = useStyles();
+    const controlClasses = useControlStyles();
+
     return (
-        <Stack className={classNames.tallPanel}>
-            <header>{PROPERTIES_TITLE}</header>
+        <div className={classes.tallPanel}>
+            <header className={classes.header}>{PROPERTIES_TITLE}</header>
             <PropertiesPanel />
-            <Separator />
-            <header>{OBJECTS_TITLE}</header>
-            <div className={classNames.scrollable}>
+
+            <Divider inset className={controlClasses.divider} />
+
+            <header className={classes.header}>{OBJECTS_TITLE}</header>
+            <div className={classes.scrollable}>
                 <SceneObjectsPanel />
             </div>
-        </Stack>
+        </div>
     );
 };
 
 const ShortDetailsPanel: React.FC = () => {
+    const classes = useStyles();
+    const [tab, setTab] = useState('properties');
+
     return (
-        <Pivot className={classNames.wrapper} styles={pivotStyles}>
-            <PivotItem headerText={PROPERTIES_TITLE} itemKey={Tabs.Properties}>
-                <PropertiesPanel />
-            </PivotItem>
-            <PivotItem headerText={OBJECTS_TITLE} itemKey={Tabs.Layers}>
-                <SceneObjectsPanel />
-            </PivotItem>
-        </Pivot>
+        <div className={classes.wrapper}>
+            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as string)}>
+                <Tab value="properties">{PROPERTIES_TITLE}</Tab>
+                <Tab value="object">{OBJECTS_TITLE}</Tab>
+            </TabList>
+            {tab === 'properties' && <PropertiesPanel />}
+            {tab === 'objects' && <SceneObjectsPanel />}
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        gridArea: 'right-panel',
+        flexShrink: '0 !important',
+        width: `${PANEL_WIDTH}px`,
+    },
+
+    widePanel: {
+        display: 'flex',
+        flexFlow: 'row',
+
+        gridArea: 'right-panel',
+        flexShrink: '0 !important',
+        height: '100%',
+    },
+
+    header: {
+        ...typographyStyles.subtitle2,
+        padding: `0 ${PANEL_PADDING}px`,
+    },
+
+    section: {
+        width: `${PANEL_WIDTH}px`,
+        display: 'flex',
+        flexFlow: 'column',
+    },
+
+    tallPanel: {
+        display: 'flex',
+        flexFlow: 'column',
+
+        gridArea: 'right-panel',
+        flexShrink: '0 !important',
+        height: '100%',
+        width: `${PANEL_WIDTH}px`,
+    },
+
+    scrollable: {
+        overflowY: 'auto',
+    },
+});

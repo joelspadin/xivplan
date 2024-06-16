@@ -1,4 +1,4 @@
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens, typographyStyles } from '@fluentui/react-components';
 import { PANEL_PADDING } from './panel/PanelStyles';
 
 export const useControlStyles = makeStyles({
@@ -30,5 +30,26 @@ export const useControlStyles = makeStyles({
 
     grow: {
         flexGrow: 1,
+    },
+
+    divider: {
+        ...typographyStyles.body1,
+        marginBottom: tokens.spacingVerticalS,
+        flexGrow: 0,
+
+        '::before': {
+            ...shorthands.borderColor(tokens.colorNeutralStroke3),
+        },
+        '::after': {
+            ...shorthands.borderColor(tokens.colorNeutralStroke3),
+        },
+
+        '[aria-orientation=horizontal]': {
+            height: '28px',
+        },
+
+        '[aria-orientation=vertical]': {
+            width: '8px',
+        },
     },
 });

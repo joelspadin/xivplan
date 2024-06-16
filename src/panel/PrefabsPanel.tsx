@@ -1,5 +1,5 @@
-import { IStyle, mergeStyleSets, Text, useTheme } from '@fluentui/react';
-import React from 'react';
+import { makeStyles, Text } from '@fluentui/react-components';
+import React, { useContext } from 'react';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
@@ -61,30 +61,21 @@ import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
 import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
-import { PANEL_PADDING } from './PanelStyles';
+import { DarkModeContext } from '../ThemeProvider';
+import { useControlStyles } from '../useControlStyles';
 import { ObjectGroup, Section } from './Section';
 
-const classNames = mergeStyleSets({
-    root: {
-        padding: PANEL_PADDING,
-    } as IStyle,
-    darken: {
-        filter: 'brightness(0.75) saturate(1.8)',
-    } as IStyle,
-    usage: {
-        marginTop: -8,
-        marginBottom: 8,
-    } as IStyle,
-});
-
 export const PrefabsPanel: React.FC = () => {
+    const classes = useStyles();
+    const controlClasses = useControlStyles();
+    const [darkMode] = useContext(DarkModeContext);
+
     // AOE zone icons don't have much contrast with light theme background.
     // Darken them a bit.
-    const theme = useTheme();
-    const zonesClass = theme.isInverted ? '' : classNames.darken;
+    const zonesClass = darkMode ? '' : classes.darken;
 
     return (
-        <div className={classNames.root}>
+        <div className={controlClasses.panel}>
             <Section title="Zones">
                 <ObjectGroup className={zonesClass}>
                     <ZoneRightTriangle />
@@ -193,7 +184,7 @@ export const PrefabsPanel: React.FC = () => {
                     <TetherPlusPlus />
                     <TetherMinusMinus />
                 </ObjectGroup>
-                <Text block variant="small" className={classNames.usage}>
+                <Text block size={200}>
                     Select a tether type, then click two objects to add a tether. Press <HotkeyName keys="esc" /> or
                     unselect the tether button to cancel. Use <HotkeyName keys="ctrl" /> + click to create chains.
                 </Text>
@@ -201,3 +192,9 @@ export const PrefabsPanel: React.FC = () => {
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    darken: {
+        filter: 'brightness(0.75) saturate(1.8)',
+    },
+});
