@@ -26,15 +26,15 @@ export const ArenaShapeEdit: React.FC = () => {
     return (
         <div className={classes.column}>
             <div className={classes.row}>
-                <CompactChoiceGroup
-                    className={classes.cell}
-                    label="Arena shape"
-                    options={arenaShapes}
-                    selectedKey={shape}
-                    onChange={(ev, option) => {
-                        option && dispatch({ type: 'arenaShape', value: option.key as ArenaShape });
-                    }}
-                />
+                <Field label="Arena shape" className={classes.cell}>
+                    <CompactChoiceGroup
+                        options={arenaShapes}
+                        selectedKey={shape}
+                        onChange={(ev, option) => {
+                            option && dispatch({ type: 'arenaShape', value: option.key as ArenaShape });
+                        }}
+                    />
+                </Field>
                 <Field label="Padding" className={classes.cell}>
                     <SpinButton min={20} max={500} step={10} value={padding} onChange={onPaddingChanged} />
                 </Field>

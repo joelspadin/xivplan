@@ -1,4 +1,5 @@
 import { IChoiceGroupOption, IChoiceGroupProps } from '@fluentui/react';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
@@ -17,7 +18,11 @@ export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ 
         [dispatch, objects],
     );
 
-    return <HollowToggle label="Style" checked={hollow} onChange={onHollowChanged} />;
+    return (
+        <Field label="Style">
+            <HollowToggle checked={hollow} onChange={onHollowChanged} />
+        </Field>
+    );
 };
 
 export interface HollowToggleProps extends Omit<IChoiceGroupProps, 'onChange'> {

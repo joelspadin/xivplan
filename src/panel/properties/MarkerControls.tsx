@@ -1,4 +1,5 @@
 import { IChoiceGroupOption } from '@fluentui/react';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
@@ -26,11 +27,12 @@ export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> 
     );
 
     return (
-        <CompactChoiceGroup
-            label="Shape"
-            options={shapeOptions}
-            selectedKey={shape}
-            onChange={(ev, option) => onShapeChanged(option)}
-        />
+        <Field label="Shape">
+            <CompactChoiceGroup
+                options={shapeOptions}
+                selectedKey={shape}
+                onChange={(ev, option) => onShapeChanged(option)}
+            />
+        </Field>
     );
 };

@@ -1,4 +1,4 @@
-import { Field, makeStyles, SpinButtonProps, tokens } from '@fluentui/react-components';
+import { Field, makeStyles, mergeClasses, SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { ARENA_BACKGROUND_COLOR } from './render/SceneTheme';
 import { SpinButton } from './SpinButton';
@@ -19,8 +19,8 @@ export const BrushSizeControl: React.FC<BrushSizeControlProps> = ({ color, opaci
     const pos = Math.max(BOX_SIZE / 2, size / 2);
 
     return (
-        <div className={controlClasses.row}>
-            <Field label="Brush size">
+        <div className={mergeClasses(controlClasses.row, controlClasses.rightGap)}>
+            <Field label="Brush size" className={controlClasses.cell}>
                 <SpinButton value={value} min={2} step={2} {...props} />
             </Field>
 

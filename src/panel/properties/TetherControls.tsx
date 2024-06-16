@@ -39,13 +39,14 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
         [dispatch, objects],
     );
     return (
-        <CompactChoiceGroup
-            label="Tether type"
-            padding={4}
-            options={tetherOptions}
-            selectedKey={tether}
-            onChange={(e, option) => onTetherChanged(option?.key as TetherType)}
-        />
+        <Field label="Tether type">
+            <CompactChoiceGroup
+                padding={4}
+                options={tetherOptions}
+                selectedKey={tether}
+                onChange={(e, option) => onTetherChanged(option?.key as TetherType)}
+            />
+        </Field>
     );
 };
 

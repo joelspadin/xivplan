@@ -43,12 +43,13 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
             <Field label="Font size">
                 <SpinButton value={fontSize} onChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
             </Field>
-            <CompactChoiceGroup
-                label="Align"
-                selectedKey={align}
-                options={alignOptions}
-                onChange={(e, option) => onAlignChanged(option?.key)}
-            />
+            <Field label="Align">
+                <CompactChoiceGroup
+                    selectedKey={align}
+                    options={alignOptions}
+                    onChange={(e, option) => onAlignChanged(option?.key)}
+                />
+            </Field>
         </div>
     );
 };

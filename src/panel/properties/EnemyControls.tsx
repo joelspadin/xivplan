@@ -1,8 +1,10 @@
 import { IChoiceGroupOption, IIconStyles } from '@fluentui/react';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
 import { EnemyObject } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
@@ -28,6 +30,7 @@ const directionalOptions: IChoiceGroupOption[] = [
 ];
 
 export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const omniDirection = useMemo(() => commonValue(objects, (obj) => obj.omniDirection), [objects]);
@@ -43,11 +46,12 @@ export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = (
     const directionalKey = omniDirection ? RingStyle.Omnidirectional : RingStyle.Directional;
 
     return (
-        <CompactChoiceGroup
-            label="Ring style"
-            options={directionalOptions}
-            selectedKey={directionalKey}
-            onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
-        />
+        <Field label="Ring style" className={classes.cell}>
+            <CompactChoiceGroup
+                options={directionalOptions}
+                selectedKey={directionalKey}
+                onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
+            />
+        </Field>
     );
 };

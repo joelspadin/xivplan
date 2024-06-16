@@ -150,12 +150,13 @@ export const ArenaGridEdit: React.FC = () => {
 
     return (
         <div className={classes.column}>
-            <CompactChoiceGroup
-                label="Grid type"
-                options={gridShapes}
-                selectedKey={grid.type}
-                onChange={(e, option) => onTypeChange(option?.key as GridType)}
-            />
+            <Field label="Grid type">
+                <CompactChoiceGroup
+                    options={gridShapes}
+                    selectedKey={grid.type}
+                    onChange={(e, option) => onTypeChange(option?.key as GridType)}
+                />
+            </Field>
             {grid.type === GridType.Rectangular && (
                 <div className={classes.row}>
                     <Field label="Columns">
