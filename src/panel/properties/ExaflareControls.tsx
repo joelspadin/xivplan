@@ -21,7 +21,7 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
     );
 
     return (
-        <Field label="Length" className={classes.rightGap}>
+        <Field label="Length" className={classes.cell}>
             <SpinButton value={length} onChange={onLengthChanged} min={MIN_LENGTH} step={1} />
         </Field>
     );

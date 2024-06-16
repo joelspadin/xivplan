@@ -9,6 +9,7 @@ import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const radius = useMemo(() => commonValue(objects, (obj) => obj.radius), [objects]);
@@ -21,7 +22,7 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
     const label = hasInnerRadius ? 'Radius 1' : 'Radius';
 
     return (
-        <Field label={label}>
+        <Field label={label} className={classes.cell}>
             <SpinButton value={radius} onChange={onRadiusChanged} min={10} step={5} />
         </Field>
     );
@@ -38,7 +39,7 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
     );
 
     return (
-        <Field label="Radius 2" className={classes.rightGap}>
+        <Field label="Radius 2" className={classes.cell}>
             <SpinButton value={innerRadius} onChange={onInnerRadiusChanged} min={10} step={5} />
         </Field>
     );

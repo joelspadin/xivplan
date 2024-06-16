@@ -60,10 +60,8 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
     );
 
     return (
-        <div className={classes.row}>
-            <Field label="Width">
-                <SpinButton value={width} onChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
-            </Field>
-        </div>
+        <Field label="Width" className={classes.cell}>
+            <SpinButton value={width} onChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
+        </Field>
     );
 };

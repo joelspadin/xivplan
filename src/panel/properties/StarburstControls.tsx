@@ -23,7 +23,7 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
     );
 
     return (
-        <Field label="Spoke width" className={classes.rightGap}>
+        <Field label="Spoke width" className={classes.cell}>
             <SpinButton value={spokeWidth} onChange={onSpokeWidthChanged} min={MIN_STARBURST_SPOKE_WIDTH} step={5} />
         </Field>
     );
@@ -40,7 +40,7 @@ export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<Starbur
     );
 
     return (
-        <Field label="Spokes" className={classes.rightGap}>
+        <Field label="Spokes" className={classes.cell}>
             <SpinButton
                 value={spokes}
                 onChange={onSpokesChanged}

@@ -29,7 +29,7 @@ export const useControlStyles = makeStyles({
     },
 
     cell: {
-        flex: 1,
+        flex: `0 1 calc(50% - (${tokens.spacingHorizontalS}) / 2)`,
     },
 
     grow: {

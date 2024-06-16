@@ -20,7 +20,7 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
     );
 
     return (
-        <Field label="Angle" className={classes.rightGap}>
+        <Field label="Angle" className={classes.cell}>
             <SpinButtonUnits
                 value={coneAngle}
                 onChange={onAngleChanged}

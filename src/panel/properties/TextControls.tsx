@@ -2,7 +2,7 @@ import { IChoiceGroupOption } from '@fluentui/react';
 import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { CompactChoiceGroup } from '../../CompactChoiceGroup';
-import { DeferredTextField } from '../../DeferredTextField';
+import { DeferredTextarea } from '../../DeferredTextarea';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
@@ -58,12 +58,22 @@ export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({
 
     const text = useMemo(() => commonValue(objects, (obj) => obj.text), [objects]);
 
-    const onTextChanged = useCallback(
-        (text: string | undefined) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text: text ?? '' })) });
+    const setText = useCallback(
+        (text: string) => {
+            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })) });
         },
         [dispatch, objects],
     );
 
-    return <DeferredTextField label="Text" value={text ?? ''} onChange={onTextChanged} multiline autoAdjustHeight />;
+    // TODO: add autoAdjustHeight once implemented
+    return (
+        <Field label="Text">
+            <DeferredTextarea
+                resize="vertical"
+                rows={3}
+                value={text ?? ''}
+                onChange={(ev, data) => setText(data.value)}
+            />
+        </Field>
+    );
 };

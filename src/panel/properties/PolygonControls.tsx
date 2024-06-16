@@ -5,10 +5,12 @@ import { SpinButton } from '../../SpinButton';
 import { MAX_POLYGON_SIDES, MIN_POLYGON_SIDES } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { PolygonZone } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const spokes = useMemo(() => commonValue(objects, (obj) => obj.sides), [objects]);
@@ -18,7 +20,7 @@ export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> 
     );
 
     return (
-        <Field label="Sides">
+        <Field label="Sides" className={classes.cell}>
             <SpinButton
                 value={spokes}
                 onChange={onSidesChanged}

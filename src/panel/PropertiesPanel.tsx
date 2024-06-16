@@ -110,15 +110,17 @@ const Controls: React.FC = () => {
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
             <ControlCondition objects={objects} test={isResizable} control={SizeControl} />
 
-            <div className={classes.row}>
+            {/* TODO: change this to a two-column grid? */}
+            <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={isRadiusObject} control={RadiusControl} />
                 <ControlCondition objects={objects} test={isInnerRadiusObject} control={InnerRadiusControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareLengthControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
             </div>
-            <div className={classes.row}>
-                <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
+
+            <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
+                <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
                 <ControlCondition objects={objects} test={isPolygonZone} control={PolygonSidesControl} />
                 <ControlCondition
@@ -131,7 +133,9 @@ const Controls: React.FC = () => {
             {/* Special options */}
             <ControlCondition objects={objects} test={isParty} control={PartyIconControl} />
             <ControlCondition objects={objects} test={isTether} control={TetherWidthControl} />
-            <ControlCondition objects={objects} test={isTowerZone} control={TowerCountControl} />
+            <div className={mergeClasses(classes.row, classes.rightGap)}>
+                <ControlCondition objects={objects} test={isTowerZone} control={TowerCountControl} />
+            </div>
             <ControlCondition objects={objects} test={isText} control={TextValueControl} />
         </>
     );

@@ -4,10 +4,12 @@ import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { EnemyObject, RotateableObject, isEnemy } from '../../scene';
+import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const RotationControl: React.FC<PropertiesControlProps<RotateableObject | EnemyObject>> = ({ objects }) => {
+    const classes = useControlStyles();
     const { dispatch } = useScene();
 
     const rotation = useMemo(() => commonValue(objects, (obj) => obj.rotation), [objects]);
@@ -18,7 +20,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     );
 
     return (
-        <Field label="Rotation">
+        <Field label="Rotation" className={classes.cell}>
             <SpinButtonUnits
                 disabled={omniDirection}
                 value={rotation}

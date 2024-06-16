@@ -44,7 +44,7 @@ export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = (
 
     return (
         <CompactChoiceGroup
-            label="Style"
+            label="Ring style"
             options={directionalOptions}
             selectedKey={directionalKey}
             onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
