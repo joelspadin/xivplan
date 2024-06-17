@@ -1,4 +1,4 @@
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { Image, makeStyles, tokens } from '@fluentui/react-components';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
@@ -63,9 +63,10 @@ const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
         }
     }, [checked, tether, setEditMode, setSelection, setTetherConfig]);
 
-    return (
-        <PrefabToggle name={getTetherName(tether)} icon={getTetherIcon(tether)} onClick={onClick} checked={checked} />
-    );
+    const label = useMemo(() => getTetherName(tether), [tether]);
+    const icon = useMemo(() => getTetherIcon(tether), [tether]);
+
+    return <PrefabToggle label={label} icon={<Image src={icon} />} onClick={onClick} checked={checked} />;
 };
 
 const INVALID_START_POS: Vector2d = { x: -20, y: 0 };

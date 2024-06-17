@@ -1,40 +1,38 @@
-import { IButtonProps, IButtonStyles, IconButton, useTheme } from '@fluentui/react';
-import React, { useMemo } from 'react';
-import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
+import {
+    ToggleButton,
+    ToggleButtonProps,
+    Tooltip,
+    makeStyles,
+    mergeClasses,
+    shorthands,
+    tokens,
+} from '@fluentui/react-components';
+import React from 'react';
 
-export interface PrefabToggleProps extends IButtonProps {
-    icon: string;
-    name?: string;
-    checked?: boolean;
-}
+export type PrefabToggleProps = ToggleButtonProps & {
+    label: string;
+};
 
-export const PrefabToggle: React.FC<PrefabToggleProps> = ({ icon, name, checked, ...props }) => {
-    const theme = useTheme();
-
-    const buttonStyles = useMemo<IButtonStyles>(() => {
-        return {
-            icon: {
-                fontSize: PREFAB_ICON_SIZE,
-                height: PREFAB_ICON_SIZE,
-                lineHeight: PREFAB_ICON_SIZE,
-            },
-            rootChecked: {
-                border: `1px solid ${theme.palette.themeSecondary}`,
-            },
-        };
-    }, [theme]);
+export const PrefabToggle: React.FC<PrefabToggleProps> = ({ label, className, ...props }) => {
+    const classes = useStyles();
 
     return (
-        <IconButton
-            {...props}
-            title={name}
-            checked={checked}
-            iconProps={{
-                imageProps: {
-                    src: icon,
-                },
-            }}
-            styles={buttonStyles}
-        />
+        <Tooltip content={label} relationship="label" withArrow>
+            <ToggleButton
+                appearance="subtle"
+                {...props}
+                className={mergeClasses(className, props.checked && classes.checked)}
+            />
+        </Tooltip>
     );
 };
+
+const useStyles = makeStyles({
+    checked: {
+        ...shorthands.borderColor(tokens.colorBrandStroke1),
+
+        ':hover': {
+            ...shorthands.borderColor(tokens.colorBrandStroke1),
+        },
+    },
+});
