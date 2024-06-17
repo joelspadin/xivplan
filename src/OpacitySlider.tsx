@@ -1,16 +1,5 @@
-import { ISliderStyles } from '@fluentui/react';
 import { Field, Label, Slider, SliderProps, makeStyles, tokens } from '@fluentui/react-components';
 import React from 'react';
-
-const styles: Partial<ISliderStyles> = {
-    titleLabel: {
-        paddingTop: 5,
-    },
-    container: {
-        marginTop: 5,
-        marginBottom: 4,
-    },
-};
 
 export interface OpacitySliderProps extends SliderProps {
     label?: string;

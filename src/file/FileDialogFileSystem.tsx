@@ -93,23 +93,20 @@ export const SaveFileSystem: React.FC = () => {
 
     const currentName = source?.name;
 
-    const save = useCallback(
-        async (event: MouseEvent<HTMLButtonElement>) => {
-            const handle = await showSavePlanPicker(currentName);
-            if (!handle) {
-                return;
-            }
+    const save = useCallback(async () => {
+        const handle = await showSavePlanPicker(currentName);
+        if (!handle) {
+            return;
+        }
 
-            const source = await getFileSource(handle);
-            await saveFile(scene, source);
-            await addRecentFile(handle);
+        const source = getFileSource(handle);
+        await saveFile(scene, source);
+        await addRecentFile(handle);
 
-            dispatch({ type: 'setSource', source });
-            setSavedState(scene);
-            dismissDialog();
-        },
-        [scene, currentName, dispatch, setSavedState, dismissDialog],
-    );
+        dispatch({ type: 'setSource', source });
+        setSavedState(scene);
+        dismissDialog();
+    }, [scene, currentName, dispatch, setSavedState, dismissDialog]);
 
     useDialogActions(
         <>
