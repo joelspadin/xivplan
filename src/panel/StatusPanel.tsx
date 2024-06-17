@@ -8,6 +8,7 @@ import {
     Tab,
     TabList,
     makeStyles,
+    shorthands,
     tokens,
 } from '@fluentui/react-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -334,7 +335,7 @@ const useStyles = makeStyles({
     },
 
     statusSearch: {
-        padding: `${PANEL_PADDING}px`,
+        ...shorthands.padding(`${PANEL_PADDING}px`, `${PANEL_PADDING}px`, 0),
         display: 'flex',
         flexFlow: 'column',
         flexGrow: 1,
@@ -346,8 +347,11 @@ const useStyles = makeStyles({
     },
     listWrapper: {
         // TODO: is there a way to make this less terrible?
-        height: `calc(100vh - 48px - 44px - 32px - 58px - 32px - 2 * ${tokens.spacingVerticalS} - 2 * ${PANEL_PADDING}px)`,
+        height: `calc(100vh - 48px - 44px - 32px - 58px - 32px - 2 * ${tokens.spacingVerticalS} - ${PANEL_PADDING}px)`,
         overflowY: 'auto',
+
+        marginLeft: `-${PANEL_PADDING}px`,
+        marginRight: `-${PANEL_PADDING}px`,
     },
     listItem: {
         float: 'left',
