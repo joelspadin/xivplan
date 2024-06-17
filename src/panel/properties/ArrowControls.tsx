@@ -1,12 +1,13 @@
-import { IconButton, Stack } from '@fluentui/react';
+import { Button, Field, makeStyles } from '@fluentui/react-components';
+import { ArrowLeftRegular, ArrowRightRegular, SubtractRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
-import { Label } from 'react-konva';
 import { useScene } from '../../SceneProvider';
 import { ArrowObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const ArrowPointersControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ objects }) => {
+    const classes = useStyles();
     const { dispatch } = useScene();
 
     const arrowBegin = useMemo(() => commonValue(objects, (obj) => !!obj.arrowBegin), [objects]);
@@ -22,16 +23,22 @@ export const ArrowPointersControl: React.FC<PropertiesControlProps<ArrowObject>>
         [dispatch, objects, arrowEnd],
     );
 
-    const arrowBeginIcon = arrowBegin ? 'TriangleSolidLeft12' : 'Remove';
-    const arrowEndIcon = arrowEnd ? 'TriangleSolidRight12' : 'Remove';
+    const arrowBeginIcon = arrowBegin ? <ArrowLeftRegular /> : <SubtractRegular />;
+    const arrowEndIcon = arrowEnd ? <ArrowRightRegular /> : <SubtractRegular />;
 
     return (
-        <Stack>
-            <Label>Pointers</Label>
-            <Stack horizontal>
-                <IconButton iconProps={{ iconName: arrowBeginIcon }} onClick={onToggleArrowBegin} />
-                <IconButton iconProps={{ iconName: arrowEndIcon }} onClick={onToggleArrowEnd} />
-            </Stack>
-        </Stack>
+        <Field label="Pointers">
+            <div className={classes.wrapper}>
+                <Button appearance="subtle" icon={arrowBeginIcon} onClick={onToggleArrowBegin} />
+                <Button appearance="subtle" icon={arrowEndIcon} onClick={onToggleArrowEnd} />
+            </div>
+        </Field>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        display: 'flex',
+        flexFlow: 'row',
+    },
+});
