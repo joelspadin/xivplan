@@ -1,5 +1,5 @@
-import { IPivotStyles, IStyle, mergeStyleSets, Pivot, PivotItem } from '@fluentui/react';
-import React, { useCallback } from 'react';
+import { makeStyles, Tab, TabList } from '@fluentui/react-components';
+import React, { useCallback, useState } from 'react';
 import { EditMode } from '../editMode';
 import { useEditMode } from '../useEditMode';
 import { ArenaPanel } from './ArenaPanel';
@@ -15,53 +15,50 @@ const enum Tabs {
     Draw = 'draw',
 }
 
-const classNames = mergeStyleSets({
-    wrapper: {
-        gridArea: 'left-panel',
-        width: PANEL_WIDTH,
-        userSelect: 'none',
-    } as IStyle,
-});
-
-const pivotStyles: Partial<IPivotStyles> = {
-    itemContainer: {
-        maxHeight: 'calc(100% - 44px)',
-        overflow: 'auto',
-    },
-};
-
 export const MainPanel: React.FC = () => {
+    const classes = useStyles();
+    const [tab, setTab] = useState(Tabs.Objects);
     const [, setEditMode] = useEditMode();
 
-    const onTabChanged = useCallback(
-        (item?: PivotItem) => {
+    const handleTabChanged = useCallback(
+        (tab: Tabs) => {
+            setTab(tab);
+
             // Cancel any special edit mode when changing tabs.
             // Draw tab should always default to draw mode.
-            const newMode = item?.props.itemKey === Tabs.Draw ? EditMode.Draw : EditMode.Normal;
+            const newMode = tab === Tabs.Draw ? EditMode.Draw : EditMode.Normal;
             setEditMode(newMode);
         },
         [setEditMode],
     );
 
     return (
-        <Pivot
-            className={classNames.wrapper}
-            styles={pivotStyles}
-            defaultSelectedKey={Tabs.Objects}
-            onLinkClick={onTabChanged}
-        >
-            <PivotItem headerText="Arena" itemKey={Tabs.Arena}>
-                <ArenaPanel />
-            </PivotItem>
-            <PivotItem headerText="Objects" itemKey={Tabs.Objects}>
-                <PrefabsPanel />
-            </PivotItem>
-            <PivotItem headerText="Icons" itemKey={Tabs.Status}>
-                <StatusPanel />
-            </PivotItem>
-            <PivotItem headerText="Draw" itemKey={Tabs.Draw}>
-                <DrawPanel />
-            </PivotItem>
-        </Pivot>
+        <div className={classes.wrapper}>
+            <TabList selectedValue={tab} onTabSelect={(ev, data) => handleTabChanged(data.value as Tabs)}>
+                <Tab value={Tabs.Arena}>Arena</Tab>
+                <Tab value={Tabs.Objects}>Objects</Tab>
+                <Tab value={Tabs.Status}>Icons</Tab>
+                <Tab value={Tabs.Draw}>Draw</Tab>
+            </TabList>
+            <div className={classes.container}>
+                {tab === Tabs.Arena && <ArenaPanel />}
+                {tab === Tabs.Objects && <PrefabsPanel />}
+                {tab === Tabs.Status && <StatusPanel />}
+                {tab === Tabs.Draw && <DrawPanel />}
+            </div>
+        </div>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        gridArea: 'left-panel',
+        width: `${PANEL_WIDTH}px`,
+        userSelect: 'none',
+    },
+
+    container: {
+        maxHeight: 'calc(100% - 44px)',
+        overflow: 'auto',
+    },
+});
