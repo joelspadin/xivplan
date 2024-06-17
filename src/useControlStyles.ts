@@ -56,4 +56,8 @@ export const useControlStyles = makeStyles({
             width: '8px',
         },
     },
+
+    noSelect: {
+        userSelect: 'none',
+    },
 });
