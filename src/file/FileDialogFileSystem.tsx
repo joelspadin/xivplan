@@ -4,8 +4,8 @@ import { useAsync, useCounter } from 'react-use';
 import { ExternalLink } from '../ExternalLink';
 import { useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
+import { useCloseDialog } from '../useCloseDialog';
 import { useDialogActions } from '../useDialogActions';
-import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { useConfirmUnsavedChanges } from './confirm';
 import {
@@ -22,7 +22,7 @@ export const OpenFileSystem: React.FC = () => {
     const classes = useStyles();
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
-    const dismissDialog = useDismissDialog();
+    const dismissDialog = useCloseDialog();
     const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
 
     const [counter, { inc: reloadFolder }] = useCounter();
@@ -38,7 +38,7 @@ export const OpenFileSystem: React.FC = () => {
             const scene = await openFile(source);
 
             loadScene(scene, source);
-            dismissDialog(event);
+            dismissDialog();
         },
         [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
     );
@@ -88,7 +88,7 @@ export const OpenFileSystem: React.FC = () => {
 
 export const SaveFileSystem: React.FC = () => {
     const setSavedState = useSetSavedState();
-    const dismissDialog = useDismissDialog();
+    const dismissDialog = useCloseDialog();
     const { scene, source, dispatch } = useScene();
 
     const currentName = source?.name;
@@ -106,7 +106,7 @@ export const SaveFileSystem: React.FC = () => {
 
             dispatch({ type: 'setSource', source });
             setSavedState(scene);
-            dismissDialog(event);
+            dismissDialog();
         },
         [scene, currentName, dispatch, setSavedState, dismissDialog],
     );

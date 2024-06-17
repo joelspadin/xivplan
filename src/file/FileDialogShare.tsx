@@ -1,10 +1,10 @@
 import { Button, DialogTrigger, Field, Textarea, TextareaOnChangeData } from '@fluentui/react-components';
-import React, { ChangeEvent, MouseEvent, useCallback, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
 import { Scene } from '../scene';
+import { useCloseDialog } from '../useCloseDialog';
 import { useDialogActions } from '../useDialogActions';
-import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty } from '../useIsDirty';
 import { useConfirmUnsavedChanges } from './confirm';
 import { parseSceneLink } from './share';
@@ -12,36 +12,32 @@ import { parseSceneLink } from './share';
 export const ImportFromString: React.FC = () => {
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
-    const dismissDialog = useDismissDialog();
-    const importButtonRef = useRef<HTMLButtonElement>(null);
+    const dismissDialog = useCloseDialog();
 
     const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
     const [data, setData] = useState<string | undefined>('');
     const [error, setError] = useState<string | undefined>('');
 
-    const importCallback = useCallback(
-        async (event: MouseEvent<HTMLElement>) => {
-            if (!data) {
+    const importLink = useCallback(async () => {
+        if (!data) {
+            return;
+        }
+
+        if (isDirty) {
+            if (!(await confirmUnsavedChanges())) {
                 return;
             }
+        }
 
-            if (isDirty) {
-                if (!(await confirmUnsavedChanges())) {
-                    return;
-                }
-            }
+        const scene = decodeScene(data);
+        if (!scene) {
+            setError('Invalid link');
+            return;
+        }
 
-            const scene = decodeScene(data);
-            if (!scene) {
-                setError('Invalid link');
-                return;
-            }
-
-            loadScene(scene);
-            dismissDialog(event);
-        },
-        [data, isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
-    );
+        loadScene(scene);
+        dismissDialog();
+    }, [data, isDirty, loadScene, dismissDialog, confirmUnsavedChanges]);
 
     const onChange = useCallback(
         (ev: ChangeEvent<HTMLTextAreaElement>, data: TextareaOnChangeData) => {
@@ -51,16 +47,19 @@ export const ImportFromString: React.FC = () => {
         [setError, setData],
     );
 
-    const onKeyUp = useCallback((ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (ev.key === 'Enter') {
-            ev.preventDefault();
-            importButtonRef.current?.click();
-        }
-    }, []);
+    const onKeyUp = useCallback(
+        (ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                importLink();
+            }
+        },
+        [importLink],
+    );
 
     useDialogActions(
         <>
-            <Button ref={importButtonRef} appearance="primary" disabled={!data} onClick={importCallback}>
+            <Button appearance="primary" disabled={!data} onClick={importLink}>
                 Import
             </Button>
             <DialogTrigger>

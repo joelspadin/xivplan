@@ -16,6 +16,7 @@ import { useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './ScenePro
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialogButton } from './file/ShareDialogButton';
+import { DialogOpenContext } from './useCloseDialog';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 import { useToolbar } from './useToolbar';
 
@@ -127,8 +128,12 @@ export const MainToolbar: React.FC = () => {
 
     return (
         <>
-            <OpenDialog open={openFileOpen} onOpenChange={(ev, data) => setOpenFileOpen(data.open)} />
-            <SaveAsDialog open={saveAsOpen} onOpenChange={(ev, data) => setSaveAsOpen(data.open)} />
+            <DialogOpenContext.Provider value={setOpenFileOpen}>
+                <OpenDialog open={openFileOpen} onOpenChange={(ev, data) => setOpenFileOpen(data.open)} />
+            </DialogOpenContext.Provider>
+            <DialogOpenContext.Provider value={setSaveAsOpen}>
+                <SaveAsDialog open={saveAsOpen} onOpenChange={(ev, data) => setSaveAsOpen(data.open)} />
+            </DialogOpenContext.Provider>
         </>
     );
 };

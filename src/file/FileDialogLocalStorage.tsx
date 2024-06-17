@@ -20,12 +20,12 @@ import {
     makeStyles,
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
+import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
+import { useCloseDialog } from '../useCloseDialog';
 import { useDialogActions } from '../useDialogActions';
-import { useDismissDialog } from '../useDismissDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { useConfirmDeleteFile, useConfirmOverwriteFile, useConfirmUnsavedChanges } from './confirm';
 import { LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
@@ -45,7 +45,7 @@ export const OpenLocalStorage: React.FC = () => {
     const classes = useStyles();
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
-    const dismissDialog = useDismissDialog();
+    const dismissDialog = useCloseDialog();
 
     const [confirmUnsavedChanges, renderModal1] = useConfirmUnsavedChanges();
     const [confirmDeleteFile, renderModal2] = useConfirmDeleteFile();
@@ -68,7 +68,7 @@ export const OpenLocalStorage: React.FC = () => {
             const scene = await openFile(source);
 
             loadScene(scene, source);
-            dismissDialog(event);
+            dismissDialog();
         },
         [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
     );
@@ -203,9 +203,8 @@ function getInitialName(source: FileSource | undefined) {
 
 export const SaveLocalStorage: React.FC = () => {
     const setSavedState = useSetSavedState();
-    const dismissDialog = useDismissDialog();
+    const dismissDialog = useCloseDialog();
     const files = useAsync(listLocalStorageFiles);
-    const saveButtonRef = useRef<HTMLButtonElement>(null);
 
     const { scene, source, dispatch } = useScene();
     const [name, setName] = useState(getInitialName(source));
@@ -214,36 +213,37 @@ export const SaveLocalStorage: React.FC = () => {
     const alreadyExists = useMemo(() => files.value?.some((f) => f.name === name?.trim()), [files.value, name]);
     const canSave = !!name?.trim() && !files.loading;
 
-    const [, save] = useAsyncFn(
-        async (event: MouseEvent<HTMLElement>) => {
-            if (!canSave) {
-                return;
-            }
-
-            const source: FileSource = { type: 'local', name: name.trim() };
-
-            if (alreadyExists && !(await confirmOverwriteFile(source.name))) {
-                return;
-            }
-
-            await saveFile(scene, source);
-
-            dispatch({ type: 'setSource', source });
-            setSavedState(scene);
-            dismissDialog(event);
-        },
-        [scene, name, canSave, alreadyExists, dispatch, dismissDialog, setSavedState, confirmOverwriteFile],
-    );
-
-    const onKeyUp = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            saveButtonRef.current?.click();
+    const [, save] = useAsyncFn(async () => {
+        if (!canSave) {
+            return;
         }
-    }, []);
+
+        const source: FileSource = { type: 'local', name: name.trim() };
+
+        if (alreadyExists && !(await confirmOverwriteFile(source.name))) {
+            return;
+        }
+
+        await saveFile(scene, source);
+
+        dispatch({ type: 'setSource', source });
+        setSavedState(scene);
+        dismissDialog();
+    }, [scene, name, canSave, alreadyExists, dispatch, dismissDialog, setSavedState, confirmOverwriteFile]);
+
+    const onKeyUp = useCallback(
+        (event: KeyboardEvent<HTMLInputElement>) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                save();
+            }
+        },
+        [save],
+    );
 
     useDialogActions(
         <>
-            <Button ref={saveButtonRef} appearance="primary" disabled={!canSave} onClick={save}>
+            <Button appearance="primary" disabled={!canSave} onClick={save}>
                 Save as
             </Button>
             <DialogTrigger>
