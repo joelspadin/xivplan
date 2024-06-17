@@ -1,5 +1,5 @@
-import { IconButton } from '@fluentui/react';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { DeleteRegular } from '@fluentui/react-icons';
 import React, { ReactNode, useMemo } from 'react';
 import { useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
@@ -16,9 +16,6 @@ export interface DetailsItemProps {
 
 export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
     const classes = useStyles();
-    const { dispatch } = useScene();
-    const onDelete = () => dispatch({ type: 'remove', ids: object.id });
-
     const filter = useMemo(() => (color ? getRecolorFilter(color) : undefined), [color]);
 
     const size = isNested ? 20 : undefined;
@@ -27,9 +24,20 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, co
         <div className={classes.wrapper}>
             <div>{icon && <PrefabIcon icon={icon} name={name} filter={filter} width={size} height={size} />}</div>
             <div className={classes.name}>{name}</div>
-            {!isNested && <IconButton iconProps={{ iconName: 'Delete' }} onClick={onDelete} />}
+            {!isNested && <DetailsItemDeleteButton object={object} />}
         </div>
     );
+};
+
+export interface DetailsItemDeleteButtonProps {
+    object: SceneObject;
+}
+
+export const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ object }) => {
+    const { dispatch } = useScene();
+    const deleteObject = () => dispatch({ type: 'remove', ids: object.id });
+
+    return <Button appearance="subtle" icon={<DeleteRegular />} onClick={deleteObject} />;
 };
 
 const useStyles = makeStyles({

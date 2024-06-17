@@ -1,4 +1,4 @@
-import { IconButton, IStackTokens, IStyle, mergeStyleSets, Stack } from '@fluentui/react';
+import { makeStyles, tokens } from '@fluentui/react-components';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
@@ -7,30 +7,31 @@ import { Vector2d } from 'konva/lib/types';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
+import { CursorGroup } from '../CursorGroup';
+import { getObjectById, useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
 import { getCanvasCoord } from '../coord';
-import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
-import { getListComponent, ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { LayerName } from '../render/layers';
-import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
+import { DetailsItemDeleteButton } from '../panel/DetailsItem';
+import { ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
 import { SELECTED_PROPS } from '../render/SceneTheme';
+import { LayerName } from '../render/layers';
 import {
     FakeCursorObject,
+    ObjectType,
+    Scene,
+    SceneObject,
+    Tether,
+    TetherType,
     isEnemy,
     isMarker,
     isMoveable,
     isRadiusObject,
     isResizable,
     isZone,
-    ObjectType,
-    Scene,
-    SceneObject,
-    Tether,
-    TetherType,
 } from '../scene';
-import { getObjectById, useScene } from '../SceneProvider';
 import { selectNone, useIsSelected, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
 import { useTetherConfig } from '../useTetherConfig';
@@ -381,10 +382,6 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
     );
 };
 
-const stackTokens: IStackTokens = {
-    childrenGap: 8,
-};
-
 const UnknownTargetComponent: React.FC = () => {
     return <span>(invalid)</span>;
 };
@@ -397,15 +394,6 @@ function getTargetNode(object: SceneObject | undefined) {
 
     return <UnknownTargetComponent />;
 }
-
-const classNames = mergeStyleSets({
-    target: {
-        display: 'grid',
-        gridTemplate: 'auto / minmax(50%, min-content) min-content minmax(50%, min-content)',
-        gridColumnGap: '4px',
-        overflow: 'hidden',
-    } as IStyle,
-});
 
 function getIconColorFilter(object: Tether) {
     switch (object.tether) {
@@ -420,30 +408,22 @@ function getIconColorFilter(object: Tether) {
 }
 
 const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
-    const { scene, dispatch } = useScene();
+    const classes = useStyles();
+    const { scene } = useScene();
     const filter = React.useMemo(() => getIconColorFilter(object), [object]);
-
-    const onDelete = () => dispatch({ type: 'remove', ids: object.id });
 
     const startObj = getObjectById(scene, object.startId);
     const endObj = getObjectById(scene, object.endId);
 
     return (
-        <Stack horizontal verticalAlign="center" tokens={stackTokens}>
-            <Stack.Item>
-                <PrefabIcon
-                    icon={getTetherIcon(object.tether)}
-                    name={getTetherName(object.tether)}
-                    filter={filter}
-                    shouldFadeIn={false}
-                />
-            </Stack.Item>
-            <Stack.Item grow className={classNames.target}>
+        <div className={classes.wrapper}>
+            <PrefabIcon icon={getTetherIcon(object.tether)} name={getTetherName(object.tether)} filter={filter} />
+            <div className={classes.targets}>
                 <div>{getTargetNode(startObj)}</div>
                 <div>{getTargetNode(endObj)}</div>
-            </Stack.Item>
-            <IconButton iconProps={{ iconName: 'Delete' }} onClick={onDelete} />
-        </Stack>
+            </div>
+            <DetailsItemDeleteButton object={object} />
+        </div>
     );
 };
 
@@ -455,3 +435,20 @@ export const TetherFar: React.FC = () => <TetherButton tether={TetherType.Far} /
 export const TetherMinusMinus: React.FC = () => <TetherButton tether={TetherType.MinusMinus} />;
 export const TetherPlusMinus: React.FC = () => <TetherButton tether={TetherType.PlusMinus} />;
 export const TetherPlusPlus: React.FC = () => <TetherButton tether={TetherType.PlusPlus} />;
+
+const useStyles = makeStyles({
+    wrapper: {
+        display: 'flex',
+        flexFlow: 'row',
+        alignItems: 'center',
+        gap: tokens.spacingHorizontalS,
+    },
+    targets: {
+        display: 'grid',
+        gridTemplate: 'auto / minmax(50%, min-content) min-content minmax(50%, min-content)',
+        gridColumnGap: '4px',
+        overflow: 'hidden',
+
+        flexGrow: 1,
+    },
+});
