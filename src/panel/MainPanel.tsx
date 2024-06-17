@@ -58,7 +58,7 @@ const useStyles = makeStyles({
     },
 
     container: {
-        maxHeight: 'calc(100% - 44px)',
+        height: 'calc(100% - 44px)',
         overflow: 'auto',
     },
 });

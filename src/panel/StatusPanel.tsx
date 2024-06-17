@@ -1,17 +1,16 @@
+import { IRectangle, List } from '@fluentui/react';
 import {
     Dropdown,
-    FocusZone,
-    FocusZoneDirection,
-    IDropdownOption,
-    IStyle,
-    List,
-    mergeStyleSets,
-    Pivot,
-    PivotItem,
-    ProgressIndicator,
+    Field,
+    Option,
     SearchBox,
-} from '@fluentui/react';
-import React, { useCallback, useState } from 'react';
+    Spinner,
+    Tab,
+    TabList,
+    makeStyles,
+    tokens,
+} from '@fluentui/react-components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import {
     StatusAttack1,
@@ -56,38 +55,9 @@ import {
     StatusUltimateTriangle,
 } from '../prefabs/Status';
 import { StatusIcon } from '../prefabs/StatusIcon';
+import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING } from './PanelStyles';
 import { ObjectGroup, Section } from './Section';
-
-const classNames = mergeStyleSets({
-    panel: {
-        padding: PANEL_PADDING,
-    } as IStyle,
-    search: {
-        marginTop: PANEL_PADDING,
-        marginLeft: PANEL_PADDING,
-        marginRight: PANEL_PADDING,
-    } as IStyle,
-    language: {
-        marginTop: PANEL_PADDING,
-        marginLeft: PANEL_PADDING,
-        marginRight: PANEL_PADDING,
-    } as IStyle,
-    list: {
-        marginTop: PANEL_PADDING,
-        paddingLeft: PANEL_PADDING,
-        paddingRight: PANEL_PADDING,
-        // TODO: is there a way to make this less terrible?
-        maxHeight: 'calc(100vh - 44px - 44px - 48px - 61px - 8px - 8px)',
-        overflow: 'auto',
-    } as IStyle,
-    listItem: {
-        width: 32,
-        height: 32,
-        float: 'left',
-        margin: 5,
-    } as IStyle,
-});
 
 interface Pagination {
     Page: number;
@@ -113,32 +83,23 @@ interface Page {
 type Language = 'en' | 'ja' | 'de' | 'fr';
 
 export const StatusPanel: React.FC = () => {
+    const classes = useStyles();
+    const [tab, setTab] = useState('markers');
     const [filter, setFilter] = useState('');
 
     return (
-        <Pivot>
-            <PivotItem headerText="Markers">
-                <SpecialStatus />
-            </PivotItem>
-            <PivotItem headerText="Status effects">
-                <StatusSearch filter={filter} onFilterChanged={setFilter} />
-            </PivotItem>
-        </Pivot>
+        <div className={classes.panel}>
+            <TabList size="small" selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as string)}>
+                <Tab value="markers">Markers</Tab>
+                <Tab value="status">Status effects</Tab>
+            </TabList>
+            {tab === 'markers' && <SpecialStatus />}
+            {tab === 'status' && <StatusSearch filter={filter} onFilterChanged={setFilter} />}
+        </div>
     );
 };
 
 const DEBOUNCE_TIME = 300;
-
-const onRenderCell = (item?: StatusItem): JSX.Element | null => {
-    if (!item) {
-        return null;
-    }
-    return (
-        <div className={classNames.listItem}>
-            <StatusIcon name={item.Name} icon={`https://xivapi.com${item.Icon}`} />
-        </div>
-    );
-};
 
 const fetchStatuses = async (search: string, signal: AbortSignal, language: Language = 'en'): Promise<StatusItem[]> => {
     const items: StatusItem[] = [];
@@ -146,6 +107,8 @@ const fetchStatuses = async (search: string, signal: AbortSignal, language: Lang
     let pageIndex: number | null = 1;
 
     do {
+        console.log('fetching page', pageIndex, items);
+
         const params = new URLSearchParams({
             language,
             indexes: 'Status',
@@ -163,22 +126,41 @@ const fetchStatuses = async (search: string, signal: AbortSignal, language: Lang
     return items;
 };
 
-const LANGUAGE_OPTIONS: IDropdownOption[] = [
-    { key: 'ja', text: '日本語' },
-    { key: 'en', text: 'English' },
-    { key: 'fr', text: 'Français' },
-    { key: 'de', text: 'Deutch' },
-];
+const LANGUAGE_OPTIONS: Record<Language, string> = {
+    ja: '日本語',
+    en: 'English',
+    fr: 'Français',
+    de: 'Deutch',
+};
 
 interface StatusSearchProps {
     filter: string;
     onFilterChanged: React.Dispatch<string>;
 }
 
+const ROWS_PER_PAGE = 4;
+const ITEM_SIZE = 32;
+const ITEM_MARGIN = 10;
+
+const getItemCountForPage = (itemIndex?: number, surfaceRect?: IRectangle) => {
+    if (!surfaceRect) {
+        return 0;
+    }
+
+    const columns = Math.floor(surfaceRect.width / (ITEM_SIZE + ITEM_MARGIN));
+
+    return columns * ROWS_PER_PAGE;
+};
+
+const getPageHeight = () => (ITEM_SIZE + ITEM_MARGIN) * ROWS_PER_PAGE;
+
 const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) => {
+    const classes = useStyles();
     const [controller, setController] = useState<AbortController>();
     const [debouncedFilter, setDebouncedFilter] = useState('');
     const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
+
+    const selectedLanguage = useMemo(() => [language as string], [language]);
 
     const setFilter = useCallback(
         (text?: string) => {
@@ -188,7 +170,10 @@ const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) 
         [controller, onFilterChanged],
     );
 
-    useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
+    const [, cancel] = useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
+    useEffect(() => {
+        return cancel;
+    }, [cancel]);
 
     const items = useAsync(async () => {
         if (!debouncedFilter) {
@@ -204,37 +189,74 @@ const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) 
             console.warn(ex);
             return [];
         }
-    }, [debouncedFilter]);
+    }, [debouncedFilter, language]);
+
+    const onRenderCell = useCallback(
+        (item?: StatusItem): JSX.Element | null => {
+            if (!item) {
+                return null;
+            }
+            return (
+                <div className={classes.listItem}>
+                    <StatusIcon name={item.Name} icon={`https://xivapi.com${item.Icon}`} />
+                </div>
+            );
+        },
+        [classes],
+    );
 
     return (
-        <FocusZone direction={FocusZoneDirection.vertical}>
-            <Dropdown
-                label="Language"
-                className={classNames.language}
-                options={LANGUAGE_OPTIONS}
-                selectedKey={language}
-                onChange={(ev, option) => option && setLanguage(option.key as Language)}
-            />
+        // TODO: replace with tabster? https://tabster.io/docs/mover
+        // <FocusZone direction={FocusZoneDirection.vertical}>
+        <div className={classes.statusSearch}>
+            <Field label="Language">
+                <Dropdown
+                    appearance="underline"
+                    value={LANGUAGE_OPTIONS[language ?? 'en']}
+                    selectedOptions={selectedLanguage}
+                    onOptionSelect={(ev, data) => setLanguage(data.optionValue as Language)}
+                >
+                    {Object.entries(LANGUAGE_OPTIONS).map(([lang, text]) => (
+                        <Option key={lang} value={lang} text={text}>
+                            {text}
+                        </Option>
+                    ))}
+                </Dropdown>
+            </Field>
             <SearchBox
-                className={classNames.search}
+                className={classes.search}
+                appearance="underline"
+                type="text"
                 placeholder="Status name"
                 value={filter}
-                onChange={(ev, text) => setFilter(text)}
+                onChange={(ev, data) => setFilter(data.value)}
             />
 
-            <div className={classNames.list}>
-                <List items={items.value ?? []} onRenderCell={onRenderCell} />
+            {/* TODO: migrate list once implemented, or replace with virtualizer? */}
+            {/* https://github.com/orgs/microsoft/projects/786/views/1?pane=issue&itemId=24404181 */}
+            <div className={classes.listWrapper}>
+                {items.loading && <Spinner />}
+                {!items.loading && (
+                    <List
+                        items={items.value ?? []}
+                        onRenderCell={onRenderCell}
+                        getItemCountForPage={getItemCountForPage}
+                        getPageHeight={getPageHeight}
+                        renderedWindowsAhead={4}
+                    />
+                )}
 
-                {items.loading && <ProgressIndicator />}
-                {!items.loading && filter && items.value?.length === 0 && <p>No results.</p>}
+                {!items.loading && debouncedFilter && items.value?.length === 0 && <p>No results.</p>}
             </div>
-        </FocusZone>
+        </div>
     );
 };
 
 const SpecialStatus: React.FC = () => {
+    const classes = useControlStyles();
+
     return (
-        <div className={classNames.panel}>
+        <div className={classes.panel}>
             <Section title="General">
                 <ObjectGroup>
                     <StatusAttack1 />
@@ -302,3 +324,38 @@ const SpecialStatus: React.FC = () => {
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    panel: {
+        height: '100%',
+        display: 'flex',
+        flexFlow: 'column',
+        overflow: 'hidden',
+    },
+
+    statusSearch: {
+        padding: `${PANEL_PADDING}px`,
+        display: 'flex',
+        flexFlow: 'column',
+        flexGrow: 1,
+        gap: tokens.spacingVerticalS,
+    },
+    search: {
+        width: '100%',
+        overflow: 'hidden',
+    },
+    listWrapper: {
+        // TODO: is there a way to make this less terrible?
+        height: `calc(100vh - 48px - 44px - 32px - 58px - 32px - 2 * ${tokens.spacingVerticalS} - 2 * ${PANEL_PADDING}px)`,
+        overflowY: 'auto',
+    },
+    listItem: {
+        float: 'left',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: `${ITEM_SIZE}px`,
+        height: `${ITEM_SIZE}px`,
+        margin: `${ITEM_MARGIN / 2}px`,
+    },
+});
