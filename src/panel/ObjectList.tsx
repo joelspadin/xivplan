@@ -1,18 +1,10 @@
-import { classNamesFunction, IStyle, mergeStyleSets, Theme, useTheme } from '@fluentui/react';
-import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
+import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd';
 import React, { useCallback } from 'react';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
-import { makeClassName, reversed } from '../util';
+import { reversed } from '../util';
 import { getListComponent } from './ListComponentRegistry';
-
-const listClassNames = mergeStyleSets({
-    list: {
-        padding: 0,
-        margin: '0 0 20px',
-        listStyle: 'none',
-    } as IStyle,
-});
 
 export type MoveCallback = (from: number, to: number) => void;
 
@@ -28,6 +20,7 @@ function reversedIndex(i: number, length: number) {
 }
 
 export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
+    const classes = useStyles();
     const onDragEnd = useCallback(
         (result: DropResult) => {
             if (result.destination?.droppableId !== DROP_ID) {
@@ -51,7 +44,7 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId={DROP_ID}>
                     {(provided) => (
-                        <div className={listClassNames.list} {...provided.droppableProps} ref={provided.innerRef}>
+                        <div className={classes.list} {...provided.droppableProps} ref={provided.innerRef}>
                             {reversedObjects.map((object, index) => (
                                 <ListItem object={object} key={object.id} index={index} />
                             ))}
@@ -64,20 +57,13 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     );
 };
 
-interface IListItemStyles {
-    root: IStyle;
-    dragging: IStyle;
-    selected: IStyle;
-}
-
-const getListItemClassNames = classNamesFunction<Theme, IListItemStyles>();
-
 export interface ListItemProps {
     index: number;
     object: SceneObject;
 }
 
 const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
+    const classes = useStyles();
     const [selection, setSelection] = useSelection();
     const isSelected = selection.has(object.id);
 
@@ -94,47 +80,17 @@ const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
         [object.id, selection, setSelection],
     );
 
-    const theme = useTheme();
-    const classNames = getListItemClassNames(
-        () => ({
-            root: {
-                minHeight: 32,
-                margin: '0 -2px',
-                padding: 2,
-                display: 'block',
-                borderRadius: theme.effects.roundedCorner2,
-                ':hover': {
-                    backgroundColor: theme.semanticColors.listItemBackgroundHovered,
-                },
-            },
-            dragging: {},
-            selected: {
-                backgroundColor: theme.semanticColors.listItemBackgroundChecked,
-                ':hover': {
-                    backgroundColor: theme.semanticColors.listItemBackgroundCheckedHovered,
-                },
-            },
-        }),
-        theme,
-    );
-
     const Component = getListComponent(object);
 
     return (
         <Draggable draggableId={object.id.toString()} index={index}>
-            {(provided, snapshot) => {
-                const className = makeClassName({
-                    [classNames.root]: true,
-                    [classNames.dragging]: snapshot.isDragging,
-                    [classNames.selected]: isSelected,
-                });
-
+            {(provided) => {
                 return (
                     <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={className}
+                        className={mergeClasses(classes.item, isSelected && classes.selected)}
                         onClick={onClick}
                     >
                         <Component object={object} isSelected={isSelected} />
@@ -144,3 +100,35 @@ const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
         </Draggable>
     );
 };
+
+const useStyles = makeStyles({
+    list: {
+        padding: 0,
+        margin: '0 0 20px',
+        listStyle: 'none',
+    },
+
+    item: {
+        minHeight: '32px',
+        margin: '0 -2px',
+        padding: '2px',
+        display: 'block',
+        borderRadius: tokens.borderRadiusMedium,
+
+        transitionProperty: 'background, border, color',
+        transitionDuration: tokens.durationFaster,
+        transitionTimingFunction: tokens.curveEasyEase,
+
+        backgroundColor: tokens.colorNeutralBackground3,
+
+        ':hover': {
+            backgroundColor: tokens.colorNeutralBackground3Hover,
+        },
+        ':hover:active': {
+            backgroundColor: tokens.colorNeutralBackground3Pressed,
+        },
+    },
+    selected: {
+        backgroundColor: tokens.colorNeutralBackground1Selected,
+    },
+});
