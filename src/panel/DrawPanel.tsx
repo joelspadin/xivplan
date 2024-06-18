@@ -1,5 +1,19 @@
-import { ChoiceGroup, IChoiceGroupOption } from '@fluentui/react';
-import { mergeClasses } from '@fluentui/react-components';
+import {
+    Field,
+    ToggleButton,
+    ToggleButtonProps,
+    makeStyles,
+    mergeClasses,
+    shorthands,
+    tokens,
+} from '@fluentui/react-components';
+import {
+    CursorClickFilled,
+    CursorClickRegular,
+    PaintBrushFilled,
+    PaintBrushRegular,
+    bundleIcon,
+} from '@fluentui/react-icons';
 import React, { useCallback } from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
@@ -14,21 +28,14 @@ import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
 
-const modeOptions: IChoiceGroupOption[] = [
-    {
-        key: EditMode.Normal,
-        text: 'Edit',
-        iconProps: { iconName: 'TouchPointer' },
-    },
-    {
-        key: EditMode.Draw,
-        text: 'Draw',
-        iconProps: { iconName: 'Brush' },
-    },
-];
+const CursorClick = bundleIcon(CursorClickFilled, CursorClickRegular);
+const PaintBrush = bundleIcon(PaintBrushFilled, PaintBrushRegular);
+
+type ToolButtonPropsGetter = (mode: EditMode) => ToggleButtonProps;
 
 export const DrawPanel: React.FC = () => {
-    const classes = useControlStyles();
+    const classes = useStyles();
+    const controlClasses = useControlStyles();
     const [editMode, setEditMode] = useEditMode();
     const [config, setConfig] = useDrawConfig();
 
@@ -56,15 +63,31 @@ export const DrawPanel: React.FC = () => {
     useHotkeys('e', '', '', modeHotkey(EditMode.Normal), [editMode]);
     useHotkeys('d', '', '', modeHotkey(EditMode.Draw), [editMode]);
 
+    const getToolButtonProps = useCallback<ToolButtonPropsGetter>(
+        (mode) => {
+            const checked = editMode === mode;
+            return {
+                checked,
+                className: mergeClasses(classes.button, checked && classes.checked),
+                onClick: () => setEditMode(mode),
+            };
+        },
+        [editMode, classes.button, classes.checked, setEditMode],
+    );
+
     return (
-        <div className={mergeClasses(classes.panel, classes.column)}>
+        <div className={mergeClasses(controlClasses.panel, controlClasses.column)}>
             {/* TODO: replace with segmented button (after implementing it) */}
-            <ChoiceGroup
-                label="Tool"
-                options={modeOptions}
-                selectedKey={editMode}
-                onChange={(e, option) => setEditMode(option?.key as EditMode)}
-            />
+            <Field label="Tool">
+                <div className={classes.wrapper}>
+                    <ToggleButton size="large" icon={<CursorClick />} {...getToolButtonProps(EditMode.Normal)}>
+                        Edit
+                    </ToggleButton>
+                    <ToggleButton size="large" icon={<PaintBrush />} {...getToolButtonProps(EditMode.Draw)}>
+                        Draw
+                    </ToggleButton>
+                </div>
+            </Field>
             <CompactColorPicker label="Color" color={config.color} onChange={setColor} debounceTime={0} />
             <CompactSwatchColorPicker
                 swatches={COLOR_SWATCHES}
@@ -81,3 +104,25 @@ export const DrawPanel: React.FC = () => {
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: {
+        display: 'flex',
+        flexFlow: 'row',
+        gap: tokens.spacingHorizontalS,
+    },
+    button: {
+        flex: 1,
+    },
+    checked: {
+        ...shorthands.borderColor(tokens.colorCompoundBrandStroke),
+
+        ':hover': {
+            ...shorthands.borderColor(tokens.colorCompoundBrandStrokeHover),
+        },
+
+        ':hover:active': {
+            ...shorthands.borderColor(tokens.colorCompoundBrandStrokePressed),
+        },
+    },
+});

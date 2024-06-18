@@ -16,11 +16,11 @@ import React, { ReactNode } from 'react';
 
 export interface SegmentedGroupProps extends RadioGroupProps {}
 
-export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, className, ...props }) => {
+export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, ...props }) => {
     const classes = useStyles();
 
     return (
-        <RadioGroup layout="horizontal-stacked" className={mergeClasses(className, classes.group)} {...props}>
+        <RadioGroup layout="horizontal-stacked" {...props}>
             <div className={classes.track}>{children}</div>
         </RadioGroup>
     );
