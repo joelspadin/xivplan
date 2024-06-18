@@ -74,7 +74,7 @@ export const DeferredTextarea: React.FC<DeferredTextareaProps> = ({
 
     return (
         <Textarea
-            value={currentValue}
+            value={currentValue ?? ''}
             onChange={deferredOnChange}
             onBlur={deferredOnBlur}
             onKeyUp={deferredOnKeyUp}

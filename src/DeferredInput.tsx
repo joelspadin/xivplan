@@ -30,6 +30,7 @@ export const DeferredInput: React.FC<DeferredInputProps> = ({
     const [latestEvent, setLatestEvent] = useState<ChangeHandlerParameters>();
 
     useEffect(() => {
+        console.log('external value changed');
         setCurrentValue(value);
         setLatestEvent(undefined);
     }, [value]);
@@ -74,7 +75,7 @@ export const DeferredInput: React.FC<DeferredInputProps> = ({
 
     return (
         <Input
-            value={currentValue}
+            value={currentValue ?? ''}
             onChange={deferredOnChange}
             onBlur={deferredOnBlur}
             onKeyUp={deferredOnKeyUp}
