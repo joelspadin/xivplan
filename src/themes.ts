@@ -69,7 +69,10 @@ export const lightTheme2: Theme = {
     colorNeutralBackground2: '#f6e4cc',
     colorNeutralBackground3: '#f2e0c9',
     colorNeutralBackground6: '#e8d7c0',
+    colorNeutralBackgroundDisabled: '#f2e0c9',
     colorNeutralStencil1: '#d8c9b3',
+    colorNeutralStroke1: '#cebfab',
+    colorNeutralStroke3: '#d8c9b3',
 };
 
 export const darkTheme2 = webDarkTheme;

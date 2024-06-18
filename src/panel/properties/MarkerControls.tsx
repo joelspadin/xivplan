@@ -1,17 +1,14 @@
-import { IChoiceGroupOption } from '@fluentui/react';
 import { Field } from '@fluentui/react-components';
+import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
-import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
+import { Segment, SegmentedGroup } from '../../Segmented';
 import { MarkerObject } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-const shapeOptions: IChoiceGroupOption[] = [
-    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
-    { key: 'circle', text: 'Circle', iconProps: { iconName: 'CircleRing' } },
-    { key: 'square', text: 'Square', iconProps: { iconName: 'Checkbox' } },
-];
+const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
+const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
 
 export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ objects }) => {
     const { dispatch } = useScene();
@@ -19,8 +16,7 @@ export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> 
     const shape = useMemo(() => commonValue(objects, (obj) => obj.shape), [objects]);
 
     const onShapeChanged = useCallback(
-        (option?: IChoiceGroupOption) => {
-            const shape = (option?.key as 'circle' | 'square') ?? 'square';
+        (shape: string) => {
             dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, shape })) });
         },
         [dispatch, objects],
@@ -28,11 +24,10 @@ export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> 
 
     return (
         <Field label="Shape">
-            <CompactChoiceGroup
-                options={shapeOptions}
-                selectedKey={shape}
-                onChange={(ev, option) => onShapeChanged(option)}
-            />
+            <SegmentedGroup name="shape" value={shape} onChange={(ev, data) => onShapeChanged(data.value)}>
+                <Segment value="circle" icon={<CircleIcon />} title="Circle" />
+                <Segment value="square" icon={<SquareIcon />} title="Square" />
+            </SegmentedGroup>
         </Field>
     );
 };

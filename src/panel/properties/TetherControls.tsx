@@ -1,8 +1,7 @@
-import { IChoiceGroupOption } from '@fluentui/react';
-import { Field } from '@fluentui/react-components';
+import { Field, Image } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
-import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
+import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
 import { getTetherIcon, getTetherName } from '../../prefabs/TetherConfig';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
@@ -12,22 +11,14 @@ import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-const tetherOptions: IChoiceGroupOption[] = [
+const TETHER_TYPES = [
     TetherType.Line,
     TetherType.Close,
     TetherType.Far,
     TetherType.MinusMinus,
     TetherType.PlusMinus,
     TetherType.PlusPlus,
-].map((tether) => {
-    const icon = getTetherIcon(tether);
-    return {
-        key: tether,
-        text: getTetherName(tether),
-        imageSrc: icon,
-        selectedImageSrc: icon,
-    };
-});
+];
 
 export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ objects }) => {
     const { dispatch } = useScene();
@@ -38,14 +29,23 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
         (tether: TetherType) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, tether })) }),
         [dispatch, objects],
     );
+
     return (
         <Field label="Tether type">
-            <CompactChoiceGroup
-                padding={4}
-                options={tetherOptions}
-                selectedKey={tether}
-                onChange={(e, option) => onTetherChanged(option?.key as TetherType)}
-            />
+            <SegmentedGroup
+                name="tether-type"
+                value={tether}
+                onChange={(ev, data) => onTetherChanged(data.value as TetherType)}
+            >
+                {TETHER_TYPES.map((item) => (
+                    <Segment
+                        key={item}
+                        value={item}
+                        icon={<Image src={getTetherIcon(item)} title={getTetherName(item)} />}
+                        size="large"
+                    />
+                ))}
+            </SegmentedGroup>
         </Field>
     );
 };

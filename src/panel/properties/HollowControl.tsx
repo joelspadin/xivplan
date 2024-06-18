@@ -1,55 +1,37 @@
-import { IChoiceGroupOption, IChoiceGroupProps } from '@fluentui/react';
 import { Field } from '@fluentui/react-components';
+import { CircleFilled, CircleRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
-import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
+import { Segment, SegmentedGroup } from '../../Segmented';
 import { HollowObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
-
-export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ objects }) => {
-    const { dispatch } = useScene();
-
-    const hollow = useMemo(() => commonValue(objects, (obj) => !!obj.hollow), [objects]);
-
-    const onHollowChanged = useCallback(
-        (hollow: boolean) =>
-            dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hollow', hollow)) }),
-        [dispatch, objects],
-    );
-
-    return (
-        <Field label="Style">
-            <HollowToggle checked={hollow} onChange={onHollowChanged} />
-        </Field>
-    );
-};
-
-export interface HollowToggleProps extends Omit<IChoiceGroupProps, 'onChange'> {
-    checked?: boolean;
-    onChange?: (checked: boolean) => void;
-}
 
 enum Styles {
     Solid = 'solid',
     Hollow = 'hollow',
 }
 
-const styleOptions: IChoiceGroupOption[] = [
-    // TODO: use CircleShape whenever icon font gets fixed.
-    { key: Styles.Solid, text: 'Solid', iconProps: { iconName: 'CircleShapeSolid' } },
-    { key: Styles.Hollow, text: 'Hollow', iconProps: { iconName: 'CircleRing' } },
-];
+export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ objects }) => {
+    const { dispatch } = useScene();
 
-export const HollowToggle: React.FC<HollowToggleProps> = ({ checked, onChange, ...props }) => {
-    const selectedKey = checked ? Styles.Hollow : Styles.Solid;
+    const hollow = useMemo(() => commonValue(objects, (obj) => !!obj.hollow), [objects]);
+    const style = hollow ? Styles.Hollow : Styles.Solid;
+
+    const onHollowChanged = useCallback(
+        (style: string) => {
+            const hollow = style === Styles.Hollow;
+            dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hollow', hollow)) });
+        },
+        [dispatch, objects],
+    );
 
     return (
-        <CompactChoiceGroup
-            options={styleOptions}
-            selectedKey={selectedKey}
-            onChange={(e, option) => onChange?.(option?.key === Styles.Hollow)}
-            {...props}
-        />
+        <Field label="Style">
+            <SegmentedGroup name="shape-style" value={style} onChange={(ev, data) => onHollowChanged(data.value)}>
+                <Segment value={Styles.Solid} icon={<CircleFilled />} title="Solid" />
+                <Segment value={Styles.Hollow} icon={<CircleRegular />} title="Hollow" />
+            </SegmentedGroup>
+        </Field>
     );
 };

@@ -1,11 +1,22 @@
-import { IChoiceGroupOption } from '@fluentui/react';
 import { Button, Field } from '@fluentui/react-components';
+import {
+    CircleFilled,
+    CircleRegular,
+    GridFilled,
+    GridRegular,
+    SquareFilled,
+    SquareHintFilled,
+    SquareHintRegular,
+    SquareRegular,
+    bundleIcon,
+} from '@fluentui/react-icons';
 import React, { useCallback, useEffect, useState } from 'react';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { DeferredInput } from '../DeferredInput';
 import { useScene } from '../SceneProvider';
+import { Segment, SegmentedGroup } from '../Segmented';
 import { SpinButton } from '../SpinButton';
 import { SpinButtonUnits } from '../SpinButtonUnits';
+import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../icon/ThreeQuarterCircle';
 import {
     CustomRadialGrid,
     CustomRectangularGrid,
@@ -19,17 +30,11 @@ import {
 } from '../scene';
 import { useControlStyles } from '../useControlStyles';
 
-const gridShapes: IChoiceGroupOption[] = [
-    { key: GridType.None, text: 'None', iconProps: { iconName: 'BorderDot' } },
-    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
-    { key: GridType.Radial, text: 'Radial', iconProps: { iconName: 'CircleRing' } },
-    // TODO: use DynamicList whenever icon font gets fixed.
-    { key: GridType.CustomRadial, text: 'Custom Radial', iconProps: { iconName: 'ThreeQuarterCircle' } },
-    // TODO: use BorderAll whenever icon font gets fixed.
-    { key: GridType.Rectangular, text: 'Square', iconProps: { iconName: 'GridViewSmall' } },
-    // TODO: use DynamicList whenever icon font gets fixed.
-    { key: GridType.CustomRectangular, text: 'Custom Square', iconProps: { iconName: 'FiveTileGrid' } },
-];
+const SquareHintIcon = bundleIcon(SquareHintFilled, SquareHintRegular);
+const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
+const DataPieIcon = bundleIcon(ThreeQuarterCircleFilled, ThreeQuarterCircleRegular);
+const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
+const GridIcon = bundleIcon(GridFilled, GridRegular);
 
 function formatCustomGridRows(grid: Grid) {
     return grid.type === GridType.CustomRectangular ? grid.rows.join(' ') : '';
@@ -123,26 +128,27 @@ export const ArenaGridEdit: React.FC = () => {
             switch (option) {
                 case GridType.None:
                     setGrid(NO_GRID);
-                    return;
+                    break;
 
                 case GridType.Rectangular:
                     setGrid(DEFAULT_RECT_GRID);
-                    return;
+                    break;
 
                 case GridType.Radial:
                     setGrid(DEFAULT_RADIAL_GRID);
-                    return;
+                    break;
 
                 case GridType.CustomRectangular:
                     setGrid(DEFAULT_CUSTOM_RECT_GRID);
                     setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(' '));
                     setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(' '));
-                    return;
+                    break;
 
                 case GridType.CustomRadial:
                     setGrid(DEFAULT_CUSTOM_RADIAL_GRID);
                     setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(' '));
                     setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(' '));
+                    break;
             }
         },
         [setGrid, setCustomRows, setCustomCols, setCustomRings, setCustomSpokes],
@@ -151,11 +157,17 @@ export const ArenaGridEdit: React.FC = () => {
     return (
         <div className={classes.column}>
             <Field label="Grid type">
-                <CompactChoiceGroup
-                    options={gridShapes}
-                    selectedKey={grid.type}
-                    onChange={(e, option) => onTypeChange(option?.key as GridType)}
-                />
+                <SegmentedGroup
+                    name="arena-grid"
+                    value={grid.type}
+                    onChange={(ev, data) => onTypeChange(data.value as GridType)}
+                >
+                    <Segment value={GridType.None} icon={<SquareHintIcon />} title="None" />
+                    <Segment value={GridType.Radial} icon={<CircleIcon />} title="Radial" />
+                    <Segment value={GridType.CustomRadial} icon={<DataPieIcon />} title="Custom radial" />
+                    <Segment value={GridType.Rectangular} icon={<SquareIcon />} title="Rectangular" />
+                    <Segment value={GridType.CustomRectangular} icon={<GridIcon />} title="Custom rectangular" />
+                </SegmentedGroup>
             </Field>
             {grid.type === GridType.Rectangular && (
                 <div className={classes.row}>

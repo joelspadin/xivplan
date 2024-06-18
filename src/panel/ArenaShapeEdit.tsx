@@ -1,18 +1,15 @@
-import { IChoiceGroupOption } from '@fluentui/react';
 import { Field } from '@fluentui/react-components';
+import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } from '@fluentui/react-icons';
 import React from 'react';
-import { CompactChoiceGroup } from '../CompactChoiceGroup';
 import { useScene } from '../SceneProvider';
+import { Segment, SegmentedGroup } from '../Segmented';
 import { SpinButton } from '../SpinButton';
 import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { ArenaShape } from '../scene';
 import { useControlStyles } from '../useControlStyles';
 
-const arenaShapes: IChoiceGroupOption[] = [
-    // TODO: use CircleShape and SquareShape whenever icon font gets fixed.
-    { key: ArenaShape.Circle, text: 'Ellipse', iconProps: { iconName: 'CircleRing' } },
-    { key: ArenaShape.Rectangle, text: 'Rectangle', iconProps: { iconName: 'Checkbox' } },
-];
+const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
+const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
 
 export const ArenaShapeEdit: React.FC = () => {
     const classes = useControlStyles();
@@ -27,13 +24,14 @@ export const ArenaShapeEdit: React.FC = () => {
         <div className={classes.column}>
             <div className={classes.row}>
                 <Field label="Arena shape" className={classes.cell}>
-                    <CompactChoiceGroup
-                        options={arenaShapes}
-                        selectedKey={shape}
-                        onChange={(ev, option) => {
-                            option && dispatch({ type: 'arenaShape', value: option.key as ArenaShape });
-                        }}
-                    />
+                    <SegmentedGroup
+                        name="arena-shape"
+                        value={shape}
+                        onChange={(ev, data) => dispatch({ type: 'arenaShape', value: data.value as ArenaShape })}
+                    >
+                        <Segment value={ArenaShape.Circle} icon={<CircleIcon />} title="Circle" />
+                        <Segment value={ArenaShape.Rectangle} icon={<SquareIcon />} title="Square" />
+                    </SegmentedGroup>
                 </Field>
                 <Field label="Padding" className={classes.cell}>
                     <SpinButton min={20} max={500} step={10} value={padding} onChange={onPaddingChanged} />

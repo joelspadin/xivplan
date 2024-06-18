@@ -1,8 +1,9 @@
-import { IChoiceGroupOption, IIconStyles } from '@fluentui/react';
-import { Field } from '@fluentui/react-components';
+import { Field, makeStyles } from '@fluentui/react-components';
+import { CircleFilled, CircleRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
-import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { useScene } from '../../SceneProvider';
+import { Segment, SegmentedGroup } from '../../Segmented';
+import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../../icon/ThreeQuarterCircle';
 import { EnemyObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
@@ -13,21 +14,13 @@ enum RingStyle {
     Omnidirectional = 'omnidirectional',
 }
 
-const rotateIconStyle: IIconStyles = {
-    root: {
-        transform: 'rotate(135deg)',
-    },
-};
+const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
+const ThreeQuarterCircleIcon = bundleIcon(ThreeQuarterCircleFilled, ThreeQuarterCircleRegular);
 
-const directionalOptions: IChoiceGroupOption[] = [
-    // TODO: use CircleShape whenever icon font gets fixed.
-    { key: RingStyle.Omnidirectional, text: 'Omnidirectional', iconProps: { iconName: 'CircleRing' } },
-    {
-        key: RingStyle.Directional,
-        text: 'Directional',
-        iconProps: { iconName: 'ThreeQuarterCircle', styles: rotateIconStyle },
-    },
-];
+const DirectionalIcon: React.FC = () => {
+    const classes = useStyles();
+    return <ThreeQuarterCircleIcon className={classes.directional} />;
+};
 
 export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objects }) => {
     const classes = useControlStyles();
@@ -47,11 +40,20 @@ export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = (
 
     return (
         <Field label="Ring style" className={classes.cell}>
-            <CompactChoiceGroup
-                options={directionalOptions}
-                selectedKey={directionalKey}
-                onChange={(e, option) => onDirectionalChanged(option?.key as RingStyle)}
-            />
+            <SegmentedGroup
+                name="enemy-ring"
+                value={directionalKey}
+                onChange={(ev, data) => onDirectionalChanged(data.value as RingStyle)}
+            >
+                <Segment value={RingStyle.Omnidirectional} icon={<CircleIcon />} title="Omnidirectional" />
+                <Segment value={RingStyle.Directional} icon={<DirectionalIcon />} title="Directional" />
+            </SegmentedGroup>
         </Field>
     );
 };
+
+const useStyles = makeStyles({
+    directional: {
+        transform: 'rotate(135deg)',
+    },
+});

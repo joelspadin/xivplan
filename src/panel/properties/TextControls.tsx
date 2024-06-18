@@ -1,9 +1,17 @@
-import { IChoiceGroupOption } from '@fluentui/react';
 import { Field } from '@fluentui/react-components';
+import {
+    TextAlignCenterFilled,
+    TextAlignCenterRegular,
+    TextAlignLeftFilled,
+    TextAlignLeftRegular,
+    TextAlignRightFilled,
+    TextAlignRightRegular,
+    bundleIcon,
+} from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
-import { CompactChoiceGroup } from '../../CompactChoiceGroup';
 import { DeferredTextarea } from '../../DeferredTextarea';
 import { useScene } from '../../SceneProvider';
+import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -12,11 +20,9 @@ import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-const alignOptions: IChoiceGroupOption[] = [
-    { key: 'left', text: 'Align left', iconProps: { iconName: 'AlignLeft' } },
-    { key: 'center', text: 'Align center', iconProps: { iconName: 'AlignCenter' } },
-    { key: 'right', text: 'Align right', iconProps: { iconName: 'AlignRight' } },
-];
+const AlignLeft = bundleIcon(TextAlignLeftFilled, TextAlignLeftRegular);
+const AlignCenter = bundleIcon(TextAlignCenterFilled, TextAlignCenterRegular);
+const AlignRight = bundleIcon(TextAlignRightFilled, TextAlignRightRegular);
 
 export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({ objects }) => {
     const classes = useControlStyles();
@@ -30,10 +36,8 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
     );
 
     const onAlignChanged = useCallback(
-        (align: string | undefined) => {
-            if (align) {
-                dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, align })) });
-            }
+        (align: string) => {
+            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, align })) });
         },
         [dispatch, objects],
     );
@@ -44,11 +48,11 @@ export const TextStyleControl: React.FC<PropertiesControlProps<TextObject>> = ({
                 <SpinButton value={fontSize} onChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
             </Field>
             <Field label="Align">
-                <CompactChoiceGroup
-                    selectedKey={align}
-                    options={alignOptions}
-                    onChange={(e, option) => onAlignChanged(option?.key)}
-                />
+                <SegmentedGroup name="text-align" value={align} onChange={(ev, data) => onAlignChanged(data.value)}>
+                    <Segment value="left" icon={<AlignLeft />} title="Align left" />
+                    <Segment value="center" icon={<AlignCenter />} title="Align center" />
+                    <Segment value="right" icon={<AlignRight />} title="Align right" />
+                </SegmentedGroup>
             </Field>
         </div>
     );
