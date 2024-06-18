@@ -1,4 +1,3 @@
-import { useBoolean } from '@fluentui/react-hooks';
 import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
@@ -144,7 +143,7 @@ interface TextContainerProps {
 }
 
 const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, children }) => {
-    const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
+    const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
@@ -159,10 +158,10 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
                     {(onTransformEnd) => {
                         return children({
                             ref: shapeRef,
-                            onTransformStart: startResizing,
+                            onTransformStart: () => setResizing(true),
                             onTransformEnd: (e) => {
                                 onTransformEnd(e);
-                                stopResizing();
+                                setResizing(false);
                             },
                             rotation: object.rotation,
                         });

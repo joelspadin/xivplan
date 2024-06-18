@@ -1,5 +1,4 @@
-import { useId } from '@fluentui/react-hooks';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useId } from 'react';
 import { Options, useHotkeys as useHotkeysBase } from 'react-hotkeys-hook';
 import type { HotkeyCallback, RefType } from 'react-hotkeys-hook/dist/types';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
@@ -39,7 +38,7 @@ export function useHotkeys<T extends HTMLElement>(
 
 export function useHotkeyHelp(keys: string, category: string, help: string): void {
     const map = useContext(HotkeyHelpContext);
-    const id = useId('key');
+    const id = useId();
     useEffect(() => {
         if (!help) {
             return;

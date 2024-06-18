@@ -1,4 +1,3 @@
-import { useBoolean } from '@fluentui/react-hooks';
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
 import { KonvaNodeEvents } from 'react-konva';
@@ -26,7 +25,7 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
     transformerProps,
     children,
 }) => {
-    const [resizing, { setTrue: startResizing, setFalse: stopResizing }] = useBoolean(false);
+    const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
@@ -49,10 +48,10 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
                     {(onTransformEnd) => {
                         return children({
                             ref: shapeRef,
-                            onTransformStart: startResizing,
+                            onTransformStart: () => setResizing(true),
                             onTransformEnd: (e) => {
                                 onTransformEnd(e);
-                                stopResizing();
+                                setResizing(false);
                             },
                             offsetX: object.width / 2,
                             offsetY: object.height / 2,
