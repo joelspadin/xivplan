@@ -115,7 +115,7 @@ const useStyles = makeStyles({
 
         ':enabled:checked': {
             [`& ~ .${radioClassNames.indicator}`]: {
-                background: tokens.colorNeutralBackground1,
+                background: tokens.colorNeutralBackground1Selected,
                 boxShadow: tokens.shadow2,
 
                 [`& .${iconFilledClassName}`]: {
