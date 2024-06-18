@@ -1,4 +1,3 @@
-import { INavLink, INavLinkGroup, Nav } from '@fluentui/react';
 import {
     Button,
     Dialog,
@@ -9,12 +8,15 @@ import {
     DialogTitle,
     DialogTrigger,
     Divider,
+    Tree,
+    TreeItem,
+    TreeItemLayout,
     makeStyles,
     mergeClasses,
     tokens,
     typographyStyles,
 } from '@fluentui/react-components';
-import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useState } from 'react';
+import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
@@ -24,6 +26,36 @@ import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
+
+const PREVIEW_SIZE = 240;
+
+interface PresetGroup {
+    value: string;
+    name: string;
+    presets: ArenaPreset[];
+}
+
+interface PresetCategory {
+    name: string;
+    groups: PresetGroup[];
+}
+
+const [GENERAL_PRESETS, ...PRESET_CATEGORIES]: PresetCategory[] = Object.entries(ARENA_PRESETS).map(
+    ([category, inner]) => {
+        return {
+            name: category,
+            groups: Object.entries(inner).map(([group, presets]) => {
+                return {
+                    value: `${category}/${group}`,
+                    name: group,
+                    presets,
+                };
+            }),
+        };
+    },
+);
+
+const DEFAULT_OPEN_ITEMS = PRESET_CATEGORIES.map((c) => c.name);
 
 export const ArenaPanel: React.FC = () => {
     const classes = useControlStyles();
@@ -39,31 +71,14 @@ export const ArenaPanel: React.FC = () => {
     );
 };
 
-const KeySep = '#';
+function getPresetsForGroup(value: string | undefined) {
+    if (!value) {
+        return [];
+    }
 
-function presetsToLinks(category: string, presets: Record<string, ArenaPreset[]>): INavLink[] {
-    return Object.keys(presets).map((key) => {
-        return { name: key, url: '', key: `${category}${KeySep}${key}` };
-    });
+    const [category, group] = value.split('/');
+    return ARENA_PRESETS[category ?? '']?.[group ?? ''] ?? [];
 }
-
-function getPresetsForKey(key: string | undefined) {
-    const [key1, key2] = key?.split(KeySep) ?? [];
-    return ARENA_PRESETS[key1 ?? '']?.[key2 ?? ''] ?? [];
-}
-
-// TODO: migrate to Tree or wait for Nav component to be implement in v9
-// https://github.com/orgs/microsoft/projects/786/views/1?pane=issue&itemId=24403433
-const navLinkGroups: INavLinkGroup[] = [
-    ...Object.entries(ARENA_PRESETS).map(([key, value]) => {
-        return {
-            name: key,
-            links: presetsToLinks(key, value),
-        } as INavLinkGroup;
-    }),
-];
-
-const PREVIEW_SIZE = 240;
 
 const SelectPresetButton: React.FC = () => {
     const classes = useStyles();
@@ -89,8 +104,10 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     const classes = useStyles();
     const { dispatch } = useScene();
 
-    const [key, setKey] = useState(navLinkGroups[0]?.links[0]?.key);
-    const [selected, setSelected] = useState<ArenaPreset>();
+    const [selectedGroup, setSelectedGroup] = useState(GENERAL_PRESETS?.groups[0]?.value);
+    const [selectedPreset, setSelectedPreset] = useState<ArenaPreset>();
+
+    const checkedItems = useMemo(() => (selectedGroup ? [selectedGroup] : []), [selectedGroup]);
 
     const applyPreset = useCallback(
         (preset: ArenaPreset) => {
@@ -105,49 +122,94 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     useHotkeys(
         'enter',
         () => {
-            if (selected) {
-                applyPreset(selected);
+            if (selectedPreset) {
+                applyPreset(selectedPreset);
             }
         },
-        [applyPreset, selected],
+        [applyPreset, selectedPreset],
     );
 
-    const presets = getPresetsForKey(key);
+    const getCategoryTreeItems = useCallback(
+        (category?: PresetCategory) => {
+            return (
+                <>
+                    {category?.groups.map((group) => (
+                        <TreeItem
+                            key={group.name}
+                            itemType={'leaf'}
+                            value={group.value}
+                            onClick={() => setSelectedGroup(group.value)}
+                            onKeyUp={(ev) => {
+                                console.log(ev);
+                                if (ev.key === 'Enter') {
+                                    ev.preventDefault();
+                                    setSelectedGroup(group.value);
+                                }
+                            }}
+                        >
+                            <TreeItemLayout
+                                className={mergeClasses(
+                                    classes.treeItem,
+                                    classes.treeCommon,
+                                    selectedGroup === group.value && classes.treeItemChecked,
+                                )}
+                                selector={{ className: classes.treeItemSelector }}
+                            >
+                                {group.name}
+                            </TreeItemLayout>
+                        </TreeItem>
+                    ))}
+                </>
+            );
+        },
+        [classes, selectedGroup, setSelectedGroup],
+    );
+
+    const presets = getPresetsForGroup(selectedGroup);
 
     return (
         <DialogBody>
             <DialogTitle>Arena presets</DialogTitle>
             <DialogContent className={classes.dialogContent}>
-                <div className={classes.nav}>
-                    <Nav
-                        groups={navLinkGroups}
-                        selectedKey={key}
-                        onLinkClick={(ev, item) => {
-                            if (item) {
-                                if (item.links) {
-                                    return;
-                                }
-
-                                setKey(item.key);
-                                setSelected(undefined);
-                            }
-                        }}
-                    />
-                </div>
+                <Tree
+                    aria-label="arena presets"
+                    className={classes.nav}
+                    defaultOpenItems={DEFAULT_OPEN_ITEMS}
+                    selectionMode="single"
+                    checkedItems={checkedItems}
+                    onCheckedChange={(ev, data) => setSelectedGroup(data.value as string)}
+                >
+                    <div className={classes.treeItemGroup}>{getCategoryTreeItems(GENERAL_PRESETS)}</div>
+                    {PRESET_CATEGORIES.map((category) => (
+                        <TreeItem key={category.name} itemType="branch" value={category.name}>
+                            <TreeItemLayout
+                                className={mergeClasses(classes.treeItemGroupHeader, classes.treeCommon)}
+                                selector={{ className: classes.treeItemSelector }}
+                            >
+                                {category.name}
+                            </TreeItemLayout>
+                            <Tree className={classes.treeItemGroup}>{getCategoryTreeItems(category)}</Tree>
+                        </TreeItem>
+                    ))}
+                </Tree>
                 <ul className={classes.presetList}>
                     {presets?.map((preset) => (
                         <PresetItem
                             key={preset.name}
                             preset={preset}
-                            selected={preset === selected}
-                            onClick={() => setSelected(preset)}
+                            selected={preset === selectedPreset}
+                            onClick={() => setSelectedPreset(preset)}
                             onDoubleClick={() => applyPreset(preset)}
                         />
                     ))}
                 </ul>
             </DialogContent>
             <DialogActions>
-                <Button appearance="primary" disabled={!selected} onClick={() => selected && applyPreset(selected)}>
+                <Button
+                    appearance="primary"
+                    disabled={!selectedPreset}
+                    onClick={() => selectedPreset && applyPreset(selectedPreset)}
+                >
                     Select preset
                 </Button>
                 <DialogTrigger>
@@ -211,6 +273,55 @@ const useStyles = makeStyles({
         minWidth: '200px',
         marginRight: tokens.spacingHorizontalXS,
         overflowY: 'auto',
+    },
+
+    treeItemSelector: {
+        display: 'none',
+    },
+
+    treeCommon: {
+        borderRadius: tokens.borderRadiusMedium,
+        userSelect: 'none',
+    },
+
+    treeItem: {
+        paddingLeft: tokens.spacingHorizontalXXL,
+
+        ':hover': {
+            background: tokens.colorNeutralBackground1Hover,
+        },
+
+        ':hover:active': {
+            background: tokens.colorNeutralBackground1Pressed,
+        },
+    },
+
+    treeItemChecked: {
+        background: tokens.colorNeutralBackground1Selected,
+
+        position: 'relative',
+
+        '::after': {
+            content: '""',
+
+            position: 'absolute',
+            left: '2px',
+            width: '4px',
+            top: '4px',
+            bottom: '4px',
+
+            background: tokens.colorCompoundBrandForeground1,
+            borderRadius: tokens.borderRadiusSmall,
+        },
+    },
+
+    treeItemGroup: {
+        marginBottom: tokens.spacingVerticalL,
+    },
+
+    treeItemGroupHeader: {
+        ...typographyStyles.subtitle2Stronger,
+        userSelect: 'none',
     },
 
     presetList: {
