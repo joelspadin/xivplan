@@ -1,4 +1,5 @@
-import { Link, Switch, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { Button, Link, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
 import React, { HTMLAttributes, useContext } from 'react';
 import { AboutDialog } from './AboutDialog';
 import { ExternalLink } from './ExternalLink';
@@ -44,9 +45,7 @@ const useStyles = makeStyles({
         fontWeight: 500,
     },
     theme: {
-        display: 'inline-block',
-        color: tokens.colorNeutralForeground2,
-        minWidth: '32px',
+        minWidth: '130px',
     },
 });
 
@@ -74,13 +73,14 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                 GitHub
             </ExternalLink>
             <div>
-                <Switch
-                    label={{ children: 'Theme', className: classes.toggleLabel }}
-                    labelPosition="before"
-                    checked={darkMode}
-                    onChange={(ev, data) => setDarkMode(data.checked)}
-                />
-                <Text className={classes.theme}>{darkMode ? 'Dark' : 'Light'}</Text>
+                <Button
+                    appearance="subtle"
+                    className={classes.theme}
+                    icon={darkMode ? <WeatherMoonFilled /> : <WeatherSunnyFilled />}
+                    onClick={() => setDarkMode(!darkMode)}
+                >
+                    {darkMode ? 'Dark theme' : 'Light theme'}
+                </Button>
             </div>
         </header>
     );

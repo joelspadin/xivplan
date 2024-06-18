@@ -1,5 +1,5 @@
-import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
-import React, { useContext, useEffect } from 'react';
+import { makeStyles, tokens } from '@fluentui/react-components';
+import React, { useEffect } from 'react';
 import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
 import { MainToolbar } from './MainToolbar';
@@ -7,7 +7,6 @@ import { PanelDragProvider } from './PanelDragProvider';
 import { useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
-import { DarkModeContext } from './ThemeProvider';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { SceneRenderer } from './render/SceneRenderer';
@@ -27,7 +26,6 @@ export const MainPage: React.FC = () => {
 
 const MainPageContent: React.FC = () => {
     const classes = useStyles();
-    const [darkMode] = useContext(DarkModeContext);
 
     usePageTitle();
 
@@ -41,7 +39,7 @@ const MainPageContent: React.FC = () => {
 
             <StepSelect />
 
-            <div className={mergeClasses(classes.stage, darkMode ? classes.dark : classes.light)}>
+            <div className={classes.stage}>
                 <SceneRenderer />
             </div>
 
@@ -69,13 +67,6 @@ const useStyles = makeStyles({
         gridArea: 'content',
         overflow: 'auto',
         minWidth: '400px',
-    },
-
-    light: {
-        backgroundColor: tokens.colorNeutralBackground3,
-    },
-
-    dark: {
         backgroundColor: tokens.colorNeutralBackground1,
     },
 });

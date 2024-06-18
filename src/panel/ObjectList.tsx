@@ -122,13 +122,13 @@ const useStyles = makeStyles({
         backgroundColor: tokens.colorNeutralBackground3,
 
         ':hover': {
-            backgroundColor: tokens.colorNeutralBackground3Hover,
+            backgroundColor: tokens.colorSubtleBackgroundHover,
         },
         ':hover:active': {
-            backgroundColor: tokens.colorNeutralBackground3Pressed,
+            backgroundColor: tokens.colorSubtleBackgroundPressed,
         },
     },
     selected: {
-        backgroundColor: tokens.colorNeutralBackground1Selected,
+        backgroundColor: tokens.colorSubtleBackgroundSelected,
     },
 });
