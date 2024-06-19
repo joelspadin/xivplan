@@ -24,6 +24,10 @@ export const useControlStyles = makeStyles({
         },
     },
 
+    alignTop: {
+        alignItems: 'start',
+    },
+
     rightGap: {
         marginRight: '40px',
     },

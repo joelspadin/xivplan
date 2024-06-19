@@ -77,7 +77,6 @@ export const DrawPanel: React.FC = () => {
 
     return (
         <div className={mergeClasses(controlClasses.panel, controlClasses.column)}>
-            {/* TODO: replace with segmented button (after implementing it) */}
             <Field label="Tool">
                 <div className={classes.wrapper}>
                     <ToggleButton size="large" icon={<CursorClick />} {...getToolButtonProps(EditMode.Normal)}>
@@ -88,7 +87,13 @@ export const DrawPanel: React.FC = () => {
                     </ToggleButton>
                 </div>
             </Field>
-            <CompactColorPicker label="Color" color={config.color} onChange={setColor} debounceTime={0} />
+            <CompactColorPicker
+                label="Color"
+                placeholder="Brush color"
+                color={config.color}
+                onChange={setColor}
+                debounceTime={0}
+            />
             <CompactSwatchColorPicker
                 swatches={COLOR_SWATCHES}
                 selectedValue={config.color}

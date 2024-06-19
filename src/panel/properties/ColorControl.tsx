@@ -24,7 +24,9 @@ export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ 
         [dispatch, objects],
     );
 
-    return <CompactColorPicker label="Color" color={color ?? ''} onChange={onColorChanged} />;
+    return (
+        <CompactColorPicker label="Color" placeholder="Object color" color={color ?? ''} onChange={onColorChanged} />
+    );
 };
 
 const MARKER_SWATCHES = [
