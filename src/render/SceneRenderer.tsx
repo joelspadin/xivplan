@@ -1,4 +1,3 @@
-import { ThemeContext, useTheme } from '@fluentui/react';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { PropsWithChildren, RefObject, useCallback, useContext, useRef } from 'react';
@@ -22,7 +21,6 @@ import { TetherEditRenderer } from './TetherEditRenderer';
 import { LayerName } from './layers';
 
 export const SceneRenderer: React.FC = () => {
-    const theme = useTheme();
     const sceneBridge = useContext(SceneContext);
     const selectionBridge = useContext(SelectionContext);
     const editModeBridge = useContext(EditModeContext);
@@ -51,19 +49,17 @@ export const SceneRenderer: React.FC = () => {
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
                 <StageContext.Provider value={stageRef.current}>
                     <DefaultCursorProvider>
-                        <ThemeContext.Provider value={theme}>
-                            <SceneContext.Provider value={sceneBridge}>
-                                <EditModeContext.Provider value={editModeBridge}>
-                                    <DrawConfigContext.Provider value={drawConfigBridge}>
-                                        <TetherConfigContext.Provider value={tetherConfigBridge}>
-                                            <SelectionContext.Provider value={selectionBridge}>
-                                                <SceneContents />
-                                            </SelectionContext.Provider>
-                                        </TetherConfigContext.Provider>
-                                    </DrawConfigContext.Provider>
-                                </EditModeContext.Provider>
-                            </SceneContext.Provider>
-                        </ThemeContext.Provider>
+                        <SceneContext.Provider value={sceneBridge}>
+                            <EditModeContext.Provider value={editModeBridge}>
+                                <DrawConfigContext.Provider value={drawConfigBridge}>
+                                    <TetherConfigContext.Provider value={tetherConfigBridge}>
+                                        <SelectionContext.Provider value={selectionBridge}>
+                                            <SceneContents />
+                                        </SelectionContext.Provider>
+                                    </TetherConfigContext.Provider>
+                                </DrawConfigContext.Provider>
+                            </EditModeContext.Provider>
+                        </SceneContext.Provider>
                     </DefaultCursorProvider>
                 </StageContext.Provider>
             </Stage>
@@ -79,7 +75,6 @@ export interface ScenePreviewProps {
 }
 
 export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, width, height }) => {
-    const theme = useTheme();
     const size = getCanvasSize(scene);
     let scale = 1;
     let x = 0;
@@ -117,11 +112,9 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, wi
     return (
         <Stage x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
             <DefaultCursorProvider>
-                <ThemeContext.Provider value={theme}>
-                    <SceneContext.Provider value={sceneContext}>
-                        <SceneContents />
-                    </SceneContext.Provider>
-                </ThemeContext.Provider>
+                <SceneContext.Provider value={sceneContext}>
+                    <SceneContents />
+                </SceneContext.Provider>
             </DefaultCursorProvider>
         </Stage>
     );

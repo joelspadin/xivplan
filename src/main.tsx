@@ -1,11 +1,8 @@
-import { initializeIcons } from '@fluentui/react';
 import Konva from 'konva';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import './index.css';
-
-initializeIcons();
 
 Konva.angleDeg = true;
 

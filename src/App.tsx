@@ -1,4 +1,4 @@
-import { makeStyles, Toaster } from '@fluentui/react-components';
+import { makeStyles, Toaster, tokens } from '@fluentui/react-components';
 import React, { PropsWithChildren, useMemo } from 'react';
 import {
     createBrowserRouter,
@@ -34,6 +34,8 @@ const useStyles = makeStyles({
                 "left-panel steps   right-panel"
                 "left-panel content right-panel"
             `,
+
+        background: tokens.colorNeutralBackground3,
     },
     header: {
         gridArea: 'header',
