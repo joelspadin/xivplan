@@ -110,7 +110,9 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
 
             {items.loading && <Spinner />}
 
-            {!items.loading && <StatusGrid items={items.value ?? []} columns={6} className={classes.list} />}
+            {!items.loading && items.value && items.value.length > 0 && (
+                <StatusGrid items={items.value} columns={6} className={classes.list} />
+            )}
 
             {!items.loading && debouncedFilter && items.value?.length === 0 && <p>No results.</p>}
         </div>
