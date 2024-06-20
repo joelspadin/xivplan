@@ -77,16 +77,24 @@ const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, cont
     return isValid ? <Control objects={objects} /> : null;
 };
 
+const NoObjectsMessage: React.FC = () => {
+    return <p>No objects selected.</p>;
+};
+
 const Controls: React.FC = () => {
     const classes = useControlStyles();
     const [selection] = useSelection();
     const step = useCurrentStep();
 
     if (selection.size === 0) {
-        return <p>No objects selected.</p>;
+        return <NoObjectsMessage />;
     }
 
     const objects = getSelectedObjects(step, selection);
+
+    if (objects.length === 0) {
+        return <NoObjectsMessage />;
+    }
 
     return (
         <>
