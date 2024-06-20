@@ -12,6 +12,7 @@ import {
 } from '@fluentui/react-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { DeferredInput } from '../DeferredInput';
+import { InfoField } from '../InfoField';
 import { useScene } from '../SceneProvider';
 import { Segment, SegmentedGroup } from '../Segmented';
 import { SpinButton } from '../SpinButton';
@@ -228,7 +229,7 @@ export const ArenaGridEdit: React.FC = () => {
                                 max={180}
                                 step={5}
                                 suffix="°"
-                                value={grid.startAngle}
+                                value={grid.startAngle ?? 0}
                                 onChange={(ev, data) => {
                                     if (typeof data.value === 'number') {
                                         setGrid({ ...grid, startAngle: data.value });
@@ -242,7 +243,7 @@ export const ArenaGridEdit: React.FC = () => {
             )}
             {grid.type === GridType.CustomRectangular && (
                 <>
-                    <Field label="Row stops">
+                    <InfoField label="Row stops" info="Enter a space-separated list of Y coordinates for grid lines.">
                         <DeferredInput
                             value={customRows}
                             onChange={(ev, data) => {
@@ -250,8 +251,11 @@ export const ArenaGridEdit: React.FC = () => {
                                 setGrid({ ...grid, rows: parseCustomGrid(data.value) });
                             }}
                         />
-                    </Field>
-                    <Field label="Column stops">
+                    </InfoField>
+                    <InfoField
+                        label="Column stops"
+                        info="Enter a space-separated list of X coordinates for grid lines."
+                    >
                         <DeferredInput
                             value={customCols}
                             onChange={(ev, data) => {
@@ -259,12 +263,12 @@ export const ArenaGridEdit: React.FC = () => {
                                 setGrid({ ...grid, columns: parseCustomGrid(data.value) });
                             }}
                         />
-                    </Field>
+                    </InfoField>
                 </>
             )}
             {grid.type === GridType.CustomRadial && (
                 <>
-                    <Field label="Ring stops">
+                    <InfoField label="Ring stops" info="Enter a space-separated list of radii for grid rings.">
                         <DeferredInput
                             value={customRings}
                             onChange={(ev, data) => {
@@ -272,8 +276,11 @@ export const ArenaGridEdit: React.FC = () => {
                                 setGrid({ ...grid, rings: parseCustomGrid(data.value) });
                             }}
                         />
-                    </Field>
-                    <Field label="Spoke angles">
+                    </InfoField>
+                    <InfoField
+                        label="Spoke angles"
+                        info="Enter a space-separated list of angles in degrees for grid spokes."
+                    >
                         <DeferredInput
                             value={customSpokes}
                             onChange={(ev, data) => {
@@ -281,7 +288,7 @@ export const ArenaGridEdit: React.FC = () => {
                                 setGrid({ ...grid, spokes: parseCustomGrid(data.value) });
                             }}
                         />
-                    </Field>
+                    </InfoField>
                 </>
             )}
         </div>
