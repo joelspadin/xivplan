@@ -11,6 +11,7 @@ import {
     Textarea,
     Toast,
     ToastTitle,
+    makeStyles,
     useToastController,
 } from '@fluentui/react-components';
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
@@ -19,6 +20,7 @@ import { CollapsableToolbarButton } from '../CollapsableToolbarButton';
 import { useScene } from '../SceneProvider';
 import { sceneToText } from '../file';
 import { Scene } from '../scene';
+import { DownloadButton } from './DownloadButton';
 
 export interface ShareDialogButtonProps {
     children?: ReactNode | undefined;
@@ -39,6 +41,7 @@ export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }
 };
 
 const ShareDialogBody: React.FC = () => {
+    const classes = useStyles();
     const { scene } = useScene();
     const { dispatchToast } = useToastController();
     const url = useMemo(() => getSceneUrl(scene), [scene]);
@@ -56,11 +59,14 @@ const ShareDialogBody: React.FC = () => {
                     <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
                 </Field>
                 <p>
-                    If the link is too long for your browser to open, paste the text into{' '}
-                    <strong>Open &gt; Import Plan Link</strong> instead.
+                    If your browser won&apos;t open the link, paste the text into{' '}
+                    <strong>Open &gt; Import Plan Link</strong> instead, or download the plan and drag and drop the file
+                    onto the page to open it.
                 </p>
             </DialogContent>
-            <DialogActions>
+            <DialogActions fluid className={classes.actions}>
+                <DownloadButton appearance="primary" className={classes.download} />
+
                 <Button appearance="primary" icon={<CopyRegular />} onClick={copyToClipboard}>
                     Copy to clipboard
                 </Button>
@@ -85,3 +91,12 @@ function getSceneUrl(scene: Scene) {
     const data = sceneToText(scene);
     return `${location.protocol}//${location.host}${location.pathname}#/plan/${data}`;
 }
+
+const useStyles = makeStyles({
+    actions: {
+        width: '100%',
+    },
+    download: {
+        marginRight: 'auto',
+    },
+});

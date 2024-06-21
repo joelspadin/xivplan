@@ -141,7 +141,13 @@ export interface FileSystemFileSource {
     handle: FileSystemFileHandle;
 }
 
-export type FileSource = LocalStorageFileSource | FileSystemFileSource;
+export interface BlobFileSource {
+    type: 'blob';
+    name: string;
+    file?: File;
+}
+
+export type FileSource = LocalStorageFileSource | FileSystemFileSource | BlobFileSource;
 
 export interface EditorState {
     scene: Scene;

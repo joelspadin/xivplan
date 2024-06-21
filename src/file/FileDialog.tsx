@@ -80,7 +80,7 @@ export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
                             </TabList>
                             {tab === 'file' && <SaveFileSystem />}
                             {tab === 'localStorage' && <SaveLocalStorage />}
-                            {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage />}
+                            {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage download />}
                         </DialogContent>
                         <DialogActionsPortal />
                     </DialogBody>
@@ -96,7 +96,7 @@ const useStyles = makeStyles({
     },
 
     saveContent: {
-        minHeight: '130px',
+        minHeight: '140px',
     },
 
     tabs: {

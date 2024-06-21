@@ -1,9 +1,7 @@
 import { Button, makeStyles, tokens } from '@fluentui/react-components';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLoadScene } from './SceneProvider';
-import { openFile } from './file';
-import { getFileSource } from './file/filesystem';
+import { useFileLoader } from './useFileLoader';
 
 function isFile(handle: FileSystemHandle): handle is FileSystemFileHandle {
     return handle.kind === 'file';
@@ -16,7 +14,7 @@ function isFile(handle: FileSystemHandle): handle is FileSystemFileHandle {
 export const FileOpenPage: React.FC = () => {
     const classes = useStyles();
     const navigate = useNavigate();
-    const loadScene = useLoadScene();
+    const loadFile = useFileLoader();
     const [error, setError] = useState<ReactNode>();
 
     const navigateToMainPage = useCallback(() => {
@@ -33,12 +31,7 @@ export const FileOpenPage: React.FC = () => {
                 }
 
                 try {
-                    const source = getFileSource(file);
-                    const scene = await openFile(source);
-
-                    // TODO: add to recent files list
-
-                    loadScene(scene, source);
+                    await loadFile(file);
                     navigateToMainPage();
                 } catch (ex) {
                     console.error('Failed to open file', ex);
@@ -56,7 +49,7 @@ export const FileOpenPage: React.FC = () => {
             console.error('Cannot open file. This browser does not support window.launchQueue.');
             navigateToMainPage();
         }
-    }, [loadScene, navigateToMainPage, setError]);
+    }, [loadFile, navigateToMainPage, setError]);
 
     return (
         <div className={classes.root}>

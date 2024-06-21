@@ -2,6 +2,7 @@ import { Base64 } from 'js-base64';
 import { deflate, inflate } from 'pako';
 
 import { FileSource } from './SceneProvider';
+import { downloadScene, openFileBlob } from './file/blob';
 import { openFileFs, saveFileFs } from './file/filesystem';
 import { openFileLocalStorage, saveFileLocalStorage } from './file/localStorage';
 import { upgradeScene } from './file/upgrade';
@@ -15,6 +16,10 @@ export async function saveFile(scene: Readonly<Scene>, source: FileSource): Prom
 
         case 'fs':
             await saveFileFs(scene, source.handle);
+            break;
+
+        case 'blob':
+            downloadScene(scene, source.name);
             break;
     }
 }
@@ -31,6 +36,12 @@ async function openFileUnvalidated(source: FileSource) {
 
         case 'fs':
             return await openFileFs(source.handle);
+
+        case 'blob':
+            if (!source.file) {
+                throw new Error('File not set');
+            }
+            return await openFileBlob(source.file);
     }
 }
 

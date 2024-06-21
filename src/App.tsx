@@ -18,6 +18,7 @@ import { SceneProvider } from './SceneProvider';
 import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 import { ToolbarProvider } from './ToolbarProvider';
+import { useFileLoaderDropTarget } from './useFileLoader';
 
 const useStyles = makeStyles({
     root: {
@@ -68,16 +69,26 @@ export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
 };
 
 const Layout: React.FC = () => {
-    const classes = useStyles();
-
     return (
         <BaseProviders>
-            <div className={classes.root}>
+            <Root />
+        </BaseProviders>
+    );
+};
+
+const Root: React.FC = () => {
+    const classes = useStyles();
+    const { onDragOver, onDrop, renderModal } = useFileLoaderDropTarget();
+
+    return (
+        <>
+            <div className={classes.root} onDragOver={onDragOver} onDrop={onDrop}>
                 <Toaster position="top" />
                 <SiteHeader className={classes.header} />
                 <Outlet />
             </div>
-        </BaseProviders>
+            {renderModal()}
+        </>
     );
 };
 

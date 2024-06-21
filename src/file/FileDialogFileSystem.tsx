@@ -7,6 +7,7 @@ import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
 import { useDialogActions } from '../useDialogActions';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
+import { DownloadButton } from './DownloadButton';
 import { useConfirmUnsavedChanges } from './confirm';
 import {
     addRecentFile,
@@ -128,9 +129,14 @@ export const SaveFileSystem: React.FC = () => {
     );
 };
 
-export const FileSystemNotSupportedMessage: React.FC = () => {
+export interface FileSystemNotSupportedMessageProps {
+    download?: boolean;
+}
+
+export const FileSystemNotSupportedMessage: React.FC<FileSystemNotSupportedMessageProps> = ({ download }) => {
     useDialogActions(
         <>
+            {download && <DownloadButton appearance="primary" />}
             <DialogTrigger>
                 <Button>Cancel</Button>
             </DialogTrigger>
@@ -140,7 +146,10 @@ export const FileSystemNotSupportedMessage: React.FC = () => {
     return (
         <>
             <div>
-                <p>Your browser does not support the experimental File System API.</p>
+                <p>
+                    Your browser does not support the experimental File System API. You can download the plan as an{' '}
+                    <strong>.xivplan</strong> file, then drag and drop it onto the page to open it again.
+                </p>
                 <p>
                     To save files locally, use a Chromium-based browser such as{' '}
                     <ExternalLink href="https://www.microsoft.com/edge">Edge</ExternalLink> or{' '}
