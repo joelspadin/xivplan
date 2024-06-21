@@ -7,7 +7,9 @@ import { HelpContext } from './HelpProvider';
 import { DarkModeContext } from './ThemeProvider';
 import { ToolbarContext } from './ToolbarProvider';
 import logoUrl from './logo.svg';
+import { PANEL_WIDTH } from './panel/PanelStyles';
 
+const GAP = '20px';
 const HEADER_HEIGHT = '48px';
 
 const useStyles = makeStyles({
@@ -15,7 +17,7 @@ const useStyles = makeStyles({
         display: 'flex',
         flexFlow: 'row',
         alignItems: 'center',
-        columnGap: '20px',
+        columnGap: GAP,
         minHeight: HEADER_HEIGHT,
         paddingInlineEnd: '30px',
     },
@@ -23,6 +25,8 @@ const useStyles = makeStyles({
         textDecoration: 'none',
         display: 'flex',
         alignItems: 'center',
+        boxSizing: 'border-box',
+        width: `calc(${PANEL_WIDTH}px - ${GAP})`,
     },
     icon: {
         display: 'block',
@@ -32,9 +36,6 @@ const useStyles = makeStyles({
         paddingRight: '8px',
     },
     commandBar: {
-        // TODO: should probably tie this to panel width
-        // TODO: handle small windows more gracefully
-        marginLeft: '122px',
         flexGrow: 1,
     },
     link: {
@@ -44,7 +45,7 @@ const useStyles = makeStyles({
         color: tokens.colorNeutralForeground2,
         fontWeight: 500,
     },
-    theme: {
+    themeButton: {
         minWidth: '130px',
     },
 });
@@ -75,7 +76,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
             <div>
                 <Button
                     appearance="subtle"
-                    className={classes.theme}
+                    className={classes.themeButton}
                     icon={darkMode ? <WeatherMoonFilled /> : <WeatherSunnyFilled />}
                     onClick={() => setDarkMode(!darkMode)}
                 >
