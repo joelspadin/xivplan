@@ -7,7 +7,7 @@ import { getDropAction } from '../DropHandler';
 import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { EditorState, SceneAction, SceneContext, useCurrentStep, useScene } from '../SceneProvider';
-import { SelectionContext } from '../SelectionProvider';
+import { SelectionContext, SelectionState } from '../SelectionProvider';
 import { getCanvasSize, getSceneCoord } from '../coord';
 import { Scene } from '../scene';
 import { selectNewObjects, selectNone, useSelection } from '../selection';
@@ -109,40 +109,50 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, wi
         () => undefined,
     ];
 
+    const selectionContext: SelectionState = [new Set<number>(), () => {}];
+
     return (
         <Stage x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
             <DefaultCursorProvider>
                 <SceneContext.Provider value={sceneContext}>
-                    <SceneContents />
+                    <SelectionContext.Provider value={selectionContext}>
+                        <SceneContents listening={false} />
+                    </SelectionContext.Provider>
                 </SceneContext.Provider>
             </DefaultCursorProvider>
         </Stage>
     );
 };
 
-const SceneContents: React.FC = () => {
+interface SceneContentsProps {
+    listening?: boolean;
+}
+
+const SceneContents: React.FC<SceneContentsProps> = ({ listening }) => {
+    listening = listening ?? true;
+
     const step = useCurrentStep();
 
     return (
         <>
-            <SceneHotkeyHandler />
+            {listening && <SceneHotkeyHandler />}
 
-            <Layer name={LayerName.Ground}>
+            <Layer name={LayerName.Ground} listening={listening}>
                 <ArenaRenderer />
                 <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
-            <Layer name={LayerName.Default}>
+            <Layer name={LayerName.Default} listening={listening}>
                 <ObjectRenderer objects={step.objects} layer={LayerName.Default} />
             </Layer>
-            <Layer name={LayerName.Foreground}>
+            <Layer name={LayerName.Foreground} listening={listening}>
                 <ObjectRenderer objects={step.objects} layer={LayerName.Foreground} />
 
                 <TetherEditRenderer />
             </Layer>
-            <Layer name={LayerName.Active}>
+            <Layer name={LayerName.Active} listening={listening}>
                 <DrawTarget />
             </Layer>
-            <Layer name={LayerName.Controls} />
+            <Layer name={LayerName.Controls} listening={listening} />
         </>
     );
 };
