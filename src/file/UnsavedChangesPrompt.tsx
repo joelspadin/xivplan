@@ -2,13 +2,13 @@ import {
     Button,
     Dialog,
     DialogActions,
-    DialogBody,
     DialogContent,
     DialogSurface,
     DialogTitle,
     DialogTrigger,
 } from '@fluentui/react-components';
 import React, { useId } from 'react';
+import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useAsyncModalResolveCallback } from '../useAsyncModal';
 import { FilePromptProps } from './FilePrompts';
 
@@ -19,7 +19,7 @@ export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ resolve, ...pr
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
             <DialogSurface>
-                <DialogBody>
+                <HotkeyBlockingDialogBody>
                     <DialogTitle>Unsaved changes</DialogTitle>
                     <DialogContent>
                         Are you sure you want to open a file? Your unsaved changes will be lost.
@@ -34,7 +34,7 @@ export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ resolve, ...pr
                             <Button>Cancel</Button>
                         </DialogTrigger>
                     </DialogActions>
-                </DialogBody>
+                </HotkeyBlockingDialogBody>
             </DialogSurface>
         </Dialog>
     );

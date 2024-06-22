@@ -2,7 +2,6 @@ import {
     Button,
     Dialog,
     DialogActions,
-    DialogBody,
     DialogContent,
     DialogSurface,
     DialogTitle,
@@ -11,6 +10,7 @@ import {
 } from '@fluentui/react-components';
 import React from 'react';
 import { ExternalLink } from './ExternalLink';
+import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 
 export interface AboutDialogProps {
     className?: string;
@@ -23,7 +23,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
                 <Link {...props}>About</Link>
             </DialogTrigger>
             <DialogSurface>
-                <DialogBody>
+                <HotkeyBlockingDialogBody>
                     <DialogTitle>About</DialogTitle>
                     <DialogContent>
                         <p>
@@ -56,7 +56,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
                             <Button appearance="secondary">Close</Button>
                         </DialogTrigger>
                     </DialogActions>
-                </DialogBody>
+                </HotkeyBlockingDialogBody>
             </DialogSurface>
         </Dialog>
     );

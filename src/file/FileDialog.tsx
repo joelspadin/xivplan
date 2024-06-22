@@ -1,6 +1,5 @@
 import {
     Dialog,
-    DialogBody,
     DialogContent,
     DialogProps,
     DialogSurface,
@@ -13,6 +12,7 @@ import {
 } from '@fluentui/react-components';
 import React, { useState } from 'react';
 import { DialogActionsPortal, DialogActionsPortalProvider } from '../DialogActionsPortal';
+import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { FileSystemNotSupportedMessage, OpenFileSystem, SaveFileSystem } from './FileDialogFileSystem';
 import { OpenLocalStorage, SaveLocalStorage } from './FileDialogLocalStorage';
 import { ImportFromString } from './FileDialogShare';
@@ -28,7 +28,7 @@ export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
         <DialogActionsPortalProvider>
             <Dialog {...props}>
                 <DialogSurface>
-                    <DialogBody>
+                    <HotkeyBlockingDialogBody>
                         <DialogTitle>Open file</DialogTitle>
                         <DialogContent className={classes.openContent}>
                             <TabList
@@ -48,7 +48,7 @@ export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
                             {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage />}
                         </DialogContent>
                         <DialogActionsPortal />
-                    </DialogBody>
+                    </HotkeyBlockingDialogBody>
                 </DialogSurface>
             </Dialog>
         </DialogActionsPortalProvider>
@@ -65,7 +65,7 @@ export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
         <DialogActionsPortalProvider>
             <Dialog {...props}>
                 <DialogSurface>
-                    <DialogBody>
+                    <HotkeyBlockingDialogBody>
                         <DialogTitle>Save file</DialogTitle>
                         <DialogContent className={classes.saveContent}>
                             <TabList
@@ -83,7 +83,7 @@ export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
                             {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage download />}
                         </DialogContent>
                         <DialogActionsPortal />
-                    </DialogBody>
+                    </HotkeyBlockingDialogBody>
                 </DialogSurface>
             </Dialog>
         </DialogActionsPortalProvider>

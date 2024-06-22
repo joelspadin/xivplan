@@ -2,7 +2,6 @@ import {
     Button,
     Dialog,
     DialogActions,
-    DialogBody,
     DialogContent,
     DialogSurface,
     DialogTitle,
@@ -17,6 +16,7 @@ import {
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { CollapsableToolbarButton } from '../CollapsableToolbarButton';
+import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
 import { sceneToText } from '../file';
 import { Scene } from '../scene';
@@ -52,7 +52,7 @@ const ShareDialogBody: React.FC = () => {
     }, [url, dispatchToast]);
 
     return (
-        <DialogBody>
+        <HotkeyBlockingDialogBody>
             <DialogTitle>Share</DialogTitle>
             <DialogContent>
                 <Field label="Link to this plan">
@@ -75,7 +75,7 @@ const ShareDialogBody: React.FC = () => {
                     <Button>Close</Button>
                 </DialogTrigger>
             </DialogActions>
-        </DialogBody>
+        </HotkeyBlockingDialogBody>
     );
 };
 

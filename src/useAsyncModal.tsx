@@ -28,7 +28,7 @@ interface PromiseRef<Args, Result> {
         return (
             <Dialog {...props} onOpenChange={onOpenChange}>
                 <DialogSurface>
-                    <DialogBody>
+                    <HotkeyBlockingDialogBody>
                         ...
                         <DialogActions>
                             <DialogTrigger>
@@ -40,7 +40,7 @@ interface PromiseRef<Args, Result> {
                                 <Button>Cancel</Button>
                             </DialogTrigger>
                         </DialogActions>
-                    </DialogBody>
+                    </HotkeyBlockingDialogBody>
                 </DialogSurface>
             </Dialog>
         );

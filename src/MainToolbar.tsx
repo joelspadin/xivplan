@@ -19,13 +19,13 @@ import {
 } from '@fluentui/react-icons';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
-import { useHotkeys } from './HotkeyHelpProvider';
 import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialogButton } from './file/ShareDialogButton';
 import { downloadScene, getBlobSource } from './file/blob';
 import { DialogOpenContext } from './useCloseDialog';
+import { useHotkeys } from './useHotkeys';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 import { useToolbar } from './useToolbar';
 

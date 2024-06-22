@@ -2,7 +2,6 @@ import {
     Button,
     Dialog,
     DialogActions,
-    DialogBody,
     DialogContent,
     DialogSurface,
     DialogTitle,
@@ -13,11 +12,13 @@ import {
     TreeItemLayout,
     makeStyles,
     mergeClasses,
+    shorthands,
     tokens,
     typographyStyles,
 } from '@fluentui/react-components';
 import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
 import { ScenePreview } from '../render/SceneRenderer';
@@ -168,7 +169,7 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     const presets = getPresetsForGroup(selectedGroup);
 
     return (
-        <DialogBody>
+        <HotkeyBlockingDialogBody>
             <DialogTitle>Arena presets</DialogTitle>
             <DialogContent className={classes.dialogContent}>
                 <Tree
@@ -216,7 +217,7 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
                     <Button>Cancel</Button>
                 </DialogTrigger>
             </DialogActions>
-        </DialogBody>
+        </HotkeyBlockingDialogBody>
     );
 };
 
@@ -364,9 +365,8 @@ const useStyles = makeStyles({
         },
     },
     selected: {
+        ...shorthands.borderColor(tokens.colorNeutralForeground2BrandSelected),
         backgroundColor: tokens.colorSubtleBackgroundSelected,
-        // TODO: should be able to just set backgroundColor here, but its type is "undefined"?
-        border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralForeground2BrandSelected}`,
         boxShadow: tokens.shadow4,
     },
     presetHeader: {

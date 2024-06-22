@@ -1,7 +1,12 @@
 import React, { useContext, useEffect, useId } from 'react';
-import { Options, useHotkeys as useHotkeysBase } from 'react-hotkeys-hook';
+import { Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import type { HotkeyCallback, RefType } from 'react-hotkeys-hook/dist/types';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
+
+export enum HotkeyScopes {
+    AlwaysEnabled = 'alwaysEnabled', // Workaround for https://github.com/JohannesKlauss/react-hotkeys-hook/issues/908
+    Default = 'default',
+}
 
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
@@ -30,6 +35,11 @@ export function useHotkeys<T extends HTMLElement>(
         deps = options;
         options = {};
     }
+
+    options = {
+        scopes: [HotkeyScopes.Default],
+        ...options,
+    };
 
     useHotkeyHelp(keys, category, help);
 
@@ -62,4 +72,16 @@ export function useRegisteredHotkeys(): HotkeyInfo[] {
 
         return a.keys.localeCompare(b.keys);
     });
+}
+
+export function useHotkeyBlocker() {
+    const { disableScope, enableScope } = useHotkeysContext();
+
+    return useEffect(() => {
+        disableScope(HotkeyScopes.Default);
+
+        return () => {
+            enableScope(HotkeyScopes.Default);
+        };
+    }, [disableScope, enableScope]);
 }

@@ -1,5 +1,6 @@
 import { makeStyles, Toaster, tokens } from '@fluentui/react-components';
 import React, { PropsWithChildren, useMemo } from 'react';
+import { HotkeysProvider } from 'react-hotkeys-hook';
 import {
     createBrowserRouter,
     createRoutesFromElements,
@@ -19,6 +20,7 @@ import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
 import { ToolbarProvider } from './ToolbarProvider';
 import { useFileLoaderDropTarget } from './useFileLoader';
+import { HotkeyScopes } from './useHotkeys';
 
 const useStyles = makeStyles({
     root: {
@@ -57,13 +59,15 @@ export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
 
     return (
         <ThemeProvider>
-            <HelpProvider>
-                <ToolbarProvider>
-                    <SceneProvider initialScene={sceneFromLink}>
-                        <DirtyProvider>{children}</DirtyProvider>
-                    </SceneProvider>
-                </ToolbarProvider>
-            </HelpProvider>
+            <HotkeysProvider initiallyActiveScopes={[HotkeyScopes.Default, HotkeyScopes.AlwaysEnabled]}>
+                <HelpProvider>
+                    <ToolbarProvider>
+                        <SceneProvider initialScene={sceneFromLink}>
+                            <DirtyProvider>{children}</DirtyProvider>
+                        </SceneProvider>
+                    </ToolbarProvider>
+                </HelpProvider>
+            </HotkeysProvider>
         </ThemeProvider>
     );
 };

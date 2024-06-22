@@ -3,7 +3,6 @@ import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
 import { HelpDialog } from './HelpDialog';
 import { HelpContext } from './HelpProvider';
-import { useHotkeyHelp, useHotkeys } from './HotkeyHelpProvider';
 import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
 import { SceneSelection } from './SelectionProvider';
 import { getSceneCoord, rotateCoord } from './coord';
@@ -14,6 +13,7 @@ import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
 import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
 import { useEditMode } from './useEditMode';
+import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
 
 const CATEGORY_GENERAL = '1.General';

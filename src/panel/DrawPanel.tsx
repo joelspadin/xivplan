@@ -18,7 +18,6 @@ import React, { useCallback } from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { useHotkeys } from '../HotkeyHelpProvider';
 import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
@@ -27,6 +26,7 @@ import { COLOR_SWATCHES } from '../render/SceneTheme';
 import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
+import { useHotkeys } from '../useHotkeys';
 
 const CursorClick = bundleIcon(CursorClickFilled, CursorClickRegular);
 const PaintBrush = bundleIcon(PaintBrushFilled, PaintBrushRegular);

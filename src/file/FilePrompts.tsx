@@ -2,7 +2,6 @@ import {
     Button,
     Dialog,
     DialogActions,
-    DialogBody,
     DialogContent,
     DialogProps,
     DialogSurface,
@@ -10,6 +9,7 @@ import {
     DialogTrigger,
 } from '@fluentui/react-components';
 import React, { useId } from 'react';
+import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useAsyncModalResolveCallback } from '../useAsyncModal';
 
 export interface FilePromptProps extends Omit<DialogProps, 'children'> {
@@ -27,7 +27,7 @@ export const OverwriteFilePrompt: React.FC<OverwriteFilePromptProps> = ({ resolv
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
             <DialogSurface>
-                <DialogBody>
+                <HotkeyBlockingDialogBody>
                     <DialogTitle>Overwrite {filename}</DialogTitle>
                     <DialogContent>A file with this name already exists. Overwrite it?</DialogContent>
                     <DialogActions>
@@ -40,7 +40,7 @@ export const OverwriteFilePrompt: React.FC<OverwriteFilePromptProps> = ({ resolv
                             <Button>Cancel</Button>
                         </DialogTrigger>
                     </DialogActions>
-                </DialogBody>
+                </HotkeyBlockingDialogBody>
             </DialogSurface>
         </Dialog>
     );
@@ -57,7 +57,7 @@ export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ resolve, fil
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
             <DialogSurface>
-                <DialogBody>
+                <HotkeyBlockingDialogBody>
                     <DialogTitle>Delete {filename}</DialogTitle>
                     <DialogContent>Are you sure you want to delete this file?</DialogContent>
                     <DialogActions>
@@ -70,7 +70,7 @@ export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ resolve, fil
                             <Button>Cancel</Button>
                         </DialogTrigger>
                     </DialogActions>
-                </DialogBody>
+                </HotkeyBlockingDialogBody>
             </DialogSurface>
         </Dialog>
     );

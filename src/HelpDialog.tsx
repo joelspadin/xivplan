@@ -1,7 +1,6 @@
 import {
     Button,
     Dialog,
-    DialogBody,
     DialogContent,
     DialogProps,
     DialogSurface,
@@ -13,8 +12,9 @@ import {
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
 import React from 'react';
-import { useRegisteredHotkeys } from './HotkeyHelpProvider';
+import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { HotkeyName } from './HotkeyName';
+import { useRegisteredHotkeys } from './useHotkeys';
 
 export type HelpDialogProps = Omit<DialogProps, 'children'>;
 
@@ -24,7 +24,7 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
     return (
         <Dialog {...props}>
             <DialogSurface className={classes.surface}>
-                <DialogBody>
+                <HotkeyBlockingDialogBody>
                     <DialogTitle
                         action={
                             <DialogTrigger action="close">
@@ -83,7 +83,7 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
                             </dl>
                         </section>
                     </DialogContent>
-                </DialogBody>
+                </HotkeyBlockingDialogBody>
             </DialogSurface>
         </Dialog>
     );
