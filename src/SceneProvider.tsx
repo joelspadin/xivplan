@@ -120,7 +120,12 @@ export interface RemoveStepAction {
     index: number;
 }
 
-export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction;
+export interface ReorderStepsAction {
+    type: 'reoderSteps';
+    order: number[];
+}
+
+export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction | ReorderStepsAction;
 
 // TODO: the source should be separate from the undo history
 export interface SetSourceAction {
@@ -328,6 +333,25 @@ function removeStep(state: Readonly<EditorState>, index: number): EditorState {
     };
 }
 
+function reoderSteps(state: Readonly<EditorState>, order: number[]): EditorState {
+    // TODO: Typescript 5.5
+    // const newSteps = order.map((index) => state.scene.steps[index]).filter((step) => step !== undefined);
+
+    function isStep(step: SceneStep | undefined): step is SceneStep {
+        return step !== undefined;
+    }
+
+    const newSteps = order.map((index) => state.scene.steps[index]).filter(isStep);
+
+    return {
+        ...state,
+        scene: {
+            ...state.scene,
+            steps: newSteps,
+        },
+    };
+}
+
 function updateStep(scene: Readonly<Scene>, index: number, step: SceneStep): Scene {
     const result: Scene = {
         nextId: scene.nextId,
@@ -517,6 +541,9 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'removeStep':
             return removeStep(state, action.index);
+
+        case 'reoderSteps':
+            return reoderSteps(state, action.order);
 
         case 'arena':
             return updateArena(state, action.value);
