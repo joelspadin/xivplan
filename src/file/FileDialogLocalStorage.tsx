@@ -8,10 +8,10 @@ import {
     DataGridHeaderCell,
     DataGridProps,
     DataGridRow,
+    DialogActions,
     DialogTrigger,
     Field,
     Input,
-    Spinner,
     TableColumnDefinition,
     TableColumnId,
     TableRowId,
@@ -21,11 +21,11 @@ import {
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useState } from 'react';
+import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
-import { useDialogActions } from '../useDialogActions';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { useConfirmDeleteFile, useConfirmOverwriteFile, useConfirmUnsavedChanges } from './confirm';
 import { LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
@@ -41,7 +41,11 @@ const getCellFocusMode = (columnId: TableColumnId): DataGridCellFocusMode => {
 
 const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
-export const OpenLocalStorage: React.FC = () => {
+export interface OpenLocalStorageProps {
+    actions: HtmlPortalNode;
+}
+
+export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) => {
     const classes = useStyles();
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
@@ -93,17 +97,6 @@ export const OpenLocalStorage: React.FC = () => {
         [reloadFiles, confirmDeleteFile],
     );
 
-    useDialogActions(
-        <>
-            <Button appearance="primary" disabled={selectedRows.size === 0} onClick={openCallback}>
-                Open
-            </Button>
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
     const columns = useMemo<TableColumnDefinition<LocalStorageFileInfo>[]>(
         () => [
             createTableColumn<LocalStorageFileInfo>({
@@ -149,13 +142,6 @@ export const OpenLocalStorage: React.FC = () => {
         [deleteFile],
     );
 
-    if (files.loading) {
-        return <Spinner />;
-    }
-    if (files.error) {
-        return <p>{files.error.message}</p>;
-    }
-
     // TODO: virtualize datagrid?
     // https://react.fluentui.dev/?path=/docs/components-datagrid--default#virtualization
     return (
@@ -193,6 +179,17 @@ export const OpenLocalStorage: React.FC = () => {
 
             {renderModal1()}
             {renderModal2()}
+
+            <InPortal node={actions}>
+                <DialogActions>
+                    <Button appearance="primary" disabled={selectedRows.size === 0} onClick={openCallback}>
+                        Open
+                    </Button>
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };
@@ -201,7 +198,11 @@ function getInitialName(source: FileSource | undefined) {
     return source?.type === 'local' ? source.name : '';
 }
 
-export const SaveLocalStorage: React.FC = () => {
+export interface SaveLocalStorageProps {
+    actions: HtmlPortalNode;
+}
+
+export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) => {
     const setSavedState = useSetSavedState();
     const dismissDialog = useCloseDialog();
     const files = useAsync(listLocalStorageFiles);
@@ -241,17 +242,6 @@ export const SaveLocalStorage: React.FC = () => {
         [save],
     );
 
-    useDialogActions(
-        <>
-            <Button appearance="primary" disabled={!canSave} onClick={save}>
-                Save as
-            </Button>
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
     return (
         <>
             <Field
@@ -269,13 +259,24 @@ export const SaveLocalStorage: React.FC = () => {
             </Field>
 
             {renderModal()}
+
+            <InPortal node={actions}>
+                <DialogActions>
+                    <Button appearance="primary" disabled={!canSave} onClick={save}>
+                        Save as
+                    </Button>
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };
 
 const useStyles = makeStyles({
     fileList: {
-        maxHeight: '40vh',
+        height: '40vh',
         overflowY: 'auto',
     },
 });

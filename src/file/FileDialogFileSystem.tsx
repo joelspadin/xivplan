@@ -1,36 +1,29 @@
-import { Button, DialogTrigger, Spinner, makeStyles, tokens } from '@fluentui/react-components';
-import React, { MouseEvent, useCallback } from 'react';
-import { useAsync, useCounter } from 'react-use';
+import { Button, DialogActions, DialogTrigger } from '@fluentui/react-components';
+import React, { useCallback, useState } from 'react';
+import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { ExternalLink } from '../ExternalLink';
 import { useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
-import { useDialogActions } from '../useDialogActions';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { DownloadButton } from './DownloadButton';
+import { FileBrowser } from './FileBrowser';
 import { useConfirmUnsavedChanges } from './confirm';
-import {
-    addRecentFile,
-    getFileSource,
-    getPlanFolder,
-    setPlanFolder,
-    showOpenPlanPicker,
-    showPlanFolderPicker,
-    showSavePlanPicker,
-} from './filesystem';
+import { addRecentFile, getFileSource, showSavePlanPicker } from './filesystem';
 
-export const OpenFileSystem: React.FC = () => {
-    const classes = useStyles();
+export interface OpenFileSystemProps {
+    actions: HtmlPortalNode;
+}
+
+export const OpenFileSystem: React.FC<OpenFileSystemProps> = ({ actions }) => {
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
     const dismissDialog = useCloseDialog();
     const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
-
-    const [counter, { inc: reloadFolder }] = useCounter();
-    const planFolder = useAsync(getPlanFolder, [counter]);
+    const [selectedFile, setSelectedFile] = useState<FileSystemFileHandle>();
 
     const loadSceneFromFile = useCallback(
-        async (event: MouseEvent<HTMLButtonElement>, handle: FileSystemFileHandle) => {
+        async (handle: FileSystemFileHandle) => {
             if (isDirty && !(await confirmUnsavedChanges())) {
                 return;
             }
@@ -44,50 +37,33 @@ export const OpenFileSystem: React.FC = () => {
         [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
     );
 
-    const pickFolder = useCallback(async () => {
-        const handle = await showPlanFolderPicker();
-        if (handle) {
-            await setPlanFolder(handle);
-            reloadFolder();
-        }
-    }, [reloadFolder]);
-
-    const pickFile = useCallback(
-        async (event: MouseEvent<HTMLButtonElement>) => {
-            const handle = await showOpenPlanPicker();
-            if (handle) {
-                await loadSceneFromFile(event, handle);
-            }
-        },
-        [loadSceneFromFile],
-    );
-
-    useDialogActions(
-        <>
-            <Button appearance="primary" disabled>
-                Open
-            </Button>
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
     return (
         <>
-            <div className={classes.root}>
-                <div className={classes.topBar}>
-                    <Button onClick={pickFile}>Open file</Button>
-                    <Button onClick={pickFolder}>Browser folder</Button>
-                </div>
-                {planFolder.loading ? <Spinner /> : <FileBrowser root={planFolder.value} />}
-            </div>
+            <FileBrowser onSelectionChanged={setSelectedFile} onFileSelected={loadSceneFromFile} />
             {renderModal()}
+            <InPortal node={actions}>
+                <DialogActions>
+                    <Button
+                        appearance="primary"
+                        disabled={!selectedFile}
+                        onClick={() => selectedFile && loadSceneFromFile(selectedFile)}
+                    >
+                        Open
+                    </Button>
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };
 
-export const SaveFileSystem: React.FC = () => {
+export interface SaveFileSystemProps {
+    actions: HtmlPortalNode;
+}
+
+export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
     const setSavedState = useSetSavedState();
     const dismissDialog = useCloseDialog();
     const { scene, source, dispatch } = useScene();
@@ -109,40 +85,31 @@ export const SaveFileSystem: React.FC = () => {
         dismissDialog();
     }, [scene, currentName, dispatch, setSavedState, dismissDialog]);
 
-    useDialogActions(
-        <>
-            <Button appearance="primary" onClick={save}>
-                Save as
-            </Button>
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
     return (
         <>
             <div>
                 <p>Click &quot;Save as&quot; below to save the plan to your computer.</p>
             </div>
+            <InPortal node={actions}>
+                <DialogActions>
+                    <Button appearance="primary" onClick={save}>
+                        Save as
+                    </Button>
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };
 
 export interface FileSystemNotSupportedMessageProps {
+    actions: HtmlPortalNode;
     download?: boolean;
 }
 
-export const FileSystemNotSupportedMessage: React.FC<FileSystemNotSupportedMessageProps> = ({ download }) => {
-    useDialogActions(
-        <>
-            {download && <DownloadButton appearance="primary" />}
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
+export const FileSystemNotSupportedMessage: React.FC<FileSystemNotSupportedMessageProps> = ({ actions, download }) => {
     return (
         <>
             <div>
@@ -156,35 +123,14 @@ export const FileSystemNotSupportedMessage: React.FC<FileSystemNotSupportedMessa
                     <ExternalLink href="https://www.google.com/chrome/">Chrome</ExternalLink>.
                 </p>
             </div>
+            <InPortal node={actions}>
+                <DialogActions>
+                    {download && <DownloadButton appearance="primary" />}
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };
-
-interface FileBrowserProps {
-    root?: FileSystemDirectoryHandle;
-}
-
-const FileBrowser: React.FC<FileBrowserProps> = ({ root }) => {
-    if (!root) {
-        return <p>No folder selected.</p>;
-    }
-
-    return (
-        <>
-            <p>TODO: A file browser for folder {root.name} will go here eventually.</p>
-            <p>For now, just use the &quot;Open file&quot; button.</p>
-        </>
-    );
-};
-
-const useStyles = makeStyles({
-    root: {
-        marginTop: tokens.spacingVerticalM,
-    },
-
-    topBar: {
-        display: 'flex',
-        flexFlow: 'row',
-        justifyContent: 'space-between',
-    },
-});

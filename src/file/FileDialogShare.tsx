@@ -1,15 +1,26 @@
-import { Button, DialogTrigger, Field, Textarea, TextareaOnChangeData } from '@fluentui/react-components';
+import {
+    Button,
+    DialogActions,
+    DialogTrigger,
+    Field,
+    Textarea,
+    TextareaOnChangeData,
+} from '@fluentui/react-components';
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
 import { Scene } from '../scene';
 import { useCloseDialog } from '../useCloseDialog';
-import { useDialogActions } from '../useDialogActions';
 import { useIsDirty } from '../useIsDirty';
 import { useConfirmUnsavedChanges } from './confirm';
 import { parseSceneLink } from './share';
 
-export const ImportFromString: React.FC = () => {
+export interface ImportFromStringProps {
+    actions: HtmlPortalNode;
+}
+
+export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) => {
     const isDirty = useIsDirty();
     const loadScene = useLoadScene();
     const dismissDialog = useCloseDialog();
@@ -57,17 +68,6 @@ export const ImportFromString: React.FC = () => {
         [importLink],
     );
 
-    useDialogActions(
-        <>
-            <Button appearance="primary" disabled={!data} onClick={importLink}>
-                Import
-            </Button>
-            <DialogTrigger>
-                <Button>Cancel</Button>
-            </DialogTrigger>
-        </>,
-    );
-
     return (
         <>
             <Field label="Enter plan link" validationState={error ? 'error' : 'none'} validationMessage={error}>
@@ -75,6 +75,17 @@ export const ImportFromString: React.FC = () => {
             </Field>
 
             {renderModal()}
+
+            <InPortal node={actions}>
+                <DialogActions>
+                    <Button appearance="primary" disabled={!data} onClick={importLink}>
+                        Import
+                    </Button>
+                    <DialogTrigger>
+                        <Button>Cancel</Button>
+                    </DialogTrigger>
+                </DialogActions>
+            </InPortal>
         </>
     );
 };

@@ -33,6 +33,7 @@
     "react-hotkeys-hook": "^4.5.0",
     "react-konva": "^18.2.10",
     "react-konva-utils": "^1.0.6",
+    "react-reverse-portal": "^2.1.2",
     "react-router-dom": "^6.23.1",
     "react-use": "^17.5.0",
     "simplify-js": "^1.2.4",
