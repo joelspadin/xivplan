@@ -13,21 +13,26 @@ import React, { useCallback } from 'react';
 export const SpinButton: React.FC<Omit<SpinButtonProps, 'displayValue'>> = ({ value, onChange, ...props }) => {
     const wrappedOnChange = useCallback(
         (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
-            if (data.value === undefined && data.displayValue) {
-                let value = Number(data.displayValue);
-
-                if (!isNaN(value)) {
-                    value = Math.round(value);
-
-                    if (props.min !== undefined) {
-                        value = Math.max(value, props.min);
-                    }
-                    if (props.max !== undefined) {
-                        value = Math.min(value, props.max);
-                    }
-
-                    data.value = value;
+            if (!isValid(data.value)) {
+                if (!data.displayValue) {
+                    return;
                 }
+
+                let value = Number(data.displayValue);
+                if (!isValid(value)) {
+                    return;
+                }
+
+                value = Math.round(value);
+
+                if (props.min !== undefined) {
+                    value = Math.max(value, props.min);
+                }
+                if (props.max !== undefined) {
+                    value = Math.min(value, props.max);
+                }
+
+                data.value = value;
             }
 
             onChange?.(event, data);
@@ -38,9 +43,13 @@ export const SpinButton: React.FC<Omit<SpinButtonProps, 'displayValue'>> = ({ va
     return (
         <FluentSpinButton
             {...props}
-            value={value ?? 0}
+            value={value ?? NaN}
             displayValue={value?.toString() ?? ''}
             onChange={wrappedOnChange}
         />
     );
 };
+
+function isValid(x: number | null | undefined) {
+    return x !== undefined && x !== null && !isNaN(x) && isFinite(x);
+}
