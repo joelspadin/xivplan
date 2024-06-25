@@ -4,7 +4,6 @@ about: Suggest an idea such as a new object type
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 # ⚠⚠⚠ Please read this before asking for any instance or mechanic-related features ⚠⚠⚠
@@ -13,16 +12,12 @@ I do almost all content in this game without guides. You will probably see new r
 
 You may discuss the following content:
 
-* ✅ All content from Shadowbringers and earlier
-* ✅ Patch 6.0-6.4 extreme trials
-* ✅ Aglaia and Euphrosyne
-* ✅ Normal raids
-* ✅ Savage raids 1st-11th circles and 12th circle first phase only
-* ✅ All ultimates (if I do these at all, I don't do them blind)
+- ✅ All content from Endwalker and earlier
+- ✅ All ultimates (if I do these, I don't do them blind)
 
 Please do not discuss the following content:
 
-❌ All Endwalker content that is not listed above
+❌ All Dawntrail content that is not listed above
 
 ---
 
