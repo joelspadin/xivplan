@@ -3,8 +3,6 @@ import {
     RadioGroup,
     RadioGroupProps,
     RadioProps,
-    Tooltip,
-    TooltipProps,
     makeStyles,
     mergeClasses,
     radioClassNames,
@@ -13,6 +11,7 @@ import {
 } from '@fluentui/react-components';
 import { iconFilledClassName, iconRegularClassName } from '@fluentui/react-icons';
 import React, { ReactNode } from 'react';
+import { OptionalTooltip } from './OptionalTooltip';
 
 export interface SegmentedGroupProps extends RadioGroupProps {}
 
@@ -37,28 +36,14 @@ export const Segment: React.FC<SegmentProps> = ({ className, icon, size, title, 
     size = size ?? 'medium';
 
     return (
-        <TooltipWrapper content={title} relationship="label" positioning="below" appearance="inverted" withArrow>
+        <OptionalTooltip content={title} relationship="label" positioning="below" appearance="inverted" withArrow>
             <Radio
                 className={mergeClasses(className, classes.item)}
                 input={{ className: classes.input }}
                 indicator={{ className: mergeClasses(classes.indicator, classes[size]), children: icon }}
                 {...props}
             />
-        </TooltipWrapper>
-    );
-};
-
-interface TooltipWrapperProps extends Omit<TooltipProps, 'content'> {
-    content?: string;
-}
-
-const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ children, content, ...props }) => {
-    return content ? (
-        <Tooltip content={content} {...props}>
-            {children}
-        </Tooltip>
-    ) : (
-        <>{children}</>
+        </OptionalTooltip>
     );
 };
 
