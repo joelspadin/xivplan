@@ -69,17 +69,22 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
                                 <dd>Select object</dd>
 
                                 <dt>
-                                    <HotkeyName keys="ctrl" suffix="Left click" />
+                                    <HotkeyName keys="ctrl" suffix="left click" />
                                 </dt>
                                 <dd>Toggle selection</dd>
 
                                 <dt>
-                                    <HotkeyName keys="shift" suffix="Left click" />
+                                    <HotkeyName keys="shift" suffix="left click" />
                                 </dt>
                                 <dd>Add to selection</dd>
 
                                 <dt>Left click + drag</dt>
                                 <dd>Move/transform object</dd>
+
+                                <dt>
+                                    <HotkeyName keys="shift" suffix="left click + drag" />
+                                </dt>
+                                <dd>Proportional resize</dd>
                             </dl>
                         </section>
                     </DialogContent>
@@ -113,7 +118,8 @@ const useStyles = makeStyles({
     },
     content: {
         display: 'grid',
-        gridTemplate: 'auto / minmax(15em, 30em) repeat(2, minmax(20em, auto))',
+        gridTemplate: 'auto / minmax(15em, 25em) repeat(2, minmax(20em, auto))',
+        columnGap: tokens.spacingHorizontalXXXL,
         ...typographyStyles.body1,
 
         '@media (max-width: 992px)': {
@@ -124,6 +130,10 @@ const useStyles = makeStyles({
         '& h2': {
             ...typographyStyles.subtitle1,
             fontWeight: tokens.fontWeightRegular,
+
+            marginTop: tokens.spacingVerticalS,
+            marginBottom: tokens.spacingVerticalM,
+            background: tokens.colorNeutralBackground1,
         },
         '& h3': {
             ...typographyStyles.subtitle2,
@@ -134,30 +144,32 @@ const useStyles = makeStyles({
             marginTop: 0,
         },
     },
-    section: {
-        marginRight: '40px',
-
-        ':last-child': {
-            marginRight: 0,
-        },
-    },
+    section: {},
     hotkeys: {
         display: 'grid',
         gridTemplate: 'auto / fit-content(30%) 1fr',
+
+        overflow: 'auto',
+        maxHeight: 'calc(100vh - 48px - 48px - 8px - 48px)',
+        marginTop: 0,
+
+        '@media (max-width: 992px)': {
+            maxHeight: 'unset',
+        },
 
         '& dt': {
             gridColumn: '1',
             display: 'flex',
             flexFlow: 'row',
             alignItems: 'center',
-            paddingInlineStart: '4px',
-            paddingInlineEnd: '20px',
+            paddingInlineStart: tokens.spacingHorizontalXS,
+            paddingInlineEnd: tokens.spacingHorizontalL,
         },
 
         '& dd': {
             gridColumn: '2',
             margin: 0,
-            paddingInlineEnd: '16px',
+            paddingInlineEnd: tokens.spacingHorizontalXL,
         },
 
         '& dt, dd': {
@@ -165,12 +177,10 @@ const useStyles = makeStyles({
             flexFlow: 'row',
             alignItems: 'center',
             boxSizing: 'border-box',
-            minHeight: '25px',
-            paddingTop: '3px',
-            paddingBottom: '3px',
+            minHeight: '28px',
 
             ':nth-of-type(2n)': {
-                background: tokens.colorNeutralBackground2,
+                background: tokens.colorNeutralBackgroundAlpha,
             },
         },
     },

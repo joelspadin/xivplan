@@ -2,6 +2,8 @@ import { Theme, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 
 export const darkTheme = webDarkTheme;
 
+// Colors adjusted to a more sepia tone that's easier on the eyes and is similar
+// to FFXIV's UI light theme.
 export const lightTheme: Theme = {
     ...webLightTheme,
     colorSubtleBackgroundHover: '#e8d7c0',
@@ -17,6 +19,7 @@ export const lightTheme: Theme = {
     colorNeutralStencil1: '#d8c9b3',
     colorNeutralStroke1: '#cebfab',
     colorNeutralStroke3: '#d8c9b3',
+    colorNeutralBackgroundAlpha: 'rgb(253 235 209 / 0.5)',
 };
 
 // Original themes, kept until new themes are fully updated
