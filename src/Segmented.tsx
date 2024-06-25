@@ -59,7 +59,7 @@ const useStyles = makeStyles({
     },
 
     item: {
-        '::after': {
+        '::before': {
             zIndex: 0,
 
             content: '""',
