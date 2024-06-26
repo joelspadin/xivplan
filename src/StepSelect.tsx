@@ -49,12 +49,12 @@ export const StepSelect: React.FC = () => {
         [dispatch],
     );
 
-    const width = useMemo(() => {
+    const maxWidth = useMemo(() => {
         return scene.arena.width + scene.arena.padding * 2;
     }, [scene]);
 
     return (
-        <div className={classes.root} style={{ width }}>
+        <div className={classes.root} style={{ maxWidth }}>
             <div className={classes.listWrapper}>
                 <TabList
                     size="small"
