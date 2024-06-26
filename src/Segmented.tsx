@@ -36,7 +36,7 @@ export const Segment: React.FC<SegmentProps> = ({ className, icon, size, title, 
     size = size ?? 'medium';
 
     return (
-        <OptionalTooltip content={title} relationship="label" positioning="below" appearance="inverted" withArrow>
+        <OptionalTooltip content={title} relationship="label" withArrow>
             <Radio
                 className={mergeClasses(className, classes.item)}
                 input={{ className: classes.input }}
