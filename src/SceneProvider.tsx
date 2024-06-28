@@ -334,14 +334,7 @@ function removeStep(state: Readonly<EditorState>, index: number): EditorState {
 }
 
 function reoderSteps(state: Readonly<EditorState>, order: number[]): EditorState {
-    // TODO: Typescript 5.5
-    // const newSteps = order.map((index) => state.scene.steps[index]).filter((step) => step !== undefined);
-
-    function isStep(step: SceneStep | undefined): step is SceneStep {
-        return step !== undefined;
-    }
-
-    const newSteps = order.map((index) => state.scene.steps[index]).filter(isStep);
+    const newSteps = order.map((index) => state.scene.steps[index]).filter((step) => step !== undefined);
 
     return {
         ...state,

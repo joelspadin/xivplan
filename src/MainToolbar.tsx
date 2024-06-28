@@ -170,9 +170,6 @@ const SaveButton: React.FC<SaveButtonProps> = () => {
         [setSaveAsOpen],
     );
 
-    // TODO: now that save button is always enabled, add a dirty indicator elsewhere. Put file name and indicator next
-    // to XIVPlan title?
-
     return (
         <>
             <Menu positioning="below-end">
