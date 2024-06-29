@@ -9,6 +9,7 @@ import {
     PartyAstrologian,
     PartyBard,
     PartyBlackMage,
+    PartyBlueMage,
     PartyDancer,
     PartyDarkKnight,
     PartyDps,
@@ -22,6 +23,7 @@ import {
     PartyNinja,
     PartyPaladin,
     PartyPhysicalRanged,
+    PartyPictomancer,
     PartyRanged,
     PartyReaper,
     PartyRedMage,
@@ -30,6 +32,7 @@ import {
     PartyScholar,
     PartySummoner,
     PartyTank,
+    PartyViper,
     PartyWarrior,
     PartyWhiteMage,
 } from '../prefabs/Party';
@@ -143,8 +146,9 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
 
                 <ObjectGroup>
+                    <PartyBlueMage />
                     <PartyNinja />
-                    {/* TODO: Viper */}
+                    <PartyViper />
                     <PartyDps />
                 </ObjectGroup>
 
@@ -160,7 +164,7 @@ export const PrefabsPanel: React.FC = () => {
                     <PartyBlackMage />
                     <PartySummoner />
                     <PartyRedMage />
-                    {/* TODO: Pictomancer */}
+                    <PartyPictomancer />
                     <PartyMagicRanged />
                 </ObjectGroup>
 

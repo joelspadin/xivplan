@@ -1,23 +1,23 @@
 import * as React from 'react';
 import { StatusIcon } from './StatusIcon';
 
-function makeIcon(name: string, icon: string) {
+function makeIcon(name: string, icon: string, scale?: number) {
     // eslint-disable-next-line react/display-name
-    return () => <StatusIcon name={name} icon={`/marker/${icon}`} />;
+    return () => <StatusIcon name={name} icon={`/marker/${icon}`} scale={scale} />;
 }
 
-export const StatusAttack1 = makeIcon('Attack 1', 'attack1.png');
-export const StatusAttack2 = makeIcon('Attack 2', 'attack2.png');
-export const StatusAttack3 = makeIcon('Attack 3', 'attack3.png');
-export const StatusAttack4 = makeIcon('Attack 4', 'attack4.png');
-export const StatusAttack5 = makeIcon('Attack 5', 'attack5.png');
-export const StatusAttack6 = makeIcon('Attack 6', 'attack6.png');
-export const StatusAttack7 = makeIcon('Attack 7', 'attack7.png');
-export const StatusAttack8 = makeIcon('Attack 8', 'attack8.png');
+export const StatusAttack1 = makeIcon('Attack 1', 'attack1.png', 2);
+export const StatusAttack2 = makeIcon('Attack 2', 'attack2.png', 2);
+export const StatusAttack3 = makeIcon('Attack 3', 'attack3.png', 2);
+export const StatusAttack4 = makeIcon('Attack 4', 'attack4.png', 2);
+export const StatusAttack5 = makeIcon('Attack 5', 'attack5.png', 2);
+export const StatusAttack6 = makeIcon('Attack 6', 'attack6.png', 2);
+export const StatusAttack7 = makeIcon('Attack 7', 'attack7.png', 2);
+export const StatusAttack8 = makeIcon('Attack 8', 'attack8.png', 2);
 
-export const StatusBind1 = makeIcon('Bind 1', 'bind1.png');
-export const StatusBind2 = makeIcon('Bind 2', 'bind2.png');
-export const StatusBind3 = makeIcon('Bind 3', 'bind3.png');
+export const StatusBind1 = makeIcon('Bind 1', 'bind1.png', 2);
+export const StatusBind2 = makeIcon('Bind 2', 'bind2.png', 2);
+export const StatusBind3 = makeIcon('Bind 3', 'bind3.png', 2);
 
 export const StatusCounter1 = makeIcon('Counter 1', 'limit1.png');
 export const StatusCounter2 = makeIcon('Counter 2', 'limit2.png');
@@ -28,13 +28,13 @@ export const StatusCounter6 = makeIcon('Counter 6', 'limit6.png');
 export const StatusCounter7 = makeIcon('Counter 7', 'limit7.png');
 export const StatusCounter8 = makeIcon('Counter 8', 'limit8.png');
 
-export const StatusIgnore1 = makeIcon('Ignore 1', 'ignore1.png');
-export const StatusIgnore2 = makeIcon('Ignore 2', 'ignore2.png');
+export const StatusIgnore1 = makeIcon('Ignore 1', 'ignore1.png', 2);
+export const StatusIgnore2 = makeIcon('Ignore 2', 'ignore2.png', 2);
 
-export const StatusCircle = makeIcon('Circle', 'circle.png');
-export const StatusCross = makeIcon('Cross', 'cross.png');
-export const StatusSquare = makeIcon('Square', 'square.png');
-export const StatusTriangle = makeIcon('Triangle', 'triangle.png');
+export const StatusCircle = makeIcon('Circle', 'circle.png', 2);
+export const StatusCross = makeIcon('Cross', 'cross.png', 2);
+export const StatusSquare = makeIcon('Square', 'square.png', 2);
+export const StatusTriangle = makeIcon('Triangle', 'triangle.png', 2);
 
 export const StatusRedTarget = makeIcon('Target', 'red_target.png');
 export const StatusGreenTarget = makeIcon('Target', 'green_target.png');

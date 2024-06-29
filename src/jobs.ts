@@ -22,6 +22,7 @@ export enum Job {
     Monk,
     Dragoon,
     Ninja,
+    Viper,
     Reaper,
     Sage,
     Samurai,
@@ -31,6 +32,8 @@ export enum Job {
     BlackMage,
     Summoner,
     RedMage,
+    Pictomancer,
+    BlueMage,
 }
 
 const JOBS: Record<Job, JobProps> = {
@@ -53,6 +56,7 @@ const JOBS: Record<Job, JobProps> = {
     [Job.Monk]: { name: 'Monk', icon: 'MNK.png' },
     [Job.Dragoon]: { name: 'Dragoon', icon: 'DRG.png' },
     [Job.Ninja]: { name: 'Ninja', icon: 'NIN.png' },
+    [Job.Viper]: { name: 'Viper', icon: 'VPR.png' },
     [Job.Reaper]: { name: 'Reaper', icon: 'RPR.png' },
     [Job.Samurai]: { name: 'Samurai', icon: 'SAM.png' },
     [Job.Bard]: { name: 'Bard', icon: 'BRD.png' },
@@ -61,6 +65,8 @@ const JOBS: Record<Job, JobProps> = {
     [Job.BlackMage]: { name: 'Black Mage', icon: 'BLM.png' },
     [Job.Summoner]: { name: 'Summoner', icon: 'SMN.png' },
     [Job.RedMage]: { name: 'Red Mage', icon: 'RDM.png' },
+    [Job.Pictomancer]: { name: 'Pictomancer', icon: 'PCT.png' },
+    [Job.BlueMage]: { name: 'Blue Mage', icon: 'BLU.png' },
 };
 
 export function getJob(job: Job): JobProps {

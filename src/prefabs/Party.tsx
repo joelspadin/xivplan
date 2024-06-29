@@ -115,6 +115,7 @@ export const PartySage = makeIcon(Job.Sage);
 export const PartyMonk = makeIcon(Job.Monk);
 export const PartyDragoon = makeIcon(Job.Dragoon);
 export const PartyNinja = makeIcon(Job.Ninja);
+export const PartyViper = makeIcon(Job.Viper);
 export const PartySamurai = makeIcon(Job.Samurai);
 export const PartyReaper = makeIcon(Job.Reaper);
 
@@ -124,3 +125,6 @@ export const PartyDancer = makeIcon(Job.Dancer);
 export const PartyBlackMage = makeIcon(Job.BlackMage);
 export const PartySummoner = makeIcon(Job.Summoner);
 export const PartyRedMage = makeIcon(Job.RedMage);
+export const PartyPictomancer = makeIcon(Job.Pictomancer);
+
+export const PartyBlueMage = makeIcon(Job.BlueMage);

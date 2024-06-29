@@ -10,9 +10,10 @@ const ICON_CHOICES = [
     [Job.RoleMelee, Job.RoleRanged, Job.RoleMagicRanged, Job.RolePhysicalRanged],
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
-    [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja], // TODO: add Viper
-    [Job.BlackMage, Job.Summoner, Job.RedMage], // TODO: add Pictomancer
+    [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
+    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer],
     [Job.Bard, Job.Machinist, Job.Dancer],
+    [Job.BlueMage],
 ].map((row) => row.map((job) => getJob(job)));
 
 export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = ({ objects }) => {
@@ -38,7 +39,7 @@ export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = (
                                     key={j}
                                     appearance="transparent"
                                     title={job.name}
-                                    icon={<Image src={icon} />}
+                                    icon={<Image src={icon} width={32} height={32} />}
                                     onClick={() => onClick(job.name, icon)}
                                 />
                             );

@@ -64,13 +64,22 @@ registerListComponent<IconObject>(ObjectType.Icon, IconDetails);
 export interface StatusIconProps {
     name: string;
     icon: string;
+    scale?: number;
 }
 
-export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon }) => {
+export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, scale }) => {
     const [, setDragObject] = usePanelDrag();
     const [image] = useImage(icon);
 
-    const { width, height } = image ?? {};
+    scale = scale ?? 1;
+    let { width, height } = image ?? {};
+
+    if (width) {
+        width /= scale;
+    }
+    if (height) {
+        height /= scale;
+    }
 
     return (
         <PrefabIcon
