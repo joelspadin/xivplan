@@ -31,7 +31,7 @@ const useStyles = makeStyles({
         bottom: 0,
         display: 'grid',
         gridTemplateColumns: `auto minmax(400px, auto) 1fr`,
-        gridTemplateRows: `min-content min-content auto`,
+        gridTemplateRows: `min-content min-content 1fr`,
         gridTemplateAreas: `
                 "header     header  header"
                 "left-panel steps   right-panel"

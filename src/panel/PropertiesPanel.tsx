@@ -53,11 +53,15 @@ import { TetherTypeControl, TetherWidthControl } from './properties/TetherContro
 import { TextStyleControl, TextValueControl } from './properties/TextControls';
 import { TowerCountControl } from './properties/TowerControls';
 
-export const PropertiesPanel: React.FC = () => {
+export interface PropertiesPanelProps {
+    className?: string;
+}
+
+export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) => {
     const classes = useControlStyles();
 
     return (
-        <div className={mergeClasses(classes.panel, classes.column)}>
+        <div className={mergeClasses(classes.panel, classes.column, className)}>
             <Controls />
         </div>
     );

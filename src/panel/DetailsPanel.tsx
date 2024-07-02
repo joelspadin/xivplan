@@ -11,14 +11,9 @@ const OBJECTS_TITLE = 'Scene';
 
 export const DetailsPanel: React.FC = () => {
     const isWide = useMedia(`(min-width: 1700px)`);
-    const isTall = useMedia('(min-height: 900px)');
 
     if (isWide) {
         return <WideDetailsPanel />;
-    }
-
-    if (isTall) {
-        return <TallDetailsPanel />;
     }
 
     return <ShortDetailsPanel />;
@@ -49,25 +44,6 @@ const WideDetailsPanel: React.FC = () => {
     );
 };
 
-const TallDetailsPanel: React.FC = () => {
-    const classes = useStyles();
-    const controlClasses = useControlStyles();
-
-    return (
-        <div className={classes.tallPanel}>
-            <header className={classes.header}>{PROPERTIES_TITLE}</header>
-            <PropertiesPanel />
-
-            <Divider inset className={controlClasses.divider} />
-
-            <header className={classes.header}>{OBJECTS_TITLE}</header>
-            <div className={classes.scrollable}>
-                <SceneObjectsPanel />
-            </div>
-        </div>
-    );
-};
-
 const ShortDetailsPanel: React.FC = () => {
     const classes = useStyles();
     const [tab, setTab] = useState('properties');
@@ -76,10 +52,10 @@ const ShortDetailsPanel: React.FC = () => {
         <div className={classes.wrapper}>
             <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as string)}>
                 <Tab value="properties">{PROPERTIES_TITLE}</Tab>
-                <Tab value="object">{OBJECTS_TITLE}</Tab>
+                <Tab value="objects">{OBJECTS_TITLE}</Tab>
             </TabList>
-            {tab === 'properties' && <PropertiesPanel />}
-            {tab === 'objects' && <SceneObjectsPanel />}
+            {tab === 'properties' && <PropertiesPanel className={classes.shortPanelContent} />}
+            {tab === 'objects' && <SceneObjectsPanel className={classes.shortPanelContent} />}
         </div>
     );
 };
@@ -111,17 +87,12 @@ const useStyles = makeStyles({
         flexFlow: 'column',
     },
 
-    tallPanel: {
-        display: 'flex',
-        flexFlow: 'column',
-
-        gridArea: 'right-panel',
-        flexShrink: '0 !important',
-        height: '100%',
-        width: `${PANEL_WIDTH}px`,
-    },
-
     scrollable: {
         overflowY: 'auto',
+    },
+
+    shortPanelContent: {
+        height: 'calc(100vh - 48px - 60px)',
+        overflow: 'auto',
     },
 });

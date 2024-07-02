@@ -4,7 +4,11 @@ import { useScene } from '../SceneProvider';
 import { useControlStyles } from '../useControlStyles';
 import { ObjectList } from './ObjectList';
 
-export const SceneObjectsPanel: React.FC = () => {
+export interface SceneObjectsPanelProps {
+    className?: string;
+}
+
+export const SceneObjectsPanel: React.FC<SceneObjectsPanelProps> = ({ className }) => {
     const classes = useControlStyles();
     const { dispatch, step } = useScene();
 
@@ -16,7 +20,7 @@ export const SceneObjectsPanel: React.FC = () => {
     );
 
     return (
-        <div className={mergeClasses(classes.panel, classes.noSelect)}>
+        <div className={mergeClasses(classes.panel, classes.noSelect, className)}>
             <ObjectList objects={step.objects} onMove={moveObject} />
         </div>
     );
