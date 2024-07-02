@@ -6,14 +6,13 @@ import { PartyObject } from '../../scene';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
-    [Job.RoleAny, Job.RoleTank, Job.RoleHealer, Job.RoleDps],
+    [Job.RoleTank, Job.RoleHealer, Job.RoleDps, Job.RoleAny],
     [Job.RoleMelee, Job.RoleRanged, Job.RoleMagicRanged, Job.RolePhysicalRanged],
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
     [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
-    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer],
+    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer, Job.BlueMage],
     [Job.Bard, Job.Machinist, Job.Dancer],
-    [Job.BlueMage],
 ].map((row) => row.map((job) => getJob(job)));
 
 export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = ({ objects }) => {
@@ -62,12 +61,12 @@ const useStyles = makeStyles({
     container: {
         display: 'flex',
         flexFlow: 'column',
-        gap: tokens.spacingVerticalXXS,
+        gap: tokens.spacingVerticalXS,
     },
 
     row: {
         display: 'flex',
         flexFlow: 'row',
-        gap: tokens.spacingHorizontalXXS,
+        gap: tokens.spacingHorizontalXS,
     },
 });

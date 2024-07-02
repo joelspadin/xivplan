@@ -126,7 +126,17 @@ export const PrefabsPanel: React.FC = () => {
             </Section>
             <Section title="Party">
                 <ObjectGroup>
+                    <PartyTank />
+                    <PartyHealer />
+                    <PartyDps />
                     <PartyAny />
+                </ObjectGroup>
+
+                <ObjectGroup>
+                    <PartyMelee />
+                    <PartyRanged />
+                    <PartyMagicRanged />
+                    <PartyPhysicalRanged />
                 </ObjectGroup>
 
                 <ObjectGroup>
@@ -134,7 +144,6 @@ export const PrefabsPanel: React.FC = () => {
                     <PartyWarrior />
                     <PartyDarkKnight />
                     <PartyGunbreaker />
-                    <PartyTank />
                 </ObjectGroup>
 
                 <ObjectGroup>
@@ -142,14 +151,6 @@ export const PrefabsPanel: React.FC = () => {
                     <PartyScholar />
                     <PartyAstrologian />
                     <PartySage />
-                    <PartyHealer />
-                </ObjectGroup>
-
-                <ObjectGroup>
-                    <PartyBlueMage />
-                    <PartyNinja />
-                    <PartyViper />
-                    <PartyDps />
                 </ObjectGroup>
 
                 <ObjectGroup>
@@ -157,23 +158,22 @@ export const PrefabsPanel: React.FC = () => {
                     <PartyDragoon />
                     <PartySamurai />
                     <PartyReaper />
-                    <PartyMelee />
+                    <PartyNinja />
+                    <PartyViper />
                 </ObjectGroup>
 
                 <ObjectGroup>
+                    <PartyBlueMage />
                     <PartyBlackMage />
                     <PartySummoner />
                     <PartyRedMage />
                     <PartyPictomancer />
-                    <PartyMagicRanged />
                 </ObjectGroup>
 
                 <ObjectGroup>
                     <PartyBard />
                     <PartyMachinist />
                     <PartyDancer />
-                    <PartyPhysicalRanged />
-                    <PartyRanged />
                 </ObjectGroup>
             </Section>
 
