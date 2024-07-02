@@ -1,5 +1,5 @@
 import { Button, makeStyles, tokens } from '@fluentui/react-components';
-import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
+import { bundleIcon, DismissFilled, DismissRegular } from '@fluentui/react-icons';
 import React, { ReactNode, useMemo } from 'react';
 import { useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
@@ -33,13 +33,13 @@ export interface DetailsItemDeleteButtonProps {
     object: SceneObject;
 }
 
-const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
+const DeleteIcon = bundleIcon(DismissFilled, DismissRegular);
 
 export const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ object }) => {
     const { dispatch } = useScene();
     const deleteObject = () => dispatch({ type: 'remove', ids: object.id });
 
-    return <Button appearance="subtle" icon={<DeleteIcon />} onClick={deleteObject} />;
+    return <Button appearance="subtle" icon={<DeleteIcon />} onClick={deleteObject} title="Delete object" />;
 };
 
 const useStyles = makeStyles({
