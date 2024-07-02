@@ -41,8 +41,9 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
                     <Segment
                         key={item}
                         value={item}
-                        icon={<Image src={getTetherIcon(item)} title={getTetherName(item)} />}
+                        icon={<Image src={getTetherIcon(item)} />}
                         size="large"
+                        title={getTetherName(item)}
                     />
                 ))}
             </SegmentedGroup>
