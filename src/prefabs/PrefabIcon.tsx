@@ -1,6 +1,5 @@
 import { Image, ImageProps, makeStyles, mergeClasses } from '@fluentui/react-components';
 import React, { CSSProperties, ReactNode, useMemo } from 'react';
-import { OptionalTooltip } from '../OptionalTooltip';
 import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
 export interface PrefabIconProps extends Omit<ImageProps, 'width' | 'height'> {
@@ -33,16 +32,15 @@ export const PrefabIcon: React.FC<PrefabIconProps> = ({
     }, [width, height, filter]);
 
     return (
-        <OptionalTooltip content={name} hideDelay={0} relationship="label" withArrow>
-            <div
-                style={style}
-                className={mergeClasses(draggable && classes.draggable)}
-                draggable={draggable}
-                onDragStart={onDragStart}
-            >
-                {typeof icon === 'string' ? <Image {...props} fit="contain" src={icon} /> : icon}
-            </div>
-        </OptionalTooltip>
+        <div
+            style={style}
+            className={mergeClasses(draggable && classes.draggable)}
+            draggable={draggable}
+            onDragStart={onDragStart}
+            title={name}
+        >
+            {typeof icon === 'string' ? <Image {...props} fit="contain" src={icon} /> : icon}
+        </div>
     );
 };
 
