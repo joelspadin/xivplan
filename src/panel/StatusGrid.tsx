@@ -26,8 +26,6 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
         return chunked(items, columns);
     }, [items, columns]);
 
-    console.log(items);
-
     const { virtualizerLength, bufferItems, bufferSize, scrollRef } = useStaticVirtualizerMeasure({
         defaultItemSize: ITEM_SIZE,
     });

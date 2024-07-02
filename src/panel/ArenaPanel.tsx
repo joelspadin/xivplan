@@ -141,7 +141,6 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
                             value={group.value}
                             onClick={() => setSelectedGroup(group.value)}
                             onKeyUp={(ev) => {
-                                console.log(ev);
                                 if (ev.key === 'Enter') {
                                     ev.preventDefault();
                                     setSelectedGroup(group.value);

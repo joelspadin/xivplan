@@ -125,8 +125,6 @@ const fetchStatuses = async (search: string, signal: AbortSignal, language: Lang
     let pageIndex: number | null = 1;
 
     do {
-        console.log('fetching page', pageIndex, items);
-
         const params = new URLSearchParams({
             language,
             indexes: 'Status',

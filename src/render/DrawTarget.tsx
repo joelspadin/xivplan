@@ -59,8 +59,6 @@ function getDrawObject(points: Vector2d[], config: DrawConfig): Omit<DrawObject,
         relativePoints.push(px, py);
     }
 
-    console.log('Simplified', points.length, simplified.length);
-
     return { type: ObjectType.Draw, points: relativePoints, x, y, width, height, rotation: 0, ...config };
 }
 
