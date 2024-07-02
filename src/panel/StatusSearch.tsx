@@ -128,6 +128,7 @@ const fetchStatuses = async (search: string, signal: AbortSignal, language: Lang
         const params = new URLSearchParams({
             language,
             indexes: 'Status',
+            columns: 'Name,IconHD,MaxStacks',
             string: search,
             page: pageIndex.toString(),
         });
@@ -138,6 +139,8 @@ const fetchStatuses = async (search: string, signal: AbortSignal, language: Lang
 
         pageIndex = page.Pagination.PageNext;
     } while (pageIndex !== null);
+
+    console.log(items);
 
     return items;
 };
