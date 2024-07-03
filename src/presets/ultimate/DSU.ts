@@ -8,6 +8,7 @@ const PRESET_1: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p1.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_2A: ArenaPreset = {
@@ -18,6 +19,7 @@ const PRESET_2A: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p2a.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_2B: ArenaPreset = {
@@ -28,6 +30,7 @@ const PRESET_2B: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p2b.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_3: ArenaPreset = {
@@ -38,6 +41,7 @@ const PRESET_3: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p3.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_4: ArenaPreset = {
@@ -48,6 +52,7 @@ const PRESET_4: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p4.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_5: ArenaPreset = {
@@ -58,6 +63,7 @@ const PRESET_5: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/dsu-p5.png',
+    backgroundOpacity: 50,
 };
 
 export const ARENA_PRESETS_ULTIMATE_DSU = [PRESET_1, PRESET_2A, PRESET_2B, PRESET_3, PRESET_4, PRESET_5];

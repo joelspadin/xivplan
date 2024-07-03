@@ -8,6 +8,7 @@ const PRESET_1: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/top-p1.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_2: ArenaPreset = {
@@ -18,6 +19,7 @@ const PRESET_2: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/top-p2.png',
+    backgroundOpacity: 50,
 };
 
 export const ARENA_PRESETS_ULTIMATE_TOP = [PRESET_1, PRESET_2];

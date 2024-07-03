@@ -8,6 +8,7 @@ const PRESET_3A: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/uwu-p3a.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_3B: ArenaPreset = {
@@ -18,6 +19,7 @@ const PRESET_3B: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/uwu-p3b.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_3C: ArenaPreset = {
@@ -28,6 +30,7 @@ const PRESET_3C: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/uwu-p3c.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_5: ArenaPreset = {
@@ -38,6 +41,7 @@ const PRESET_5: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/uwu-p5.png',
+    backgroundOpacity: 50,
 };
 
 export const ARENA_PRESETS_ULTIMATE_UWU = [PRESET_3A, PRESET_3B, PRESET_3C, PRESET_5];

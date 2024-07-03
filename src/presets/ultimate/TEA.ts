@@ -8,6 +8,7 @@ const PRESET_1: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/tea-p1.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_2: ArenaPreset = {
@@ -18,6 +19,7 @@ const PRESET_2: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/tea-p2.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_3: ArenaPreset = {
@@ -28,6 +30,7 @@ const PRESET_3: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/tea-p3.png',
+    backgroundOpacity: 50,
 };
 
 const PRESET_4: ArenaPreset = {
@@ -38,6 +41,7 @@ const PRESET_4: ArenaPreset = {
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/tea-p4.png',
+    backgroundOpacity: 50,
 };
 
 export const ARENA_PRESETS_ULTIMATE_TEA = [PRESET_1, PRESET_2, PRESET_3, PRESET_4];
