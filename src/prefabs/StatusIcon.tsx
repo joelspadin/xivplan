@@ -64,10 +64,12 @@ registerListComponent<IconObject>(ObjectType.Icon, IconDetails);
 export interface StatusIconProps {
     name: string;
     icon: string;
+    iconId?: number;
+    maxStacks?: number;
     scale?: number;
 }
 
-export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, scale }) => {
+export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxStacks, scale }) => {
     const [, setDragObject] = usePanelDrag();
     const [image] = useImage(icon);
 
@@ -85,6 +87,7 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, scale }) => 
         <PrefabIcon
             draggable
             name={name}
+            title={getTitle(name, maxStacks)}
             icon={icon}
             width={width}
             height={height}
@@ -96,6 +99,8 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, scale }) => 
                         name,
                         width,
                         height,
+                        iconId,
+                        maxStacks,
                     },
                     offset: getDragOffset(e),
                 });
@@ -103,3 +108,11 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, scale }) => 
         />
     );
 };
+
+function getTitle(name: string, maxStacks: number | undefined) {
+    if (!maxStacks) {
+        return name;
+    }
+
+    return `${name} \u00D7${maxStacks}`;
+}

@@ -11,6 +11,7 @@ import {
     isDrawObject,
     isEnemy,
     isExaflareZone,
+    isIcon,
     isImageObject,
     isInnerRadiusObject,
     isMarker,
@@ -38,6 +39,7 @@ import { ConeAngleControl } from './properties/ConeControls';
 import { EnemyRingControl } from './properties/EnemyControls';
 import { ExaflareLengthControl } from './properties/ExaflareControls';
 import { HollowControl } from './properties/HollowControl';
+import { IconStacksControl } from './properties/IconControls';
 import { ImageControl } from './properties/ImageControl';
 import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
@@ -140,6 +142,7 @@ const Controls: React.FC = () => {
                     test={(x) => isArcZone(x) || isConeZone(x)}
                     control={ConeAngleControl}
                 />
+                <ControlCondition objects={objects} test={isIcon} control={IconStacksControl} />
             </div>
 
             {/* Special options */}

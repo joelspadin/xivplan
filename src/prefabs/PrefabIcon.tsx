@@ -5,6 +5,7 @@ import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 export interface PrefabIconProps extends Omit<ImageProps, 'width' | 'height'> {
     icon: string | ReactNode;
     name?: string;
+    title?: string;
     filter?: string;
     width?: number;
     height?: number;
@@ -13,6 +14,7 @@ export interface PrefabIconProps extends Omit<ImageProps, 'width' | 'height'> {
 export const PrefabIcon: React.FC<PrefabIconProps> = ({
     icon,
     name,
+    title,
     filter,
     width,
     height,
@@ -37,7 +39,7 @@ export const PrefabIcon: React.FC<PrefabIconProps> = ({
             className={mergeClasses(draggable && classes.draggable)}
             draggable={draggable}
             onDragStart={onDragStart}
-            title={name}
+            title={title ?? name}
         >
             {typeof icon === 'string' ? <Image {...props} fit="contain" src={icon} /> : icon}
         </div>

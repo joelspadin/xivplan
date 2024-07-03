@@ -177,6 +177,8 @@ export type Marker = MarkerObject | ArrowObject | TextObject;
 
 export interface IconObject extends ImageObject, NamedObject, SceneId {
     readonly type: ObjectType.Icon;
+    readonly iconId?: number;
+    readonly maxStacks?: number;
 }
 export const isIcon = makeObjectTest<IconObject>(ObjectType.Icon);
 

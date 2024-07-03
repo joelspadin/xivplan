@@ -10,7 +10,8 @@ const ITEM_SIZE = ICON_SIZE + ICON_MARGIN;
 export interface StatusItem {
     Name: string;
     IconHD: string;
-    MaxStacks: string;
+    IconID: number;
+    MaxStacks: number;
 }
 
 export interface StatusGridProps {
@@ -58,6 +59,8 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
                                         <StatusIcon
                                             name={item.Name}
                                             icon={`https://xivapi.com${item.IconHD}`}
+                                            iconId={item.IconID}
+                                            maxStacks={item.MaxStacks}
                                             scale={2}
                                         />
                                     </div>
