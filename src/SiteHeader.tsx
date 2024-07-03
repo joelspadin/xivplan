@@ -1,11 +1,12 @@
 import { Button, Link, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
 import React, { HTMLAttributes, useContext } from 'react';
+import { OutPortal } from 'react-reverse-portal';
 import { AboutDialog } from './AboutDialog';
 import { ExternalLink } from './ExternalLink';
 import { HelpContext } from './HelpProvider';
 import { DarkModeContext } from './ThemeProvider';
-import { ToolbarContext } from './ToolbarProvider';
+import { ToolbarContext } from './ToolbarContext';
 import logoUrl from './logo.svg';
 import { PANEL_WIDTH } from './panel/PanelStyles';
 
@@ -52,9 +53,9 @@ const useStyles = makeStyles({
 
 export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
     const classes = useStyles();
+    const toolbarNode = useContext(ToolbarContext);
     const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
-    const [commands] = useContext(ToolbarContext);
 
     return (
         <header className={mergeClasses(classes.root, className)} {...props}>
@@ -64,7 +65,9 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                     XIVPlan
                 </Text>
             </div>
-            <div className={classes.commandBar}>{commands}</div>
+            <div className={classes.commandBar}>
+                <OutPortal node={toolbarNode} />
+            </div>
 
             <Link onClick={() => setHelpOpen(true)} className={classes.link}>
                 Help

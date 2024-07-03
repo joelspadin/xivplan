@@ -18,7 +18,6 @@ import { MainPage } from './MainPage';
 import { SceneProvider } from './SceneProvider';
 import { SiteHeader } from './SiteHeader';
 import { ThemeProvider } from './ThemeProvider';
-import { ToolbarProvider } from './ToolbarProvider';
 import { useFileLoaderDropTarget } from './useFileLoader';
 import { HotkeyScopes } from './useHotkeys';
 
@@ -61,11 +60,9 @@ export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
         <ThemeProvider>
             <HotkeysProvider initiallyActiveScopes={[HotkeyScopes.Default, HotkeyScopes.AlwaysEnabled]}>
                 <HelpProvider>
-                    <ToolbarProvider>
-                        <SceneProvider initialScene={sceneFromLink}>
-                            <DirtyProvider>{children}</DirtyProvider>
-                        </SceneProvider>
-                    </ToolbarProvider>
+                    <SceneProvider initialScene={sceneFromLink}>
+                        <DirtyProvider>{children}</DirtyProvider>
+                    </SceneProvider>
                 </HelpProvider>
             </HotkeysProvider>
         </ThemeProvider>

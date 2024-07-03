@@ -17,9 +17,11 @@ import {
     SaveEditRegular,
     SaveRegular,
 } from '@fluentui/react-icons';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useState } from 'react';
+import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
+import { ToolbarContext } from './ToolbarContext';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialogButton } from './file/ShareDialogButton';
@@ -27,7 +29,6 @@ import { downloadScene, getBlobSource } from './file/blob';
 import { DialogOpenContext } from './useCloseDialog';
 import { useHotkeys } from './useHotkeys';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
-import { useToolbar } from './useToolbar';
 
 const useStyles = makeStyles({
     toolbar: {
@@ -38,6 +39,7 @@ const useStyles = makeStyles({
 
 export const MainToolbar: React.FC = () => {
     const classes = useStyles();
+    const toolbarNode = useContext(ToolbarContext);
     const [undo, redo] = useSceneUndoRedo();
     const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const [openFileOpen, setOpenFileOpen] = useState(false);
@@ -53,37 +55,33 @@ export const MainToolbar: React.FC = () => {
         [setOpenFileOpen],
     );
 
-    const toolbar = useMemo(() => {
-        return (
-            <Toolbar className={classes.toolbar}>
-                {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
-                <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
-                    Open
-                </CollapsableToolbarButton>
-
-                <SaveButton />
-
-                <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
-                    Undo
-                </CollapsableToolbarButton>
-                <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
-                    Redo
-                </CollapsableToolbarButton>
-
-                <ToolbarDivider />
-
-                <ShareDialogButton>Share</ShareDialogButton>
-            </Toolbar>
-        );
-    }, [undoPossible, redoPossible, classes.toolbar, setOpenFileOpen, undo, redo]);
-
-    useToolbar(toolbar);
-
     return (
         <>
             <DialogOpenContext.Provider value={setOpenFileOpen}>
                 <OpenDialog open={openFileOpen} onOpenChange={(ev, data) => setOpenFileOpen(data.open)} />
             </DialogOpenContext.Provider>
+
+            <InPortal node={toolbarNode}>
+                <Toolbar className={classes.toolbar}>
+                    {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
+                    <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
+                        Open
+                    </CollapsableToolbarButton>
+
+                    <SaveButton />
+
+                    <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
+                        Undo
+                    </CollapsableToolbarButton>
+                    <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
+                        Redo
+                    </CollapsableToolbarButton>
+
+                    <ToolbarDivider />
+
+                    <ShareDialogButton>Share</ShareDialogButton>
+                </Toolbar>
+            </InPortal>
         </>
     );
 };
