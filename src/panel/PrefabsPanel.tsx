@@ -196,7 +196,7 @@ export const PrefabsPanel: React.FC = () => {
                     <TetherPlusPlus />
                     <TetherMinusMinus />
                 </ObjectGroup>
-                <Text block size={200}>
+                <Text block size={200} data-nosnippet>
                     Select a tether type, then click two objects to add a tether. Press <HotkeyName keys="esc" /> or
                     unselect the tether button to cancel. Use <HotkeyName keys="ctrl" /> + click to create chains.
                 </Text>
