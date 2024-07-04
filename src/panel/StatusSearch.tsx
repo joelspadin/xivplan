@@ -8,7 +8,7 @@ import {
     shorthands,
     tokens,
 } from '@fluentui/react-components';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import { PANEL_PADDING } from './PanelStyles';
 import { StatusGrid, StatusItem } from './StatusGrid';
@@ -60,10 +60,7 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
         [controller, onFilterChanged],
     );
 
-    const [, cancel] = useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
-    useEffect(() => {
-        return cancel;
-    }, [cancel]);
+    useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
 
     const items = useAsync(async () => {
         if (!debouncedFilter) {

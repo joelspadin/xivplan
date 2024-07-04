@@ -10,7 +10,7 @@ import {
     SquareRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DeferredInput } from '../DeferredInput';
 import { InfoField } from '../InfoField';
 import { useScene } from '../SceneProvider';
@@ -96,33 +96,21 @@ export const ArenaGridEdit: React.FC = () => {
     const [customRings, setCustomRings] = useState(formatCustomGridRings(grid));
     const [customSpokes, setCustomSpokes] = useState(formatCustomGridSpokes(grid));
 
-    useEffect(() => {
-        switch (grid.type) {
-            case GridType.CustomRectangular:
-                if (didCustomRectGridChange(grid, customRows, customCols)) {
-                    setCustomRows(formatCustomGridRows(grid));
-                    setCustomCols(formatCustomGridCols(grid));
-                }
-                break;
+    switch (grid.type) {
+        case GridType.CustomRectangular:
+            if (didCustomRectGridChange(grid, customRows, customCols)) {
+                setCustomRows(formatCustomGridRows(grid));
+                setCustomCols(formatCustomGridCols(grid));
+            }
+            break;
 
-            case GridType.CustomRadial:
-                if (didCustomRadialGridChange(grid, customRings, customSpokes)) {
-                    setCustomRings(formatCustomGridRings(grid));
-                    setCustomSpokes(formatCustomGridSpokes(grid));
-                }
-                break;
-        }
-    }, [
-        grid,
-        customRows,
-        customCols,
-        setCustomRows,
-        setCustomCols,
-        customRings,
-        customSpokes,
-        setCustomRings,
-        setCustomSpokes,
-    ]);
+        case GridType.CustomRadial:
+            if (didCustomRadialGridChange(grid, customRings, customSpokes)) {
+                setCustomRings(formatCustomGridRings(grid));
+                setCustomSpokes(formatCustomGridSpokes(grid));
+            }
+            break;
+    }
 
     const onTypeChange = useCallback(
         (option?: GridType) => {

@@ -1,5 +1,5 @@
 import { Input, InputProps } from '@fluentui/react-components';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDebounce } from 'react-use';
 
 const DEFAULT_DEBOUNCE_TIME = 1000;
@@ -26,13 +26,15 @@ export const DeferredInput: React.FC<DeferredInputProps> = ({
 }) => {
     debounceTime = debounceTime ?? DEFAULT_DEBOUNCE_TIME;
 
+    const [prevValue, setPrevValue] = useState(value);
     const [currentValue, setCurrentValue] = useState(value);
     const [latestEvent, setLatestEvent] = useState<ChangeHandlerParameters>();
 
-    useEffect(() => {
+    if (value !== prevValue) {
+        setPrevValue(value);
         setCurrentValue(value);
         setLatestEvent(undefined);
-    }, [value]);
+    }
 
     const notifyChanged = useCallback(() => {
         if (latestEvent) {
@@ -67,10 +69,7 @@ export const DeferredInput: React.FC<DeferredInputProps> = ({
         [notifyChanged, onKeyUp],
     );
 
-    const [, cancelDebounce] = useDebounce(notifyChanged, debounceTime, [currentValue]);
-    useEffect(() => {
-        return cancelDebounce;
-    }, [cancelDebounce]);
+    useDebounce(notifyChanged, debounceTime, [currentValue]);
 
     return (
         <Input

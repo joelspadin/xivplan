@@ -38,7 +38,7 @@ import {
     MoreHorizontalRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import { getPlanFolder, showOpenPlanPicker, showPlanFolderPicker } from './filesystem';
 
@@ -70,16 +70,63 @@ export interface FileBrowserProps {
     onFileSelected?: (handle: FileSystemFileHandle) => void;
 }
 
-export const FileBrowser: React.FC<FileBrowserProps> = ({ className, onSelectionChanged, onFileSelected }) => {
+export const FileBrowser: React.FC<FileBrowserProps> = (props) => {
+    const folder = useAsync(getPlanFolder);
+
+    // Render an empty browser until folder.value resolves, then replace the
+    // whole component to avoid needing to handl changes to "planFolder" inside.
+    return <FileBrowserInner key={folder.value ? 0 : 1} planFolder={folder.value} {...props} />;
+};
+
+interface FileBrowserInnerProps extends FileBrowserProps {
+    planFolder: FileSystemDirectoryHandle | undefined;
+}
+
+const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
+    className,
+    planFolder,
+    onSelectionChanged,
+    onFileSelected,
+}) => {
     const classes = useStyles();
     const [tree, setTree] = useState(new DirectoryTree());
-    const [root, setRootInner] = useState<FileSystemDirectoryHandle>();
-    const [folder, setFolder] = useState<FileSystemDirectoryHandle>();
-    const [selectedRows, setSelectedRows] = useState(new Set<TableRowId>());
+    const [root, setRootInner] = useState(planFolder);
+    const [folder, setFolderInner] = useState(planFolder);
+    const [selectedRows, setSelectedRowsInner] = useState(new Set<TableRowId>());
 
     const parents = useMemo(() => {
         return folder ? tree.getPath(folder).split('/') : [];
     }, [tree, folder]);
+
+    const items = useAsync(async () => {
+        return root && folder ? await tree.getEntries(root, folder) : [];
+    }, [tree, root, folder]);
+
+    // Fire selection changed event whenever the list of items changes, or the
+    // selected item changes.
+    const fireSelectionChanged = useCallback(
+        (selection: Set<TableRowId>) => {
+            const selectedFile = findSelectedFile(items.value ?? [], selection);
+            onSelectionChanged?.(selectedFile);
+        },
+        [items.value, onSelectionChanged],
+    );
+
+    const setSelectedRows = useCallback(
+        (value: Set<TableRowId>) => {
+            setSelectedRowsInner(value);
+            fireSelectionChanged(value);
+        },
+        [setSelectedRowsInner, fireSelectionChanged],
+    );
+
+    const setFolder = useCallback(
+        (handle: FileSystemDirectoryHandle | undefined) => {
+            setFolderInner(handle);
+            setSelectedRows(new Set());
+        },
+        [setFolderInner, setSelectedRows],
+    );
 
     const setRoot = useCallback(
         (handle: FileSystemDirectoryHandle | undefined) => {
@@ -89,22 +136,6 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({ className, onSelection
         },
         [setRootInner, setFolder, setTree],
     );
-
-    useEffect(() => {
-        const initRoot = async () => {
-            setRoot(await getPlanFolder());
-        };
-        initRoot();
-    }, [setRoot]);
-
-    const items = useAsync(async () => {
-        return root && folder ? await tree.getEntries(root, folder) : [];
-    }, [tree, root, folder]);
-
-    useEffect(() => {
-        const selectedFile = findSelectedFile(items.value ?? [], selectedRows);
-        onSelectionChanged?.(selectedFile);
-    }, [items, selectedRows, onSelectionChanged]);
 
     const navigateToParent = useCallback(
         (index?: number) => {
