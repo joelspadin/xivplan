@@ -5,7 +5,7 @@ import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { LineConfig } from 'konva/lib/shapes/Line';
 import { Vector2d } from 'konva/lib/types';
 import * as React from 'react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
 import { getObjectById, useScene } from '../SceneProvider';
@@ -34,6 +34,7 @@ import {
 } from '../scene';
 import { selectNone, useIsSelected, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
+import { useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
 import { MagnetMinus, MagnetPlus } from './Magnets';
@@ -321,9 +322,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const isSelectable = editMode === EditMode.Normal;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useEffect(() => {
-        groupRef.current?.cache();
-    }, [object, startObject, endObject, groupRef, showHighlight]);
+    useKonvaCache(groupRef, [object, startObject, endObject, showHighlight]);
 
     return (
         <SelectableObject object={object}>
@@ -372,9 +371,7 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
     const Renderer = getRenderer(tether);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useEffect(() => {
-        groupRef.current?.cache();
-    }, [startObject, cursorPos, tether, groupRef]);
+    useKonvaCache(groupRef, [startObject, cursorPos, tether]);
 
     return (
         <Group ref={groupRef} opacity={0.5}>

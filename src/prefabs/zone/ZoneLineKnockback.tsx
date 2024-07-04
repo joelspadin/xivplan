@@ -56,8 +56,8 @@ registerDropHandler<RectangleZone>(ObjectType.LineKnockback, (object, position) 
     };
 });
 
-const OFFSCREEN_X = -1000;
-const OFFSCREEN_Y = -1000;
+const OFFSCREEN_X = -10000;
+const OFFSCREEN_Y = -10000;
 
 const PATTERN_W = 50;
 const PATTERN_H = 50;

@@ -1,8 +1,9 @@
 import Konva from 'konva';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { KonvaNodeEvents } from 'react-konva';
 import { ActivePortal } from '../render/Portals';
 import { ResizeableObject, UnknownObject } from '../scene';
+import { useKonvaCache } from '../useKonvaCache';
 import { DraggableObject } from './DraggableObject';
 import { Resizer, ResizerProps } from './Resizer';
 
@@ -17,7 +18,7 @@ export interface ResizeableObjectContainerProps {
     children: (groupProps: GroupProps) => React.ReactElement;
 }
 
-export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps> = ({
+export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps> = ({
     object,
     cache,
     cacheKey,
@@ -29,11 +30,7 @@ export const ResizeableObjectContainer: React.VFC<ResizeableObjectContainerProps
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
-    useEffect(() => {
-        if (cache) {
-            shapeRef.current?.cache();
-        }
-    }, [cache, cacheKey, shapeRef, object]);
+    useKonvaCache(shapeRef, !!cache, [cacheKey, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>

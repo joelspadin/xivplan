@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
-import { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 import { Arc, Circle, Group, Path, Text } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -16,6 +16,7 @@ import {
 } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { EnemyObject, ObjectType } from '../scene';
+import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
@@ -170,9 +171,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
     const arrowScale = radius / 32;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useEffect(() => {
-        groupRef.current?.cache();
-    }, [radius, color, groupRef]);
+    useKonvaCache(groupRef, [radius, color]);
 
     return (
         <>

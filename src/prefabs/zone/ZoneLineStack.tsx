@@ -59,8 +59,8 @@ registerDropHandler<RectangleZone>(ObjectType.LineStack, (object, position) => {
     };
 });
 
-const OFFSCREEN_X = -1000;
-const OFFSCREEN_Y = -1000;
+const OFFSCREEN_X = -10000;
+const OFFSCREEN_Y = -10000;
 
 const CHEVRON_ANGLE = 40;
 

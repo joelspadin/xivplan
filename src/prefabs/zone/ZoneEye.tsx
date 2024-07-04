@@ -1,7 +1,7 @@
 import Color from 'colorjs.io';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useEffect, useMemo, useRef } from 'react';
+import React, { RefObject, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import icon from '../../assets/zone/eye.png';
@@ -11,6 +11,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
+import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -145,9 +146,7 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
     const highlightColor = useMemo(() => getHighlightColor(object.color), [object.color]);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useEffect(() => {
-        groupRef.current?.cache();
-    }, [object.color, object.opacity, radius, showHighlight, groupRef]);
+    useKonvaCache(groupRef, [object.color, object.opacity, radius, showHighlight]);
 
     return (
         <>

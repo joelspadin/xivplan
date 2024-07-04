@@ -11,6 +11,7 @@ import { ActivePortal } from '../render/Portals';
 import { SELECTED_PROPS, useSceneTheme } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { ObjectType, TextObject } from '../scene';
+import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { DraggableObject } from './DraggableObject';
 import { PrefabIcon } from './PrefabIcon';
@@ -64,10 +65,6 @@ registerDropHandler<TextObject>(ObjectType.Text, (object, position) => {
 
 const LINE_HEIGHT = 1.2;
 
-// function lineCount(text: string) {
-//     return text.split('\n').length;
-// }
-
 function measureText(
     node: Konva.Text,
     text: string,
@@ -95,8 +92,6 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
-
-    // const minHeight = useMemo(() => MIN_FONT_SIZE * LINE_HEIGHT * lineCount(object.text), [object.text]);
 
     useEffect(() => {
         if (showResizer && trRef.current && nodeRef.current) {
@@ -147,9 +142,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
-    useEffect(() => {
-        shapeRef.current?.cache();
-    }, [cacheKey, shapeRef, object]);
+    useKonvaCache(shapeRef, [cacheKey, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
@@ -188,10 +181,22 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
         }
     }, [textRef, object.text, object.fontSize]);
 
-    useEffect(() => {
+    const [prevSize, setPrevSize] = useState(size);
+    const [prevShowHighlight, setPrevShowHighlight] = useState(showHighlight);
+    const [prevMeasuredFontSize, setPrevMeasuredFontSize] = useState(measuredFontSize);
+
+    if (size !== prevSize) {
+        setPrevSize(size);
         setCacheKey(cacheKey + 1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [textRef, showHighlight, size, measuredFontSize]);
+    }
+    if (showHighlight !== prevShowHighlight) {
+        setPrevShowHighlight(showHighlight);
+        setCacheKey(cacheKey + 1);
+    }
+    if (measuredFontSize !== prevMeasuredFontSize) {
+        setPrevMeasuredFontSize(measuredFontSize);
+        setCacheKey(cacheKey + 1);
+    }
 
     const strokeWidth = Math.max(1, measuredFontSize / 8);
 

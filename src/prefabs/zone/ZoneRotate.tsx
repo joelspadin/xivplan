@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useEffect, useMemo, useRef } from 'react';
+import React, { RefObject, useMemo, useRef } from 'react';
 import { Circle, Group, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
@@ -11,6 +11,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { CENTER_DOT_RADIUS, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
+import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -112,9 +113,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
     }, [object.color, radius, isClockwise]);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useEffect(() => {
-        groupRef.current?.cache();
-    }, [object, radius, arrow, isDragging, groupRef]);
+    useKonvaCache(groupRef, [object, radius, arrow, isDragging]);
 
     return (
         <>
