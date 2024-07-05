@@ -20,6 +20,7 @@
     "@hello-pangea/dnd": "^16.6.0",
     "@uiw/react-color-hue": "^2.3.0",
     "@uiw/react-color-saturation": "^2.3.0",
+    "client-zip": "^2.4.5",
     "colorize-filter": "^1.0.3",
     "colorjs.io": "^0.5.2",
     "history": "^5.3.0",

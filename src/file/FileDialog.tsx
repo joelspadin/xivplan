@@ -24,7 +24,7 @@ export type OpenDialogProps = Omit<DialogProps, 'children'>;
 export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
     const classes = useStyles();
     const [tab, setTab] = useState<TabValue>(supportsFs ? 'file' : 'localStorage');
-    const portalNode = useMemo(() => createHtmlPortalNode(), []);
+    const portalNode = useMemo(() => createHtmlPortalNode({ attributes: { class: classes.actionsPortal } }), [classes]);
 
     return (
         <Dialog {...props}>
@@ -48,7 +48,7 @@ export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
                         {tab === 'import' && <ImportFromString actions={portalNode} />}
                         {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage actions={portalNode} />}
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions fluid className={classes.actionsPortal}>
                         <OutPortal node={portalNode} />
                     </DialogActions>
                 </HotkeyBlockingDialogBody>
@@ -104,5 +104,11 @@ const useStyles = makeStyles({
 
     tabs: {
         marginBottom: tokens.spacingVerticalM,
+    },
+
+    actionsPortal: {
+        display: 'flex',
+        justifyContent: 'end',
+        width: '100%',
     },
 });

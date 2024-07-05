@@ -27,6 +27,7 @@ import { FileSource, useLoadScene, useScene } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
+import { DownloadLocalStorageButton } from './DownloadLocalStorageButton';
 import { useConfirmDeleteFile, useConfirmOverwriteFile, useConfirmUnsavedChanges } from './confirm';
 import { LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
 
@@ -181,7 +182,8 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
             {renderModal2()}
 
             <InPortal node={actions}>
-                <DialogActions>
+                <DialogActions fluid className={classes.actions}>
+                    <DownloadLocalStorageButton />
                     <Button appearance="primary" disabled={selectedRows.size === 0} onClick={openCallback}>
                         Open
                     </Button>
@@ -278,5 +280,9 @@ const useStyles = makeStyles({
     fileList: {
         height: '40vh',
         overflowY: 'auto',
+    },
+
+    actions: {
+        width: '100%',
     },
 });

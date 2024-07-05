@@ -34,13 +34,17 @@ export function downloadScene(scene: Readonly<Scene>, name: string | undefined) 
         type: 'application/vnd.xivplan.plan+json',
     });
 
-    const url = window.URL.createObjectURL(file);
+    downloadBlob(file, name);
+}
+
+export function downloadBlob(blob: Blob | MediaSource, name: string) {
+    const url = window.URL.createObjectURL(blob);
 
     const link = document.createElement('a');
-    link.style.display = 'none';
     link.href = url;
     link.download = name;
     link.click();
+    link.remove();
 
     window.URL.revokeObjectURL(url);
 }
