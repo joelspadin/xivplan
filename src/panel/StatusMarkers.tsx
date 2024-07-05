@@ -55,6 +55,8 @@ export const StatusMarkers: React.FC = () => {
                     <StatusAttack2 />
                     <StatusAttack3 />
                     <StatusAttack4 />
+                </ObjectGroup>
+                <ObjectGroup>
                     <StatusAttack5 />
                     <StatusAttack6 />
                     <StatusAttack7 />
