@@ -23,6 +23,7 @@ export function useKonvaCache(
     // where the object draws with its old cached appearance.
     const [prevRef, setPrevRef] = useState(ref.current);
     const [prevDeps, setPrevDeps] = useState(deps);
+    const [prevEnabled, setPrevEnabled] = useState(enabled);
 
     if (ref.current !== prevRef) {
         setPrevRef(ref.current);
@@ -31,6 +32,11 @@ export function useKonvaCache(
 
     if (!depsEqual(prevDeps, deps)) {
         setPrevDeps(deps);
+        ref.current?.clearCache();
+    }
+
+    if (enabled !== prevEnabled) {
+        setPrevEnabled(enabled);
         ref.current?.clearCache();
     }
 
