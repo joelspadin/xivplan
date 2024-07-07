@@ -19,11 +19,18 @@ import { OpenLocalStorage, SaveLocalStorage } from './FileDialogLocalStorage';
 import { ImportFromString } from './FileDialogShare';
 import { supportsFs } from './filesystem';
 
+enum Tabs {
+    File = 'file',
+    LocalStorage = 'localStorage',
+    Import = 'import',
+    FileUnsupported = 'fileUnsupported',
+}
+
 export type OpenDialogProps = Omit<DialogProps, 'children'>;
 
 export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
     const classes = useStyles();
-    const [tab, setTab] = useState<TabValue>(supportsFs ? 'file' : 'localStorage');
+    const [tab, setTab] = useState<TabValue>(supportsFs ? Tabs.File : Tabs.LocalStorage);
     const portalNode = useMemo(() => createHtmlPortalNode({ attributes: { class: classes.actionsPortal } }), [classes]);
 
     return (
@@ -38,15 +45,15 @@ export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
                             selectedValue={tab}
                             onTabSelect={(ev, data) => setTab(data.value)}
                         >
-                            {supportsFs && <Tab value="file">Local file</Tab>}
-                            <Tab value="localStorage">Browser storage</Tab>
-                            <Tab value="import">Import plan link</Tab>
-                            {!supportsFs && <Tab value="fileUnsupported">Local file</Tab>}
+                            {supportsFs && <Tab value={Tabs.File}>Local file</Tab>}
+                            <Tab value={Tabs.LocalStorage}>Browser storage</Tab>
+                            <Tab value={Tabs.Import}>Import plan link</Tab>
+                            {!supportsFs && <Tab value={Tabs.FileUnsupported}>Local file</Tab>}
                         </TabList>
-                        {tab === 'file' && <OpenFileSystem actions={portalNode} />}
-                        {tab === 'localStorage' && <OpenLocalStorage actions={portalNode} />}
-                        {tab === 'import' && <ImportFromString actions={portalNode} />}
-                        {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage actions={portalNode} />}
+                        {tab === Tabs.File && <OpenFileSystem actions={portalNode} />}
+                        {tab === Tabs.LocalStorage && <OpenLocalStorage actions={portalNode} />}
+                        {tab === Tabs.Import && <ImportFromString actions={portalNode} />}
+                        {tab === Tabs.FileUnsupported && <FileSystemNotSupportedMessage actions={portalNode} />}
                     </DialogContent>
                     <DialogActions fluid className={classes.actionsPortal}>
                         <OutPortal node={portalNode} />
@@ -76,13 +83,15 @@ export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
                             selectedValue={tab}
                             onTabSelect={(ev, data) => setTab(data.value)}
                         >
-                            {supportsFs && <Tab value="file">Local file</Tab>}
-                            <Tab value="localStorage">Browser storage</Tab>
-                            {!supportsFs && <Tab value="fileUnsupported">Local file</Tab>}
+                            {supportsFs && <Tab value={Tabs.File}>Local file</Tab>}
+                            <Tab value={Tabs.LocalStorage}>Browser storage</Tab>
+                            {!supportsFs && <Tab value={Tabs.FileUnsupported}>Local file</Tab>}
                         </TabList>
-                        {tab === 'file' && <SaveFileSystem actions={portalNode} />}
-                        {tab === 'localStorage' && <SaveLocalStorage actions={portalNode} />}
-                        {tab === 'fileUnsupported' && <FileSystemNotSupportedMessage actions={portalNode} download />}
+                        {tab === Tabs.File && <SaveFileSystem actions={portalNode} />}
+                        {tab === Tabs.LocalStorage && <SaveLocalStorage actions={portalNode} />}
+                        {tab === Tabs.FileUnsupported && (
+                            <FileSystemNotSupportedMessage actions={portalNode} download />
+                        )}
                     </DialogContent>
                     <DialogActions>
                         <OutPortal node={portalNode} />

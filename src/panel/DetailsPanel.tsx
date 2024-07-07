@@ -1,4 +1,4 @@
-import { Divider, makeStyles, Tab, TabList, typographyStyles } from '@fluentui/react-components';
+import { Divider, makeStyles, Tab, TabList, TabValue, typographyStyles } from '@fluentui/react-components';
 import React, { useState } from 'react';
 import { useMedia } from 'react-use';
 import { useControlStyles } from '../useControlStyles';
@@ -44,18 +44,23 @@ const WideDetailsPanel: React.FC = () => {
     );
 };
 
+enum Tabs {
+    Properties = 'properties',
+    Objects = 'objects',
+}
+
 const ShortDetailsPanel: React.FC = () => {
     const classes = useStyles();
-    const [tab, setTab] = useState('properties');
+    const [tab, setTab] = useState<TabValue>(Tabs.Properties);
 
     return (
         <div className={classes.wrapper}>
-            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as string)}>
-                <Tab value="properties">{PROPERTIES_TITLE}</Tab>
-                <Tab value="objects">{OBJECTS_TITLE}</Tab>
+            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value)}>
+                <Tab value={Tabs.Properties}>{PROPERTIES_TITLE}</Tab>
+                <Tab value={Tabs.Objects}>{OBJECTS_TITLE}</Tab>
             </TabList>
-            {tab === 'properties' && <PropertiesPanel className={classes.shortPanelContent} />}
-            {tab === 'objects' && <SceneObjectsPanel className={classes.shortPanelContent} />}
+            {tab === Tabs.Properties && <PropertiesPanel className={classes.shortPanelContent} />}
+            {tab === Tabs.Objects && <SceneObjectsPanel className={classes.shortPanelContent} />}
         </div>
     );
 };
