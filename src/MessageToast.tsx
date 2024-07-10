@@ -1,4 +1,4 @@
-import { Toast, ToastBody, ToastProps, ToastTitle } from '@fluentui/react-components';
+import { Text, Toast, ToastBody, ToastProps, ToastTitle } from '@fluentui/react-components';
 import React from 'react';
 
 export interface MessageToastProps extends ToastProps {
@@ -12,7 +12,9 @@ export const MessageToast: React.FC<MessageToastProps> = ({ title, message, ...p
     return (
         <Toast {...props}>
             <ToastTitle>{title}</ToastTitle>
-            <ToastBody>{messageStr}</ToastBody>
+            <ToastBody>
+                <Text>{messageStr}</Text>
+            </ToastBody>
         </Toast>
     );
 };

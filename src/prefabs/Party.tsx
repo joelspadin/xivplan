@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Group, Image, Rect } from 'react-konva';
-import useImage from 'use-image';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { getJob, getJobIconUrl, Job } from '../jobs';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -9,6 +8,7 @@ import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
+import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
@@ -63,7 +63,7 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image, 'anonymous');
+    const [image] = useImageTracked(object.image);
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>

@@ -8,6 +8,7 @@ import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { IconObject, ObjectType } from '../scene';
+import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
@@ -32,7 +33,7 @@ registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
 
 const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image, 'anonymous');
+    const [image] = useImageTracked(object.image);
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>

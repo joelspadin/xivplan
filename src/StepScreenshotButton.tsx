@@ -8,16 +8,19 @@ import {
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
-import React, { useCallback, useContext, useRef, useState } from 'react';
-import { useEffectOnce } from 'react-use';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useTimeoutFn } from 'react-use';
 import { CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
 import { MessageToast } from './MessageToast';
+import { ObjectLoadingContext, ObjectLoadingProvider } from './ObjectLoadingContext';
 import { ScenePreview } from './render/SceneRenderer';
 import { useScene } from './SceneProvider';
 import { DarkModeContext } from './ThemeProvider';
 import { getTheme } from './themes';
 import { useHotkeys } from './useHotkeys';
+
+const SCREENSHOT_TIMEOUT = 1000;
 
 export type StepScreenshotButtonProps = ToolbarButtonProps;
 
@@ -39,6 +42,23 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
         [dispatchToast, setTakingScreenshot],
     );
 
+    // Cancel the screenshot if it takes too long so it can't get stuck.
+    const handleTimeout = useCallback(() => {
+        if (!takingScreenshot) {
+            return;
+        }
+
+        setTakingScreenshot(false);
+        dispatchToast(<MessageToast title="Error" message="Screenshot timed out" />, { intent: 'error' });
+    }, [takingScreenshot, dispatchToast, setTakingScreenshot]);
+
+    const [, , startTimeout] = useTimeoutFn(handleTimeout, SCREENSHOT_TIMEOUT);
+
+    const startScreenshot = useCallback(() => {
+        setTakingScreenshot(true);
+        startTimeout();
+    }, [setTakingScreenshot, startTimeout]);
+
     useHotkeys(
         'ctrl+shift+c',
         '7.Steps',
@@ -56,11 +76,13 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
                 {...props}
                 icon={<ScreenshotRegular />}
                 disabled={takingScreenshot}
-                onClick={() => setTakingScreenshot(true)}
+                onClick={startScreenshot}
             />
             {takingScreenshot && (
                 <Portal mountNode={{ className: classes.screenshot }}>
-                    <ScreenshotComponent onScreenshotDone={handleScreenshotDone} />
+                    <ObjectLoadingProvider>
+                        <ScreenshotComponent onScreenshotDone={handleScreenshotDone} />
+                    </ObjectLoadingProvider>
                 </Portal>
             )}
         </>
@@ -80,19 +102,15 @@ interface ScreenshotComponentProps {
 }
 
 const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ onScreenshotDone }) => {
+    const { isLoading } = useContext(ObjectLoadingContext);
     const { scene, stepIndex } = useScene();
-    const ref = useRef<Konva.Stage>(null);
+    const [frozenScene] = useState(scene);
+    const [frozenStepIndex] = useState(stepIndex);
     const [darkMode] = useContext(DarkModeContext);
+    const ref = useRef<Konva.Stage>(null);
 
     const takeScreenshot = useCallback(async () => {
         try {
-            // TODO: replace this delay with some sort of counter on the number of loading images.
-            // Make a new hook that wraps useImage() and keeps a reference count or set of image URLs?
-            // Also have a timeout in case an image is stuck loading.
-            await new Promise((resolve) => {
-                setTimeout(resolve, 500);
-            });
-
             if (!ref.current) {
                 throw new Error('Stage missing');
             }
@@ -104,28 +122,35 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ onScreenshotD
         }
     }, [onScreenshotDone]);
 
+    // Delay screenshot by at least one render to make sure any objects that need
+    // to load resources have reported that they are loading.
+    const [firstRender, setFirstRender] = useState(true);
+    useEffect(() => {
+        setFirstRender(false);
+    }, [setFirstRender]);
+
     // Avoid double screenshot in development builds.
     const screenshotTaken = useRef(false);
 
-    useEffectOnce(() => {
-        if (!screenshotTaken.current) {
+    useEffect(() => {
+        if (!firstRender && !isLoading && !screenshotTaken.current) {
             takeScreenshot();
 
             return () => {
                 screenshotTaken.current = true;
             };
         }
-    });
+    }, [firstRender, isLoading, takeScreenshot]);
 
-    const size = getCanvasSize(scene);
+    const size = getCanvasSize(frozenScene);
     const theme = getTheme(darkMode);
 
     return (
         <ScenePreview
             ref={ref}
             backgroundColor={theme.colorNeutralBackground1}
-            scene={scene}
-            stepIndex={stepIndex}
+            scene={frozenScene}
+            stepIndex={frozenStepIndex}
             width={size.width}
             height={size.height}
         />

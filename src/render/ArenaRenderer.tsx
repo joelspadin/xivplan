@@ -2,7 +2,6 @@ import { Context as KonvaContext } from 'konva/lib/Context';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { PropsWithChildren } from 'react';
 import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
-import useImage from 'use-image';
 import { useScene } from '../SceneProvider';
 import {
     ALIGN_TO_PIXEL,
@@ -24,6 +23,7 @@ import {
     RectangularGrid,
     Scene,
 } from '../scene';
+import { useImageTracked } from '../useObjectLoading';
 import { degtorad } from '../util';
 import { useSceneTheme } from './SceneTheme';
 
@@ -87,7 +87,7 @@ const ArenaClip: React.FC<PropsWithChildren> = ({ children }) => {
 
 const BackgroundImage: React.FC = () => {
     const { scene } = useScene();
-    const [image] = useImage(scene.arena.backgroundImage ?? '', 'anonymous');
+    const [image] = useImageTracked(scene.arena.backgroundImage ?? '');
 
     if (!image) {
         return null;

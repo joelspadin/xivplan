@@ -1,7 +1,6 @@
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
-import useImage from 'use-image';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -16,6 +15,7 @@ import {
 } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { MarkerObject, ObjectType } from '../scene';
+import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
@@ -152,7 +152,7 @@ const RectangleOutline: React.FC<OutlineProps> = ({
 
 const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image, 'anonymous');
+    const [image] = useImageTracked(object.image);
 
     const iconWidth = object.width * ICON_RATIO;
     const iconHeight = object.height * ICON_RATIO;
