@@ -72,63 +72,68 @@ export interface ScenePreviewProps {
     stepIndex?: number;
     width?: number;
     height?: number;
+    backgroundColor?: string;
 }
 
-export const ScenePreview: React.FC<ScenePreviewProps> = ({ scene, stepIndex, width, height }) => {
-    const size = getCanvasSize(scene);
-    let scale = 1;
-    let x = 0;
-    let y = 0;
+export const ScenePreview = React.forwardRef<Konva.Stage, ScenePreviewProps>(
+    ({ scene, stepIndex, width, height, backgroundColor }, ref) => {
+        const size = getCanvasSize(scene);
+        let scale = 1;
+        let x = 0;
+        let y = 0;
 
-    if (width) {
-        scale = Math.min(scale, width / size.width);
-    }
-    if (height) {
-        scale = Math.min(scale, height / size.height);
-    }
+        if (width) {
+            scale = Math.min(scale, width / size.width);
+        }
+        if (height) {
+            scale = Math.min(scale, height / size.height);
+        }
 
-    size.width *= scale;
-    size.height *= scale;
+        size.width *= scale;
+        size.height *= scale;
 
-    if (width) {
-        x = (width - size.width) / 2;
-    }
-    if (height) {
-        y = (height - size.height) / 2;
-    }
+        if (width) {
+            x = (width - size.width) / 2;
+        }
+        if (height) {
+            y = (height - size.height) / 2;
+        }
 
-    const sceneContext: UndoContext<EditorState, SceneAction> = [
-        {
-            present: {
-                scene,
-                currentStep: stepIndex ?? 0,
+        const sceneContext: UndoContext<EditorState, SceneAction> = [
+            {
+                present: {
+                    scene,
+                    currentStep: stepIndex ?? 0,
+                },
+                past: [],
+                future: [],
             },
-            past: [],
-            future: [],
-        },
-        () => undefined,
-    ];
+            () => undefined,
+        ];
 
-    const selectionContext: SelectionState = [new Set<number>(), () => {}];
+        const selectionContext: SelectionState = [new Set<number>(), () => {}];
 
-    return (
-        <Stage x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
-            <DefaultCursorProvider>
-                <SceneContext.Provider value={sceneContext}>
-                    <SelectionContext.Provider value={selectionContext}>
-                        <SceneContents listening={false} />
-                    </SelectionContext.Provider>
-                </SceneContext.Provider>
-            </DefaultCursorProvider>
-        </Stage>
-    );
-};
+        return (
+            <Stage ref={ref} x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
+                <DefaultCursorProvider>
+                    <SceneContext.Provider value={sceneContext}>
+                        <SelectionContext.Provider value={selectionContext}>
+                            <SceneContents listening={false} backgroundColor={backgroundColor} />
+                        </SelectionContext.Provider>
+                    </SceneContext.Provider>
+                </DefaultCursorProvider>
+            </Stage>
+        );
+    },
+);
+ScenePreview.displayName = 'ScenePreview';
 
 interface SceneContentsProps {
     listening?: boolean;
+    backgroundColor?: string;
 }
 
-const SceneContents: React.FC<SceneContentsProps> = ({ listening }) => {
+const SceneContents: React.FC<SceneContentsProps> = ({ listening, backgroundColor }) => {
     listening = listening ?? true;
 
     const step = useCurrentStep();
@@ -138,7 +143,7 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening }) => {
             {listening && <SceneHotkeyHandler />}
 
             <Layer name={LayerName.Ground} listening={listening}>
-                <ArenaRenderer />
+                <ArenaRenderer backgroundColor={backgroundColor} />
                 <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
             <Layer name={LayerName.Default} listening={listening}>

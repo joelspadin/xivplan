@@ -2,7 +2,7 @@ import { SplitButton, SplitButtonProps, ToolbarButton, ToolbarButtonProps, Toolt
 import React from 'react';
 import { useMedia } from 'react-use';
 
-const WIDE_MEDIA_QUERY = '(min-width: 1200px)';
+const WIDE_MEDIA_QUERY = '(min-width: 1280px)';
 
 export const CollapsableToolbarButton: React.FC<ToolbarButtonProps> = ({ children, ...props }) => {
     const isWide = useMedia(WIDE_MEDIA_QUERY);

@@ -152,7 +152,7 @@ const RectangleOutline: React.FC<OutlineProps> = ({
 
 const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image);
+    const [image] = useImage(object.image, 'anonymous');
 
     const iconWidth = object.width * ICON_RATIO;
     const iconHeight = object.height * ICON_RATIO;

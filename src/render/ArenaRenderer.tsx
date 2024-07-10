@@ -9,6 +9,7 @@ import {
     getCanvasArenaEllipse,
     getCanvasArenaRect,
     getCanvasCoord,
+    getCanvasSize,
     getCanvasX,
     getCanvasY,
     useCanvasArenaEllipse,
@@ -26,9 +27,14 @@ import {
 import { degtorad } from '../util';
 import { useSceneTheme } from './SceneTheme';
 
-export const ArenaRenderer: React.FC = () => {
+export interface ArenaRendererProps {
+    backgroundColor?: string;
+}
+
+export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor }) => {
     return (
         <>
+            {backgroundColor && <Backdrop color={backgroundColor} />}
             <BackgroundRenderer />
             <ArenaClip>
                 <BackgroundImage />
@@ -36,6 +42,17 @@ export const ArenaRenderer: React.FC = () => {
             </ArenaClip>
         </>
     );
+};
+
+interface BackdropProps {
+    color: string;
+}
+
+const Backdrop: React.FC<BackdropProps> = ({ color }) => {
+    const { scene } = useScene();
+    const size = getCanvasSize(scene);
+
+    return <Rect fill={color} x={0} y={0} {...size} />;
 };
 
 function getArenaClip(scene: Scene): (context: KonvaContext) => void {
@@ -70,7 +87,7 @@ const ArenaClip: React.FC<PropsWithChildren> = ({ children }) => {
 
 const BackgroundImage: React.FC = () => {
     const { scene } = useScene();
-    const [image] = useImage(scene.arena.backgroundImage ?? '');
+    const [image] = useImage(scene.arena.backgroundImage ?? '', 'anonymous');
 
     if (!image) {
         return null;

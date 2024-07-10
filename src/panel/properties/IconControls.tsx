@@ -42,7 +42,7 @@ function setStacks(object: Readonly<IconObject>, stacks: number): IconObject {
 
     return {
         ...object,
-        image: `https://xivapi.com/i/${folder}/${iconId}_hr1.png`,
+        image: `https://beta.xivapi.com/api/1/asset/ui/icon/${folder}/${iconId}_hr1.tex?format=png`,
     };
 }
 

@@ -1,6 +1,16 @@
 import { Vector2d } from 'konva/lib/types';
 import { DEFAULT_ENEMY_OPACITY } from '../render/SceneTheme';
-import { DrawObject, EnemyObject, Scene, SceneObject, SceneStep, isDrawObject, isEnemy } from '../scene';
+import {
+    DrawObject,
+    EnemyObject,
+    ImageObject,
+    Scene,
+    SceneObject,
+    SceneStep,
+    isDrawObject,
+    isEnemy,
+    isImageObject,
+} from '../scene';
 
 export function upgradeScene(scene: Scene): Scene {
     return {
@@ -25,10 +35,14 @@ function upgradeObject(object: SceneObject): SceneObject {
         object = upgradeDrawObject(object);
     }
 
+    if (isImageObject(object)) {
+        object = upgradeImageObject(object);
+    }
+
     return object;
 }
 
-function upgradeEnemy(object: EnemyObject): SceneObject {
+function upgradeEnemy<T extends EnemyObject>(object: T): T {
     // enemy was changed from { rotation?: number }
     // to { rotation: number, directional: boolean, opacity: number }
     return {
@@ -43,7 +57,7 @@ interface DrawObjectV1 {
     points: readonly Vector2d[];
 }
 
-function upgradeDrawObject(object: DrawObject): SceneObject {
+function upgradeDrawObject<T extends DrawObject>(object: T): T {
     // draw object was changed from { points: Vector2d[] }
     // to { points: number[] }
 
@@ -55,8 +69,17 @@ function upgradeDrawObject(object: DrawObject): SceneObject {
             points.push(point.x, point.y);
         }
 
-        return { ...object, points } as DrawObject;
+        return { ...object, points };
     }
 
     return object;
+}
+
+function upgradeImageObject<T extends ImageObject>(object: T): T {
+    // Replace status icons from XIVAPI with ones from the beta API that support CORS.
+    const image = object.image.replace(/https:\/\/xivapi.com\/i\/(\w+)\/(\w+)\.png/, (match, folder, name) => {
+        return `https://beta.xivapi.com/api/1/asset/ui/icon/${folder}/${name}.tex?format=png`;
+    });
+
+    return { ...object, image };
 }

@@ -32,7 +32,7 @@ registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
 
 const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image);
+    const [image] = useImage(object.image, 'anonymous');
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>

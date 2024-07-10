@@ -58,7 +58,7 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
                                     >
                                         <StatusIcon
                                             name={item.Name}
-                                            icon={`https://xivapi.com${item.IconHD}`}
+                                            icon={fixIconUrl(item.IconHD)}
                                             iconId={item.IconID}
                                             maxStacks={item.MaxStacks}
                                             scale={2}
@@ -73,6 +73,17 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
         </div>
     );
 };
+
+const PREFIX = '/i/';
+const SUFFIX = '.png';
+
+function fixIconUrl(url: string) {
+    if (url.startsWith(PREFIX) && url.endsWith(SUFFIX)) {
+        url = url.substring(PREFIX.length, url.length - SUFFIX.length);
+    }
+
+    return `https://beta.xivapi.com/api/1/asset/ui/icon/${url}.tex?format=png`;
+}
 
 function chunked<T>(items: T[], chunkSize: number): T[][] {
     chunkSize = Math.max(1, chunkSize);

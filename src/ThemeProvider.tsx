@@ -1,7 +1,7 @@
 import { FluentProvider, makeStyles } from '@fluentui/react-components';
 import React, { Dispatch, PropsWithChildren, createContext, useEffect } from 'react';
 import { useLocalStorage, useMedia } from 'react-use';
-import { darkTheme, lightTheme } from './themes';
+import { getTheme } from './themes';
 
 export type DarkModeValue = [boolean, Dispatch<boolean>];
 
@@ -18,7 +18,7 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }, [classes, darkMode]);
 
     return (
-        <FluentProvider theme={darkMode ? darkTheme : lightTheme}>
+        <FluentProvider theme={getTheme(darkMode)}>
             <DarkModeContext.Provider value={[!!darkMode, setDarkMode]}>{children}</DarkModeContext.Provider>
         </FluentProvider>
     );

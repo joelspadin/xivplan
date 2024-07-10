@@ -63,7 +63,7 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const [image] = useImage(object.image);
+    const [image] = useImage(object.image, 'anonymous');
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>

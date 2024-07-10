@@ -1,5 +1,9 @@
 import { Theme, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 
+export function getTheme(darkMode: boolean | undefined) {
+    return darkMode ? darkTheme : lightTheme;
+}
+
 export const darkTheme = webDarkTheme;
 
 // Colors adjusted to a more sepia tone that's easier on the eyes and is similar
