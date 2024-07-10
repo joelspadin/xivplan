@@ -4,7 +4,6 @@ import React, { PropsWithChildren, RefObject, useCallback, useContext, useRef } 
 import { Layer, Stage } from 'react-konva';
 import { DefaultCursorProvider } from '../DefaultCursorState';
 import { getDropAction } from '../DropHandler';
-import { DrawConfigContext, EditModeContext, TetherConfigContext } from '../EditModeProvider';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { EditorState, SceneAction, SceneContext, useCurrentStep, useScene } from '../SceneProvider';
 import { SelectionContext, SelectionState } from '../SelectionProvider';
@@ -21,14 +20,8 @@ import { TetherEditRenderer } from './TetherEditRenderer';
 import { LayerName } from './layers';
 
 export const SceneRenderer: React.FC = () => {
-    const sceneBridge = useContext(SceneContext);
-    const selectionBridge = useContext(SelectionContext);
-    const editModeBridge = useContext(EditModeContext);
-    const drawConfigBridge = useContext(DrawConfigContext);
-    const tetherConfigBridge = useContext(TetherConfigContext);
-
     const { scene } = useScene();
-    const [, setSelection] = selectionBridge;
+    const [, setSelection] = useContext(SelectionContext);
     const size = getCanvasSize(scene);
     const stageRef = useRef<Konva.Stage>(null);
 
@@ -49,17 +42,7 @@ export const SceneRenderer: React.FC = () => {
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
                 <StageContext.Provider value={stageRef.current}>
                     <DefaultCursorProvider>
-                        <SceneContext.Provider value={sceneBridge}>
-                            <EditModeContext.Provider value={editModeBridge}>
-                                <DrawConfigContext.Provider value={drawConfigBridge}>
-                                    <TetherConfigContext.Provider value={tetherConfigBridge}>
-                                        <SelectionContext.Provider value={selectionBridge}>
-                                            <SceneContents />
-                                        </SelectionContext.Provider>
-                                    </TetherConfigContext.Provider>
-                                </DrawConfigContext.Provider>
-                            </EditModeContext.Provider>
-                        </SceneContext.Provider>
+                        <SceneContents />
                     </DefaultCursorProvider>
                 </StageContext.Provider>
             </Stage>
