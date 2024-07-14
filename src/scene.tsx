@@ -179,6 +179,7 @@ export interface IconObject extends ImageObject, NamedObject, SceneId {
     readonly type: ObjectType.Icon;
     readonly iconId?: number;
     readonly maxStacks?: number;
+    readonly time?: number;
 }
 export const isIcon = makeObjectTest<IconObject>(ObjectType.Icon);
 

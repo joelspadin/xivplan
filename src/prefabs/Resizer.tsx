@@ -26,7 +26,7 @@ export interface ResizerProps {
     children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
 }
 
-export const Resizer: React.VFC<ResizerProps> = ({
+export const Resizer: React.FC<ResizerProps> = ({
     object,
     nodeRef,
     dragging,
@@ -49,7 +49,7 @@ export const Resizer: React.VFC<ResizerProps> = ({
             trRef.current.nodes([nodeRef.current]);
             trRef.current.getLayer()?.batchDraw();
         }
-    }, [showResizer, nodeRef, trRef]);
+    }, [object, showResizer, nodeRef, trRef]);
 
     const onTransformEnd = useCallback(() => {
         const node = nodeRef.current;

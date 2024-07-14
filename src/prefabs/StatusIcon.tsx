@@ -1,5 +1,6 @@
-import React from 'react';
-import { Group, Image as KonvaImage, Rect } from 'react-konva';
+import Konva from 'konva';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Group, Image as KonvaImage, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -31,6 +32,57 @@ registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
     };
 });
 
+interface IconTimerProps {
+    time: number;
+    width: number;
+    height: number;
+}
+
+const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
+    const text = useMemo(() => {
+        if (time < 60) {
+            return time.toString();
+        }
+
+        return `${Math.floor(time / 60)}m`;
+    }, [time]);
+
+    const textRef = useRef<Konva.Text>(null);
+    const [textNode, setTextNode] = useState(textRef.current);
+    if (textRef.current !== textNode) {
+        setTextNode(textRef.current);
+    }
+
+    const fontSize = Math.max(14, height / 3);
+    const strokeWidth = Math.max(1, fontSize / 8);
+
+    const [textWidth, setTextWidth] = useState(width);
+    useEffect(() => {
+        setTextWidth(textNode?.measureSize(text).width ?? width);
+    }, [textNode, text, fontSize, width, setTextWidth]);
+
+    if (time <= 0) {
+        return null;
+    }
+
+    return (
+        <Text
+            ref={textRef}
+            text={text}
+            x={(width - textWidth) / 2}
+            y={height * 0.8}
+            width={textWidth}
+            height={fontSize}
+            align="center"
+            fill="white"
+            stroke="black"
+            fontSize={fontSize}
+            strokeWidth={strokeWidth}
+            fillAfterStrokeEnabled
+        />
+    );
+};
+
 const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
     const [image] = useImageTracked(object.image);
@@ -48,6 +100,7 @@ const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
                         />
                     )}
                     <KonvaImage image={image} width={object.width} height={object.height} />
+                    <IconTimer time={object.time ?? 0} width={object.width} height={object.height} />
                 </Group>
             )}
         </ResizeableObjectContainer>

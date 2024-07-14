@@ -4,9 +4,27 @@ import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { IconObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
+import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
+
+export const IconTimeControl: React.FC<PropertiesControlProps<IconObject>> = ({ objects }) => {
+    const classes = useControlStyles();
+    const { dispatch } = useScene();
+
+    const time = useMemo(() => commonValue(objects, (obj) => obj.time ?? 0), [objects]);
+
+    const onChange = useSpinChanged((time: number) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, time })) }),
+    );
+
+    return (
+        <Field label="Duration" className={classes.cell}>
+            <SpinButtonUnits value={time} min={0} suffix=" s" onChange={onChange} />
+        </Field>
+    );
+};
 
 export const IconStacksControl: React.FC<PropertiesControlProps<IconObject>> = ({ objects }) => {
     const classes = useControlStyles();
