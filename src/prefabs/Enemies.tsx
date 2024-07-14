@@ -11,6 +11,7 @@ import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
     DEFAULT_ENEMY_OPACITY,
+    EnemyTheme,
     SELECTED_PROPS,
     useSceneTheme,
 } from '../render/SceneTheme';
@@ -91,7 +92,11 @@ interface RingProps extends ShapeConfig {
     isSelected?: boolean;
 }
 
-const EnemyLabel: React.FC<RingProps> = ({ name, radius, theme, ...props }) => {
+interface EnemyLabelProps extends RingProps {
+    theme: EnemyTheme;
+}
+
+const EnemyLabel: React.FC<EnemyLabelProps> = ({ name, radius, theme, ...props }) => {
     if (radius < 32) {
         return null;
     }

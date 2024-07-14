@@ -40,7 +40,7 @@ export interface RadiusObjectContainerProps extends ControlPointProps {
     onTransformEnd?(state: RadiusObjectState): void;
 }
 
-export const RadiusObjectContainer: React.VFC<RadiusObjectContainerProps> = ({
+export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     object,
     onTransformEnd,
     children,

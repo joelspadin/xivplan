@@ -32,7 +32,7 @@ export interface StarburstContainerProps extends StarburstControlProps {
     onTransformEnd?(state: StarburstObjectState): void;
 }
 
-export const StarburstControlContainer: React.VFC<StarburstContainerProps> = ({
+export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     object,
     onTransformEnd,
     children,

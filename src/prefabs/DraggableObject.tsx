@@ -17,7 +17,7 @@ export interface DraggableObjectProps {
     children?: ReactNode | ((center: Vector2d) => React.ReactElement);
 }
 
-export const DraggableObject: React.VFC<DraggableObjectProps> = ({ object, onActive, children }) => {
+export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActive, children }) => {
     const [editMode] = useEditMode();
     const [dragCenter, setDragCenter] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
