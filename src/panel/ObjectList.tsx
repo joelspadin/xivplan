@@ -1,6 +1,23 @@
+import {
+    closestCenter,
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
-import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
 import { reversed } from '../util';
@@ -13,62 +30,76 @@ export interface ObjectListProps {
     onMove: MoveCallback;
 }
 
-const DROP_ID = 'drop-id-objects';
-
-function reversedIndex(i: number, length: number) {
-    return length - 1 - i;
+function getObjectIndex(objects: readonly SceneObject[], id: number) {
+    return objects.findIndex((o) => o.id === id);
 }
 
 export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     const classes = useStyles();
-    const onDragEnd = useCallback(
-        (result: DropResult) => {
-            if (result.destination?.droppableId !== DROP_ID) {
-                return;
-            }
-
-            onMove(
-                reversedIndex(result.source.index, objects.length),
-                reversedIndex(result.destination.index, objects.length),
-            );
-        },
-        [objects.length, onMove],
-    );
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
-    const reversedObjects = [...reversed(objects)];
+    const reversedObjects = useMemo(() => [...reversed(objects)], [objects]);
+
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 4,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    const handleDragEnd = useCallback(
+        (ev: DragEndEvent) => {
+            const { active, over } = ev;
+
+            if (over && active.id !== over.id) {
+                onMove(getObjectIndex(objects, active.id as number), getObjectIndex(objects, over.id as number));
+            }
+        },
+        [objects, onMove],
+    );
 
     return (
-        <div>
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId={DROP_ID}>
-                    {(provided) => (
-                        <div className={classes.list} {...provided.droppableProps} ref={provided.innerRef}>
-                            {reversedObjects.map((object, index) => (
-                                <ListItem object={object} key={object.id} index={index} />
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
+        <div className={classes.list}>
+            <DndContext
+                sensors={sensors}
+                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <SortableContext items={reversedObjects} strategy={verticalListSortingStrategy}>
+                    {reversedObjects.map((object) => (
+                        <SortableItem key={object.id} object={object} />
+                    ))}
+                </SortableContext>
+            </DndContext>
         </div>
     );
 };
 
-export interface ListItemProps {
-    index: number;
+interface SortableItemProps {
     object: SceneObject;
 }
 
-const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
+const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
     const isSelected = selection.has(object.id);
 
     const onClick = useCallback(
         (e: React.MouseEvent) => {
+            console.log('click!');
+
             if (e.shiftKey) {
                 setSelection(addSelection(selection, object.id));
             } else if (e.ctrlKey) {
@@ -82,37 +113,58 @@ const ListItem: React.FC<ListItemProps> = ({ index, object }) => {
 
     const Component = getListComponent(object);
 
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: object.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
-        <Draggable draggableId={object.id.toString()} index={index}>
-            {(provided) => {
-                return (
-                    <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={mergeClasses(classes.item, isSelected && classes.selected)}
-                        onClick={onClick}
-                    >
-                        <Component object={object} isSelected={isSelected} />
-                    </div>
-                );
-            }}
-        </Draggable>
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={mergeClasses(isDragging && classes.draggingWrapper)}
+            onClick={onClick}
+            {...attributes}
+            {...listeners}
+        >
+            <div
+                className={mergeClasses(
+                    classes.item,
+                    isSelected && classes.selected,
+                    isDragging && classes.dragging,
+                    isDragging && isSelected && classes.draggingSelected,
+                )}
+            >
+                <Component object={object} isSelected={isSelected} />
+            </div>
+        </div>
     );
 };
 
 const useStyles = makeStyles({
     list: {
+        display: 'flex',
+        flexFlow: 'column',
+        gap: tokens.spacingVerticalXXS,
+
         padding: 0,
-        margin: '0 0 20px',
+        margin: '0 -2px 20px',
         listStyle: 'none',
     },
 
+    draggingWrapper: {
+        position: 'relative',
+        zIndex: 1,
+    },
+
     item: {
-        minHeight: '32px',
-        margin: '0 -2px',
-        padding: '2px',
         display: 'block',
+        zIndex: 0,
+
+        minHeight: '32px',
+        padding: '2px',
         borderRadius: tokens.borderRadiusMedium,
 
         transitionProperty: 'background, border, color',
@@ -122,13 +174,29 @@ const useStyles = makeStyles({
         backgroundColor: tokens.colorNeutralBackground3,
 
         ':hover': {
-            backgroundColor: tokens.colorSubtleBackgroundHover,
+            backgroundColor: tokens.colorNeutralBackground3Hover,
         },
         ':hover:active': {
-            backgroundColor: tokens.colorSubtleBackgroundPressed,
+            backgroundColor: tokens.colorNeutralBackground3Pressed,
         },
     },
+
     selected: {
-        backgroundColor: tokens.colorSubtleBackgroundSelected,
+        backgroundColor: tokens.colorBrandBackgroundSelected,
+
+        ':hover': {
+            backgroundColor: tokens.colorBrandBackgroundHover,
+        },
+        ':hover:active': {
+            backgroundColor: tokens.colorBrandBackgroundPressed,
+        },
+    },
+
+    dragging: {
+        backgroundColor: tokens.colorNeutralBackground3Pressed,
+    },
+
+    draggingSelected: {
+        backgroundColor: tokens.colorBrandBackgroundPressed,
     },
 });
