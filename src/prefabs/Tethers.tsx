@@ -405,7 +405,7 @@ function getIconColorFilter(object: Tether) {
     }
 }
 
-const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
+const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object, isSelected }) => {
     const classes = useStyles();
     const { scene } = useScene();
     const filter = React.useMemo(() => getIconColorFilter(object), [object]);
@@ -420,7 +420,7 @@ const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object }) => {
                 <div>{getTargetNode(startObj)}</div>
                 <div>{getTargetNode(endObj)}</div>
             </div>
-            <DetailsItemDeleteButton object={object} />
+            <DetailsItemDeleteButton object={object} isSelected={isSelected} />
         </div>
     );
 };

@@ -109,8 +109,8 @@ const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
 
 registerRenderer<IconObject>(ObjectType.Icon, LayerName.Default, IconRenderer);
 
-const IconDetails: React.FC<ListComponentProps<IconObject>> = ({ object, isNested }) => {
-    return <DetailsItem icon={object.image} name={object.name} object={object} isNested={isNested} />;
+const IconDetails: React.FC<ListComponentProps<IconObject>> = ({ object, ...props }) => {
+    return <DetailsItem icon={object.image} name={object.name} object={object} {...props} />;
 };
 
 registerListComponent<IconObject>(ObjectType.Icon, IconDetails);

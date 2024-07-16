@@ -274,8 +274,8 @@ const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
 
 registerRenderer<EnemyObject>(ObjectType.Enemy, LayerName.Ground, EnemyContainer);
 
-const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, isNested }) => {
-    return <DetailsItem icon={object.icon} name={object.name || 'Enemy'} object={object} isNested={isNested} />;
+const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, ...props }) => {
+    return <DetailsItem icon={object.icon} name={object.name || 'Enemy'} object={object} {...props} />;
 };
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);

@@ -182,6 +182,7 @@ const useStyles = makeStyles({
     },
 
     selected: {
+        color: tokens.colorNeutralForegroundStaticInverted,
         backgroundColor: tokens.colorBrandBackgroundSelected,
 
         ':hover': {

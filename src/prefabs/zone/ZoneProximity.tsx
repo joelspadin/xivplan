@@ -192,8 +192,8 @@ const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 
 registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
-const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name="Proximity AOE" object={object} color={object.color} isNested={isNested} />;
+const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name="Proximity AOE" object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

@@ -189,8 +189,8 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
-const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
+const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);

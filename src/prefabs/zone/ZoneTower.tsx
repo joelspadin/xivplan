@@ -147,8 +147,8 @@ const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
 
 registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerContainer);
 
-const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name="Meteor/tower" object={object} color={object.color} isNested={isNested} />;
+const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name="Meteor/tower" object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);

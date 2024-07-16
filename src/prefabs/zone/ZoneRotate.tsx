@@ -144,11 +144,11 @@ const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 
 registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateContainer);
 
-const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
+const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
     const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
 
-    return <DetailsItem icon={icon} name={name} object={object} color={object.color} isNested={isNested} />;
+    return <DetailsItem icon={icon} name={name} object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

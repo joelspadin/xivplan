@@ -195,8 +195,8 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) 
 
 registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
-const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
+const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);

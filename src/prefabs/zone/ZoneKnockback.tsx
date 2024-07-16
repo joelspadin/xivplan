@@ -111,8 +111,8 @@ const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 
 registerRenderer<CircleZone>(ObjectType.Knockback, LayerName.Ground, KnockbackContainer);
 
-const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name="Knockback" object={object} color={object.color} isNested={isNested} />;
+const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name="Knockback" object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

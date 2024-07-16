@@ -91,8 +91,8 @@ const PolygonContainer: React.FC<RendererProps<PolygonZone>> = ({ object }) => {
 
 registerRenderer<PolygonZone>(ObjectType.Polygon, LayerName.Ground, PolygonContainer);
 
-const PolygonDetails: React.FC<ListComponentProps<PolygonZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
+const PolygonDetails: React.FC<ListComponentProps<PolygonZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<PolygonZone>(ObjectType.Polygon, PolygonDetails);

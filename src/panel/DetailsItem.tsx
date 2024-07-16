@@ -1,4 +1,4 @@
-import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { bundleIcon, DismissFilled, DismissRegular } from '@fluentui/react-icons';
 import React, { ReactNode, useMemo } from 'react';
 import { useScene } from '../SceneProvider';
@@ -12,9 +12,10 @@ export interface DetailsItemProps {
     color?: string;
     name: string;
     isNested?: boolean;
+    isSelected?: boolean;
 }
 
-export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, color, isNested }) => {
+export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, color, isNested, isSelected }) => {
     const classes = useStyles();
     const filter = useMemo(() => (color ? getRecolorFilter(color) : undefined), [color]);
 
@@ -24,22 +25,31 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({ object, icon, name, co
         <div className={classes.wrapper}>
             <div>{icon && <PrefabIcon icon={icon} name={name} filter={filter} width={size} height={size} />}</div>
             <div className={classes.name}>{name}</div>
-            {!isNested && <DetailsItemDeleteButton object={object} />}
+            {!isNested && <DetailsItemDeleteButton object={object} isSelected={isSelected} />}
         </div>
     );
 };
 
 export interface DetailsItemDeleteButtonProps {
     object: SceneObject;
+    isSelected?: boolean;
 }
 
 const DeleteIcon = bundleIcon(DismissFilled, DismissRegular);
 
-export const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ object }) => {
+export const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ object, isSelected }) => {
+    const classes = useStyles();
     const { dispatch } = useScene();
     const deleteObject = () => dispatch({ type: 'remove', ids: object.id });
 
-    return <Button appearance="subtle" icon={<DeleteIcon />} onClick={deleteObject} title="Delete object" />;
+    return (
+        <Button
+            appearance="transparent"
+            icon={<DeleteIcon className={mergeClasses(isSelected && classes.selectedIcon)} />}
+            onClick={deleteObject}
+            title="Delete object"
+        />
+    );
 };
 
 const useStyles = makeStyles({
@@ -55,5 +65,9 @@ const useStyles = makeStyles({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+    },
+
+    selectedIcon: {
+        color: tokens.colorNeutralForegroundStaticInverted,
     },
 });

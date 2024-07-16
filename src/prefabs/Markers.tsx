@@ -209,8 +209,8 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
 
 registerRenderer<MarkerObject>(ObjectType.Marker, LayerName.Ground, MarkerRenderer);
 
-const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, isNested }) => {
-    return <DetailsItem icon={object.image} name={object.name} object={object} isNested={isNested} />;
+const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, ...props }) => {
+    return <DetailsItem icon={object.image} name={object.name} object={object} {...props} />;
 };
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);

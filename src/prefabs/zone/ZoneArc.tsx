@@ -246,8 +246,8 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
 
 registerRenderer<ArcZone>(ObjectType.Arc, LayerName.Ground, ArcContainer);
 
-const ArcDetails: React.FC<ListComponentProps<ArcZone>> = ({ object, isNested }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} isNested={isNested} />;
+const ArcDetails: React.FC<ListComponentProps<ArcZone>> = ({ object, ...props }) => {
+    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
 };
 
 registerListComponent<ArcZone>(ObjectType.Arc, ArcDetails);

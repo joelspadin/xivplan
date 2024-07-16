@@ -253,8 +253,8 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
 
 registerRenderer<TextObject>(ObjectType.Text, LayerName.Foreground, TextRenderer);
 
-const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, isNested }) => {
-    return <DetailsItem icon={ICON} name={object.text} object={object} isNested={isNested} />;
+const TextDetails: React.FC<ListComponentProps<TextObject>> = ({ object, ...props }) => {
+    return <DetailsItem icon={ICON} name={object.text} object={object} {...props} />;
 };
 
 registerListComponent<TextObject>(ObjectType.Text, TextDetails);
