@@ -11,7 +11,7 @@ const PRESET_DIAMOND_WEAPON_1: ArenaPreset = {
 };
 
 const PRESET_DIAMOND_WEAPON_2: ArenaPreset = {
-    name: 'The Cloud Deck (half)',
+    name: 'The Cloud Deck (Half)',
     shape: ArenaShape.Rectangle,
     width: 300,
     height: 600,
@@ -19,4 +19,15 @@ const PRESET_DIAMOND_WEAPON_2: ArenaPreset = {
     grid: { type: GridType.Rectangular, rows: 5, columns: 2 },
 };
 
-export const ARENA_PRESETS_TRIALS = [PRESET_DIAMOND_WEAPON_1, PRESET_DIAMOND_WEAPON_2];
+const PRESET_EVERKEEP: ArenaPreset = {
+    name: 'Everkeep (Dawn of an Age)',
+    spoilerFreeName: 'Dawntrail Trial 2',
+    shape: ArenaShape.Rectangle,
+    width: 300,
+    height: 650,
+    padding: 100,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/everkeep.png',
+};
+
+export const ARENA_PRESETS_TRIALS = [PRESET_DIAMOND_WEAPON_1, PRESET_DIAMOND_WEAPON_2, PRESET_EVERKEEP];

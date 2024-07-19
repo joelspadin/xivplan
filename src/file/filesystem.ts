@@ -211,7 +211,7 @@ const CURRENT_VERSION = 1;
 const db = openDB<Schema>('xivplan-files', CURRENT_VERSION, {
     upgrade(db, oldVersion, newVersion) {
         if (oldVersion > CURRENT_VERSION) {
-            console.warn(`Database version downgrade from ${oldVersion} to ${newVersion}. Resetting database.`);
+            console.warn(`Files database version downgrade from ${oldVersion} to ${newVersion}. Resetting database.`);
             db.deleteObjectStore('recent');
             db.deleteObjectStore('folders');
         }

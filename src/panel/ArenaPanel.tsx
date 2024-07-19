@@ -1,5 +1,7 @@
 import {
     Button,
+    Checkbox,
+    CheckboxProps,
     Dialog,
     DialogActions,
     DialogContent,
@@ -18,11 +20,13 @@ import {
 } from '@fluentui/react-components';
 import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useAsync, useCounter, useLocalStorage, useSessionStorage } from 'react-use';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
 import { ScenePreview } from '../render/SceneRenderer';
 import { ArenaPreset, Scene } from '../scene';
+import { getRevealedArenaPresets, revealArenaPreset } from '../spoilers';
 import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
@@ -81,6 +85,10 @@ function getPresetsForGroup(value: string | undefined) {
     return ARENA_PRESETS[category ?? '']?.[group ?? ''] ?? [];
 }
 
+function getPresetKey(group: string | undefined, name: string) {
+    return `${group ?? ''}/${name}`;
+}
+
 const SelectPresetButton: React.FC = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
@@ -105,7 +113,11 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     const classes = useStyles();
     const { dispatch } = useScene();
 
-    const [selectedGroup, setSelectedGroup] = useState(GENERAL_PRESETS?.groups[0]?.value);
+    const [counter, { inc: reloadRevealedPresets }] = useCounter();
+    const revealedPresets = useAsync(getRevealedArenaPresets, [counter]);
+    const [revealAll, setRevealAll] = useLocalStorage<CheckboxProps['checked']>('revealArenaPresets', false);
+
+    const [selectedGroup, setSelectedGroup] = useSessionStorage('arenaPresetGroup', GENERAL_PRESETS?.groups[0]?.value);
     const [selectedPreset, setSelectedPreset] = useState<ArenaPreset>();
 
     const checkedItems = useMemo(() => (selectedGroup ? [selectedGroup] : []), [selectedGroup]);
@@ -118,6 +130,14 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
             setOpen(false);
         },
         [dispatch, setOpen],
+    );
+
+    const revealPreset = useCallback(
+        async (key: string) => {
+            await revealArenaPreset(key);
+            reloadRevealedPresets();
+        },
+        [reloadRevealedPresets],
     );
 
     useHotkeys(
@@ -167,6 +187,8 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
 
     const presets = getPresetsForGroup(selectedGroup);
 
+    // TODO: make keyboard list keyboard-navigable
+
     return (
         <HotkeyBlockingDialogBody>
             <DialogTitle>Arena presets</DialogTitle>
@@ -193,18 +215,31 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
                     ))}
                 </Tree>
                 <ul className={classes.presetList}>
-                    {presets?.map((preset) => (
-                        <PresetItem
-                            key={preset.name}
-                            preset={preset}
-                            selected={preset === selectedPreset}
-                            onClick={() => setSelectedPreset(preset)}
-                            onDoubleClick={() => applyPreset(preset)}
-                        />
-                    ))}
+                    {presets?.map((preset) => {
+                        const key = getPresetKey(selectedGroup, preset.name);
+
+                        return (
+                            <PresetItem
+                                key={key}
+                                presetKey={key}
+                                preset={preset}
+                                selected={preset === selectedPreset}
+                                revealedPresets={revealAll ? [key] : revealedPresets.value}
+                                onReveal={() => revealPreset(key)}
+                                onSelect={() => setSelectedPreset(preset)}
+                                onConfirm={() => applyPreset(preset)}
+                            />
+                        );
+                    })}
                 </ul>
             </DialogContent>
-            <DialogActions>
+            <DialogActions fluid className={classes.dialogActions}>
+                <Checkbox
+                    className={classes.revealAll}
+                    checked={revealAll}
+                    onChange={(ev, data) => setRevealAll(data.checked)}
+                    label="Show all presets"
+                />
                 <Button
                     appearance="primary"
                     disabled={!selectedPreset}
@@ -222,13 +257,52 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
 
 interface PresetItemProps {
     preset: ArenaPreset;
+    presetKey: string;
     selected: boolean;
-    onClick: MouseEventHandler<HTMLElement>;
-    onDoubleClick: MouseEventHandler<HTMLElement>;
+    revealedPresets: readonly string[] | undefined;
+    onConfirm: MouseEventHandler<HTMLElement>;
+    onReveal: MouseEventHandler<HTMLElement>;
+    onSelect: MouseEventHandler<HTMLElement>;
 }
 
-const PresetItem: React.FC<PresetItemProps> = ({ preset, selected, onClick, onDoubleClick }) => {
+const PresetItem: React.FC<PresetItemProps> = ({
+    preset,
+    presetKey,
+    revealedPresets,
+    selected,
+    onConfirm,
+    onReveal,
+    onSelect,
+}) => {
     const classes = useStyles();
+
+    const isSpoiler = useMemo(() => {
+        return !(preset.isSpoilerFree || revealedPresets?.includes(presetKey));
+    }, [preset.isSpoilerFree, revealedPresets, presetKey]);
+
+    const handleClick: MouseEventHandler<HTMLElement> = useCallback(
+        (ev) => {
+            if (isSpoiler) {
+                onReveal(ev);
+            }
+
+            onSelect(ev);
+        },
+        [isSpoiler, onReveal, onSelect],
+    );
+
+    const handleDoubleClick: MouseEventHandler<HTMLElement> = useCallback(
+        (ev) => {
+            if (isSpoiler) {
+                onReveal(ev);
+            } else {
+                onConfirm(ev);
+            }
+        },
+        [isSpoiler, onReveal, onConfirm],
+    );
+
+    const name = isSpoiler ? preset.spoilerFreeName ?? preset.name : preset.name;
 
     const scene: Scene = {
         nextId: 0,
@@ -239,11 +313,20 @@ const PresetItem: React.FC<PresetItemProps> = ({ preset, selected, onClick, onDo
     return (
         <li
             className={mergeClasses(classes.presetItem, selected && classes.selected)}
-            onClick={onClick}
-            onDoubleClick={onDoubleClick}
+            onClick={handleClick}
+            onDoubleClick={handleDoubleClick}
         >
-            <div className={classes.presetHeader}>{preset.name}</div>
-            <ScenePreview scene={scene} width={PREVIEW_SIZE} height={PREVIEW_SIZE} />
+            <div className={classes.presetHeader}>{name}</div>
+            <div className={classes.arenaPreviewWrap}>
+                <div className={mergeClasses(classes.arenaPreview, isSpoiler && classes.blur)}>
+                    <ScenePreview scene={scene} width={PREVIEW_SIZE} height={PREVIEW_SIZE} />
+                </div>
+                {isSpoiler && (
+                    <div className={classes.spoilerNotice}>
+                        <p>Click to show</p>
+                    </div>
+                )}
+            </div>
         </li>
     );
 };
@@ -267,6 +350,14 @@ const useStyles = makeStyles({
 
         height: '80vh',
         paddingBottom: tokens.spacingVerticalS,
+    },
+
+    dialogActions: {
+        width: '100%',
+    },
+
+    revealAll: {
+        marginRight: 'auto',
     },
 
     nav: {
@@ -375,5 +466,36 @@ const useStyles = makeStyles({
         paddingInlineStart: tokens.spacingHorizontalS,
         paddingInlineEnd: tokens.spacingHorizontalS,
         ...typographyStyles.body2,
+    },
+
+    arenaPreviewWrap: {
+        position: 'relative',
+    },
+
+    arenaPreview: {
+        filter: 'sepia(0) blur(0)',
+        transitionProperty: 'filter',
+        transitionDuration: tokens.durationUltraFast,
+        transitionTimingFunction: tokens.curveEasyEase,
+    },
+
+    blur: {
+        filter: 'sepia(1) blur(50px)',
+    },
+
+    spoilerNotice: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        display: 'flex',
+        flexFlow: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        userSelect: 'none',
+        color: tokens.colorNeutralForegroundStaticInverted,
+        textShadow: `0 1px 2px ${tokens.colorNeutralBackgroundStatic}`,
+        ...typographyStyles.subtitle2,
     },
 });

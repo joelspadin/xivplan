@@ -100,6 +100,8 @@ export interface Arena {
 
 export interface ArenaPreset extends Arena {
     name: string;
+    spoilerFreeName?: string;
+    isSpoilerFree?: boolean;
 }
 
 export interface NamedObject {

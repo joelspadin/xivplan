@@ -1,5 +1,5 @@
 import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../scene';
-import { SPOKES_45_DEGREES } from '../Components';
+import { SPOKES_45_DEGREES } from '../common';
 
 const PRESET_2: ArenaPreset = {
     name: "Eden's Gate: Descent (E2)",

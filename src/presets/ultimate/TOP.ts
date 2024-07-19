@@ -2,6 +2,7 @@ import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../
 
 const PRESET_1: ArenaPreset = {
     name: 'Phase 1',
+    spoilerFreeName: 'Phase ██',
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
@@ -13,13 +14,14 @@ const PRESET_1: ArenaPreset = {
 
 const PRESET_2: ArenaPreset = {
     name: 'Phase 2',
+    spoilerFreeName: 'Phase ██',
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
     backgroundImage: '/arena/top-p2.png',
-    backgroundOpacity: 50,
+    backgroundOpacity: 35,
 };
 
 export const ARENA_PRESETS_ULTIMATE_TOP = [PRESET_1, PRESET_2];

@@ -16,7 +16,7 @@ export const ARENA_PRESETS: Record<string, Record<string, ArenaPreset[]>> = {
         Criterion: ARENA_PRESETS_CRITERION,
         Trials: ARENA_PRESETS_TRIALS,
     },
-    Savage: {
+    Raids: {
         Eden: ARENA_PRESETS_SAVAGE_EDEN,
         Pandæmonium: ARENA_PRESETS_SAVAGE_PANDAEMONIUM,
     },

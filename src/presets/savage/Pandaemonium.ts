@@ -1,5 +1,5 @@
 import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../scene';
-import { SPOKES_45_DEGREES } from '../Components';
+import { SPOKES_45_DEGREES } from '../common';
 
 const PRESET_7: ArenaPreset = {
     name: 'Abyssos: The Seventh Circle',
@@ -73,6 +73,7 @@ const PRESET_12: ArenaPreset = {
 
 const PRESET_12_CHECKERBOARD: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Checkerboard)',
+    spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
@@ -87,6 +88,7 @@ const PRESET_12_CHECKERBOARD: ArenaPreset = {
 
 const PRESET_12_CHECKERBOARD_2: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Checkerboard Mirror)',
+    spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 600,
@@ -101,6 +103,7 @@ const PRESET_12_CHECKERBOARD_2: ArenaPreset = {
 
 const PRESET_12_OCTAGON: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Octagon)',
+    spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
@@ -115,6 +118,7 @@ const PRESET_12_OCTAGON: ArenaPreset = {
 
 const PRESET_12_PHASE_2: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Phase 2)',
+    spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
     shape: ArenaShape.Rectangle,
     width: 600,
     height: 450,

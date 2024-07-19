@@ -2,6 +2,7 @@ import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../
 
 const PRESET_3: ArenaPreset = {
     name: 'Phase 3',
+    spoilerFreeName: 'Phase ██',
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
@@ -13,6 +14,7 @@ const PRESET_3: ArenaPreset = {
 
 const PRESET_4: ArenaPreset = {
     name: 'Phase 4',
+    spoilerFreeName: 'Phase ██',
     shape: ArenaShape.Circle,
     width: 600,
     height: 600,
