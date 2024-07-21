@@ -21,6 +21,7 @@ export const COLOR_DARK_PURPLE = '#20052e'; // dark purple
 export const COLOR_WHITE = '#ffffff'; // white
 export const COLOR_BLACK = '#000000'; // black
 export const COLOR_GRID = '#6f5a48'; // grid
+export const COLOR_BACKGROUND = '#292929'; // background
 
 export const COLOR_MARKER_RED = '#f13b66';
 export const COLOR_MARKER_YELLOW = '#e1dc5d';
@@ -50,6 +51,7 @@ export const COLOR_SWATCHES: ColorSwatchProps[] = [
     makeColorSwatch(COLOR_WHITE, 'white'),
     makeColorSwatch(COLOR_BLACK, 'black'),
     makeColorSwatch(COLOR_GRID, 'brown'),
+    makeColorSwatch(COLOR_BACKGROUND, 'background'),
 ];
 
 export const DEFAULT_ENEMY_COLOR = '#ff0000';
