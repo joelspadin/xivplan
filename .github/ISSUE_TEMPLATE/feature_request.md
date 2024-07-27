@@ -14,6 +14,8 @@ You may discuss the following content:
 
 - ✅ All content from Endwalker and earlier
 - ✅ All ultimates (if I do these, I don't do them blind)
+- ✅ Dawntrail extreme trials 1-2
+- ✅ Arcadion: Light-heavyweight Division **normal mode only**
 
 Please do not discuss the following content:
 
