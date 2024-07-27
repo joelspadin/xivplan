@@ -9,15 +9,16 @@ import {
     DialogTitle,
     DialogTrigger,
     Divider,
-    Tree,
-    TreeItem,
-    TreeItemLayout,
     makeStyles,
     mergeClasses,
     shorthands,
     tokens,
+    Tree,
+    TreeItem,
+    TreeItemLayout,
     typographyStyles,
 } from '@fluentui/react-components';
+import { OptionsFilled } from '@fluentui/react-icons';
 import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useAsync, useCounter, useLocalStorage, useSessionStorage } from 'react-use';
@@ -96,7 +97,7 @@ const SelectPresetButton: React.FC = () => {
     return (
         <Dialog open={open} onOpenChange={(ev, data) => setOpen(data.open)}>
             <DialogTrigger>
-                <Button>Select preset</Button>
+                <Button icon={<OptionsFilled />}>Arena presets</Button>
             </DialogTrigger>
             <DialogSurface className={classes.dialogSurface}>
                 <PresetsDialogBody setOpen={setOpen} />
