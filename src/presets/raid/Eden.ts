@@ -55,4 +55,4 @@ const PRESET_12: ArenaPreset = {
     },
 };
 
-export const ARENA_PRESETS_SAVAGE_EDEN = [PRESET_2, PRESET_5, PRESET_8, PRESET_12];
+export const ARENA_PRESETS_RAID_EDEN = [PRESET_2, PRESET_5, PRESET_8, PRESET_12];

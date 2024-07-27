@@ -131,7 +131,7 @@ const PRESET_12_PHASE_2: ArenaPreset = {
     backgroundImage: '/arena/p12-p2.png',
 };
 
-export const ARENA_PRESETS_SAVAGE_PANDAEMONIUM = [
+export const ARENA_PRESETS_RAID_PANDAEMONIUM = [
     PRESET_7,
     PRESET_9,
     PRESET_10,
