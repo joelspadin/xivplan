@@ -2,6 +2,7 @@ import { ArenaPreset } from '../scene';
 import { ARENA_PRESETS_CRITERION } from './Criterion';
 import { ARENA_PRESETS_GENERAL } from './General';
 import { ARENA_PRESETS_TRIALS } from './Trials';
+import { ARENA_PRESETS_RAID_ARCADION } from './savage/Arcadion';
 import { ARENA_PRESETS_SAVAGE_EDEN } from './savage/Eden';
 import { ARENA_PRESETS_SAVAGE_PANDAEMONIUM } from './savage/Pandaemonium';
 import { ARENA_PRESETS_ULTIMATE_DSU } from './ultimate/DSU';
@@ -19,6 +20,7 @@ export const ARENA_PRESETS: Record<string, Record<string, ArenaPreset[]>> = {
     Raids: {
         Eden: ARENA_PRESETS_SAVAGE_EDEN,
         Pandæmonium: ARENA_PRESETS_SAVAGE_PANDAEMONIUM,
+        Arcadion: ARENA_PRESETS_RAID_ARCADION,
     },
     Ultimate: {
         'Unending Coil': ARENA_PRESETS_ULTIMATE_UCOB,
