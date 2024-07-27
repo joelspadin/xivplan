@@ -71,7 +71,7 @@ function getArenaClip(scene: Scene): (context: KonvaContext) => void {
         case ArenaShape.Rectangle:
             return (ctx) => {
                 ctx.beginPath();
-                ctx.rect(rect.x, rect.y, rect.width, rect.height);
+                ctx.rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
                 ctx.clip();
                 ctx.closePath();
             };
