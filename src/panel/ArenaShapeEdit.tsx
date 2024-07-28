@@ -30,7 +30,7 @@ export const ArenaShapeEdit: React.FC = () => {
                         onChange={(ev, data) => dispatch({ type: 'arenaShape', value: data.value as ArenaShape })}
                     >
                         <Segment value={ArenaShape.Circle} icon={<CircleIcon />} title="Circle" />
-                        <Segment value={ArenaShape.Rectangle} icon={<SquareIcon />} title="Square" />
+                        <Segment value={ArenaShape.Rectangle} icon={<SquareIcon />} title="Rectangle" />
                     </SegmentedGroup>
                 </Field>
                 <Field label="Padding" className={classes.cell}>
