@@ -16,7 +16,7 @@ const PRESET_3: ArenaPreset = {
     width: 600,
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.Rectangular, rows: 4, columns: 4 },
+    grid: { type: GridType.None },
     backgroundImage: '/arena/arcadion3.svg',
 };
 
