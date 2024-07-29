@@ -11,6 +11,7 @@ import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { SceneRenderer } from './render/SceneRenderer';
 import { useIsDirty } from './useIsDirty';
+import { removeFileExtension } from './util';
 
 export const MainPage: React.FC = () => {
     return (
@@ -56,7 +57,7 @@ function usePageTitle() {
     const isDirty = useIsDirty();
 
     useEffect(() => {
-        const name = source?.name ?? DEFAULT_TITLE;
+        const name = removeFileExtension(source?.name ?? DEFAULT_TITLE);
         const flag = isDirty ? ' ●' : '';
         document.title = `${name}${flag}`;
     }, [source, isDirty]);

@@ -80,3 +80,7 @@ export function commonValue<T, U>(objects: readonly T[], value: (object: T) => U
     const first = value(objects[0]);
     return objects.every((obj) => value(obj) === first) ? first : undefined;
 }
+
+export function removeFileExtension(path: string) {
+    return path.replace(/\..+?$/, '');
+}

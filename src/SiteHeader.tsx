@@ -1,14 +1,16 @@
-import { Button, Link, Text, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { Button, Link, Text, Tooltip, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import { WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
 import React, { HTMLAttributes, useContext } from 'react';
 import { OutPortal } from 'react-reverse-portal';
 import { AboutDialog } from './AboutDialog';
 import { ExternalLink } from './ExternalLink';
 import { HelpContext } from './HelpProvider';
+import { PANEL_WIDTH } from './panel/PanelStyles';
+import { FileSource, useScene } from './SceneProvider';
 import { DarkModeContext } from './ThemeProvider';
 import { ToolbarContext } from './ToolbarContext';
-import logoUrl from './logo.svg';
-import { PANEL_WIDTH } from './panel/PanelStyles';
+import { useIsDirty } from './useIsDirty';
+import { removeFileExtension } from './util';
 
 const GAP = '20px';
 const HEADER_HEIGHT = '48px';
@@ -22,19 +24,30 @@ const useStyles = makeStyles({
         minHeight: HEADER_HEIGHT,
         paddingInlineEnd: '30px',
     },
-    brand: {
-        textDecoration: 'none',
+    title: {
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'baseline',
         boxSizing: 'border-box',
+        paddingLeft: tokens.spacingHorizontalM,
+        gap: tokens.spacingHorizontalM,
         width: `calc(${PANEL_WIDTH}px - ${GAP})`,
+        textDecoration: 'none',
     },
-    icon: {
-        display: 'block',
-        width: '32px',
-        height: '32px',
-        paddingLeft: '8px',
-        paddingRight: '8px',
+    source: {
+        display: 'inline-flex',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+    },
+    filename: {
+        color: tokens.colorNeutralForeground3,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    dirty: {
+        ':before': {
+            content: '" "',
+        },
     },
     commandBar: {
         flexGrow: 1,
@@ -53,17 +66,20 @@ const useStyles = makeStyles({
 
 export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
     const classes = useStyles();
+    const { source } = useScene();
     const toolbarNode = useContext(ToolbarContext);
     const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
 
+    const titleSize = source ? 400 : 500;
+
     return (
         <header className={mergeClasses(classes.root, className)} {...props}>
-            <div className={classes.brand}>
-                <img src={logoUrl} alt="Site logo" className={classes.icon} />
-                <Text size={500} weight="semibold">
+            <div className={classes.title}>
+                <Text size={titleSize} weight="semibold">
                     XIVPlan
                 </Text>
+                {source && <SourceIndicator source={source} />}
             </div>
             <div className={classes.commandBar}>
                 <OutPortal node={toolbarNode} />
@@ -87,5 +103,25 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                 </Button>
             </div>
         </header>
+    );
+};
+
+interface SourceIndicatorProps {
+    source: FileSource;
+}
+
+const SourceIndicator: React.FC<SourceIndicatorProps> = ({ source }) => {
+    const classes = useStyles();
+    const isDirty = useIsDirty();
+
+    const tooltip = isDirty ? `${source.name} (unsaved changes)` : source.name;
+
+    return (
+        <Tooltip content={tooltip} relationship="description">
+            <span className={classes.source}>
+                <Text className={classes.filename}>{removeFileExtension(source.name)}</Text>
+                {isDirty && <Text className={classes.dirty}>●</Text>}
+            </span>
+        </Tooltip>
     );
 };
