@@ -7,6 +7,8 @@ import {
     DialogTitle,
     DialogTrigger,
     Link,
+    makeStyles,
+    typographyStyles,
 } from '@fluentui/react-components';
 import React from 'react';
 import { ExternalLink } from './ExternalLink';
@@ -17,6 +19,8 @@ export interface AboutDialogProps {
 }
 
 export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
+    const classes = useStyles();
+
     return (
         <Dialog>
             <DialogTrigger>
@@ -25,7 +29,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
             <DialogSurface>
                 <HotkeyBlockingDialogBody>
                     <DialogTitle>About</DialogTitle>
-                    <DialogContent>
+                    <DialogContent className={classes.content}>
                         <p>
                             XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by{' '}
                             <ExternalLink href="https://raidplan.io">RaidPlan.io</ExternalLink> and{' '}
@@ -34,21 +38,30 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
                             </ExternalLink>
                             .
                         </p>
-                        <h2>Giving Feedback</h2>
                         <p>
                             XIVPlan is open source on{' '}
                             <ExternalLink href="https://github.com/joelspadin/xivplan">GitHub</ExternalLink>. If you
-                            find a bug or have other feedback, please use the &ldquo;issues&rdquo; tab on the GitHub
-                            page.
+                            find a bug or have other feedback, please create a{' '}
+                            <ExternalLink href="https://github.com/joelspadin/xivplan/issues/new/choose">
+                                new issue
+                            </ExternalLink>{' '}
+                            on GitHub.
                         </p>
                         <h2>Credits</h2>
-                        <p>XIVPlan is © 2021 Joel Spadin.</p>
+                        <p>XIVPlan is © 2021 Joel Spadin and contributors.</p>
                         <p>Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.</p>
                         <p>
                             <ExternalLink href="https://magentalava.gumroad.com/l/limitcuticons">
                                 Limit cut counter icons
                             </ExternalLink>{' '}
                             by yullanellis.
+                        </p>
+                        <p>
+                            Some{' '}
+                            <ExternalLink href="https://github.com/kotarou3/ffxiv-arena-images">
+                                arena background images
+                            </ExternalLink>{' '}
+                            by kotarou3
                         </p>
                     </DialogContent>
                     <DialogActions>
@@ -61,3 +74,9 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
         </Dialog>
     );
 };
+
+const useStyles = makeStyles({
+    content: {
+        '& h2': typographyStyles.subtitle2,
+    },
+});

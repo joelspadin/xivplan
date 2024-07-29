@@ -30,7 +30,7 @@ If you are using a Chromium-based browser and you install the site as an app, th
 
 [RaidPlan.io](https://raidplan.io/ffxiv) now supports FFXIV.
 
-[FF14 Toolbox Gaming Space](https://ff14.toolboxgaming.space) is a more powerful tool that supports animations and much more. Its UI is cumbersome to use though, so it is not well suited to quickly diagramming during raids.
+[FF14 Toolbox Gaming Space](https://ff14.toolboxgaming.space) is a more powerful tool that supports animations and much more. I find its UI cumbersome to use though, so it is not well suited to quickly diagramming during raids.
 
 ## Credits
 
