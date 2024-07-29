@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
-import { PropsWithChildren } from 'react';
+import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useMemo, useState } from 'react';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -157,7 +157,6 @@ export type FileSource = LocalStorageFileSource | FileSystemFileSource | BlobFil
 export interface EditorState {
     scene: Scene;
     currentStep: number;
-    source?: FileSource;
 }
 
 function getCurrentStep(state: EditorState): SceneStep {
@@ -170,6 +169,11 @@ function getCurrentStep(state: EditorState): SceneStep {
 
 const HISTORY_SIZE = 1000;
 
+const SourceContext = createContext<[FileSource | undefined, Dispatch<SetStateAction<FileSource | undefined>>]>([
+    undefined,
+    () => {},
+]);
+
 const { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset } = createUndoContext(
     sceneReducer,
     HISTORY_SIZE,
@@ -180,12 +184,21 @@ export interface SceneProviderProps extends PropsWithChildren {
 }
 
 export const SceneProvider: React.FC<SceneProviderProps> = ({ initialScene, children }) => {
-    const initialState: EditorState = {
-        scene: initialScene ?? DEFAULT_SCENE,
-        currentStep: 0,
-    };
+    const source = useState<FileSource | undefined>();
 
-    return <UndoProvider initialState={initialState}>{children}</UndoProvider>;
+    const initialState: EditorState = useMemo(
+        () => ({
+            scene: initialScene ?? DEFAULT_SCENE,
+            currentStep: 0,
+        }),
+        [initialScene],
+    );
+
+    return (
+        <SourceContext.Provider value={source}>
+            <UndoProvider initialState={initialState}>{children}</UndoProvider>
+        </SourceContext.Provider>
+    );
 };
 
 export const SceneContext = Context;
@@ -200,12 +213,13 @@ export interface SceneContext {
 
 export function useScene(): SceneContext {
     const [present, dispatch] = usePresent();
+    const [source] = useContext(SourceContext);
 
     return {
         scene: present.scene,
         step: getCurrentStep(present),
         stepIndex: present.currentStep,
-        source: present.source,
+        source: source,
         dispatch,
     };
 }
@@ -221,14 +235,21 @@ export const useSceneUndoRedoPossible = useUndoRedoPossible;
 export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
     const reset = useReset();
     const setSavedState = useSetSavedState();
+    const [, setSource] = useContext(SourceContext);
 
     return React.useCallback(
         (scene: Scene, source?: FileSource) => {
-            reset({ scene, source, currentStep: 0 });
+            reset({ scene, currentStep: 0 });
             setSavedState(scene);
+            setSource(source);
         },
-        [reset, setSavedState],
+        [reset, setSavedState, setSource],
     );
+}
+
+export function useSetSource(): Dispatch<SetStateAction<FileSource | undefined>> {
+    const [, setSource] = useContext(SourceContext);
+    return setSource;
 }
 
 export function getObjectById(scene: Scene, id: number): SceneObject | undefined {
@@ -511,9 +532,6 @@ function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
 
 function sceneReducer(state: Readonly<EditorState>, action: SceneAction): EditorState {
     switch (action.type) {
-        case 'setSource':
-            return { ...state, source: action.source };
-
         case 'setStep':
             return setStep(state, action.index);
 

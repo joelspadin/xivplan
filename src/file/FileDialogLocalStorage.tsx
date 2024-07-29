@@ -23,7 +23,7 @@ import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
-import { FileSource, useLoadScene, useScene } from '../SceneProvider';
+import { FileSource, useLoadScene, useScene, useSetSource } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
@@ -209,6 +209,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
     const dismissDialog = useCloseDialog();
     const files = useAsync(listLocalStorageFiles);
 
+    const setSource = useSetSource();
     const { scene, source, dispatch } = useScene();
     const [name, setName] = useState(getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
@@ -229,10 +230,10 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
 
         await saveFile(scene, source);
 
-        dispatch({ type: 'setSource', source });
+        setSource(source);
         setSavedState(scene);
         dismissDialog();
-    }, [scene, name, canSave, alreadyExists, dispatch, dismissDialog, setSavedState, confirmOverwriteFile]);
+    }, [scene, name, canSave, alreadyExists, dismissDialog, setSavedState, setSource, confirmOverwriteFile]);
 
     const onKeyUp = useCallback(
         (event: KeyboardEvent<HTMLInputElement>) => {

@@ -20,7 +20,7 @@ import {
 import React, { ReactElement, useCallback, useContext, useState } from 'react';
 import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
-import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible } from './SceneProvider';
+import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
 import { StepScreenshotButton } from './StepScreenshotButton';
 import { ToolbarContext } from './ToolbarContext';
 import { saveFile } from './file';
@@ -114,7 +114,8 @@ const SaveButton: React.FC<SaveButtonProps> = () => {
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
     const [saveAsOpen, setSaveAsOpen] = useState(false);
-    const { scene, source, dispatch } = useScene();
+    const { scene, source } = useScene();
+    const setSource = useSetSource();
 
     const { type, text, icon, disabled } = getSaveButtonState(source, isDirty);
 
@@ -130,9 +131,9 @@ const SaveButton: React.FC<SaveButtonProps> = () => {
     const download = useCallback(() => {
         downloadScene(scene, source?.name);
         if (!source) {
-            dispatch({ type: 'setSource', source: getBlobSource() });
+            setSource(getBlobSource());
         }
-    }, [scene, source, dispatch]);
+    }, [scene, source, setSource]);
 
     const handleClick = useCallback(() => {
         switch (type) {

@@ -2,7 +2,7 @@ import { Button, DialogActions, DialogTrigger } from '@fluentui/react-components
 import React, { useCallback, useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { ExternalLink } from '../ExternalLink';
-import { useLoadScene, useScene } from '../SceneProvider';
+import { useLoadScene, useScene, useSetSource } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
@@ -66,7 +66,8 @@ export interface SaveFileSystemProps {
 export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
     const setSavedState = useSetSavedState();
     const dismissDialog = useCloseDialog();
-    const { scene, source, dispatch } = useScene();
+    const setSource = useSetSource();
+    const { scene, source } = useScene();
 
     const currentName = source?.name;
 
@@ -80,10 +81,10 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
         await saveFile(scene, source);
         await addRecentFile(handle);
 
-        dispatch({ type: 'setSource', source });
+        setSource(source);
         setSavedState(scene);
         dismissDialog();
-    }, [scene, currentName, dispatch, setSavedState, dismissDialog]);
+    }, [scene, currentName, setSource, setSavedState, dismissDialog]);
 
     return (
         <>
