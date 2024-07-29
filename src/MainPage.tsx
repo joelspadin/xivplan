@@ -50,16 +50,22 @@ const MainPageContent: React.FC = () => {
     );
 };
 
-const DEFAULT_TITLE = 'FFXIV Raid Planner';
+const TITLE = 'XIVPlan';
 
 function usePageTitle() {
     const { source } = useScene();
     const isDirty = useIsDirty();
 
     useEffect(() => {
-        const name = removeFileExtension(source?.name ?? DEFAULT_TITLE);
-        const flag = isDirty ? ' ●' : '';
-        document.title = `${name}${flag}`;
+        let title = TITLE;
+        if (source) {
+            title += ': ';
+            title += removeFileExtension(source?.name);
+        }
+        if (isDirty) {
+            title += ' ●';
+        }
+        document.title = title;
     }, [source, isDirty]);
 }
 

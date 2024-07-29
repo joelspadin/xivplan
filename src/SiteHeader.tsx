@@ -12,7 +12,7 @@ import { ToolbarContext } from './ToolbarContext';
 import { useIsDirty } from './useIsDirty';
 import { removeFileExtension } from './util';
 
-const GAP = '20px';
+const GAP = tokens.spacingHorizontalL;
 const HEADER_HEIGHT = '48px';
 
 const useStyles = makeStyles({
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
         alignItems: 'baseline',
         boxSizing: 'border-box',
         paddingLeft: tokens.spacingHorizontalM,
-        gap: tokens.spacingHorizontalM,
+        gap: GAP,
         width: `calc(${PANEL_WIDTH}px - ${GAP})`,
         textDecoration: 'none',
     },
@@ -45,9 +45,7 @@ const useStyles = makeStyles({
         textOverflow: 'ellipsis',
     },
     dirty: {
-        ':before': {
-            content: '" "',
-        },
+        paddingInlineStart: tokens.spacingHorizontalXS,
     },
     commandBar: {
         flexGrow: 1,
