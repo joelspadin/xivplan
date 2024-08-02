@@ -56,12 +56,10 @@ function setStacks(object: Readonly<IconObject>, stacks: number): IconObject {
     stacks = Math.min(stacks, object.maxStacks);
 
     const iconId = (object.iconId + stacks - 1).toString().padStart(6, '0');
-    const folder = iconId.substring(0, iconId.length - 3) + '000';
 
-    return {
-        ...object,
-        image: `https://beta.xivapi.com/api/1/asset/ui/icon/${folder}/${iconId}_hr1.tex?format=png`,
-    };
+    const image = object.image.replace(/\d{6}(?=(?:_hr1)?\.tex)/, iconId);
+
+    return { ...object, image };
 }
 
 function getStackCount(object: IconObject) {

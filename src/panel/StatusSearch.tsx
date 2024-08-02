@@ -7,28 +7,39 @@ import {
     makeStyles,
     shorthands,
     tokens,
+    useToastController,
 } from '@fluentui/react-components';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
+import { MessageToast } from '../MessageToast';
 import { PANEL_PADDING } from './PanelStyles';
 import { StatusGrid, StatusItem } from './StatusGrid';
 
-interface Pagination {
-    Page: number;
-    PageNext: number | null;
-    PagePrev: number | null;
-    PageTotal: number;
-    Results: number;
-    ResultsPerPage: number;
-    ResultsTotal: number;
+interface Result {
+    score: number;
+    sheet: string;
+    row_id: number;
+    fields: {
+        Name: string;
+        MaxStacks: number;
+        Icon: {
+            id: number;
+            path_hr1: string;
+        };
+    };
 }
 
 interface Page {
-    Pagination: Pagination;
-    Results: StatusItem[];
+    schema: string;
+    results: Result[];
+    next?: string;
 }
 
 export type Language = 'en' | 'ja' | 'de' | 'fr';
+
+const API_ENDPOINT = 'https://beta.xivapi.com/api/1';
+const SEARCH_URL = `${API_ENDPOINT}/search`;
+const ASSET_URL = `${API_ENDPOINT}/asset`;
 
 const DEBOUNCE_TIME = 300;
 
@@ -49,6 +60,7 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
     const [controller, setController] = useState<AbortController>();
     const [debouncedFilter, setDebouncedFilter] = useState('');
     const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
+    const { dispatchToast } = useToastController();
 
     const selectedLanguage = useMemo(() => [language as string], [language]);
 
@@ -74,9 +86,10 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
             return fetchStatuses(debouncedFilter, controller.signal, language);
         } catch (ex) {
             console.warn(ex);
+            dispatchToast(<MessageToast title="Error" message={ex} />, { intent: 'error' });
             return [];
         }
-    }, [debouncedFilter, language]);
+    }, [debouncedFilter, language, dispatchToast]);
 
     return (
         // TODO: replace with tabster? https://tabster.io/docs/mover
@@ -116,29 +129,43 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
     );
 };
 
-const fetchStatuses = async (search: string, signal: AbortSignal, language: Language = 'en'): Promise<StatusItem[]> => {
+async function fetchStatuses(search: string, signal: AbortSignal, language: Language = 'en') {
     const items: StatusItem[] = [];
-
-    let pageIndex: number | null = 1;
+    let cursor: string | undefined = undefined;
 
     do {
         const params = new URLSearchParams({
             language,
-            indexes: 'Status',
-            columns: 'Name,IconHD,IconID,MaxStacks',
-            string: search,
-            page: pageIndex.toString(),
+            sheets: 'Status',
+            fields: 'Name,Icon,MaxStacks',
+            query: `Name~"${encodeURIComponent(search)}"`,
+            ...(cursor && { cursor }),
         });
-        const response = await fetch(`https://xivapi.com/search?${params}`, { signal });
+
+        const response = await fetch(`${SEARCH_URL}?${params}`, { cache: 'force-cache', signal });
         const page = (await response.json()) as Page;
+        cursor = page.next;
 
-        items.push(...page.Results);
-
-        pageIndex = page.Pagination.PageNext;
-    } while (pageIndex !== null);
+        items.push(...page.results.map(getStatusIcon));
+    } while (cursor);
 
     return items;
-};
+}
+
+function getStatusIcon({ fields }: Result) {
+    return {
+        name: fields.Name,
+        maxStacks: fields.MaxStacks,
+        icon: {
+            id: fields.Icon.id,
+            url: getIconUrl(fields.Icon.path_hr1),
+        },
+    };
+}
+
+function getIconUrl(path: string) {
+    return `${ASSET_URL}/${path}?format=png`;
+}
 
 const useStyles = makeStyles({
     statusSearch: {

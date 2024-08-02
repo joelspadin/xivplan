@@ -7,11 +7,15 @@ const ICON_SIZE = 32;
 const ICON_MARGIN = 8;
 const ITEM_SIZE = ICON_SIZE + ICON_MARGIN;
 
+export interface StatusItemIcon {
+    id: number;
+    url: string;
+}
+
 export interface StatusItem {
-    Name: string;
-    IconHD: string;
-    IconID: number;
-    MaxStacks: number;
+    name: string;
+    icon: StatusItemIcon;
+    maxStacks: number;
 }
 
 export interface StatusGridProps {
@@ -57,10 +61,10 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
                                         className={classes.item}
                                     >
                                         <StatusIcon
-                                            name={item.Name}
-                                            icon={fixIconUrl(item.IconHD)}
-                                            iconId={item.IconID}
-                                            maxStacks={item.MaxStacks}
+                                            name={item.name}
+                                            icon={item.icon.url}
+                                            iconId={item.icon.id}
+                                            maxStacks={item.maxStacks}
                                             scale={2}
                                         />
                                     </div>
@@ -73,17 +77,6 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
         </div>
     );
 };
-
-const PREFIX = '/i/';
-const SUFFIX = '.png';
-
-function fixIconUrl(url: string) {
-    if (url.startsWith(PREFIX) && url.endsWith(SUFFIX)) {
-        url = url.substring(PREFIX.length, url.length - SUFFIX.length);
-    }
-
-    return `https://beta.xivapi.com/api/1/asset/ui/icon/${url}.tex?format=png`;
-}
 
 function chunked<T>(items: T[], chunkSize: number): T[][] {
     chunkSize = Math.max(1, chunkSize);
