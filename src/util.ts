@@ -84,3 +84,9 @@ export function commonValue<T, U>(objects: readonly T[], value: (object: T) => U
 export function removeFileExtension(path: string) {
     return path.replace(/\..+?$/, '');
 }
+
+export function makeDisplayName(name: string) {
+    name = name.trim();
+    name = name.charAt(0).toUpperCase() + name.substring(1);
+    return name.replaceAll(/\s+(.)/g, (_, c: string) => c.toUpperCase());
+}

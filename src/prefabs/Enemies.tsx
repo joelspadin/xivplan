@@ -19,6 +19,7 @@ import { LayerName } from '../render/layers';
 import { EnemyObject, ObjectType } from '../scene';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
+import { makeDisplayName } from '../util';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -41,8 +42,7 @@ const SHADOW_BLUR_RATIO = 1 / 10;
 const SHADOW_BLUR_MIN = 2;
 
 function makeIcon(name: string, icon: string, radius: number, hasDirection = true) {
-    // eslint-disable-next-line react/display-name
-    return () => {
+    const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = `/actor/${icon}`;
 
@@ -66,6 +66,8 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
             />
         );
     };
+    Component.displayName = makeDisplayName(name);
+    return Component;
 }
 
 registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {

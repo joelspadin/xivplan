@@ -3,7 +3,7 @@ import {
     FieldState,
     ForwardRefComponent,
     InfoLabel,
-    PopoverSurface,
+    PopoverSurfaceProps,
     Slot,
     renderField_unstable,
     slot,
@@ -17,7 +17,7 @@ import React from 'react';
 // and it is possible to set an InfoLabel in a Field's label slot.
 
 export interface InfoFieldProps extends FieldProps {
-    info?: NonNullable<Slot<typeof PopoverSurface>>;
+    info?: NonNullable<Slot<ForwardRefComponent<PopoverSurfaceProps>>>;
 }
 
 export const InfoField: ForwardRefComponent<InfoFieldProps> = React.forwardRef((props, ref) => {

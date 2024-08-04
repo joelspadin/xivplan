@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAsyncModal } from '../useAsyncModal';
 import { DeleteFilePrompt, OverwriteFilePrompt } from './FilePrompts';
 import { UnsavedChangesPrompt } from './UnsavedChangesPrompt';

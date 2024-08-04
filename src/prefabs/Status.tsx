@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { makeDisplayName } from '../util';
 import { StatusIcon } from './StatusIcon';
 
 function makeIcon(name: string, icon: string, scale?: number) {
-    // eslint-disable-next-line react/display-name
-    return () => <StatusIcon name={name} icon={`/marker/${icon}`} scale={scale} />;
+    const Component: React.FC = () => <StatusIcon name={name} icon={`/marker/${icon}`} scale={scale} />;
+    Component.displayName = makeDisplayName(name);
+    return Component;
 }
 
 export const StatusAttack1 = makeIcon('Attack 1', 'attack1.png', 2);

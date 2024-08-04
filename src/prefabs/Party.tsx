@@ -10,6 +10,7 @@ import { SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
+import { makeDisplayName } from '../util';
 import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
@@ -19,8 +20,7 @@ const DEFAULT_SIZE = 32;
 function makeIcon(job: Job) {
     const { icon, name } = getJob(job);
 
-    // eslint-disable-next-line react/display-name
-    return () => {
+    const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = getJobIconUrl(icon);
 
@@ -42,6 +42,8 @@ function makeIcon(job: Job) {
             />
         );
     };
+    Component.displayName = makeDisplayName(name);
+    return Component;
 }
 
 registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {

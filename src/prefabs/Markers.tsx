@@ -17,6 +17,7 @@ import { LayerName } from '../render/layers';
 import { MarkerObject, ObjectType } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
+import { makeDisplayName } from '../util';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -25,8 +26,7 @@ const DEFAULT_SIZE = 42;
 const ICON_RATIO = 32 / DEFAULT_SIZE;
 
 function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color: string) {
-    // eslint-disable-next-line react/display-name
-    return () => {
+    const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = `/marker/${icon}`;
 
@@ -50,6 +50,8 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
             />
         );
     };
+    Component.displayName = makeDisplayName(name);
+    return Component;
 }
 
 registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {

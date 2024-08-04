@@ -9,7 +9,7 @@ import {
     tokens,
     useToastController,
 } from '@fluentui/react-components';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import { MessageToast } from '../MessageToast';
 import { PANEL_PADDING } from './PanelStyles';

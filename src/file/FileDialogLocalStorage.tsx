@@ -210,7 +210,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
     const files = useAsync(listLocalStorageFiles);
 
     const setSource = useSetSource();
-    const { scene, source, dispatch } = useScene();
+    const { scene, source } = useScene();
     const [name, setName] = useState(getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 

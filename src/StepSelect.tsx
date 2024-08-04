@@ -148,9 +148,7 @@ const ReorderStepsButton: React.FC = () => {
     );
 };
 
-interface ReoderStepsDialogContentProps {}
-
-const ReoderStepsDialogContent: React.FC<ReoderStepsDialogContentProps> = () => {
+const ReoderStepsDialogContent: React.FC = () => {
     const classes = useStyles();
     const { scene, dispatch } = useScene();
     const [sceneSnapshot] = useState<Scene>(scene);

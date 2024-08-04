@@ -86,8 +86,7 @@ function getHandleId(handles: readonly Handle[], index: number): number {
     return activeHandle.id;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function createControlPointManager<T extends Vector2d, S, P = {}>(
+export function createControlPointManager<T extends Vector2d, S, P = unknown>(
     config: ControlPointConfig<T, S, P>,
 ): React.FC<ControlPointManagerProps<T, S, P>> {
     const ControlPointManager: React.FC<ControlPointManagerProps<T, S, P>> = (props) => {

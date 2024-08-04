@@ -167,7 +167,9 @@ export const ArenaGridEdit: React.FC = () => {
                             step={1}
                             value={grid.columns}
                             onChange={(ev, data) => {
-                                data.value && setGrid({ ...grid, columns: data.value });
+                                if (data.value) {
+                                    setGrid({ ...grid, columns: data.value });
+                                }
                             }}
                         />
                     </Field>
@@ -178,7 +180,9 @@ export const ArenaGridEdit: React.FC = () => {
                             step={1}
                             value={grid.rows}
                             onChange={(ev, data) => {
-                                data.value && setGrid({ ...grid, rows: data.value });
+                                if (data.value) {
+                                    setGrid({ ...grid, rows: data.value });
+                                }
                             }}
                         />
                     </Field>
@@ -194,7 +198,9 @@ export const ArenaGridEdit: React.FC = () => {
                                 step={1}
                                 value={grid.angularDivs}
                                 onChange={(ev, data) => {
-                                    data.value && setGrid({ ...grid, angularDivs: data.value });
+                                    if (data.value) {
+                                        setGrid({ ...grid, angularDivs: data.value });
+                                    }
                                 }}
                             />
                         </Field>
@@ -205,7 +211,9 @@ export const ArenaGridEdit: React.FC = () => {
                                 step={1}
                                 value={grid.radialDivs}
                                 onChange={(ev, data) => {
-                                    data.value && setGrid({ ...grid, radialDivs: data.value });
+                                    if (data.value) {
+                                        setGrid({ ...grid, radialDivs: data.value });
+                                    }
                                 }}
                             />
                         </Field>

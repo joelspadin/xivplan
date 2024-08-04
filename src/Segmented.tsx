@@ -13,7 +13,7 @@ import { iconFilledClassName, iconRegularClassName } from '@fluentui/react-icons
 import React, { ReactNode } from 'react';
 import { OptionalTooltip } from './OptionalTooltip';
 
-export interface SegmentedGroupProps extends RadioGroupProps {}
+export type SegmentedGroupProps = RadioGroupProps;
 
 export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, ...props }) => {
     const classes = useStyles();

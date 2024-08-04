@@ -108,9 +108,7 @@ function getSaveButtonState(source: FileSource | undefined, isDirty: boolean): S
     return { type: 'save', text: 'Save', icon: <SaveRegular />, disabled: !isDirty };
 }
 
-interface SaveButtonProps {}
-
-const SaveButton: React.FC<SaveButtonProps> = () => {
+const SaveButton: React.FC = () => {
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
     const [saveAsOpen, setSaveAsOpen] = useState(false);
