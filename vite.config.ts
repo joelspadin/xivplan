@@ -70,6 +70,7 @@ export default defineConfig({
                 globPatterns: ['**/*.{js,css,html,svg,png,svg,ico}'],
                 cleanupOutdatedCaches: true,
                 clientsClaim: true,
+                maximumFileSizeToCacheInBytes: 4 * 1000 * 1000,
             },
             injectManifest: {
                 globPatterns: ['**/*.{js,css,html,svg,png,svg,ico}'],

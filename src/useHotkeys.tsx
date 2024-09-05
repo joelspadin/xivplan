@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useId } from 'react';
+import { useContext, useEffect, useId } from 'react';
 import { Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import type { HotkeyCallback, RefType } from 'react-hotkeys-hook/dist/types';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
@@ -14,7 +14,7 @@ export function useHotkeys<T extends HTMLElement>(
     help: string,
     callback: HotkeyCallback,
     deps?: unknown[],
-): React.MutableRefObject<RefType<T>>;
+): (instance: RefType<T>) => void;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
@@ -22,7 +22,7 @@ export function useHotkeys<T extends HTMLElement>(
     callback: HotkeyCallback,
     options?: Options,
     deps?: unknown[],
-): React.MutableRefObject<RefType<T>>;
+): (instance: RefType<T>) => void;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
@@ -30,7 +30,7 @@ export function useHotkeys<T extends HTMLElement>(
     callback: HotkeyCallback,
     options?: Options | unknown[],
     deps?: unknown[],
-): React.MutableRefObject<RefType<T>> {
+): (instance: RefType<T>) => void {
     if (Array.isArray(options)) {
         deps = options;
         options = {};
