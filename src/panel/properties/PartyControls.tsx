@@ -6,7 +6,7 @@ import { PartyObject } from '../../scene';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
-    [Job.RoleTank, Job.RoleHealer, Job.RoleDps, Job.RoleAny],
+    [Job.RoleSupport, Job.RoleTank, Job.RoleHealer, Job.RoleDps, Job.RoleAny],
     [Job.RoleMelee, Job.RoleRanged, Job.RoleMagicRanged, Job.RolePhysicalRanged],
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],

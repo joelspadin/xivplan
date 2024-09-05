@@ -97,6 +97,7 @@ registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
 export const PartyAny = makeIcon(Job.RoleAny);
 export const PartyTank = makeIcon(Job.RoleTank);
 export const PartyHealer = makeIcon(Job.RoleHealer);
+export const PartySupport = makeIcon(Job.RoleSupport);
 export const PartyDps = makeIcon(Job.RoleDps);
 
 export const PartyMelee = makeIcon(Job.RoleMelee);

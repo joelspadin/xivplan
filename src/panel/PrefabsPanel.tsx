@@ -31,6 +31,7 @@ import {
     PartySamurai,
     PartyScholar,
     PartySummoner,
+    PartySupport,
     PartyTank,
     PartyViper,
     PartyWarrior,
@@ -126,6 +127,7 @@ export const PrefabsPanel: React.FC = () => {
             </Section>
             <Section title="Party">
                 <ObjectGroup>
+                    <PartySupport />
                     <PartyTank />
                     <PartyHealer />
                     <PartyDps />
