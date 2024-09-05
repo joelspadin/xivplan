@@ -64,5 +64,8 @@
   },
   "overrides": {
     "eslint": "^9.9.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.21.2"
   }
 }
