@@ -36,10 +36,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         <>
             <div className={classes.row}>
                 <Field label="X">
-                    <SpinButton value={x} onChange={onXChanged} step={10} />
+                    <SpinButton value={x} onChange={onXChanged} step={1} />
                 </Field>
                 <Field label="Y">
-                    <SpinButton value={y} onChange={onYChanged} step={10} />
+                    <SpinButton value={y} onChange={onYChanged} step={1} />
                 </Field>
                 <Tooltip content={tooltip} relationship="label" withArrow>
                     <ToggleButton checked={pinned} onClick={onTogglePinned} icon={icon} />

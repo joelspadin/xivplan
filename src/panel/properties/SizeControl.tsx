@@ -25,10 +25,10 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>
             <Field label="Width">
-                <SpinButton value={width} onChange={onWidthChanged} min={20} step={10} />
+                <SpinButton value={width} onChange={onWidthChanged} min={20} step={5} />
             </Field>
             <Field label="Height">
-                <SpinButton value={height} onChange={onHeightChanged} min={20} step={10} />
+                <SpinButton value={height} onChange={onHeightChanged} min={20} step={5} />
             </Field>
         </div>
     );
