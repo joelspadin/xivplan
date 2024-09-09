@@ -19,7 +19,7 @@ import { getArrowStyle, getZoneStyle } from './style';
 const NAME = 'Moving AOE';
 
 const DEFAULT_RADIUS = 50;
-const DEFAULT_LENGTH = 10;
+const DEFAULT_LENGTH = 6;
 
 export const ZoneExaflare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();

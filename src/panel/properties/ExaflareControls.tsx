@@ -8,7 +8,7 @@ import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-const MIN_LENGTH = 2;
+const MIN_LENGTH = 1;
 
 export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ objects }) => {
     const classes = useControlStyles();
