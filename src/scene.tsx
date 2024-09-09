@@ -280,6 +280,7 @@ export const isPolygonZone = makeObjectTest<PolygonZone>(ObjectType.Polygon);
 export interface ExaflareZone extends RadiusObject, RotateableObject, ColoredObject, TransparentObject, SceneId {
     readonly type: ObjectType.Exaflare;
     readonly length: number;
+    readonly spacing: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 

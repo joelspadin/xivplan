@@ -13,6 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
+import { EXAFLARE_SPACING_DEFAULT } from './constants';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -50,6 +51,7 @@ registerDropHandler<ExaflareZone>(ObjectType.Exaflare, (object, position) => {
             opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
             length: DEFAULT_LENGTH,
+            spacing: EXAFLARE_SPACING_DEFAULT,
             rotation: 0,
             ...object,
             ...position,
@@ -60,12 +62,10 @@ registerDropHandler<ExaflareZone>(ObjectType.Exaflare, (object, position) => {
 const ARROW_W_FRAC = 0.8;
 const ARROW_H_FRAC = 0.5;
 
-const TRAIL_SPACING = 0.6;
-
-function getTrailPositions(radius: number, length: number): Vector2d[] {
+function getTrailPositions(radius: number, length: number, spacing: number): Vector2d[] {
     return Array.from({ length }).map((_, i) => ({
         x: 0,
-        y: -(radius * 2 * TRAIL_SPACING) * i,
+        y: -((radius * 2 * spacing) / 100) * i,
     }));
 }
 
@@ -86,7 +86,10 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
         [object.color, object.opacity, radius],
     );
     const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
-    const trail = useMemo(() => getTrailPositions(radius, object.length), [radius, object.length]);
+    const trail = useMemo(
+        () => getTrailPositions(radius, object.length, object.spacing),
+        [radius, object.length, object.spacing],
+    );
     const dashSize = getDashSize(radius);
 
     return (

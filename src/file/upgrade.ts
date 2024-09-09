@@ -3,12 +3,14 @@ import { DEFAULT_ENEMY_OPACITY } from '../render/SceneTheme';
 import {
     DrawObject,
     EnemyObject,
+    ExaflareZone,
     ImageObject,
     Scene,
     SceneObject,
     SceneStep,
     isDrawObject,
     isEnemy,
+    isExaflareZone,
     isImageObject,
 } from '../scene';
 
@@ -37,6 +39,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isImageObject(object)) {
         object = upgradeImageObject(object);
+    }
+
+    if (isExaflareZone(object)) {
+        object = upgradeExaflareZone(object);
     }
 
     return object;
@@ -82,4 +88,10 @@ function upgradeImageObject<T extends ImageObject>(object: T): T {
     });
 
     return { ...object, image };
+}
+
+const LEGACY_SPACING = 60;
+
+function upgradeExaflareZone(object: ExaflareZone): ExaflareZone {
+    return { ...object, spacing: object.spacing ?? LEGACY_SPACING };
 }

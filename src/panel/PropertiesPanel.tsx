@@ -37,7 +37,7 @@ import { DrawObjectBrushControl } from './properties/BrushControl';
 import { ColorControl, ColorSwatchControl } from './properties/ColorControl';
 import { ConeAngleControl } from './properties/ConeControls';
 import { EnemyRingControl } from './properties/EnemyControls';
-import { ExaflareLengthControl } from './properties/ExaflareControls';
+import { ExaflareLengthControl, ExaflareSpacingControl } from './properties/ExaflareControls';
 import { HollowControl } from './properties/HollowControl';
 import { IconStacksControl, IconTimeControl } from './properties/IconControls';
 import { ImageControl } from './properties/ImageControl';
@@ -137,6 +137,7 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
                 <ControlCondition objects={objects} test={isPolygonZone} control={PolygonSidesControl} />
+                <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareSpacingControl} />
                 <ControlCondition
                     objects={objects}
                     test={(x) => isArcZone(x) || isConeZone(x)}

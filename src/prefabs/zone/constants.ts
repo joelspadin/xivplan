@@ -1,0 +1,7 @@
+export const EXAFLARE_LENGTH_DEFAULT = 6;
+export const EXAFLARE_LENGTH_MIN = 1;
+export const EXAFLARE_LENGTH_MAX = 100;
+
+export const EXAFLARE_SPACING_DEFAULT = 50;
+export const EXAFLARE_SPACING_MIN = 10;
+export const EXAFLARE_SPACING_MAX = 1000;
