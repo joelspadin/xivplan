@@ -102,7 +102,9 @@ type OpenChangeCallback = Required<DialogProps>['onOpenChange'];
 export function useAsyncModalResolveCallback(confirmId: string, resolve: (result: boolean) => void) {
     return useCallback<OpenChangeCallback>(
         (ev, data) => {
-            if (!data.open) {
+            if (data.type === 'escapeKeyDown') {
+                resolve(false);
+            } else {
                 const target = ev.target as HTMLElement;
                 resolve(target.id === confirmId);
             }
