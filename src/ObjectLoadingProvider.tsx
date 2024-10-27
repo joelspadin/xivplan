@@ -1,16 +1,5 @@
-import React, { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
-
-export interface ObjectLoadingState {
-    isLoading: boolean;
-    setLoading: (id: string) => void;
-    clearLoading: (id: string) => void;
-}
-
-export const ObjectLoadingContext = createContext<ObjectLoadingState>({
-    isLoading: false,
-    setLoading: () => undefined,
-    clearLoading: () => undefined,
-});
+import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
+import { ObjectLoadingContext, ObjectLoadingState } from './ObjectLoadingContext';
 
 /**
  * Tracks whether any descendants using useObjectLoading()

@@ -1,11 +1,8 @@
 import { FluentProvider, makeStyles } from '@fluentui/react-components';
-import React, { Dispatch, PropsWithChildren, createContext, useEffect } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import { useLocalStorage, useMedia } from 'react-use';
+import { DarkModeContext } from './ThemeContext';
 import { getTheme } from './themes';
-
-export type DarkModeValue = [boolean, Dispatch<boolean>];
-
-export const DarkModeContext = createContext<DarkModeValue>([false, () => undefined]);
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const prefersDarkMode = useMedia('(prefers-color-scheme: dark)');

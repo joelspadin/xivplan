@@ -1,12 +1,12 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren, RefObject, useCallback, useContext, useRef } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
-import { DefaultCursorProvider } from '../DefaultCursorState';
+import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { EditorState, SceneAction, SceneContext, useCurrentStep, useScene } from '../SceneProvider';
-import { SelectionContext, SelectionState } from '../SelectionProvider';
+import { SelectionContext, SelectionState } from '../SelectionContext';
 import { getCanvasSize, getSceneCoord } from '../coord';
 import { Scene } from '../scene';
 import { selectNewObjects, selectNone, useSelection } from '../selection';
@@ -23,7 +23,7 @@ export const SceneRenderer: React.FC = () => {
     const { scene } = useScene();
     const [, setSelection] = useContext(SelectionContext);
     const size = getCanvasSize(scene);
-    const stageRef = useRef<Konva.Stage>(null);
+    const [stage, stageRef] = useState<Konva.Stage | null>(null);
 
     const onClickStage = useCallback(
         (e: KonvaEventObject<MouseEvent>) => {
@@ -38,9 +38,9 @@ export const SceneRenderer: React.FC = () => {
     // console.log(scene);
 
     return (
-        <DropTarget stageRef={stageRef}>
+        <DropTarget stage={stage}>
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
-                <StageContext.Provider value={stageRef.current}>
+                <StageContext.Provider value={stage}>
                     <DefaultCursorProvider>
                         <SceneContents />
                     </DefaultCursorProvider>
@@ -146,10 +146,10 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, backgroundColo
 };
 
 interface DropTargetProps extends PropsWithChildren {
-    stageRef: RefObject<Konva.Stage>;
+    stage: Konva.Stage | null;
 }
 
-const DropTarget: React.FC<DropTargetProps> = ({ stageRef, children }) => {
+const DropTarget: React.FC<DropTargetProps> = ({ stage, children }) => {
     const { scene, dispatch } = useScene();
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
@@ -158,14 +158,14 @@ const DropTarget: React.FC<DropTargetProps> = ({ stageRef, children }) => {
         (e: React.DragEvent) => {
             e.preventDefault();
 
-            if (!dragObject || !stageRef.current) {
+            if (!dragObject || !stage) {
                 return;
             }
 
             setDragObject(null);
-            stageRef.current.setPointersPositions(e);
+            stage.setPointersPositions(e);
 
-            const position = stageRef.current.getPointerPosition();
+            const position = stage.getPointerPosition();
             if (!position) {
                 return;
             }
@@ -179,7 +179,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ stageRef, children }) => {
                 setSelection(selectNewObjects(scene, 1));
             }
         },
-        [scene, stageRef, dispatch, setSelection, dragObject, setDragObject],
+        [scene, stage, dispatch, setSelection, dragObject, setDragObject],
     );
 
     return (

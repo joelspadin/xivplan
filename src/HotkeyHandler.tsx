@@ -1,10 +1,10 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
+import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { HelpContext } from './HelpProvider';
 import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
-import { SceneSelection } from './SelectionProvider';
+import { SceneSelection } from './SelectionContext';
 import { getSceneCoord, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
 import { EditMode } from './editMode';

@@ -9,14 +9,12 @@ import {
     DialogTrigger,
 } from '@fluentui/react-components';
 import { Action } from 'history';
-import React, { Dispatch, PropsWithChildren, createContext, useCallback, useId, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useId, useState } from 'react';
 import { Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
+import { DirtyContext, SavedStateContext } from './DirtyContext';
 import { useScene } from './SceneProvider';
 import { Scene } from './scene';
-
-export const DirtyContext = createContext(false);
-export const SavedStateContext = createContext<Dispatch<Scene>>(() => undefined);
 
 export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { scene } = useScene();

@@ -65,7 +65,7 @@ import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
 import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
-import { DarkModeContext } from '../ThemeProvider';
+import { DarkModeContext } from '../ThemeContext';
 import { useControlStyles } from '../useControlStyles';
 import { ObjectGroup, Section } from './Section';
 

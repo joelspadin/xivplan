@@ -1,5 +1,5 @@
 import { Dispatch, useContext } from 'react';
-import { DirtyContext, SavedStateContext } from './DirtyProvider';
+import { DirtyContext, SavedStateContext } from './DirtyContext';
 import { Scene } from './scene';
 
 /**

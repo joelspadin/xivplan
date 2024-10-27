@@ -1,8 +1,5 @@
-import React, { Dispatch, PropsWithChildren, SetStateAction, createContext, useState } from 'react';
-
-export type HelpState = [boolean, Dispatch<SetStateAction<boolean>>];
-
-export const HelpContext = createContext<HelpState>([false, () => {}]);
+import React, { PropsWithChildren, useState } from 'react';
+import { HelpContext } from './HelpContext';
 
 export const HelpProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const context = useState(false);

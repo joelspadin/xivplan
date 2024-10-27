@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useCurrentStep } from './SceneProvider';
-import { SceneSelection, SelectionContext, SelectionState } from './SelectionProvider';
+import { SceneSelection, SelectionContext, SelectionState } from './SelectionContext';
 import { Scene, SceneObject, SceneStep } from './scene';
 
 export function useSelection(): SelectionState {

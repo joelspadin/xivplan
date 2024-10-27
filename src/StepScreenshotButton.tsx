@@ -13,10 +13,11 @@ import { useTimeoutFn } from 'react-use';
 import { CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
 import { MessageToast } from './MessageToast';
-import { ObjectLoadingContext, ObjectLoadingProvider } from './ObjectLoadingContext';
+import { ObjectLoadingContext } from './ObjectLoadingContext';
+import { ObjectLoadingProvider } from './ObjectLoadingProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { useScene } from './SceneProvider';
-import { DarkModeContext } from './ThemeProvider';
+import { DarkModeContext } from './ThemeContext';
 import { getTheme } from './themes';
 import { useHotkeys } from './useHotkeys';
 
