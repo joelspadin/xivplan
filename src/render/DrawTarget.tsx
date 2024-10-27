@@ -3,7 +3,7 @@ import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Line, Rect } from 'react-konva';
 import simplify from 'simplify-js';
-import { DrawConfig } from '../EditModeProvider';
+import { DrawConfig } from '../EditModeContext';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, getPointerPosition } from '../coord';
 import { useDefaultCursor } from '../cursor';

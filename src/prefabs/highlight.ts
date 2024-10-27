@@ -1,7 +1,7 @@
 import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
 import { useSelection } from '../selection';
-import { SceneSelection } from '../SelectionProvider';
+import { SceneSelection } from '../SelectionContext';
 import { useEditMode } from '../useEditMode';
 
 function isPinned(object: UnknownObject) {

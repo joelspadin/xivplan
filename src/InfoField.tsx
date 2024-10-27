@@ -3,6 +3,7 @@ import {
     FieldState,
     ForwardRefComponent,
     InfoLabel,
+    InfoLabelProps,
     PopoverSurfaceProps,
     Slot,
     renderField_unstable,
@@ -37,7 +38,7 @@ const useInfoField = (props: InfoFieldProps, ref: React.Ref<HTMLDivElement>): Fi
     const id = state.label?.id ?? '';
     const htmlFor = state.label?.htmlFor ?? '';
 
-    const label = slot.optional(props.label, {
+    const label = slot.optional<InfoLabelProps>(props.label, {
         defaultProps: { htmlFor, id, info, required: rest.required, size: 'medium' },
         elementType: InfoLabel,
     });

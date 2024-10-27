@@ -1,6 +1,6 @@
 import { Vector2d } from 'konva/lib/types';
 import React from 'react';
-import { PanelDragObject } from './PanelDragProvider';
+import { PanelDragObject } from './PanelDragContext';
 import { SceneAction } from './SceneProvider';
 import { SceneObject } from './scene';
 import { asArray } from './util';
