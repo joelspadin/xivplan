@@ -126,12 +126,26 @@ const SelectionActionHandler: React.FC = () => {
     useHotkeys(
         'ctrl+v',
         CATEGORY_SELECTION,
-        'Paste objects',
+        'Paste objects at mouse',
         (e) => {
             if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
             }
             pasteObjects(stage, scene, dispatch, setSelection, clipboard);
+            e.preventDefault();
+        },
+        [stage, scene, dispatch, setSelection, clipboard, editMode],
+    );
+
+    useHotkeys(
+        'ctrl+shift+v',
+        CATEGORY_SELECTION,
+        'Paste objects at original location',
+        (e) => {
+            if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
+                return;
+            }
+            pasteObjects(stage, scene, dispatch, setSelection, clipboard, false);
             e.preventDefault();
         },
         [stage, scene, dispatch, setSelection, clipboard, editMode],
