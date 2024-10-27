@@ -24,6 +24,7 @@ export enum ObjectType {
     Eye = 'eye',
     Icon = 'icon',
     Knockback = 'knockback',
+    Line = 'line',
     LineKnockAway = 'lineKnockAway',
     LineKnockback = 'lineKnockback',
     LineStack = 'lineStack',
@@ -233,6 +234,16 @@ export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObjec
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
+export interface LineProps extends MoveableObject, ColoredObject, TransparentObject, HollowObject, RotateableObject {
+    readonly length: number;
+    readonly width: number;
+}
+
+export interface LineZone extends LineProps, SceneId {
+    readonly type: ObjectType.Line;
+}
+export const isLineZone = makeObjectTest<LineZone>(ObjectType.Line);
+
 export interface ConeProps extends RadiusObject, ColoredObject, TransparentObject, HollowObject, RotateableObject {
     readonly coneAngle: number;
 }
@@ -302,6 +313,7 @@ export type Zone =
     | DonutZone
     | ConeZone
     | ArcZone
+    | LineZone
     | RectangleZone
     | ExaflareZone
     | StarburstZone
@@ -312,6 +324,7 @@ export function isZone(object: UnknownObject): object is Zone {
         isDonutZone(object) ||
         isConeZone(object) ||
         isArcZone(object) ||
+        isLineZone(object) ||
         isRectangleZone(object) ||
         isExaflareZone(object) ||
         isStarburstZone(object) ||
@@ -406,6 +419,7 @@ export const supportsHollow = makeObjectTest<HollowObject & UnknownObject>(
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
     ObjectType.Cone,
+    ObjectType.Line,
     ObjectType.Rect,
     ObjectType.Triangle,
     ObjectType.RightTriangle,

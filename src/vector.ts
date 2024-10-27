@@ -85,3 +85,16 @@ export function intersect(p1: Vector2d, u1: Vector2d, p2: Vector2d, u2: Vector2d
 
     return a ? vecAdd(p1, vecMult(u1, a)) : undefined;
 }
+
+/**
+ * Find the distance from q to the closest point on a line from p1 to p2.
+ * @param p1 Start point of line.
+ * @param p2 End point of line.
+ * @param q Target point.
+ */
+export function getDistanceFromLine(p1: Vector2d, p2: Vector2d, q: Vector2d) {
+    return (
+        Math.abs((p2.y - p1.y) * q.x - (p2.x - p1.x) * q.y + p2.x * p1.y - p2.y * p1.x) /
+        Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2))
+    );
+}

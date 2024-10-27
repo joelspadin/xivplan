@@ -14,6 +14,7 @@ import {
     isIcon,
     isImageObject,
     isInnerRadiusObject,
+    isLineZone,
     isMarker,
     isMoveable,
     isNamed,
@@ -41,6 +42,7 @@ import { ExaflareLengthControl, ExaflareSpacingControl } from './properties/Exaf
 import { HollowControl } from './properties/HollowControl';
 import { IconStacksControl, IconTimeControl } from './properties/IconControls';
 import { ImageControl } from './properties/ImageControl';
+import { LineSizeControl } from './properties/LineControls';
 import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
 import { OpacityControl } from './properties/OpacityControl';
@@ -123,6 +125,7 @@ const Controls: React.FC = () => {
             <ControlCondition objects={objects} test={isImageObject} control={ImageControl} />
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
             <ControlCondition objects={objects} test={isResizable} control={SizeControl} />
+            <ControlCondition objects={objects} test={isLineZone} control={LineSizeControl} />
 
             {/* TODO: change this to a two-column grid? */}
             <div className={mergeClasses(classes.row, classes.rightGap)}>

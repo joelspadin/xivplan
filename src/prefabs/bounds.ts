@@ -4,6 +4,9 @@ export const MIN_SIZE = 20;
 export const MIN_CONE_ANGLE = 5;
 export const MAX_CONE_ANGLE = 360;
 
+export const MIN_LINE_LENGTH = 10;
+export const MIN_LINE_WIDTH = 10;
+
 export const MIN_FONT_SIZE = 15;
 
 export const MIN_TETHER_WIDTH = 2;

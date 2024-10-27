@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import lineIcon from '../../assets/zone/line.png';
+
 import squareIcon from '../../assets/zone/square.png';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -17,7 +17,7 @@ import { getZoneStyle } from './style';
 
 const NAME = 'Rectangle';
 
-const DEFAULT_SQUARE_SIZE = 150;
+const DEFAULT_SIZE = 150;
 
 export const ZoneSquare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
@@ -30,32 +30,8 @@ export const ZoneSquare: React.FC = () => {
                 setDragObject({
                     object: {
                         type: ObjectType.Rect,
-                        width: DEFAULT_SQUARE_SIZE,
-                        height: DEFAULT_SQUARE_SIZE,
-                    },
-                    offset: getDragOffset(e),
-                });
-            }}
-        />
-    );
-};
-
-const DEFAULT_LINE_WIDTH = 50;
-const DEFAULT_LINE_HEIGHT = 250;
-
-export const ZoneLine: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-    return (
-        <PrefabIcon
-            draggable
-            name="Line AOE"
-            icon={lineIcon}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Rect,
-                        width: DEFAULT_LINE_WIDTH,
-                        height: DEFAULT_LINE_HEIGHT,
+                        width: DEFAULT_SIZE,
+                        height: DEFAULT_SIZE,
                     },
                     offset: getDragOffset(e),
                 });
@@ -71,8 +47,8 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
             type: ObjectType.Rect,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_SQUARE_SIZE,
-            height: DEFAULT_SQUARE_SIZE,
+            width: DEFAULT_SIZE,
+            height: DEFAULT_SIZE,
             rotation: 0,
             ...object,
             ...position,
