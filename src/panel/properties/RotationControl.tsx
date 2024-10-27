@@ -25,7 +25,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
                 disabled={omniDirection}
                 value={rotation}
                 onChange={onRotationChanged}
-                step={15}
+                step={5}
                 suffix="°"
             />
         </Field>
