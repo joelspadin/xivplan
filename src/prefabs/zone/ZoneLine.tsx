@@ -147,15 +147,18 @@ const LineControlPoints = createControlPointManager<LineZone, LineState>({
         const length = state.length + strokeWidth * 2;
 
         return (
-            <Rect
-                x={-width / 2}
-                y={-length + strokeWidth}
-                width={width}
-                height={length}
-                stroke={CONTROL_POINT_BORDER_COLOR}
-                strokeWidth={strokeWidth}
-                fillEnabled={false}
-            />
+            <>
+                <Rect
+                    x={-width / 2}
+                    y={-length + strokeWidth}
+                    width={width}
+                    height={length}
+                    stroke={CONTROL_POINT_BORDER_COLOR}
+                    strokeWidth={strokeWidth}
+                    fillEnabled={false}
+                />
+                <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
+            </>
         );
     },
 });
