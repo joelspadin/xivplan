@@ -21,7 +21,7 @@ import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
-const NAME = 'Line AOE';
+const NAME = 'Line';
 
 const DEFAULT_WIDTH = 100;
 const DEFAULT_LENGTH = 250;
