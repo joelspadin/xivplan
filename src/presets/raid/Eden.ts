@@ -42,6 +42,20 @@ const PRESET_8: ArenaPreset = {
     backgroundOpacity: 65,
 };
 
+const PRESET_11: ArenaPreset = {
+    name: "Eden's Promise: Anamorphosis (E11)",
+    shape: ArenaShape.Circle,
+    width: 600,
+    height: 600,
+    padding: DEFAULT_ARENA_PADDING,
+    grid: {
+        type: GridType.Radial,
+        angularDivs: 8,
+        radialDivs: 1,
+    },
+    backgroundImage: '/arena/e11.svg',
+};
+
 const PRESET_12: ArenaPreset = {
     name: "Eden's Promise: Eternity (E12)",
     shape: ArenaShape.Circle,
@@ -55,4 +69,4 @@ const PRESET_12: ArenaPreset = {
     },
 };
 
-export const ARENA_PRESETS_RAID_EDEN = [PRESET_2, PRESET_5, PRESET_8, PRESET_12];
+export const ARENA_PRESETS_RAID_EDEN = [PRESET_2, PRESET_5, PRESET_8, PRESET_11, PRESET_12];
