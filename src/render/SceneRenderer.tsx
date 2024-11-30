@@ -56,10 +56,12 @@ export interface ScenePreviewProps {
     width?: number;
     height?: number;
     backgroundColor?: string;
+    /** Do not draw complex objects that may slow down rendering. Useful for small previews. */
+    simple?: boolean;
 }
 
 export const ScenePreview = React.forwardRef<Konva.Stage, ScenePreviewProps>(
-    ({ scene, stepIndex, width, height, backgroundColor }, ref) => {
+    ({ scene, stepIndex, width, height, backgroundColor, simple }, ref) => {
         const size = getCanvasSize(scene);
         let scale = 1;
         let x = 0;
@@ -101,7 +103,7 @@ export const ScenePreview = React.forwardRef<Konva.Stage, ScenePreviewProps>(
                 <DefaultCursorProvider>
                     <SceneContext.Provider value={sceneContext}>
                         <SelectionContext.Provider value={selectionContext}>
-                            <SceneContents listening={false} preview={true} backgroundColor={backgroundColor} />
+                            <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
                         </SelectionContext.Provider>
                     </SceneContext.Provider>
                 </DefaultCursorProvider>
@@ -113,11 +115,11 @@ ScenePreview.displayName = 'ScenePreview';
 
 interface SceneContentsProps {
     listening?: boolean;
-    preview?: boolean;
+    simple?: boolean;
     backgroundColor?: string;
 }
 
-const SceneContents: React.FC<SceneContentsProps> = ({ listening, preview, backgroundColor }) => {
+const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgroundColor }) => {
     listening = listening ?? true;
 
     const step = useCurrentStep();
@@ -127,7 +129,7 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, preview, backg
             {listening && <SceneHotkeyHandler />}
 
             <Layer name={LayerName.Ground} listening={listening}>
-                <ArenaRenderer backgroundColor={backgroundColor} preview={preview} />
+                <ArenaRenderer backgroundColor={backgroundColor} simple={simple} />
                 <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
             <Layer name={LayerName.Default} listening={listening}>

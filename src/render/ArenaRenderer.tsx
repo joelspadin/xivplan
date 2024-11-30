@@ -30,10 +30,11 @@ import { useSceneTheme } from './SceneTheme';
 
 export interface ArenaRendererProps {
     backgroundColor?: string;
-    preview?: boolean;
+    /** Do not draw complex objects that may slow down rendering. Useful for small previews. */
+    simple?: boolean;
 }
 
-export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, preview }) => {
+export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, simple }) => {
     return (
         <>
             {backgroundColor && <Backdrop color={backgroundColor} />}
@@ -42,7 +43,7 @@ export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, p
                 <BackgroundImage />
                 <GridRenderer />
             </ArenaClip>
-            {!preview && <ArenaTickRenderer />}
+            {!simple && <ArenaTickRenderer />}
         </>
     );
 };

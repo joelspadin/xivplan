@@ -322,7 +322,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
             <div className={classes.presetHeader}>{name}</div>
             <div className={classes.arenaPreviewWrap}>
                 <div className={mergeClasses(classes.arenaPreview, isSpoiler && classes.blur)}>
-                    <ScenePreview scene={scene} width={PREVIEW_SIZE} height={PREVIEW_SIZE} />
+                    <ScenePreview scene={scene} width={PREVIEW_SIZE} height={PREVIEW_SIZE} simple />
                 </div>
                 {isSpoiler && (
                     <div className={classes.spoilerNotice}>

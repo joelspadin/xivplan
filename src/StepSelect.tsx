@@ -280,7 +280,7 @@ const StepItem = React.forwardRef<HTMLDivElement, StepItemProps>(({ scene, step,
     return (
         <div ref={ref} className={mergeClasses(classes.stepItem, className)} {...props}>
             <div className={classes.stepHeader}>{stepText}</div>
-            <ScenePreview scene={scene} stepIndex={step.index} width={PREVIEW_SIZE} height={PREVIEW_SIZE} />
+            <ScenePreview scene={scene} stepIndex={step.index} width={PREVIEW_SIZE} height={PREVIEW_SIZE} simple />
         </div>
     );
 });
