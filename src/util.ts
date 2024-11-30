@@ -90,3 +90,11 @@ export function makeDisplayName(name: string) {
     name = name.charAt(0).toUpperCase() + name.substring(1);
     return name.replaceAll(/\s+(.)/g, (_, c: string) => c.toUpperCase());
 }
+
+export function round(value: number, multiple = 1) {
+    return Math.round(value / multiple) * multiple;
+}
+
+export function getLinearGridDivs(divs: number, start: number, distance: number) {
+    return Array.from({ length: divs - 1 }, (_, i) => start + ((i + 1) / divs) * distance);
+}

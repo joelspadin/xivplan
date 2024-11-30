@@ -1,6 +1,8 @@
 import { ColorSwatchProps } from '@fluentui/react-components';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
+import { useContext } from 'react';
+import { DarkModeContext } from '../ThemeContext';
 
 /**
  * Radius of a dot to display when editing an object that is centered on a point.
@@ -22,6 +24,11 @@ export const COLOR_WHITE = '#ffffff'; // white
 export const COLOR_BLACK = '#000000'; // black
 export const COLOR_GRID = '#6f5a48'; // grid
 export const COLOR_BACKGROUND = '#292929'; // background
+
+export const COLOR_TICK_MAJOR_LIGHT = 'rgb(32 5 46%)';
+export const COLOR_TICK_MINOR_LIGHT = 'rgb(32 5 46 / 67%)';
+export const COLOR_TICK_MAJOR_DARK = 'rgb(186 227 255)';
+export const COLOR_TICK_MINOR_DARK = 'rgb(186 227 255 / 67%)';
 
 export const COLOR_MARKER_RED = '#f13b66';
 export const COLOR_MARKER_YELLOW = '#e1dc5d';
@@ -81,6 +88,11 @@ export interface GridTheme {
     strokeWidth: number;
 }
 
+export interface TickTheme {
+    major: string;
+    minor: string;
+}
+
 export interface EnemyTheme {
     text: Partial<Konva.TextConfig>;
 }
@@ -88,13 +100,14 @@ export interface EnemyTheme {
 export interface SceneTheme {
     arena: ArenaTheme;
     grid: GridTheme;
+    ticks: TickTheme;
     enemy: EnemyTheme;
 }
 
 export const ARENA_BACKGROUND_COLOR = '#40352c';
 export const ARENA_TEXT_COLOR = '#ffffff';
 
-const SCENE_THEME = {
+const SCENE_THEME: SceneTheme = {
     arena: {
         fill: ARENA_BACKGROUND_COLOR,
         stroke: COLOR_GRID,
@@ -104,6 +117,10 @@ const SCENE_THEME = {
         stroke: COLOR_GRID,
         strokeWidth: 1,
     },
+    ticks: {
+        major: COLOR_TICK_MAJOR_LIGHT,
+        minor: COLOR_TICK_MINOR_LIGHT,
+    },
     enemy: {
         text: {
             fill: ARENA_TEXT_COLOR,
@@ -112,6 +129,16 @@ const SCENE_THEME = {
     },
 };
 
+const SCENE_THEME_DARK = {
+    ...SCENE_THEME,
+    ticks: {
+        major: COLOR_TICK_MAJOR_DARK,
+        minor: COLOR_TICK_MINOR_DARK,
+    },
+};
+
 export function useSceneTheme(): SceneTheme {
-    return SCENE_THEME;
+    const [darkMode] = useContext(DarkModeContext);
+
+    return darkMode ? SCENE_THEME_DARK : SCENE_THEME;
 }

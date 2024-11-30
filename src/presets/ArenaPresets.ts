@@ -6,6 +6,7 @@ import { ARENA_PRESETS_RAID_ARCADION } from './raid/Arcadion';
 import { ARENA_PRESETS_RAID_EDEN } from './raid/Eden';
 import { ARENA_PRESETS_RAID_PANDAEMONIUM } from './raid/Pandaemonium';
 import { ARENA_PRESETS_ULTIMATE_DSU } from './ultimate/DSU';
+import { ARENA_PRESETS_ULTIMATE_FRU } from './ultimate/FRU';
 import { ARENA_PRESETS_ULTIMATE_TEA } from './ultimate/TEA';
 import { ARENA_PRESETS_ULTIMATE_TOP } from './ultimate/TOP';
 import { ARENA_PRESETS_ULTIMATE_UCOB } from './ultimate/UCOB';
@@ -28,5 +29,6 @@ export const ARENA_PRESETS: Record<string, Record<string, ArenaPreset[]>> = {
         'The Epic of Alexander': ARENA_PRESETS_ULTIMATE_TEA,
         "Dragonsong's Reprise": ARENA_PRESETS_ULTIMATE_DSU,
         'The Omega Protocol': ARENA_PRESETS_ULTIMATE_TOP,
+        'Futures Rewritten': ARENA_PRESETS_ULTIMATE_FRU,
     },
 };

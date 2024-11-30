@@ -24,14 +24,16 @@ import {
     Scene,
 } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
-import { degtorad } from '../util';
+import { degtorad, getLinearGridDivs } from '../util';
+import { ArenaTickRenderer } from './ArenaTickRenderer';
 import { useSceneTheme } from './SceneTheme';
 
 export interface ArenaRendererProps {
     backgroundColor?: string;
+    preview?: boolean;
 }
 
-export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor }) => {
+export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, preview }) => {
     return (
         <>
             {backgroundColor && <Backdrop color={backgroundColor} />}
@@ -40,6 +42,7 @@ export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor })
                 <BackgroundImage />
                 <GridRenderer />
             </ArenaClip>
+            {!preview && <ArenaTickRenderer />}
         </>
     );
 };
@@ -238,10 +241,6 @@ const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
         />
     );
 };
-
-function getLinearGridDivs(divs: number, start: number, distance: number) {
-    return Array.from({ length: divs - 1 }, (_, i) => start + ((i + 1) / divs) * distance);
-}
 
 const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid }) => {
     const theme = useSceneTheme();

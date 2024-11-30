@@ -101,7 +101,7 @@ export const ScenePreview = React.forwardRef<Konva.Stage, ScenePreviewProps>(
                 <DefaultCursorProvider>
                     <SceneContext.Provider value={sceneContext}>
                         <SelectionContext.Provider value={selectionContext}>
-                            <SceneContents listening={false} backgroundColor={backgroundColor} />
+                            <SceneContents listening={false} preview={true} backgroundColor={backgroundColor} />
                         </SelectionContext.Provider>
                     </SceneContext.Provider>
                 </DefaultCursorProvider>
@@ -113,10 +113,11 @@ ScenePreview.displayName = 'ScenePreview';
 
 interface SceneContentsProps {
     listening?: boolean;
+    preview?: boolean;
     backgroundColor?: string;
 }
 
-const SceneContents: React.FC<SceneContentsProps> = ({ listening, backgroundColor }) => {
+const SceneContents: React.FC<SceneContentsProps> = ({ listening, preview, backgroundColor }) => {
     listening = listening ?? true;
 
     const step = useCurrentStep();
@@ -126,7 +127,7 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, backgroundColo
             {listening && <SceneHotkeyHandler />}
 
             <Layer name={LayerName.Ground} listening={listening}>
-                <ArenaRenderer backgroundColor={backgroundColor} />
+                <ArenaRenderer backgroundColor={backgroundColor} preview={preview} />
                 <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
             <Layer name={LayerName.Default} listening={listening}>

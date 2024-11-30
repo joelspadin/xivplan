@@ -32,6 +32,7 @@ import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';
 import { ArenaGridEdit } from './ArenaGridEdit';
 import { ArenaShapeEdit } from './ArenaShapeEdit';
+import { ArenaTickEdit } from './ArenaTickEdit';
 
 const PREVIEW_SIZE = 240;
 
@@ -70,6 +71,7 @@ export const ArenaPanel: React.FC = () => {
         <div className={mergeClasses(classes.panel, classes.column)}>
             <ArenaShapeEdit />
             <ArenaGridEdit />
+            <ArenaTickEdit />
             <ArenaBackgroundEdit />
             <Divider />
             <SelectPresetButton />

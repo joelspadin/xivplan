@@ -1,5 +1,5 @@
 export const MIN_RADIUS = 10;
-export const MIN_SIZE = 20;
+export const MIN_SIZE = 1;
 
 export const MIN_CONE_ANGLE = 5;
 export const MAX_CONE_ANGLE = 360;

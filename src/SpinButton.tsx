@@ -5,12 +5,17 @@ import {
     SpinButtonProps,
 } from '@fluentui/react-components';
 import React, { useCallback } from 'react';
+import { round } from './util';
+
+export interface CustomSpinButtonProps extends Omit<SpinButtonProps, 'displayValue'> {
+    roundTo?: number;
+}
 
 /**
  * Wrapper around SpinButton which displays nothing instead of NaN if value == undefined
  * and properly handles direct data entry.
  */
-export const SpinButton: React.FC<Omit<SpinButtonProps, 'displayValue'>> = ({ value, onChange, ...props }) => {
+export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, roundTo, ...props }) => {
     const wrappedOnChange = useCallback(
         (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
             if (!isValid(data.value)) {
@@ -23,7 +28,7 @@ export const SpinButton: React.FC<Omit<SpinButtonProps, 'displayValue'>> = ({ va
                     return;
                 }
 
-                value = Math.round(value);
+                value = round(value, roundTo);
 
                 if (props.min !== undefined) {
                     value = Math.max(value, props.min);
@@ -37,7 +42,7 @@ export const SpinButton: React.FC<Omit<SpinButtonProps, 'displayValue'>> = ({ va
 
             onChange?.(event, data);
         },
-        [onChange, props.min, props.max],
+        [onChange, roundTo, props.min, props.max],
     );
 
     return (

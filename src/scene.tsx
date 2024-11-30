@@ -11,6 +11,12 @@ export enum GridType {
     CustomRadial = 'customRadial',
 }
 
+export enum TickType {
+    None = 'none',
+    Rectangular = 'rectangle',
+    Radial = 'radial',
+}
+
 export enum ObjectType {
     Arc = 'arc',
     Arrow = 'arrow',
@@ -89,12 +95,33 @@ export interface CustomRadialGrid {
 
 export type Grid = NoGrid | RectangularGrid | RadialGrid | CustomRectangularGrid | CustomRadialGrid;
 
+export interface NoTicks {
+    readonly type: TickType.None;
+}
+
+export interface RectangularTicks {
+    readonly type: TickType.Rectangular;
+    readonly rows: number;
+    readonly columns: number;
+}
+
+export interface RadialTicks {
+    readonly type: TickType.Radial;
+    readonly majorStart: number;
+    readonly majorCount: number;
+    readonly minorStart: number;
+    readonly minorCount: number;
+}
+
+export type Ticks = NoTicks | RectangularTicks | RadialTicks;
+
 export interface Arena {
     readonly shape: ArenaShape;
     readonly width: number;
     readonly height: number;
     readonly padding: number;
     readonly grid: Grid;
+    readonly ticks?: Ticks;
     readonly backgroundImage?: string;
     readonly backgroundOpacity?: number;
 }
@@ -466,6 +493,24 @@ export const DEFAULT_CUSTOM_RADIAL_GRID: CustomRadialGrid = {
     type: GridType.CustomRadial,
     rings: [150, 450],
     spokes: [0, 45, 90, 135, 180, 225, 270, 315],
+};
+
+export const NO_TICKS: NoTicks = {
+    type: TickType.None,
+};
+
+export const DEFAULT_RECT_TICKS: RectangularTicks = {
+    type: TickType.Rectangular,
+    rows: 20,
+    columns: 20,
+};
+
+export const DEFAULT_RADIAL_TICKS: RadialTicks = {
+    type: TickType.Radial,
+    majorStart: 0,
+    majorCount: 8,
+    minorStart: 0,
+    minorCount: 72,
 };
 
 export const DEFAULT_ARENA_PADDING = 120;

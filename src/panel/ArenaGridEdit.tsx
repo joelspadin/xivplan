@@ -1,4 +1,4 @@
-import { Button, Field } from '@fluentui/react-components';
+import { Divider, Field } from '@fluentui/react-components';
 import {
     CircleFilled,
     CircleRegular,
@@ -217,13 +217,13 @@ export const ArenaGridEdit: React.FC = () => {
                                 }}
                             />
                         </Field>
-                    </div>
-                    <div className={classes.row}>
+
                         <Field label="Rotation">
                             <SpinButtonUnits
                                 min={-180}
                                 max={180}
                                 step={5}
+                                roundTo={0.5}
                                 suffix="°"
                                 value={grid.startAngle ?? 0}
                                 onChange={(ev, data) => {
@@ -233,7 +233,6 @@ export const ArenaGridEdit: React.FC = () => {
                                 }}
                             />
                         </Field>
-                        <Button onClick={() => setGrid({ ...grid, startAngle: undefined })}>Reset</Button>
                     </div>
                 </>
             )}
@@ -287,6 +286,7 @@ export const ArenaGridEdit: React.FC = () => {
                     </InfoField>
                 </>
             )}
+            {grid.type !== GridType.None && <Divider />}
         </div>
     );
 };

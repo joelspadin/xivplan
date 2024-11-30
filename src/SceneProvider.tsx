@@ -13,6 +13,7 @@ import {
     SceneObjectWithoutId,
     SceneStep,
     Tether,
+    Ticks,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
 import { useSetSavedState } from './useIsDirty';
@@ -48,6 +49,11 @@ export interface SetArenaGridAction {
     value: Grid;
 }
 
+export interface SetArenaTicksActions {
+    type: 'arenaTicks';
+    value: Ticks;
+}
+
 export interface SetArenaBackgroundAction {
     type: 'arenaBackground';
     value: string | undefined;
@@ -65,6 +71,7 @@ export type ArenaAction =
     | SetArenaHeightAction
     | SetArenaPaddingAction
     | SetArenaGridAction
+    | SetArenaTicksActions
     | SetArenaBackgroundAction
     | SetArenaBackgroundOpacityAction;
 
@@ -573,6 +580,9 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'arenaGrid':
             return updateArena(state, { ...state.scene.arena, grid: action.value });
+
+        case 'arenaTicks':
+            return updateArena(state, { ...state.scene.arena, ticks: action.value });
 
         case 'arenaBackground':
             return updateArena(state, { ...state.scene.arena, backgroundImage: action.value });
