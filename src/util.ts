@@ -1,3 +1,5 @@
+import { Vector2d } from 'konva/lib/types';
+
 export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x];
 }
@@ -91,8 +93,17 @@ export function makeDisplayName(name: string) {
     return name.replaceAll(/\s+(.)/g, (_, c: string) => c.toUpperCase());
 }
 
-export function round(value: number, multiple = 1) {
-    return Math.round(value / multiple) * multiple;
+export function round(value: number, multiple?: number): number;
+export function round(value: Vector2d, multiple?: number): Vector2d;
+export function round(value: number | Vector2d, multiple = 1) {
+    if (typeof value === 'number') {
+        return Math.round(value / multiple) * multiple;
+    }
+
+    return {
+        x: round(value.x, multiple),
+        y: round(value.y, multiple),
+    };
 }
 
 export function getLinearGridDivs(divs: number, start: number, distance: number) {

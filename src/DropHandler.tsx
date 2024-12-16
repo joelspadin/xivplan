@@ -3,7 +3,7 @@ import React from 'react';
 import { PanelDragObject } from './PanelDragContext';
 import { SceneAction } from './SceneProvider';
 import { SceneObject } from './scene';
-import { asArray } from './util';
+import { asArray, round } from './util';
 
 export type DropHandler<T extends SceneObject> = (object: Partial<T>, position: Vector2d) => SceneAction;
 const dropHandlers: Record<string, DropHandler<SceneObject>> = {};
@@ -32,5 +32,5 @@ export function getDragOffset(e: React.DragEvent<HTMLElement>): Vector2d {
     const centerX = rect.x + rect.width / 2;
     const centerY = rect.y + rect.height / 2;
 
-    return { x: e.clientX - centerX, y: e.clientY - centerY };
+    return round({ x: e.clientX - centerX, y: e.clientY - centerY });
 }

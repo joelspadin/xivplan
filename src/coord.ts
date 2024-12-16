@@ -2,7 +2,7 @@ import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import { useScene } from './SceneProvider';
 import { Scene } from './scene';
-import { degtorad } from './util';
+import { degtorad, round } from './util';
 import { vecAngle } from './vector';
 
 export const ALIGN_TO_PIXEL = {
@@ -73,7 +73,7 @@ export function getSceneY(scene: Scene, y: number): number {
 }
 
 export function getSceneCoord(scene: Scene, p: Vector2d): Vector2d {
-    return { x: getSceneX(scene, p.x), y: getSceneY(scene, p.y) };
+    return round({ x: getSceneX(scene, p.x), y: getSceneY(scene, p.y) });
 }
 
 export function rotateCoord(p: Vector2d, angle: number, center: Vector2d = { x: 0, y: 0 }): Vector2d {
