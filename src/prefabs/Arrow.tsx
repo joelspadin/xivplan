@@ -80,7 +80,8 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
         scaleX: object.width / DEFAULT_ARROW_WIDTH,
         scaleY: object.height / DEFAULT_ARROW_HEIGHT,
         pointerLength: DEFAULT_ARROW_HEIGHT * 0.15,
-        pointerWidth: DEFAULT_ARROW_WIDTH * 0.8,
+        // respect the stroke width when calculating the pointer width to avoid cropping
+        pointerWidth: DEFAULT_ARROW_WIDTH - STROKE_WIDTH * Math.sqrt(3),
         strokeWidth: STROKE_WIDTH,
         lineCap: 'round',
         pointerAtBeginning: !!object.arrowBegin,
