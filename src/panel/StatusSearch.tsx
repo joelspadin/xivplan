@@ -138,7 +138,7 @@ async function fetchStatuses(search: string, signal: AbortSignal, language: Lang
             language,
             sheets: 'Status',
             fields: 'Name,Icon,MaxStacks',
-            query: `Name~"${encodeURIComponent(search)}"`,
+            query: `Name~"${search}"`,
             ...(cursor && { cursor }),
         });
 
