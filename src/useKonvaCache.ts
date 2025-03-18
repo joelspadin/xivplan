@@ -28,17 +28,11 @@ export function useKonvaCache(
     // On changes to dependencies, immediately clear the cache to avoid a flicker
     // where the object draws with its old cached appearance.
     const [prevRef, setPrevRef] = useState(ref.current);
-    const [prevOptions, setPrevOptions] = useState(options);
     const [prevDeps, setPrevDeps] = useState(deps);
     const [prevEnabled, setPrevEnabled] = useState(enabled);
 
     if (ref.current !== prevRef) {
         setPrevRef(ref.current);
-        ref.current?.clearCache();
-    }
-
-    if (options !== prevOptions) {
-        setPrevOptions(options);
         ref.current?.clearCache();
     }
 
