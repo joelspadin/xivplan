@@ -202,7 +202,8 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
 };
 
 const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
-    const [start, end] = getTetherPoints(scene, startObject, endObject, object.width);
+    const addOffset = object.width / Math.sin(Math.atan(0.5)) / 2;
+    const [start, end] = getTetherPoints(scene, startObject, endObject, addOffset);
 
     const arrowProps: ArrowConfig = {
         points: [start.x, start.y, end.x, end.y],
@@ -322,7 +323,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const isSelectable = editMode === EditMode.Normal;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useKonvaCache(groupRef, [object, startObject, endObject, showHighlight]);
+    useKonvaCache(groupRef, { offset: object.width }, [object, startObject, endObject, showHighlight]);
 
     return (
         <SelectableObject object={object}>

@@ -3,20 +3,26 @@
 import { Node } from 'konva/lib/Node';
 import { DependencyList, useEffect, useState } from 'react';
 
+type CacheOptions = Exclude<Parameters<Node['cache']>[0], undefined>;
 export function useKonvaCache(ref: React.RefObject<Node>, deps: DependencyList): void;
 export function useKonvaCache(ref: React.RefObject<Node>, enabled: boolean, deps: DependencyList): void;
+export function useKonvaCache(ref: React.RefObject<Node>, options: CacheOptions, deps: DependencyList): void;
 export function useKonvaCache(
     ref: React.RefObject<Node>,
-    enabledOrDeps: boolean | DependencyList,
+    enabledOrOptionsOrDeps: boolean | CacheOptions | DependencyList,
     deps?: DependencyList,
 ) {
     let enabled = true;
+    let options: CacheOptions | undefined;
 
-    if (typeof enabledOrDeps === 'boolean') {
-        enabled = enabledOrDeps;
+    if (typeof enabledOrOptionsOrDeps === 'boolean') {
+        enabled = enabledOrOptionsOrDeps;
         deps = deps ?? [];
+    } else if (Array.isArray(enabledOrOptionsOrDeps)) {
+        deps = enabledOrOptionsOrDeps;
     } else {
-        deps = enabledOrDeps;
+        options = enabledOrOptionsOrDeps as CacheOptions;
+        deps = deps ?? [];
     }
 
     // On changes to dependencies, immediately clear the cache to avoid a flicker
@@ -43,7 +49,7 @@ export function useKonvaCache(
     // Then re-cache the object after it has been drawn.
     useEffect(() => {
         if (enabled) {
-            ref.current?.cache();
+            ref.current?.cache(options);
         }
     }, [enabled, ref.current, ...deps]);
 }
