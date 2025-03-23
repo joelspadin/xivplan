@@ -93,17 +93,34 @@ export function makeDisplayName(name: string) {
     return name.replaceAll(/\s+(.)/g, (_, c: string) => c.toUpperCase());
 }
 
-export function round(value: number, multiple?: number): number;
-export function round(value: Vector2d, multiple?: number): Vector2d;
-export function round(value: number | Vector2d, multiple = 1) {
+/**
+ * Round `value` to the nearest multiple of `step`
+ */
+export function round(value: number, step?: number): number;
+export function round(value: Vector2d, step?: number): Vector2d;
+export function round(value: number | Vector2d, step = 1) {
     if (typeof value === 'number') {
-        return Math.round(value / multiple) * multiple;
+        return Math.round(value / step) * step;
     }
 
     return {
-        x: round(value.x, multiple),
-        y: round(value.y, multiple),
+        x: round(value.x, step),
+        y: round(value.y, step),
     };
+}
+
+/**
+ * Get the step value for rounding a value to `fractionDigits` decimal places.
+ */
+export function fractionDigitsToStep(fractionDigits: number) {
+    return Math.pow(10, -fractionDigits);
+}
+
+/**
+ * Format a number, rounded to `fractionDigits` decimal places, with any trailing zeroes removed.
+ */
+export function formatNumber(value: number | null | undefined, fractionDigits = 2) {
+    return value?.toFixed(fractionDigits).replace(/\.0+$/, '') ?? '';
 }
 
 export function getLinearGridDivs(divs: number, start: number, distance: number) {

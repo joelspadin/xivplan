@@ -5,17 +5,19 @@ import {
     SpinButtonProps,
 } from '@fluentui/react-components';
 import React, { useCallback } from 'react';
-import { round } from './util';
+import { formatNumber, fractionDigitsToStep, round } from './util';
 
 export interface CustomSpinButtonProps extends Omit<SpinButtonProps, 'displayValue'> {
-    roundTo?: number;
+    fractionDigits?: number;
 }
 
 /**
  * Wrapper around SpinButton which displays nothing instead of NaN if value == undefined
  * and properly handles direct data entry.
  */
-export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, roundTo, ...props }) => {
+export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, fractionDigits, ...props }) => {
+    fractionDigits ??= 0;
+
     const wrappedOnChange = useCallback(
         (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
             if (!isValid(data.value)) {
@@ -28,7 +30,7 @@ export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, r
                     return;
                 }
 
-                value = round(value, roundTo);
+                value = round(value, fractionDigitsToStep(fractionDigits));
 
                 if (props.min !== undefined) {
                     value = Math.max(value, props.min);
@@ -42,14 +44,14 @@ export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, r
 
             onChange?.(event, data);
         },
-        [onChange, roundTo, props.min, props.max],
+        [onChange, fractionDigits, props.min, props.max],
     );
 
     return (
         <FluentSpinButton
             {...props}
             value={value ?? NaN}
-            displayValue={value?.toString() ?? ''}
+            displayValue={formatNumber(value, fractionDigits)}
             onChange={wrappedOnChange}
         />
     );

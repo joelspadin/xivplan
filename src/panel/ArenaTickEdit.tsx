@@ -85,7 +85,7 @@ export const ArenaTickEdit: React.FC = () => {
                                 min={-180}
                                 max={180}
                                 step={5}
-                                roundTo={0.5}
+                                fractionDigits={1}
                                 suffix="°"
                                 value={ticks.majorStart}
                                 onChange={(ev, data) => {
@@ -115,7 +115,7 @@ export const ArenaTickEdit: React.FC = () => {
                                 min={-180}
                                 max={180}
                                 step={5}
-                                roundTo={0.5}
+                                fractionDigits={1}
                                 suffix="°"
                                 value={ticks.minorStart}
                                 onChange={(ev, data) => {

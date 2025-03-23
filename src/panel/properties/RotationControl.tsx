@@ -26,6 +26,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
                 value={rotation}
                 onChange={onRotationChanged}
                 step={5}
+                fractionDigits={1}
                 suffix="°"
             />
         </Field>

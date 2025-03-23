@@ -223,7 +223,7 @@ export const ArenaGridEdit: React.FC = () => {
                                 min={-180}
                                 max={180}
                                 step={5}
-                                roundTo={0.5}
+                                fractionDigits={1}
                                 suffix="°"
                                 value={grid.startAngle ?? 0}
                                 onChange={(ev, data) => {
