@@ -42,7 +42,8 @@ const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
     const text = useMemo(() => {
         if (time < 60) {
             return time.toString();
-        } else if (time < 3600) {
+        }
+        if (time < 3600) {
             return `${Math.floor(time / 60)}m`;
         }
 
