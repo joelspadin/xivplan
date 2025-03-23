@@ -27,6 +27,7 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
                 min={MIN_CONE_ANGLE}
                 max={MAX_CONE_ANGLE}
                 step={5}
+                fractionDigits={1}
                 suffix="°"
             />
         </Field>
