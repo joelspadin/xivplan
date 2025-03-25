@@ -15,7 +15,7 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ label, ...props })
         <Field label={label ?? 'Opacity'}>
             <div className={classes.wrapper}>
                 <Slider
-                    min={5}
+                    min={0}
                     max={100}
                     step={5}
                     aria-valuetext={ariaValueText}
