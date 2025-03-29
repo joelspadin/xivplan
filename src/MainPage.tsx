@@ -10,6 +10,7 @@ import { StepSelect } from './StepSelect';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { SceneRenderer } from './render/SceneRenderer';
+import { MIN_STAGE_WIDTH } from './render/SceneTheme';
 import { useIsDirty } from './useIsDirty';
 import { removeFileExtension } from './util';
 
@@ -72,8 +73,11 @@ function usePageTitle() {
 const useStyles = makeStyles({
     stage: {
         gridArea: 'content',
+        display: 'flex',
+        flexFlow: 'row',
+        justifyContent: 'center',
         overflow: 'auto',
-        minWidth: '400px',
+        minWidth: MIN_STAGE_WIDTH,
         backgroundColor: tokens.colorNeutralBackground1,
     },
 });

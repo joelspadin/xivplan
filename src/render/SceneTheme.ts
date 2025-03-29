@@ -4,6 +4,8 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import { useContext } from 'react';
 import { DarkModeContext } from '../ThemeContext';
 
+export const MIN_STAGE_WIDTH = '400px';
+
 /**
  * Radius of a dot to display when editing an object that is centered on a point.
  */

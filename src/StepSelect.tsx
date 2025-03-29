@@ -34,6 +34,7 @@ import React, { HTMLAttributes, useCallback, useMemo, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
+import { MIN_STAGE_WIDTH } from './render/SceneTheme';
 import { Scene } from './scene';
 
 export const StepSelect: React.FC = () => {
@@ -293,6 +294,7 @@ const useStyles = makeStyles({
         flexFlow: 'row',
         columnGap: tokens.spacingHorizontalXS,
         backgroundColor: tokens.colorNeutralBackground2,
+        minWidth: MIN_STAGE_WIDTH,
     },
     listWrapper: {
         overflow: 'auto',

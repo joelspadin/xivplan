@@ -34,7 +34,7 @@ export const ArenaShapeEdit: React.FC = () => {
                     </SegmentedGroup>
                 </Field>
                 <Field label="Padding" className={classes.cell}>
-                    <SpinButton min={20} max={500} step={10} value={padding} onChange={onPaddingChanged} />
+                    <SpinButton min={0} max={500} step={10} value={padding} onChange={onPaddingChanged} />
                 </Field>
             </div>
             <div className={classes.row}>
