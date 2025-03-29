@@ -2,6 +2,27 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Mar 29, 2025
+
+- Added an options menu to the screenshot button with options to increase the screenshot resolution.
+
+## Mar 23, 2025
+
+- Angle and rotation fields now support typing in values with one decimal place.
+
+## Mar 19, 2025
+
+- Fixed searching for statuses with spaces in their names.
+
+## Dec 16, 2024
+
+- Fixed an issue where typing into the line zone width/height fields didn't work.
+- Fixed an issue where object positions weren't rounded to integers when the OS display scaling was set to a value other than 100%.
+
+## Nov 30, 2040
+
+- Added an option to display tick marks, similar to those used in ultimates, around the edge of the arena.
+
 ## Oct 27, 2024
 
 - Changed the line AOE object to pivot about one end, making it easier to place lines that originate from a point.
