@@ -1,16 +1,26 @@
 import {
     makeStyles,
+    Menu,
+    MenuButtonProps,
+    MenuCheckedValueChangeData,
+    MenuCheckedValueChangeEvent,
+    MenuGroup,
+    MenuGroupHeader,
+    MenuItemRadio,
+    MenuList,
+    MenuPopover,
+    MenuTrigger,
     Portal,
+    SplitButtonProps,
     Toast,
     ToastTitle,
-    ToolbarButtonProps,
     useToastController,
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useTimeoutFn } from 'react-use';
-import { CollapsableToolbarButton } from './CollapsableToolbarButton';
+import { useLocalStorage, useTimeoutFn } from 'react-use';
+import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
 import { MessageToast } from './MessageToast';
 import { ObjectLoadingContext } from './ObjectLoadingContext';
@@ -23,12 +33,26 @@ import { useHotkeys } from './useHotkeys';
 
 const SCREENSHOT_TIMEOUT = 1000;
 
-export type StepScreenshotButtonProps = ToolbarButtonProps;
+export type StepScreenshotButtonProps = SplitButtonProps;
 
 export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props) => {
     const classes = useStyles();
+    const [scale, setScale] = useLocalStorage('screenshotPixelRatio', 1);
     const [takingScreenshot, setTakingScreenshot] = useState(false);
     const { dispatchToast } = useToastController();
+
+    const checkedValues: Record<string, string[]> = {
+        scale: [scale?.toString() ?? '1'],
+    };
+
+    const handleCheckedValueChanged = useCallback(
+        (e: MenuCheckedValueChangeEvent, data: MenuCheckedValueChangeData) => {
+            if (data.name === 'scale') {
+                setScale(parseInt(data.checkedItems?.[0] ?? '1'));
+            }
+        },
+        [setScale],
+    );
 
     const handleScreenshotDone = useCallback(
         (error?: unknown) => {
@@ -73,16 +97,43 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
 
     return (
         <>
-            <CollapsableToolbarButton
-                {...props}
-                icon={<ScreenshotRegular />}
-                disabled={takingScreenshot}
-                onClick={startScreenshot}
-            />
+            <Menu
+                positioning="below-end"
+                checkedValues={checkedValues}
+                onCheckedValueChange={handleCheckedValueChanged}
+            >
+                <MenuTrigger disableButtonEnhancement>
+                    {(triggerProps: MenuButtonProps) => (
+                        <CollapsableSplitButton
+                            {...props}
+                            menuButton={triggerProps}
+                            primaryActionButton={{ onClick: startScreenshot, disabled: takingScreenshot }}
+                            icon={<ScreenshotRegular />}
+                            appearance="subtle"
+                        />
+                    )}
+                </MenuTrigger>
+                <MenuPopover>
+                    <MenuList>
+                        <MenuGroup>
+                            <MenuGroupHeader>Screenshot scale</MenuGroupHeader>
+                            <MenuItemRadio name="scale" value="1">
+                                1X
+                            </MenuItemRadio>
+                            <MenuItemRadio name="scale" value="2">
+                                2X
+                            </MenuItemRadio>
+                            <MenuItemRadio name="scale" value="4">
+                                4X
+                            </MenuItemRadio>
+                        </MenuGroup>
+                    </MenuList>
+                </MenuPopover>
+            </Menu>
             {takingScreenshot && (
                 <Portal mountNode={{ className: classes.screenshot }}>
                     <ObjectLoadingProvider>
-                        <ScreenshotComponent onScreenshotDone={handleScreenshotDone} />
+                        <ScreenshotComponent scale={scale} onScreenshotDone={handleScreenshotDone} />
                     </ObjectLoadingProvider>
                 </Portal>
             )}
@@ -99,10 +150,11 @@ const ScreenshotSuccessToast = () => {
 };
 
 interface ScreenshotComponentProps {
+    scale?: number;
     onScreenshotDone: (error?: unknown) => void;
 }
 
-const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ onScreenshotDone }) => {
+const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScreenshotDone }) => {
     const { isLoading } = useContext(ObjectLoadingContext);
     const { scene, stepIndex } = useScene();
     const [frozenScene] = useState(scene);
@@ -116,12 +168,12 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ onScreenshotD
                 throw new Error('Stage missing');
             }
 
-            await copyToClipboard(ref.current);
+            await copyToClipboard(ref.current, scale);
             onScreenshotDone();
         } catch (ex) {
             onScreenshotDone(ex);
         }
-    }, [onScreenshotDone]);
+    }, [scale, onScreenshotDone]);
 
     // Delay screenshot by at least one render to make sure any objects that need
     // to load resources have reported that they are loading.
@@ -158,8 +210,8 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ onScreenshotD
     );
 };
 
-async function copyToClipboard(stage: Konva.Stage) {
-    const blob = (await stage.toBlob({ mimeType: 'image/png' })) as Blob;
+async function copyToClipboard(stage: Konva.Stage, pixelRatio = 2) {
+    const blob = (await stage.toBlob({ mimeType: 'image/png', pixelRatio })) as Blob;
 
     await navigator.clipboard.write([
         new ClipboardItem({
