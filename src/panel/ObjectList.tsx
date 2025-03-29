@@ -98,8 +98,6 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
 
     const onClick = useCallback(
         (e: React.MouseEvent) => {
-            console.log('click!');
-
             if (e.shiftKey) {
                 setSelection(addSelection(selection, object.id));
             } else if (e.ctrlKey) {

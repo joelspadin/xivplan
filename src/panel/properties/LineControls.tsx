@@ -17,7 +17,6 @@ export const LineSizeControl: React.FC<PropertiesControlProps<LineZone>> = ({ ob
     const length = useMemo(() => commonValue(objects, (obj) => obj.length), [objects]);
 
     const onWidthChanged = useSpinChanged((width: number) => {
-        console.log(width);
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) });
     });
     const onLengthChanged = useSpinChanged((length: number) =>

@@ -177,8 +177,6 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const highlightWidth = object.width + highlightOffset;
     const highlightHeight = object.height + highlightOffset;
 
-    console.log(strokeProps);
-
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
