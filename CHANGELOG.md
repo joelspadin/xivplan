@@ -2,9 +2,11 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
-## Mar 29, 2025
+## Mar 30, 2025
 
 - Added an options menu to the screenshot button with options to increase the screenshot resolution.
+- Fixed arc objects not supporting hollow style
+- Changed the minimum arena padding to 0
 
 ## Mar 23, 2025
 

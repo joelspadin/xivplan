@@ -446,6 +446,7 @@ export const supportsHollow = makeObjectTest<HollowObject & UnknownObject>(
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
     ObjectType.Cone,
+    ObjectType.Arc,
     ObjectType.Line,
     ObjectType.Rect,
     ObjectType.Triangle,
