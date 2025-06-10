@@ -25,8 +25,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.210722"
-     inkscape:cx="327.49055"
-     inkscape:cy="253.98069"
+     inkscape:cx="472.03241"
+     inkscape:cy="473.68431"
      inkscape:window-width="2194"
      inkscape:window-height="1163"
      inkscape:window-x="1912"
@@ -39,10 +39,10 @@
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
        id="filter35"
-       x="-0.029615385"
-       y="-0.029615385"
-       width="1.0592308"
-       height="1.0784615">
+       x="-0.0308"
+       y="-0.0308"
+       width="1.0616"
+       height="1.0816">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -83,13 +83,13 @@
        id="circle1"
        cx="420"
        cy="680"
-       r="130"
        inkscape:tile-cx="420"
        inkscape:tile-cy="420"
        inkscape:tile-w="261"
        inkscape:tile-h="261"
        inkscape:tile-x0="289.5"
-       inkscape:tile-y0="549.5" />
+       inkscape:tile-y0="549.5"
+       r="125" />
     <use
        x="0"
        y="0"
