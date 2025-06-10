@@ -1,20 +1,22 @@
 import { Field, makeStyles } from '@fluentui/react-components';
-import { CircleFilled, CircleRegular, bundleIcon } from '@fluentui/react-icons';
+import {
+    ChevronCircleUpFilled,
+    ChevronCircleUpRegular,
+    CircleFilled,
+    CircleRegular,
+    bundleIcon,
+} from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../../icon/ThreeQuarterCircle';
-import { EnemyObject } from '../../scene';
+import { EnemyObject, EnemyRingStyle } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-enum RingStyle {
-    Directional = 'directional',
-    Omnidirectional = 'omnidirectional',
-}
-
 const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
+const ChevronCircleUpIcon = bundleIcon(ChevronCircleUpFilled, ChevronCircleUpRegular);
 const ThreeQuarterCircleIcon = bundleIcon(ThreeQuarterCircleFilled, ThreeQuarterCircleRegular);
 
 const DirectionalIcon: React.FC = () => {
@@ -26,27 +28,29 @@ export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = (
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const omniDirection = useMemo(() => commonValue(objects, (obj) => obj.omniDirection), [objects]);
+    const ring = useMemo(() => commonValue(objects, (obj) => obj.ring), [objects]);
 
     const onDirectionalChanged = useCallback(
-        (option: RingStyle) => {
-            const omniDirection = option === RingStyle.Omnidirectional;
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, omniDirection })) });
+        (ring: EnemyRingStyle) => {
+            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, ring })) });
         },
         [dispatch, objects],
     );
-
-    const directionalKey = omniDirection ? RingStyle.Omnidirectional : RingStyle.Directional;
 
     return (
         <Field label="Ring style" className={classes.cell}>
             <SegmentedGroup
                 name="enemy-ring"
-                value={directionalKey}
-                onChange={(ev, data) => onDirectionalChanged(data.value as RingStyle)}
+                value={ring}
+                onChange={(ev, data) => onDirectionalChanged(data.value as EnemyRingStyle)}
             >
-                <Segment value={RingStyle.Omnidirectional} icon={<CircleIcon />} title="Omnidirectional" />
-                <Segment value={RingStyle.Directional} icon={<DirectionalIcon />} title="Directional" />
+                <Segment value={EnemyRingStyle.Directional} icon={<DirectionalIcon />} title="Directional" />
+                <Segment
+                    value={EnemyRingStyle.Omnidirectional}
+                    icon={<ChevronCircleUpIcon />}
+                    title="Omnidirectional"
+                />
+                <Segment value={EnemyRingStyle.NoDirection} icon={<CircleIcon />} title="No direction" />
             </SegmentedGroup>
         </Field>
     );

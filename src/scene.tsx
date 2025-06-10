@@ -219,6 +219,12 @@ export interface PartyObject extends ImageObject, NamedObject, SceneId {
 }
 export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
+export enum EnemyRingStyle {
+    NoDirection = 'none',
+    Directional = 'dir',
+    Omnidirectional = 'omni',
+}
+
 export interface EnemyObject
     extends RadiusObject,
         RotateableObject,
@@ -228,7 +234,7 @@ export interface EnemyObject
         SceneId {
     readonly type: ObjectType.Enemy;
     readonly icon: string;
-    readonly omniDirection: boolean;
+    readonly ring: EnemyRingStyle;
 }
 export const isEnemy = makeObjectTest<EnemyObject>(ObjectType.Enemy);
 

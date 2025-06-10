@@ -3,6 +3,7 @@ import { DEFAULT_ENEMY_OPACITY } from '../render/SceneTheme';
 import {
     DrawObject,
     EnemyObject,
+    EnemyRingStyle,
     ExaflareZone,
     ImageObject,
     Scene,
@@ -48,13 +49,26 @@ function upgradeObject(object: SceneObject): SceneObject {
     return object;
 }
 
+function getRingStyle<T extends EnemyObject>(object: T): EnemyRingStyle {
+    if (object.rotation === undefined) {
+        return EnemyRingStyle.NoDirection;
+    }
+
+    if ('omniDirection' in object && typeof object.omniDirection === 'boolean') {
+        return object.omniDirection ? EnemyRingStyle.NoDirection : EnemyRingStyle.Directional;
+    }
+
+    return EnemyRingStyle.Directional;
+}
+
 function upgradeEnemy<T extends EnemyObject>(object: T): T {
     // enemy was changed from { rotation?: number }
-    // to { rotation: number, directional: boolean, opacity: number }
+    // to { rotation: number, omniDirection: boolean, opacity: number }, then
+    // to { rotation: number, ring: EnemyRingStyle, opacity: number }
     return {
         ...object,
         rotation: object.rotation ?? 0,
-        omniDirection: object.omniDirection ?? object.rotation === undefined,
+        ring: getRingStyle(object),
         opacity: object.opacity ?? DEFAULT_ENEMY_OPACITY,
     };
 }
