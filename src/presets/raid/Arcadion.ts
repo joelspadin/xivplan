@@ -131,7 +131,7 @@ const PRESET_7_PHASE_3: ArenaPreset = {
 };
 
 const PRESET_8: ArenaPreset = {
-    name: 'AAC Cuirserweight M4',
+    name: 'AAC Cruiserweight M4',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
     shape: ArenaShape.Circle,
     width: 800,
@@ -142,7 +142,7 @@ const PRESET_8: ArenaPreset = {
 };
 
 const PRESET_8_PHASE_2: ArenaPreset = {
-    name: 'AAC Cuirserweight M4 (Phase 2)',
+    name: 'AAC Cruiserweight M4 (Phase 2)',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
     shape: ArenaShape.Circle,
     width: 580,
@@ -153,7 +153,7 @@ const PRESET_8_PHASE_2: ArenaPreset = {
 };
 
 const PRESET_8_SAVAGE_PHASE_2: ArenaPreset = {
-    name: 'AAC Cuirserweight M4 (Savage Phase 2)',
+    name: 'AAC Cruiserweight M4 (Savage Phase 2)',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
     shape: ArenaShape.None,
     width: 840,
