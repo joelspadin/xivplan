@@ -128,6 +128,10 @@ function getInnerRadius(radius: number) {
     return Math.min(radius - 4, radius * INNER_RADIUS_RATIO);
 }
 
+function getOuterRadius(radius: number, strokeWidth: number) {
+    return radius - strokeWidth / 2;
+}
+
 function getShapeProps(color: string, radius: number, strokeRatio: number, minStroke: number) {
     const strokeWidth = Math.max(minStroke, radius * strokeRatio);
     const shadowBlur = Math.max(SHADOW_BLUR_MIN, radius * SHADOW_BLUR_RATIO);
@@ -142,16 +146,17 @@ function getShapeProps(color: string, radius: number, strokeRatio: number, minSt
 }
 
 const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, ...props }) => {
-    const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const innerRadius = getInnerRadius(radius);
+    const outerRadius = getOuterRadius(radius, outerProps.strokeWidth);
 
     return (
         <>
-            {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
+            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
 
             <Group opacity={opacity} {...props}>
-                <Circle {...outerProps} radius={radius} />
+                <Circle {...outerProps} radius={outerRadius} />
                 <Circle {...innerProps} radius={innerRadius} />
             </Group>
         </>
@@ -172,9 +177,10 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
     groupRef,
     ...props
 }) => {
-    const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const innerRadius = getInnerRadius(radius);
+    const outerRadius = getOuterRadius(radius, outerProps.strokeWidth);
     const arrowScale = radius / 32;
 
     // Cache so overlapping shapes with opacity appear as one object.
@@ -190,8 +196,8 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
                     {...outerProps}
                     rotation={RING_ROTATION}
                     angle={RING_ANGLE}
-                    innerRadius={radius}
-                    outerRadius={radius}
+                    innerRadius={outerRadius}
+                    outerRadius={outerRadius}
                 />
                 <Arc
                     {...innerProps}
@@ -201,7 +207,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
                     outerRadius={innerRadius}
                 />
                 <Path
-                    data="M0-42c-2 2-4 7-4 10c4 0 4 0 8 0c0-3-2-8-4-10"
+                    data="M0-41c-2 2-4 7-4 10 4 0 4 0 8 0 0-3-2-8-4-10"
                     scaleX={arrowScale}
                     scaleY={arrowScale}
                     strokeEnabled={false}
@@ -221,9 +227,10 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
     groupRef,
     ...props
 }) => {
-    const innerRadius = getInnerRadius(radius);
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
+    const innerRadius = getInnerRadius(radius);
+    const outerRadius = getOuterRadius(radius, outerProps.strokeWidth);
     const arrowScale = radius / 42;
 
     // Cache so overlapping shapes with opacity appear as one object.
@@ -231,12 +238,14 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
 
     return (
         <>
-            {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
+            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
 
             <Group opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
-                <Circle {...outerProps} radius={radius} />
+
+                <Circle {...outerProps} radius={outerRadius} />
                 <Circle {...innerProps} radius={innerRadius} />
+
                 <Path
                     data="M0-40c-2 2-4 7-4 10l4-2L4-30c0-3-2-8-4-10"
                     scaleX={arrowScale}
@@ -347,7 +356,7 @@ const EnemyDetails: React.FC<ListComponentProps<EnemyObject>> = ({ object, ...pr
 
 registerListComponent<EnemyObject>(ObjectType.Enemy, EnemyDetails);
 
-export const EnemyCircle = makeIcon('Generic enemy', 'enemy_circle.png', SIZE_SMALL, false);
+export const EnemyCircle = makeIcon('Enemy circle', 'enemy_circle.png', SIZE_SMALL, false);
 export const EnemySmall = makeIcon('Small enemy', 'enemy_small.png', SIZE_SMALL);
 export const EnemyMedium = makeIcon('Medium enemy', 'enemy_medium.png', SIZE_MEDIUM);
 export const EnemyLarge = makeIcon('Large enemy', 'enemy_large.png', SIZE_LARGE);
