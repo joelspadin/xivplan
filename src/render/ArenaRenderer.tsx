@@ -73,6 +73,7 @@ function getArenaClip(scene: Scene): (context: KonvaContext) => void {
             };
 
         case ArenaShape.Rectangle:
+        case ArenaShape.None:
             return (ctx) => {
                 ctx.beginPath();
                 ctx.rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
@@ -112,6 +113,9 @@ const BackgroundRenderer: React.FC = () => {
 
         case ArenaShape.Rectangle:
             return <RectangularBackground />;
+
+        case ArenaShape.None:
+            return <></>;
     }
 };
 

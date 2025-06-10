@@ -1,5 +1,13 @@
 import { Field } from '@fluentui/react-components';
-import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } from '@fluentui/react-icons';
+import {
+    BorderNoneFilled,
+    BorderNoneRegular,
+    CircleFilled,
+    CircleRegular,
+    SquareFilled,
+    SquareRegular,
+    bundleIcon,
+} from '@fluentui/react-icons';
 import React from 'react';
 import { useScene } from '../SceneProvider';
 import { Segment, SegmentedGroup } from '../Segmented';
@@ -10,6 +18,7 @@ import { useControlStyles } from '../useControlStyles';
 
 const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
 const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
+const BorderNoneIcon = bundleIcon(BorderNoneFilled, BorderNoneRegular);
 
 export const ArenaShapeEdit: React.FC = () => {
     const classes = useControlStyles();
@@ -29,6 +38,7 @@ export const ArenaShapeEdit: React.FC = () => {
                         value={shape}
                         onChange={(ev, data) => dispatch({ type: 'arenaShape', value: data.value as ArenaShape })}
                     >
+                        <Segment value={ArenaShape.None} icon={<BorderNoneIcon />} title="None" />
                         <Segment value={ArenaShape.Circle} icon={<CircleIcon />} title="Circle" />
                         <Segment value={ArenaShape.Rectangle} icon={<SquareIcon />} title="Rectangle" />
                     </SegmentedGroup>

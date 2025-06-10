@@ -1,4 +1,5 @@
 export enum ArenaShape {
+    None = 'none',
     Rectangle = 'rectangle',
     Circle = 'circle',
 }
