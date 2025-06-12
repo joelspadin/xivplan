@@ -1,6 +1,5 @@
-import { useContext, useEffect, useId } from 'react';
-import { Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
-import type { HotkeyCallback, RefType } from 'react-hotkeys-hook/dist/types';
+import { RefObject, useContext, useEffect, useId } from 'react';
+import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
 
 export enum HotkeyScopes {
@@ -14,7 +13,7 @@ export function useHotkeys<T extends HTMLElement>(
     help: string,
     callback: HotkeyCallback,
     deps?: unknown[],
-): (instance: RefType<T>) => void;
+): RefObject<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
@@ -22,7 +21,7 @@ export function useHotkeys<T extends HTMLElement>(
     callback: HotkeyCallback,
     options?: Options,
     deps?: unknown[],
-): (instance: RefType<T>) => void;
+): RefObject<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     category: string,
@@ -30,7 +29,7 @@ export function useHotkeys<T extends HTMLElement>(
     callback: HotkeyCallback,
     options?: Options | unknown[],
     deps?: unknown[],
-): (instance: RefType<T>) => void {
+): RefObject<T | null> {
     if (Array.isArray(options)) {
         deps = options;
         options = {};

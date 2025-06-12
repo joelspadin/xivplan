@@ -1,7 +1,7 @@
 import { Vector2d } from 'konva/lib/types';
 
 export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
-    return Array.isArray(x) ? x : [x];
+    return Array.isArray(x) ? x : [x as Readonly<T>];
 }
 
 export function clamp(x: number, min: number, max: number): number {
