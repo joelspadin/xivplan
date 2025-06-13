@@ -14,14 +14,16 @@ You may discuss the following content:
 
 - ✅ All content from Endwalker and earlier
 - ✅ All ultimates (if I do these, I don't do them blind)
-- ✅ Dawntrail extreme trials 1-3
+- ✅ Dawntrail extreme trials 1-4
 - ✅ Arcadion: Light-heavyweight Division normal and savage
-
-If you discuss something about recent content which is listed above, please indicate in the issue title which content it is so other people can avoid being spoiled as well.
+- ✅ Arcadion: Cruiserweight Division normal
+- ✅ Arcadion: Cruiserweight Division savage matches 1-3
 
 Please do not discuss the following content:
 
 ❌ All Dawntrail content that is not listed above
+
+When discussing mechanics that are specific to some content, please indicate in the issue title which content it is so other people can avoid being spoiled as well.
 
 ---
 
