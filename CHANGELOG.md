@@ -2,6 +2,19 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Jun 10, 2025
+
+- Added an enemy ring type that shows the full circle ring with a direction indicator.
+- Added an option for hiding the arena background.
+- Added arena presets for Arcadion M6.
+- Added a remaining arena preset for Arcadion M7.
+- Added arena presets for Arcadion M8.
+- Fixed an issue where enemy rings were slightly larger than the specified radius.
+
+## Apr 28, 2025
+
+- Added arena presets for some parts of Arcadion M7.
+
 ## Mar 30, 2025
 
 - Added an options menu to the screenshot button with options to increase the screenshot resolution.
