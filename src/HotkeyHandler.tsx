@@ -124,6 +124,23 @@ const SelectionActionHandler: React.FC = () => {
         [step, selection, editMode],
     );
     useHotkeys(
+        'ctrl+x',
+        CATEGORY_SELECTION,
+        'Cut selected objects',
+        (e) => {
+            if (!selection.size || editMode !== EditMode.Normal) {
+                return;
+            }
+            setClipboard(getSelectedObjects(step, selection));
+
+            dispatch({ type: 'remove', ids: [...selection] });
+            setSelection(selectNone());
+
+            e.preventDefault();
+        },
+        [step, dispatch, setSelection, selection, editMode],
+    );
+    useHotkeys(
         'ctrl+v',
         CATEGORY_SELECTION,
         'Paste objects at mouse',
