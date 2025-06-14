@@ -9,6 +9,7 @@ import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PRO
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -68,9 +69,11 @@ const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragg
         <>
             {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Circle radius={radius} {...style} />
+            <HideGroup>
+                <Circle radius={radius} {...style} />
 
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+            </HideGroup>
         </>
     );
 };

@@ -9,6 +9,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -80,19 +81,29 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
         <>
             {showHighlight && <Circle radius={radius + ring.strokeWidth} {...SELECTED_PROPS} opacity={0.35} />}
 
-            <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
-            <ChevronTail
-                rotation={180}
-                chevronAngle={ca}
-                width={cw * 0.6}
-                height={ch * 0.6}
-                {...arrow}
-                listening={false}
-            />
+            <HideGroup>
+                <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
+                <ChevronTail
+                    rotation={180}
+                    chevronAngle={ca}
+                    width={cw * 0.6}
+                    height={ch * 0.6}
+                    {...arrow}
+                    listening={false}
+                />
 
-            {CHEVRON_ANGLES.map((r, i) => (
-                <ChevronTail key={i} offsetY={-cx} rotation={r} chevronAngle={ca} width={cw} height={ch} {...arrow} />
-            ))}
+                {CHEVRON_ANGLES.map((r, i) => (
+                    <ChevronTail
+                        key={i}
+                        offsetY={-cx}
+                        rotation={r}
+                        chevronAngle={ca}
+                        width={cw}
+                        height={ch}
+                        {...arrow}
+                    />
+                ))}
+            </HideGroup>
         </>
     );
 };

@@ -10,6 +10,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -98,7 +99,9 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =>
                             {...SELECTED_PROPS}
                         />
                     )}
-                    <EquilateralTriangle width={object.width} height={object.height} {...style} />
+                    <HideGroup>
+                        <EquilateralTriangle width={object.width} height={object.height} {...style} />
+                    </HideGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

@@ -15,6 +15,7 @@ import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelecti
 import { useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
+import { commonValue, setOrOmit } from './util';
 
 const CATEGORY_GENERAL = '1.General';
 const CATEGORY_HISTORY = '2.History';
@@ -55,6 +56,12 @@ function pasteObjects(
         dispatch({ type: 'add', object: newObjects });
         setSelection(selectNewObjects(scene, newObjects.length));
     }
+}
+
+function toggleHide(objects: readonly SceneObject[], dispatch: Dispatch<SceneAction>) {
+    const show = commonValue(objects, (obj) => !obj.hide);
+
+    dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', !!show)) });
 }
 
 const SelectionActionHandler: React.FC = () => {
@@ -182,6 +189,22 @@ const SelectionActionHandler: React.FC = () => {
         [stage, scene, step, dispatch, selection, setSelection, editMode],
     );
 
+    useHotkeys(
+        'h',
+        CATEGORY_SELECTION,
+        'Show/hide selected objects',
+        (e) => {
+            // This will fire together with CTRL+H, so ignore it in that case.
+            if (!selection.size || e.ctrlKey) {
+                return;
+            }
+
+            toggleHide(getSelectedObjects(step, selection), dispatch);
+        },
+        { useKey: true },
+        [step, dispatch, selection],
+    );
+
     const tetherCallback = useCallback(
         (type: TetherType) => (e: KeyboardEvent) => {
             if (selection.size === 0) {
@@ -213,15 +236,22 @@ const SelectionActionHandler: React.FC = () => {
         [scene, step, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
     );
 
-    useHotkeys('/', CATEGORY_TETHER, 'Tether', tetherCallback(TetherType.Line), [tetherCallback]);
-    useHotkeys('-', CATEGORY_TETHER, 'Tether -/-', tetherCallback(TetherType.MinusMinus), [tetherCallback]);
-    useHotkeys('=', CATEGORY_TETHER, 'Tether +/-', tetherCallback(TetherType.PlusMinus), [tetherCallback]);
-    useHotkeys('shift+=', '', '', tetherCallback(TetherType.PlusPlus), [tetherCallback]);
-    useHotkeyHelp('+', CATEGORY_TETHER, 'Tether +/+');
-    useHotkeys('shift+,', '', '', tetherCallback(TetherType.Close), [tetherCallback]);
-    useHotkeyHelp('<', CATEGORY_TETHER, 'Tether (stay together)');
-    useHotkeys('shift+.', '', '', tetherCallback(TetherType.Far), [tetherCallback]);
-    useHotkeyHelp('>', CATEGORY_TETHER, 'Tether (stay apart)');
+    useHotkeys('/', CATEGORY_TETHER, 'Tether', tetherCallback(TetherType.Line), { useKey: true }, [tetherCallback]);
+    useHotkeys('-', CATEGORY_TETHER, 'Tether -/-', tetherCallback(TetherType.MinusMinus), { useKey: true }, [
+        tetherCallback,
+    ]);
+    useHotkeys('=', CATEGORY_TETHER, 'Tether +/-', tetherCallback(TetherType.PlusMinus), { useKey: true }, [
+        tetherCallback,
+    ]);
+    useHotkeys('+', CATEGORY_TETHER, 'Tether +/+', tetherCallback(TetherType.PlusPlus), { useKey: true }, [
+        tetherCallback,
+    ]);
+    useHotkeys('<', CATEGORY_TETHER, 'Tether (stay together)', tetherCallback(TetherType.Close), { useKey: true }, [
+        tetherCallback,
+    ]);
+    useHotkeys('>', CATEGORY_TETHER, 'Tether (stay apart)', tetherCallback(TetherType.Far), { useKey: true }, [
+        tetherCallback,
+    ]);
 
     return null;
 };

@@ -12,6 +12,7 @@ import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -157,27 +158,29 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
         <>
             {showHighlight && <Circle radius={radius} {...SELECTED_PROPS} opacity={0.25} />}
 
-            <Circle radius={radius} {...gradient} />
+            <HideGroup>
+                <Circle radius={radius} {...gradient} />
 
-            <Group scaleX={arrowScale} scaleY={arrowScale}>
-                {CORNER_ANGLES.map((r, i) => (
-                    <Group key={i} rotation={r}>
-                        <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
-                        <FlareCorner
-                            scaleX={SCALE2}
-                            scaleY={SCALE2}
-                            {...arrow}
-                            shadowColor={shadowColor}
-                            {...getShadowOffset(i)}
-                        />
-                    </Group>
-                ))}
-                {ARROW_ANGLES.map((r, i) => (
-                    <Group key={i} rotation={r}>
-                        <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
-                    </Group>
-                ))}
-            </Group>
+                <Group scaleX={arrowScale} scaleY={arrowScale}>
+                    {CORNER_ANGLES.map((r, i) => (
+                        <Group key={i} rotation={r}>
+                            <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
+                            <FlareCorner
+                                scaleX={SCALE2}
+                                scaleY={SCALE2}
+                                {...arrow}
+                                shadowColor={shadowColor}
+                                {...getShadowOffset(i)}
+                            />
+                        </Group>
+                    ))}
+                    {ARROW_ANGLES.map((r, i) => (
+                        <Group key={i} rotation={r}>
+                            <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
+                        </Group>
+                    ))}
+                </Group>
+            </HideGroup>
         </>
     );
 };

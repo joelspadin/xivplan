@@ -18,6 +18,7 @@ import { clamp, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
@@ -142,7 +143,9 @@ const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, c
                     {...SELECTED_PROPS}
                 />
             )}
-            <Wedge radius={radius} angle={coneAngle} {...style} />
+            <HideGroup>
+                <Wedge radius={radius} angle={coneAngle} {...style} />
+            </HideGroup>
         </Group>
     );
 };

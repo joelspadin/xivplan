@@ -10,6 +10,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -120,17 +121,19 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
                                 {...SELECTED_PROPS}
                             />
                         )}
-                        <Rect
-                            width={object.width}
-                            height={object.height}
-                            fillPatternImage={pattern}
-                            fillPatternOffsetX={patternWidth / 2}
-                            fillPatternOffsetY={patternHeight / 2}
-                            fillPatternX={object.width / 2}
-                            fillPatternY={object.height / 2}
-                            fillPatternRepeat="repeat-y"
-                            {...stroke}
-                        />
+                        <HideGroup>
+                            <Rect
+                                width={object.width}
+                                height={object.height}
+                                fillPatternImage={pattern}
+                                fillPatternOffsetX={patternWidth / 2}
+                                fillPatternOffsetY={patternHeight / 2}
+                                fillPatternX={object.width / 2}
+                                fillPatternY={object.height / 2}
+                                fillPatternRepeat="repeat-y"
+                                {...stroke}
+                            />
+                        </HideGroup>
                     </Group>
                 )}
             </ResizeableObjectContainer>

@@ -6,11 +6,12 @@ import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
-import { SELECTED_PROPS } from '../render/SceneTheme';
+import { DEFAULT_IMAGE_OPACITY, SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { IconObject, ObjectType } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
+import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -26,6 +27,7 @@ registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
+            opacity: DEFAULT_IMAGE_OPACITY,
             ...object,
             ...position,
         } as IconObject,
@@ -97,8 +99,10 @@ const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
                             {...SELECTED_PROPS}
                         />
                     )}
-                    <KonvaImage image={image} width={object.width} height={object.height} />
-                    <IconTimer time={object.time ?? 0} width={object.width} height={object.height} />
+                    <HideGroup>
+                        <KonvaImage image={image} width={object.width} height={object.height} />
+                        <IconTimer time={object.time ?? 0} width={object.width} height={object.height} />
+                    </HideGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

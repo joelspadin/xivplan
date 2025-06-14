@@ -6,7 +6,7 @@ import { NamedObject } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ objects }) => {
+export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ objects, className }) => {
     const { dispatch } = useScene();
 
     const name = useMemo(() => commonValue(objects, (obj) => obj.name), [objects]);
@@ -17,7 +17,7 @@ export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ obj
     );
 
     return (
-        <Field label="Name">
+        <Field label="Name" className={className}>
             <DeferredInput value={name ?? ''} onChange={(ev, data) => setName(data.value)} />
         </Field>
     );

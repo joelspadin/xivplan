@@ -9,6 +9,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { ObjectType, PolygonZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -76,7 +77,9 @@ const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotat
                     {...SELECTED_PROPS}
                 />
             )}
-            <RegularPolygon radius={radius} sides={object.sides} {...style} />
+            <HideGroup>
+                <RegularPolygon radius={radius} sides={object.sides} {...style} />
+            </HideGroup>
         </Group>
     );
 };

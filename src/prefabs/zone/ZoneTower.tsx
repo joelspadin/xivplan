@@ -10,6 +10,7 @@ import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { ObjectType, TowerZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -127,12 +128,14 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDraggin
         <>
             {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Circle radius={radius} {...style} opacity={0.75} />
-            {zones.map((props, i) => (
-                <CountZone key={i} {...props} {...style} listening={false} />
-            ))}
+            <HideGroup>
+                <Circle radius={radius} {...style} opacity={0.75} />
+                {zones.map((props, i) => (
+                    <CountZone key={i} {...props} {...style} listening={false} />
+                ))}
 
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+            </HideGroup>
         </>
     );
 };

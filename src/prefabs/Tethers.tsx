@@ -1,4 +1,4 @@
-import { Image, makeStyles, tokens } from '@fluentui/react-components';
+import { Image, makeStyles } from '@fluentui/react-components';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
@@ -12,7 +12,7 @@ import { getObjectById, useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
 import { getCanvasCoord } from '../coord';
 import { EditMode } from '../editMode';
-import { DetailsItemDeleteButton } from '../panel/DetailsItem';
+import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
@@ -37,8 +37,8 @@ import { useEditMode } from '../useEditMode';
 import { useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
+import { HideCutoutGroup, HideGroup } from './HideGroup';
 import { MagnetMinus, MagnetPlus } from './Magnets';
-import { PrefabIcon } from './PrefabIcon';
 import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
 import { getTetherIcon, getTetherName, makeTether } from './TetherConfig';
@@ -157,7 +157,10 @@ const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighligh
     return (
         <>
             {showHighlight && <Line {...lineProps} {...getSelectedProps(object)} />}
-            <Line {...lineProps} />
+
+            <HideCutoutGroup>
+                <Line {...lineProps} />
+            </HideCutoutGroup>
         </>
     );
 };
@@ -195,8 +198,10 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
                     <Arrow {...arrowProps2} {...getSelectedProps(object)} />
                 </>
             )}
-            <Arrow {...arrowProps1} />
-            <Arrow {...arrowProps2} />
+            <HideCutoutGroup>
+                <Arrow {...arrowProps1} />
+                <Arrow {...arrowProps2} />
+            </HideCutoutGroup>
         </>
     );
 };
@@ -217,7 +222,9 @@ const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight
     return (
         <>
             {showHighlight && <Arrow {...arrowProps} {...getSelectedProps(object)} />}
-            <Arrow {...arrowProps} />
+            <HideCutoutGroup>
+                <Arrow {...arrowProps} />
+            </HideCutoutGroup>
         </>
     );
 };
@@ -261,14 +268,20 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
             {showHighlight && (
                 <>
                     <Line {...lineProps} {...getSelectedProps(object)} />
-                    <Circle x={start.x} y={start.y} radius={magnetRadius} {...SELECTED_PROPS} />
-                    <Circle x={end.x} y={end.y} radius={magnetRadius} {...SELECTED_PROPS} />
+                    <HideGroup>
+                        <Circle x={start.x} y={start.y} radius={magnetRadius} {...SELECTED_PROPS} />
+                        <Circle x={end.x} y={end.y} radius={magnetRadius} {...SELECTED_PROPS} />
+                    </HideGroup>
                 </>
             )}
-            <Line {...lineProps} />
+            <HideCutoutGroup>
+                <Line {...lineProps} />
+            </HideCutoutGroup>
             <ForegroundPortal>
-                <StartRenderer x={start.x} y={start.y} radius={magnetRadius} listening={false} />
-                <EndRenderer x={end.x} y={end.y} radius={magnetRadius} listening={false} />
+                <HideGroup>
+                    <StartRenderer x={start.x} y={start.y} radius={magnetRadius} listening={false} />
+                    <EndRenderer x={end.x} y={end.y} radius={magnetRadius} listening={false} />
+                </HideGroup>
             </ForegroundPortal>
         </>
     );
@@ -405,23 +418,23 @@ function getIconColorFilter(object: Tether) {
     }
 }
 
-const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object, isSelected }) => {
+const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object, ...props }) => {
     const classes = useStyles();
     const { scene } = useScene();
+    const icon = getTetherIcon(object.tether);
+    const name = getTetherName(object.tether);
     const filter = React.useMemo(() => getIconColorFilter(object), [object]);
 
     const startObj = getObjectById(scene, object.startId);
     const endObj = getObjectById(scene, object.endId);
 
     return (
-        <div className={classes.wrapper}>
-            <PrefabIcon icon={getTetherIcon(object.tether)} name={getTetherName(object.tether)} filter={filter} />
+        <DetailsItem object={object} icon={icon} name={name} filter={filter} {...props}>
             <div className={classes.targets}>
                 <div>{getTargetNode(startObj)}</div>
                 <div>{getTargetNode(endObj)}</div>
             </div>
-            <DetailsItemDeleteButton object={object} isSelected={isSelected} />
-        </div>
+        </DetailsItem>
     );
 };
 
@@ -435,12 +448,6 @@ export const TetherPlusMinus: React.FC = () => <TetherButton tether={TetherType.
 export const TetherPlusPlus: React.FC = () => <TetherButton tether={TetherType.PlusPlus} />;
 
 const useStyles = makeStyles({
-    wrapper: {
-        display: 'flex',
-        flexFlow: 'row',
-        alignItems: 'center',
-        gap: tokens.spacingHorizontalS,
-    },
     targets: {
         display: 'grid',
         gridTemplate: 'auto / minmax(50%, min-content) min-content minmax(50%, min-content)',

@@ -18,6 +18,7 @@ import { clamp, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
@@ -182,8 +183,10 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
                     {...SELECTED_PROPS}
                 />
             )}
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
-            <Arc outerRadius={outerRadius} innerRadius={innerRadius} angle={coneAngle} {...style} />
+            <HideGroup>
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                <Arc outerRadius={outerRadius} innerRadius={innerRadius} angle={coneAngle} {...style} />
+            </HideGroup>
         </Group>
     );
 };

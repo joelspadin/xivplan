@@ -13,7 +13,9 @@ import { LayerName } from '../render/layers';
 import { ObjectType, TextObject } from '../scene';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
+import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
+import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
 import { useShowHighlight, useShowResizer } from './highlight';
@@ -204,12 +206,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
         <>
             <TextContainer object={object} cacheKey={cacheKey}>
                 {(groupProps) => (
-                    <Group
-                        {...groupProps}
-                        offsetX={size.width / 2}
-                        offsetY={size.height / 2}
-                        opacity={object.opacity / 100}
-                    >
+                    <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2}>
                         {showHighlight && (
                             <Text
                                 text={object.text}
@@ -224,19 +221,23 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                             />
                         )}
 
-                        <Text
-                            text={object.text}
-                            width={size.width}
-                            height={size.height}
-                            align={object.align}
-                            verticalAlign="middle"
-                            fontSize={measuredFontSize}
-                            lineHeight={LINE_HEIGHT}
-                            fill={object.color}
-                            stroke={theme.arena.fill}
-                            strokeWidth={strokeWidth}
-                            fillAfterStrokeEnabled
-                        />
+                        <HideCutoutGroup>
+                            <CompositeReplaceGroup enabled={showHighlight} opacity={object.opacity / 100}>
+                                <Text
+                                    text={object.text}
+                                    width={size.width}
+                                    height={size.height}
+                                    align={object.align}
+                                    verticalAlign="middle"
+                                    fontSize={measuredFontSize}
+                                    lineHeight={LINE_HEIGHT}
+                                    fill={object.color}
+                                    stroke={theme.arena.fill}
+                                    strokeWidth={strokeWidth}
+                                    fillAfterStrokeEnabled
+                                />
+                            </CompositeReplaceGroup>
+                        </HideCutoutGroup>
                     </Group>
                 )}
             </TextContainer>

@@ -5,10 +5,11 @@ import { TransparentObject } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>> = ({ objects }) => {
+export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>> = ({ objects, className }) => {
     const { dispatch } = useScene();
 
     const opacity = useMemo(() => commonValue(objects, (obj) => obj.opacity), [objects]);
+    const hide = useMemo(() => commonValue(objects, (obj) => !!obj.hide), [objects]);
 
     const setOpacity = useCallback(
         (newOpacity: number) => {
@@ -19,5 +20,12 @@ export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>>
         [dispatch, objects, opacity],
     );
 
-    return <OpacitySlider value={opacity} onChange={(ev, data) => setOpacity(data.value)} />;
+    return (
+        <OpacitySlider
+            className={className}
+            value={opacity}
+            disabled={hide}
+            onChange={(ev, data) => setOpacity(data.value)}
+        />
+    );
 };

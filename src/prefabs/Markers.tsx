@@ -12,6 +12,7 @@ import {
     COLOR_MARKER_PURPLE,
     COLOR_MARKER_RED,
     COLOR_MARKER_YELLOW,
+    DEFAULT_MARKER_OPACITY,
     SELECTED_PROPS,
 } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
@@ -19,6 +20,7 @@ import { MarkerObject, ObjectType } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
+import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -64,6 +66,7 @@ registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
             image: '',
             shape: 'square',
             color: COLOR_MARKER_RED,
+            opacity: DEFAULT_MARKER_OPACITY,
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
@@ -96,6 +99,7 @@ interface OutlineProps {
     showHighlight: boolean;
     strokeProps: ShapeConfig;
     dashSize: number;
+    opacity: number;
 }
 
 const EllipseOutline: React.FC<OutlineProps> = ({
@@ -105,6 +109,7 @@ const EllipseOutline: React.FC<OutlineProps> = ({
     highlightHeight,
     showHighlight,
     strokeProps,
+    opacity,
 }) => {
     return (
         <>
@@ -119,7 +124,16 @@ const EllipseOutline: React.FC<OutlineProps> = ({
                 />
             )}
 
-            <Ellipse x={width / 2} y={height / 2} radiusX={width / 2} radiusY={height / 2} {...strokeProps} />
+            <HideGroup>
+                <Ellipse
+                    x={width / 2}
+                    y={height / 2}
+                    radiusX={width / 2}
+                    radiusY={height / 2}
+                    opacity={opacity}
+                    {...strokeProps}
+                />
+            </HideGroup>
         </>
     );
 };
@@ -133,6 +147,7 @@ const RectangleOutline: React.FC<OutlineProps> = ({
     showHighlight,
     strokeProps,
     dashSize,
+    opacity,
 }) => {
     return (
         <>
@@ -148,7 +163,16 @@ const RectangleOutline: React.FC<OutlineProps> = ({
                 />
             )}
 
-            <Rect width={width} height={height} dashOffset={dashSize / 2} {...strokeProps} {...ALIGN_TO_PIXEL} />
+            <HideGroup>
+                <Rect
+                    width={width}
+                    height={height}
+                    dashOffset={dashSize / 2}
+                    {...strokeProps}
+                    opacity={opacity}
+                    {...ALIGN_TO_PIXEL}
+                />
+            </HideGroup>
         </>
     );
 };
@@ -191,6 +215,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
                             highlightOffset={highlightOffset}
                             strokeProps={strokeProps}
                             dashSize={dashSize}
+                            opacity={object.opacity / 100}
                         />
                     )}
                     {object.shape === 'square' && (
@@ -203,9 +228,19 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
                             highlightOffset={highlightOffset}
                             strokeProps={strokeProps}
                             dashSize={dashSize}
+                            opacity={object.opacity / 100}
                         />
                     )}
-                    <Image image={image} x={iconX} y={iconY} width={iconWidth} height={iconHeight} />
+                    <HideGroup>
+                        <Image
+                            image={image}
+                            x={iconX}
+                            y={iconY}
+                            width={iconWidth}
+                            height={iconHeight}
+                            opacity={object.opacity / 100}
+                        />
+                    </HideGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

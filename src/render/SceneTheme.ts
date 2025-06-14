@@ -36,6 +36,11 @@ export const COLOR_MARKER_RED = '#f13b66';
 export const COLOR_MARKER_YELLOW = '#e1dc5d';
 export const COLOR_MARKER_BLUE = '#65b3ea';
 export const COLOR_MARKER_PURPLE = '#e291e6';
+export const DEFAULT_MARKER_OPACITY = 100;
+
+export const DEFAULT_PARTY_OPACITY = 100;
+
+export const DEFAULT_IMAGE_OPACITY = 100;
 
 export const DEFAULT_AOE_COLOR = COLOR_ORANGE;
 

@@ -1,8 +1,16 @@
-import { Divider, makeStyles, Tab, TabList, TabValue, typographyStyles } from '@fluentui/react-components';
+import {
+    Divider,
+    makeStyles,
+    mergeClasses,
+    Tab,
+    TabList,
+    TabValue,
+    typographyStyles,
+} from '@fluentui/react-components';
 import React, { useState } from 'react';
 import { useMedia } from 'react-use';
 import { useControlStyles } from '../useControlStyles';
-import { PANEL_PADDING, PANEL_WIDTH } from './PanelStyles';
+import { PANEL_PADDING, PANEL_WIDTH, WIDE_PANEL_WIDTH } from './PanelStyles';
 import { PropertiesPanel } from './PropertiesPanel';
 import { SceneObjectsPanel } from './SceneObjectsPanel';
 
@@ -34,7 +42,7 @@ const WideDetailsPanel: React.FC = () => {
 
             <Divider inset vertical className={controlClasses.divider} />
 
-            <section className={classes.section}>
+            <section className={mergeClasses(classes.section, classes.wideSection)}>
                 <header className={classes.header}>{OBJECTS_TITLE}</header>
                 <div className={classes.scrollable}>
                     <SceneObjectsPanel />
@@ -90,6 +98,10 @@ const useStyles = makeStyles({
         width: `${PANEL_WIDTH}px`,
         display: 'flex',
         flexFlow: 'column',
+    },
+
+    wideSection: {
+        width: `${WIDE_PANEL_WIDTH}px`,
     },
 
     scrollable: {

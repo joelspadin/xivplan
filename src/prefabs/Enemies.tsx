@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import * as React from 'react';
 import { RefObject, useRef } from 'react';
-import { Arc, Circle, Group, Path, Text } from 'react-konva';
+import { Arc, Circle, Path, Text } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -20,6 +20,7 @@ import { EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
+import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -155,10 +156,10 @@ const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, .
         <>
             {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
 
-            <Group opacity={opacity} {...props}>
+            <HideGroup opacity={opacity} {...props}>
                 <Circle {...outerProps} radius={outerRadius} />
                 <Circle {...innerProps} radius={innerRadius} />
-            </Group>
+            </HideGroup>
         </>
     );
 };
@@ -190,7 +191,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
         <>
             {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Group opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
+            <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
                 <Arc
                     {...outerProps}
@@ -213,7 +214,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
                     strokeEnabled={false}
                     fill={color}
                 />
-            </Group>
+            </HideGroup>
         </>
     );
 };
@@ -240,7 +241,7 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
         <>
             {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
 
-            <Group opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
+            <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
 
                 <Circle {...outerProps} radius={outerRadius} />
@@ -253,7 +254,7 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
                     strokeEnabled={false}
                     fill={color}
                 />
-            </Group>
+            </HideGroup>
         </>
     );
 };
@@ -315,9 +316,11 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
 
     return (
         <>
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
+            <HideGroup>
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
 
-            <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
+                <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
+            </HideGroup>
 
             {renderRing(object, radius, rotation, groupRef, showHighlight)}
         </>

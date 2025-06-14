@@ -4,7 +4,7 @@ import { asArray } from '../util';
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
-    isSelected?: boolean;
+    isDragging?: boolean;
     isNested?: boolean;
 }
 

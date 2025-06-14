@@ -10,6 +10,8 @@ import { COLOR_RED, SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { ArrowObject, ObjectType } from '../scene';
 import { usePanelDrag } from '../usePanelDrag';
+import { CompositeReplaceGroup } from './CompositeReplaceGroup';
+import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
@@ -96,20 +98,18 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
     };
 
     return (
-        <ResizeableObjectContainer
-            object={object}
-            cache
-            cacheKey={showHighlight}
-            transformerProps={{ centeredScaling: true }}
-        >
+        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
-                <Group {...groupProps} opacity={object.opacity / 100}>
-                    <Rect width={object.width} height={object.height} fill="transparent" />
+                <Group {...groupProps} listening={!object.hide}>
                     {showHighlight && (
                         <Arrow {...arrowProps} {...SELECTED_PROPS} strokeWidth={HIGHLIGHT_STROKE_WIDTH} />
                     )}
-
-                    <Arrow {...arrowProps} fill={object.color} stroke={object.color} />
+                    <Rect width={object.width} height={object.height} fill="transparent" />
+                    <HideCutoutGroup>
+                        <CompositeReplaceGroup enabled={showHighlight} opacity={object.opacity / 100}>
+                            <Arrow {...arrowProps} fill={object.color} stroke={object.color} />
+                        </CompositeReplaceGroup>
+                    </HideCutoutGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

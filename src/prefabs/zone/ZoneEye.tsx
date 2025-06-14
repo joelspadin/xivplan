@@ -13,6 +13,7 @@ import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -156,23 +157,25 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
                         <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...SELECTED_PROPS} />
                     )}
 
-                    <Path
-                        data={OUTER_EYE_PATH}
-                        fill={highlightColor}
-                        stroke={strokeColor}
-                        strokeWidth={3}
-                        fillAfterStrokeEnabled
-                    />
+                    <HideGroup>
+                        <Path
+                            data={OUTER_EYE_PATH}
+                            fill={highlightColor}
+                            stroke={strokeColor}
+                            strokeWidth={3}
+                            fillAfterStrokeEnabled
+                        />
 
-                    <Path data={INNER_EYE_PATH} {...eyeStyle} />
-                    <Line
-                        points={[-19, 0, 19, 0]}
-                        stroke={highlightColor}
-                        strokeWidth={0.25}
-                        opacity={0.7}
-                        lineCap="round"
-                    />
-                    <Circle radius={10} {...irisStyle} />
+                        <Path data={INNER_EYE_PATH} {...eyeStyle} />
+                        <Line
+                            points={[-19, 0, 19, 0]}
+                            stroke={highlightColor}
+                            strokeWidth={0.25}
+                            opacity={0.7}
+                            lineCap="round"
+                        />
+                        <Circle radius={10} {...irisStyle} />
+                    </HideGroup>
                 </Group>
             </Group>
         </>

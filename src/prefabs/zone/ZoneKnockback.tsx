@@ -9,6 +9,7 @@ import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PRO
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -78,25 +79,27 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, i
         <>
             {showHighlight && <Circle radius={radius + ring.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Circle radius={radius} {...ring} strokeEnabled={false} opacity={0.5} />
+            <HideGroup>
+                <Circle radius={radius} {...ring} strokeEnabled={false} opacity={0.5} />
 
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={ring.stroke} />}
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={ring.stroke} />}
 
-            {CHEVRON_ANGLES.map((r, i) => (
-                <Group key={i} rotation={r} listening={false}>
-                    {[0.25, 0.52, 0.85].map((s, j) => (
-                        <ChevronTail
-                            key={j}
-                            offsetY={cx * s}
-                            chevronAngle={ca}
-                            width={cw * s}
-                            height={ch * s}
-                            opacity={object.opacity / 100}
-                            {...arrow}
-                        />
-                    ))}
-                </Group>
-            ))}
+                {CHEVRON_ANGLES.map((r, i) => (
+                    <Group key={i} rotation={r} listening={false}>
+                        {[0.25, 0.52, 0.85].map((s, j) => (
+                            <ChevronTail
+                                key={j}
+                                offsetY={cx * s}
+                                chevronAngle={ca}
+                                width={cw * s}
+                                height={ch * s}
+                                opacity={object.opacity / 100}
+                                {...arrow}
+                            />
+                        ))}
+                    </Group>
+                ))}
+            </HideGroup>
         </>
     );
 };

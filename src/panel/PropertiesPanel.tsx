@@ -39,6 +39,7 @@ import { ColorControl, ColorSwatchControl } from './properties/ColorControl';
 import { ConeAngleControl } from './properties/ConeControls';
 import { EnemyRingControl } from './properties/EnemyControls';
 import { ExaflareLengthControl, ExaflareSpacingControl } from './properties/ExaflareControls';
+import { HideControl } from './properties/HideControl';
 import { HollowControl } from './properties/HollowControl';
 import { IconStacksControl, IconTimeControl } from './properties/IconControls';
 import { ImageControl } from './properties/ImageControl';
@@ -74,15 +75,21 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
 interface ControlConditionProps {
     objects: readonly SceneObject[];
     test: (object: UnknownObject) => boolean;
+    invert?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     control: React.FC<PropertiesControlProps<any>>;
+    className?: string;
 }
 
-const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, control }) => {
-    const isValid = useMemo(() => objects.every(test), [objects, test]);
-    const Control = control;
+const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, invert, control, className }) => {
+    const isValid = useMemo(() => {
+        const result = objects.every(test);
 
-    return isValid ? <Control objects={objects} /> : null;
+        return invert ? !result : result;
+    }, [objects, test, invert]);
+
+    const Control = control;
+    return isValid ? <Control objects={objects} className={className} /> : null;
 };
 
 const NoObjectsMessage: React.FC = () => {
@@ -107,22 +114,30 @@ const Controls: React.FC = () => {
     return (
         <>
             <ControlCondition objects={objects} test={isNamed} control={NameControl} />
+            <ControlCondition objects={objects} test={isImageObject} control={ImageControl} />
 
             {/* Style */}
             <ControlCondition objects={objects} test={isTether} control={TetherTypeControl} />
             <div className={mergeClasses(classes.row, classes.alignTop)}>
-                <ControlCondition objects={objects} test={isColored} control={ColorControl} />
+                <ControlCondition objects={objects} test={isColored} control={ColorControl} className={classes.grow} />
                 <ControlCondition objects={objects} test={isArrow} control={ArrowPointersControl} />
                 <ControlCondition objects={objects} test={supportsHollow} control={HollowControl} />
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />
             </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />
-            <ControlCondition objects={objects} test={isTransparent} control={OpacityControl} />
+            <div className={mergeClasses(classes.row)}>
+                <ControlCondition
+                    objects={objects}
+                    test={isTransparent}
+                    control={OpacityControl}
+                    className={classes.grow}
+                />
+                <ControlCondition objects={objects} test={isTransparent} control={HideControl} />
+            </div>
             <ControlCondition objects={objects} test={isDrawObject} control={DrawObjectBrushControl} />
             <ControlCondition objects={objects} test={isText} control={TextStyleControl} />
 
             {/* Position/Size */}
-            <ControlCondition objects={objects} test={isImageObject} control={ImageControl} />
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
             <ControlCondition objects={objects} test={isResizable} control={SizeControl} />
             <ControlCondition objects={objects} test={isLineZone} control={LineSizeControl} />

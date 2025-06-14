@@ -10,6 +10,7 @@ import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PRO
 import { LayerName } from '../../render/layers';
 import { ObjectType, StarburstZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../bounds';
 import { useShowHighlight } from '../highlight';
@@ -97,9 +98,11 @@ const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spo
                     />
                 ))}
 
-            {items.map((r, i) => (
-                <Rect key={i} rotation={r} {...rect} />
-            ))}
+            <HideGroup>
+                {items.map((r, i) => (
+                    <Rect key={i} rotation={r} {...rect} />
+                ))}
+            </HideGroup>
         </Group>
     );
 };
@@ -146,9 +149,11 @@ const StarburstEven: React.FC<StarburstConfig> = ({
                     />
                 ))}
 
-            {items.map((r, i) => (
-                <Rect key={i} rotation={r} {...rect} />
-            ))}
+            <HideGroup>
+                {items.map((r, i) => (
+                    <Rect key={i} rotation={r} {...rect} />
+                ))}
+            </HideGroup>
         </Group>
     );
 };

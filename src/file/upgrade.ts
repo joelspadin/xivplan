@@ -1,11 +1,18 @@
 import { Vector2d } from 'konva/lib/types';
-import { DEFAULT_ENEMY_OPACITY } from '../render/SceneTheme';
+import {
+    DEFAULT_ENEMY_OPACITY,
+    DEFAULT_IMAGE_OPACITY,
+    DEFAULT_MARKER_OPACITY,
+    DEFAULT_PARTY_OPACITY,
+} from '../render/SceneTheme';
 import {
     DrawObject,
     EnemyObject,
     EnemyRingStyle,
     ExaflareZone,
     ImageObject,
+    MarkerObject,
+    PartyObject,
     Scene,
     SceneObject,
     SceneStep,
@@ -13,6 +20,8 @@ import {
     isEnemy,
     isExaflareZone,
     isImageObject,
+    isMarker,
+    isParty,
 } from '../scene';
 
 export function upgradeScene(scene: Scene): Scene {
@@ -34,6 +43,10 @@ function upgradeObject(object: SceneObject): SceneObject {
         object = upgradeEnemy(object);
     }
 
+    if (isParty(object)) {
+        object = upgradeParty(object);
+    }
+
     if (isDrawObject(object)) {
         object = upgradeDrawObject(object);
     }
@@ -44,6 +57,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isExaflareZone(object)) {
         object = upgradeExaflareZone(object);
+    }
+
+    if (isMarker(object)) {
+        object = upgradeMarker(object);
     }
 
     return object;
@@ -101,11 +118,29 @@ function upgradeImageObject<T extends ImageObject>(object: T): T {
         return `https://beta.xivapi.com/api/1/asset/ui/icon/${folder}/${name}.tex?format=png`;
     });
 
-    return { ...object, image };
+    return {
+        ...object,
+        image,
+        opacity: object.opacity ?? DEFAULT_IMAGE_OPACITY,
+    };
 }
 
 const LEGACY_SPACING = 60;
 
 function upgradeExaflareZone(object: ExaflareZone): ExaflareZone {
     return { ...object, spacing: object.spacing ?? LEGACY_SPACING };
+}
+
+function upgradeMarker(object: MarkerObject): MarkerObject {
+    return {
+        ...object,
+        opacity: object.opacity ?? DEFAULT_MARKER_OPACITY,
+    };
+}
+
+function upgradeParty(object: PartyObject): PartyObject {
+    return {
+        ...object,
+        opacity: object.opacity ?? DEFAULT_PARTY_OPACITY,
+    };
 }

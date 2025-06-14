@@ -10,6 +10,7 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { ExaflareZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -95,31 +96,35 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
     return (
         <>
             <Group rotation={rotation}>
-                {trail.map((point, i) => (
-                    <Circle
-                        key={i}
-                        listening={false}
-                        radius={radius}
-                        {...point}
-                        {...style}
-                        fillEnabled={false}
-                        dash={[dashSize, dashSize]}
-                        dashOffset={dashSize / 2}
-                        opacity={0.5}
-                    />
-                ))}
+                <HideGroup>
+                    {trail.map((point, i) => (
+                        <Circle
+                            key={i}
+                            listening={false}
+                            radius={radius}
+                            {...point}
+                            {...style}
+                            fillEnabled={false}
+                            dash={[dashSize, dashSize]}
+                            dashOffset={dashSize / 2}
+                            opacity={0.5}
+                        />
+                    ))}
+                </HideGroup>
 
                 {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-                <Circle radius={radius} {...style} />
-                <ChevronTail
-                    y={-radius * ARROW_H_FRAC * 0.9}
-                    width={radius * ARROW_W_FRAC}
-                    height={radius * ARROW_H_FRAC}
-                    {...arrow}
-                />
+                <HideGroup>
+                    <Circle radius={radius} {...style} />
+                    <ChevronTail
+                        y={-radius * ARROW_H_FRAC * 0.9}
+                        width={radius * ARROW_W_FRAC}
+                        height={radius * ARROW_H_FRAC}
+                        {...arrow}
+                    />
 
-                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                    {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                </HideGroup>
             </Group>
         </>
     );

@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useMemo, useRef } from 'react';
-import { Circle, Group, Path } from 'react-konva';
+import { Circle, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import counterClockwise from '../../assets/zone/rotate_ccw.png';
 import clockwise from '../../assets/zone/rotate_cw.png';
@@ -13,6 +13,7 @@ import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -119,7 +120,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
         <>
             {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
 
-            <Group opacity={(object.opacity * 2) / 100} ref={groupRef}>
+            <HideGroup opacity={(object.opacity * 2) / 100} ref={groupRef}>
                 <Circle radius={radius} {...style} />
 
                 {ARROW_ANGLES.map((r, i) => (
@@ -127,7 +128,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
                 ))}
 
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
-            </Group>
+            </HideGroup>
         </>
     );
 };

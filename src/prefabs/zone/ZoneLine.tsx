@@ -17,6 +17,7 @@ import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vecto
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
+import { HideGroup } from '../HideGroup';
 import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
@@ -196,9 +197,11 @@ const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rota
                     {...SELECTED_PROPS}
                 />
             )}
-            <Rect x={x} y={y} width={width} height={length} {...style} />
+            <HideGroup>
+                <Rect x={x} y={y} width={width} height={length} {...style} />
 
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+            </HideGroup>
         </Group>
     );
 };

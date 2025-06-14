@@ -6,11 +6,12 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
-import { SELECTED_PROPS } from '../render/SceneTheme';
+import { DEFAULT_PARTY_OPACITY, SELECTED_PROPS } from '../render/SceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
+import { HideGroup } from './HideGroup';
 import { useShowHighlight } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
@@ -56,6 +57,7 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
             status: [],
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
+            opacity: DEFAULT_PARTY_OPACITY,
             rotation: 0,
             ...object,
             ...position,
@@ -79,7 +81,14 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
                             {...SELECTED_PROPS}
                         />
                     )}
-                    <Image image={image} width={object.width} height={object.height} />
+                    <HideGroup>
+                        <Image
+                            image={image}
+                            width={object.width}
+                            height={object.height}
+                            opacity={object.opacity / 100}
+                        />
+                    </HideGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

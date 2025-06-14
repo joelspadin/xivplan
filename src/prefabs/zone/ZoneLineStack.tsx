@@ -10,6 +10,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../re
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { useShowHighlight } from '../highlight';
@@ -108,25 +109,27 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
                         {showHighlight && (
                             <Rect width={object.width} height={object.height} {...SELECTED_PROPS} opacity={0.25} />
                         )}
-                        <Rect
-                            width={object.width}
-                            height={object.height}
-                            fillPatternImage={pattern}
-                            fillPatternOffsetX={patternWidth / 2}
-                            fillPatternOffsetY={patternHeight / 2}
-                            fillPatternX={object.width / 2}
-                            fillPatternY={object.height / 2}
-                            fillPatternRepeat="repeat-y"
-                        />
-                        <ChevronTail
-                            rotation={180}
-                            chevronAngle={CHEVRON_ANGLE}
-                            x={object.width / 2}
-                            y={object.height / 2}
-                            width={object.width * 0.2}
-                            height={object.width * 0.13}
-                            fill={arrow.fill}
-                        />
+                        <HideGroup>
+                            <Rect
+                                width={object.width}
+                                height={object.height}
+                                fillPatternImage={pattern}
+                                fillPatternOffsetX={patternWidth / 2}
+                                fillPatternOffsetY={patternHeight / 2}
+                                fillPatternX={object.width / 2}
+                                fillPatternY={object.height / 2}
+                                fillPatternRepeat="repeat-y"
+                            />
+                            <ChevronTail
+                                rotation={180}
+                                chevronAngle={CHEVRON_ANGLE}
+                                x={object.width / 2}
+                                y={object.height / 2}
+                                width={object.width * 0.2}
+                                height={object.width * 0.13}
+                                fill={arrow.fill}
+                            />
+                        </HideGroup>
                     </Group>
                 )}
             </ResizeableObjectContainer>

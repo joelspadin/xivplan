@@ -9,6 +9,7 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
+import { HideGroup } from '../HideGroup';
 import { useShowHighlight } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -76,9 +77,11 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
                     {...SELECTED_PROPS}
                 />
             )}
-            <Ring innerRadius={innerRadius} outerRadius={radius} {...style} />
+            <HideGroup>
+                <Ring innerRadius={innerRadius} outerRadius={radius} {...style} />
 
-            {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+                {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}
+            </HideGroup>
         </>
     );
 };

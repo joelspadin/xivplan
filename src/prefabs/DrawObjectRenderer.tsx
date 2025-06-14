@@ -7,6 +7,7 @@ import { HIGHLIGHT_WIDTH, SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
 import { DrawObject, ObjectType } from '../scene';
 import { DRAW_LINE_PROPS } from './DrawObjectStyles';
+import { HideCutoutGroup } from './HideGroup';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useShowHighlight } from './highlight';
 
@@ -35,7 +36,14 @@ export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object
                             strokeWidth={object.brushSize + HIGHLIGHT_WIDTH}
                         />
                     )}
-                    <Line {...DRAW_LINE_PROPS} points={points} stroke={object.color} strokeWidth={object.brushSize} />
+                    <HideCutoutGroup>
+                        <Line
+                            {...DRAW_LINE_PROPS}
+                            points={points}
+                            stroke={object.color}
+                            strokeWidth={object.brushSize}
+                        />
+                    </HideCutoutGroup>
                 </Group>
             )}
         </ResizeableObjectContainer>

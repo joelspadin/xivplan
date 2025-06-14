@@ -1,7 +1,8 @@
 import React from 'react';
+import { ObjectContext } from '../prefabs/ObjectContext';
 import { SceneObject } from '../scene';
-import { getLayerName, getRenderer } from './ObjectRegistry';
 import { LayerName } from './layers';
+import { getLayerName, getRenderer } from './ObjectRegistry';
 
 export interface ObjectRendererProps {
     objects: readonly SceneObject[];
@@ -17,7 +18,11 @@ export const ObjectRenderer: React.FC<ObjectRendererProps> = ({ objects, layer }
                 }
 
                 const Component = getRenderer(object);
-                return <Component key={object.id} object={object} />;
+                return (
+                    <ObjectContext.Provider key={object.id} value={object}>
+                        <Component object={object} />
+                    </ObjectContext.Provider>
+                );
             })}
         </>
     );

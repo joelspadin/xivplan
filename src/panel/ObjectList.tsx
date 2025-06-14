@@ -16,7 +16,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
@@ -135,7 +135,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                     isDragging && isSelected && classes.draggingSelected,
                 )}
             >
-                <Component object={object} isSelected={isSelected} />
+                <Component object={object} isDragging={isDragging} />
             </div>
         </div>
     );
@@ -148,7 +148,7 @@ const useStyles = makeStyles({
         gap: tokens.spacingVerticalXXS,
 
         padding: 0,
-        margin: '0 -2px 20px',
+        ...shorthands.margin(0, `-${tokens.spacingHorizontalXXS}`, tokens.spacingVerticalXL),
         listStyle: 'none',
     },
 
@@ -162,7 +162,6 @@ const useStyles = makeStyles({
         zIndex: 0,
 
         minHeight: '32px',
-        padding: '2px',
         borderRadius: tokens.borderRadiusMedium,
 
         transitionProperty: 'background, border, color',
