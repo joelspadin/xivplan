@@ -28,11 +28,11 @@ const CATEGORY_STEPS = '7.Steps';
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
 
-    useHotkeys('ctrl+z', CATEGORY_HISTORY, 'Undo', (e) => {
+    useHotkeys('ctrl+z', { category: CATEGORY_HISTORY, help: 'Undo' }, (e) => {
         undo();
         e.preventDefault();
     });
-    useHotkeys('ctrl+y', CATEGORY_HISTORY, 'Redo', (e) => {
+    useHotkeys('ctrl+y', { category: CATEGORY_HISTORY, help: 'Redo' }, (e) => {
         redo();
         e.preventDefault();
     });
@@ -74,8 +74,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+a',
-        CATEGORY_SELECTION,
-        'Select all objects',
+        { category: CATEGORY_SELECTION, help: 'Select all objects' },
         (e) => {
             if (editMode !== EditMode.Normal) {
                 return;
@@ -88,8 +87,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'escape',
-        CATEGORY_SELECTION,
-        'Unselect all, cancel tool',
+        { category: CATEGORY_SELECTION, help: 'Unselect all, cancel tool' },
         (e) => {
             if (selection.size) {
                 setSelection(selectNone());
@@ -104,8 +102,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'delete',
-        CATEGORY_SELECTION,
-        'Delete selected objects',
+        { category: CATEGORY_SELECTION, help: 'Delete selected objects' },
         (e) => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
@@ -119,8 +116,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+c',
-        CATEGORY_SELECTION,
-        'Copy selected objects',
+        { category: CATEGORY_SELECTION, help: 'Copy selected objects' },
         (e) => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
@@ -132,8 +128,7 @@ const SelectionActionHandler: React.FC = () => {
     );
     useHotkeys(
         'ctrl+x',
-        CATEGORY_SELECTION,
-        'Cut selected objects',
+        { category: CATEGORY_SELECTION, help: 'Cut selected objects' },
         (e) => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
@@ -149,8 +144,7 @@ const SelectionActionHandler: React.FC = () => {
     );
     useHotkeys(
         'ctrl+v',
-        CATEGORY_SELECTION,
-        'Paste objects at mouse',
+        { category: CATEGORY_SELECTION, help: 'Paste objects at mouse' },
         (e) => {
             if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
@@ -163,8 +157,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+shift+v',
-        CATEGORY_SELECTION,
-        'Paste objects at original location',
+        { category: CATEGORY_SELECTION, help: 'Paste objects at original location' },
         (e) => {
             if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
@@ -177,8 +170,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+d',
-        CATEGORY_SELECTION,
-        'Duplicate selected objects',
+        { category: CATEGORY_SELECTION, help: 'Duplicate selected objects' },
         (e) => {
             if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
@@ -191,8 +183,7 @@ const SelectionActionHandler: React.FC = () => {
 
     useHotkeys(
         'h',
-        CATEGORY_SELECTION,
-        'Show/hide selected objects',
+        { category: CATEGORY_SELECTION, help: 'Show/hide selected objects' },
         (e) => {
             // This will fire together with CTRL+H, so ignore it in that case.
             if (!selection.size || e.ctrlKey) {
@@ -236,22 +227,44 @@ const SelectionActionHandler: React.FC = () => {
         [scene, step, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
     );
 
-    useHotkeys('/', CATEGORY_TETHER, 'Tether', tetherCallback(TetherType.Line), { useKey: true }, [tetherCallback]);
-    useHotkeys('-', CATEGORY_TETHER, 'Tether -/-', tetherCallback(TetherType.MinusMinus), { useKey: true }, [
+    useHotkeys('/', { category: CATEGORY_TETHER, help: 'Tether' }, tetherCallback(TetherType.Line), { useKey: true }, [
         tetherCallback,
     ]);
-    useHotkeys('=', CATEGORY_TETHER, 'Tether +/-', tetherCallback(TetherType.PlusMinus), { useKey: true }, [
-        tetherCallback,
-    ]);
-    useHotkeys('+', CATEGORY_TETHER, 'Tether +/+', tetherCallback(TetherType.PlusPlus), { useKey: true }, [
-        tetherCallback,
-    ]);
-    useHotkeys('<', CATEGORY_TETHER, 'Tether (stay together)', tetherCallback(TetherType.Close), { useKey: true }, [
-        tetherCallback,
-    ]);
-    useHotkeys('>', CATEGORY_TETHER, 'Tether (stay apart)', tetherCallback(TetherType.Far), { useKey: true }, [
-        tetherCallback,
-    ]);
+    useHotkeys(
+        '-',
+        { category: CATEGORY_TETHER, help: 'Tether -/-' },
+        tetherCallback(TetherType.MinusMinus),
+        { useKey: true },
+        [tetherCallback],
+    );
+    useHotkeys(
+        '=',
+        { category: CATEGORY_TETHER, help: 'Tether +/-' },
+        tetherCallback(TetherType.PlusMinus),
+        { useKey: true },
+        [tetherCallback],
+    );
+    useHotkeys(
+        'shift+equal',
+        { category: CATEGORY_TETHER, help: 'Tether +/+', keys: '+' },
+        tetherCallback(TetherType.PlusPlus),
+        { useKey: true },
+        [tetherCallback],
+    );
+    useHotkeys(
+        '<',
+        { category: CATEGORY_TETHER, help: 'Tether (stay together)' },
+        tetherCallback(TetherType.Close),
+        { useKey: true },
+        [tetherCallback],
+    );
+    useHotkeys(
+        'shift+period',
+        { category: CATEGORY_TETHER, help: 'Tether (stay apart)', keys: '>' },
+        tetherCallback(TetherType.Far),
+        { useKey: true },
+        [tetherCallback],
+    );
 
     return null;
 };
@@ -304,24 +317,24 @@ const EditActionHandler: React.FC = () => {
         [scene, dispatch, selection, editMode],
     );
 
-    useHotkeys('up', '', '', moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('down', '', '', moveCallback({ y: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('left', '', '', moveCallback({ x: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('right', '', '', moveCallback({ x: DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('up', {}, moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('down', {}, moveCallback({ y: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('left', {}, moveCallback({ x: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('right', {}, moveCallback({ x: DEFAULT_MOVE_OFFSET }), [moveCallback]);
 
-    useHotkeys('ctrl+up', '', '', moveCallback({ y: LARGE_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('ctrl+down', '', '', moveCallback({ y: -LARGE_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('ctrl+left', '', '', moveCallback({ x: -LARGE_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('ctrl+right', '', '', moveCallback({ x: LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+up', {}, moveCallback({ y: LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+down', {}, moveCallback({ y: -LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+left', {}, moveCallback({ x: -LARGE_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('ctrl+right', {}, moveCallback({ x: LARGE_MOVE_OFFSET }), [moveCallback]);
 
-    useHotkeys('shift+up', '', '', moveCallback({ y: SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('shift+down', '', '', moveCallback({ y: -SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('shift+left', '', '', moveCallback({ x: -SMALL_MOVE_OFFSET }), [moveCallback]);
-    useHotkeys('shift+right', '', '', moveCallback({ x: SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+up', {}, moveCallback({ y: SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+down', {}, moveCallback({ y: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+left', {}, moveCallback({ x: -SMALL_MOVE_OFFSET }), [moveCallback]);
+    useHotkeys('shift+right', {}, moveCallback({ x: SMALL_MOVE_OFFSET }), [moveCallback]);
 
-    useHotkeyHelp('🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object');
-    useHotkeyHelp('ctrl+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (coarse)');
-    useHotkeyHelp('shift+🡐🡑🡓🡒', CATEGORY_EDIT, 'Move object (fine)');
+    useHotkeyHelp({ keys: '🡐🡑🡓🡒', category: CATEGORY_EDIT, help: 'Move object' });
+    useHotkeyHelp({ keys: 'ctrl+🡐🡑🡓🡒', category: CATEGORY_EDIT, help: 'Move object (coarse)' });
+    useHotkeyHelp({ keys: 'shift+🡐🡑🡓🡒', category: CATEGORY_EDIT, help: 'Move object (fine)' });
 
     const rotateCallback = useCallback(
         (offset: number) => (e: KeyboardEvent) => {
@@ -345,9 +358,13 @@ const EditActionHandler: React.FC = () => {
         [scene, step, dispatch, selection, editMode],
     );
 
-    useHotkeys('ctrl+g', CATEGORY_EDIT, 'Rotate 90° counter-clockwise', rotateCallback(-90), [rotateCallback]);
-    useHotkeys('ctrl+h', CATEGORY_EDIT, 'Rotate 90° clockwise', rotateCallback(90), [rotateCallback]);
-    useHotkeys('ctrl+j', CATEGORY_EDIT, 'Rotate 180°', rotateCallback(180), [rotateCallback]);
+    useHotkeys('ctrl+g', { category: CATEGORY_EDIT, help: 'Rotate 90° counter-clockwise' }, rotateCallback(-90), [
+        rotateCallback,
+    ]);
+    useHotkeys('ctrl+h', { category: CATEGORY_EDIT, help: 'Rotate 90° clockwise' }, rotateCallback(90), [
+        rotateCallback,
+    ]);
+    useHotkeys('ctrl+j', { category: CATEGORY_EDIT, help: 'Rotate 180°' }, rotateCallback(180), [rotateCallback]);
 
     const orderCallback = useCallback(
         (type: GroupMoveAction['type']) => (e: KeyboardEvent) => {
@@ -357,10 +374,16 @@ const EditActionHandler: React.FC = () => {
         [dispatch, selection],
     );
 
-    useHotkeys('pageup', CATEGORY_EDIT, 'Move layer up', orderCallback('moveUp'), [orderCallback]);
-    useHotkeys('pagedown', CATEGORY_EDIT, 'Move layer down', orderCallback('moveDown'), [orderCallback]);
-    useHotkeys('shift+pageup', CATEGORY_EDIT, 'Move to top', orderCallback('moveToTop'), [orderCallback]);
-    useHotkeys('shift+pagedown', CATEGORY_EDIT, 'Move to bottom', orderCallback('moveToBottom'), [orderCallback]);
+    useHotkeys('pageup', { category: CATEGORY_EDIT, help: 'Move layer up' }, orderCallback('moveUp'), [orderCallback]);
+    useHotkeys('pagedown', { category: CATEGORY_EDIT, help: 'Move layer down' }, orderCallback('moveDown'), [
+        orderCallback,
+    ]);
+    useHotkeys('shift+pageup', { category: CATEGORY_EDIT, help: 'Move to top' }, orderCallback('moveToTop'), [
+        orderCallback,
+    ]);
+    useHotkeys('shift+pagedown', { category: CATEGORY_EDIT, help: 'Move to bottom' }, orderCallback('moveToBottom'), [
+        orderCallback,
+    ]);
 
     return null;
 };
@@ -370,8 +393,7 @@ const HelpHandler: React.FC = () => {
 
     useHotkeys(
         'f1',
-        CATEGORY_GENERAL,
-        'Help',
+        { category: CATEGORY_GENERAL, help: 'Help' },
         (e) => {
             setOpen(true);
             e.preventDefault();
@@ -383,8 +405,8 @@ const HelpHandler: React.FC = () => {
 };
 
 const DrawModeHandler: React.FC = () => {
-    useHotkeyHelp('e', CATEGORY_DRAW, '(On draw tab) switch to edit mode');
-    useHotkeyHelp('d', CATEGORY_DRAW, '(On draw tab) switch to draw mode');
+    useHotkeyHelp({ keys: 'e', category: CATEGORY_DRAW, help: '(On draw tab) switch to edit mode' });
+    useHotkeyHelp({ keys: 'd', category: CATEGORY_DRAW, help: '(On draw tab) switch to draw mode' });
 
     return null;
 };
@@ -394,8 +416,7 @@ const StepHandler: React.FC = () => {
 
     useHotkeys(
         'alt+left',
-        CATEGORY_STEPS,
-        'Previous step',
+        { category: CATEGORY_STEPS, help: 'Previous step' },
         (e) => {
             dispatch({ type: 'previousStep' });
             e.preventDefault();
@@ -405,8 +426,7 @@ const StepHandler: React.FC = () => {
 
     useHotkeys(
         'alt+right',
-        CATEGORY_STEPS,
-        'Next step',
+        { category: CATEGORY_STEPS, help: 'Next step' },
         (e) => {
             dispatch({ type: 'nextStep' });
             e.preventDefault();
@@ -416,8 +436,7 @@ const StepHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+enter',
-        CATEGORY_STEPS,
-        'Add step',
+        { category: CATEGORY_STEPS, help: 'Add step' },
         (e) => {
             dispatch({ type: 'addStep' });
             e.preventDefault();

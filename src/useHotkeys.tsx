@@ -9,23 +9,20 @@ export enum HotkeyScopes {
 
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
-    category: string,
-    help: string,
+    info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     deps?: unknown[],
 ): RefObject<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
-    category: string,
-    help: string,
+    info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     options?: Options,
     deps?: unknown[],
 ): RefObject<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
-    category: string,
-    help: string,
+    info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     options?: Options | unknown[],
     deps?: unknown[],
@@ -40,25 +37,29 @@ export function useHotkeys<T extends HTMLElement>(
         ...options,
     };
 
-    useHotkeyHelp(keys, category, help);
+    useHotkeyHelp({
+        keys: info.keys ?? keys,
+        category: info.category ?? '',
+        help: info.help ?? '',
+    });
 
     return useHotkeysBase(keys, callback, options, deps);
 }
 
-export function useHotkeyHelp(keys: string, category: string, help: string): void {
+export function useHotkeyHelp(info: HotkeyInfo): void {
     const map = useContext(HotkeyHelpContext);
     const id = useId();
     useEffect(() => {
-        if (!help) {
+        if (!info.category || !info.help) {
             return;
         }
 
-        map.set(id, { keys, category, help });
+        map.set(id, info);
 
         return () => {
             map.delete(id);
         };
-    }, [map, id, keys, category, help]);
+    }, [map, id, info]);
 }
 
 export function useRegisteredHotkeys(): HotkeyInfo[] {

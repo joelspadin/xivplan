@@ -60,8 +60,8 @@ export const DrawPanel: React.FC = () => {
         [setEditMode],
     );
 
-    useHotkeys('e', '', '', modeHotkey(EditMode.Normal), [editMode]);
-    useHotkeys('d', '', '', modeHotkey(EditMode.Draw), [editMode]);
+    useHotkeys('e', {}, modeHotkey(EditMode.Normal), [editMode]);
+    useHotkeys('d', {}, modeHotkey(EditMode.Draw), [editMode]);
 
     const getToolButtonProps = useCallback<ToolButtonPropsGetter>(
         (mode) => {
