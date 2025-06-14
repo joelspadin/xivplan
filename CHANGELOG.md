@@ -2,6 +2,12 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Jun 14, 2025
+
+- Fixed shotcut keys for creating tethers.
+- Updated all object types to support transparency.
+- Objects can now be shown/hidden with the `H` key, clicking the button next to the opacity slider, or clicking the button on the item in the scene list.
+
 ## Jun 10, 2025
 
 - Added an enemy ring type that shows the full circle ring with a direction indicator.
