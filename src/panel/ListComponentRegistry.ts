@@ -6,6 +6,7 @@ export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
     isDragging?: boolean;
     isNested?: boolean;
+    isSelected?: boolean;
 }
 
 export type ListComponent<T extends SceneObject> = React.FC<ListComponentProps<T>>;

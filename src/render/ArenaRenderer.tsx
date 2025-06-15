@@ -35,9 +35,12 @@ export interface ArenaRendererProps {
 }
 
 export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, simple }) => {
+    const theme = useSceneTheme();
+    backgroundColor ??= theme.backgroundColor;
+
     return (
         <>
-            {backgroundColor && <Backdrop color={backgroundColor} />}
+            <Backdrop color={backgroundColor} />
             <BackgroundRenderer />
             <ArenaClip>
                 <BackgroundImage />

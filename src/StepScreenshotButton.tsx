@@ -27,8 +27,6 @@ import { ObjectLoadingContext } from './ObjectLoadingContext';
 import { ObjectLoadingProvider } from './ObjectLoadingProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { useScene } from './SceneProvider';
-import { DarkModeContext } from './ThemeContext';
-import { getTheme } from './themes';
 import { useHotkeys } from './useHotkeys';
 
 const SCREENSHOT_TIMEOUT = 1000;
@@ -158,7 +156,6 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     const { scene, stepIndex } = useScene();
     const [frozenScene] = useState(scene);
     const [frozenStepIndex] = useState(stepIndex);
-    const [darkMode] = useContext(DarkModeContext);
     const ref = useRef<Konva.Stage>(null);
 
     const takeScreenshot = useCallback(async () => {
@@ -195,12 +192,10 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     }, [firstRender, isLoading, takeScreenshot]);
 
     const size = getCanvasSize(frozenScene);
-    const theme = getTheme(darkMode);
 
     return (
         <ScenePreview
             ref={ref}
-            backgroundColor={theme.colorNeutralBackground1}
             scene={frozenScene}
             stepIndex={frozenStepIndex}
             width={size.width}
