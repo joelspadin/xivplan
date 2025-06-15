@@ -1,8 +1,6 @@
 import { ColorSwatchProps } from '@fluentui/react-components';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import { useContext } from 'react';
-import { DarkModeContext } from '../ThemeContext';
 
 export const MIN_STAGE_WIDTH = '400px';
 
@@ -84,12 +82,6 @@ export const SELECTED_PROPS: ShapeConfig = {
     opacity: 0.75,
 };
 
-export interface ArenaTheme {
-    fill: string;
-    stroke: string;
-    strokeWidth: number;
-}
-
 export interface GridTheme {
     stroke: string;
     strokeWidth: number;
@@ -105,18 +97,21 @@ export interface EnemyTheme {
 }
 
 export interface SceneTheme {
-    arena: ArenaTheme;
-    grid: GridTheme;
+    backgroundColor: string;
+    arena: ShapeConfig;
+    grid: ShapeConfig;
     ticks: TickTheme;
     enemy: EnemyTheme;
 }
 
-export const ARENA_BACKGROUND_COLOR = '#40352c';
+export const ARENA_BACKGROUND_COLOR = '#292929';
+export const ARENA_FILL_COLOR = '#40352c';
 export const ARENA_TEXT_COLOR = '#ffffff';
 
 const SCENE_THEME: SceneTheme = {
+    backgroundColor: ARENA_BACKGROUND_COLOR,
     arena: {
-        fill: ARENA_BACKGROUND_COLOR,
+        fill: ARENA_FILL_COLOR,
         stroke: COLOR_GRID,
         strokeWidth: 1,
     },
@@ -125,27 +120,17 @@ const SCENE_THEME: SceneTheme = {
         strokeWidth: 1,
     },
     ticks: {
-        major: COLOR_TICK_MAJOR_LIGHT,
-        minor: COLOR_TICK_MINOR_LIGHT,
+        major: COLOR_TICK_MAJOR_DARK,
+        minor: COLOR_TICK_MINOR_DARK,
     },
     enemy: {
         text: {
             fill: ARENA_TEXT_COLOR,
-            stroke: ARENA_BACKGROUND_COLOR,
+            stroke: ARENA_FILL_COLOR,
         },
     },
 };
 
-const SCENE_THEME_DARK = {
-    ...SCENE_THEME,
-    ticks: {
-        major: COLOR_TICK_MAJOR_DARK,
-        minor: COLOR_TICK_MINOR_DARK,
-    },
-};
-
 export function useSceneTheme(): SceneTheme {
-    const [darkMode] = useContext(DarkModeContext);
-
-    return darkMode ? SCENE_THEME_DARK : SCENE_THEME;
+    return SCENE_THEME;
 }

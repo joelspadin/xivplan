@@ -1,5 +1,13 @@
 import { Button, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
-import { bundleIcon, DismissFilled, DismissRegular, EyeOffRegular, EyeRegular } from '@fluentui/react-icons';
+import {
+    bundleIcon,
+    DismissFilled,
+    DismissRegular,
+    EyeFilled,
+    EyeOffFilled,
+    EyeOffRegular,
+    EyeRegular,
+} from '@fluentui/react-icons';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { useScene } from '../SceneProvider';
 import { getRecolorFilter } from '../color';
@@ -17,6 +25,7 @@ export interface DetailsItemProps {
     children?: ReactNode;
     isNested?: boolean;
     isDragging?: boolean;
+    isSelected?: boolean;
 }
 
 // TODO: only show hide button if hidden or hovered/selected
@@ -29,6 +38,7 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
     filter,
     isNested,
     isDragging,
+    isSelected,
     children,
 }) => {
     const classes = useStyles();
@@ -42,8 +52,14 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
             {children ? children : <div className={classes.name}>{name}</div>}
             {!isNested && (
                 <div className={classes.buttons}>
-                    <DetailsItemHideButton object={object} className={mergeClasses(isDragging && classes.visible)} />
-                    <DetailsItemDeleteButton object={object} />
+                    <DetailsItemHideButton
+                        object={object}
+                        className={mergeClasses(isSelected && classes.selectedButton, isDragging && classes.visible)}
+                    />
+                    <DetailsItemDeleteButton
+                        object={object}
+                        className={mergeClasses(isSelected && classes.selectedButton)}
+                    />
                 </div>
             )}
         </div>
@@ -54,6 +70,9 @@ interface DetailsItemHideButtonProps {
     object: SceneObject;
     className?: string;
 }
+
+const EyeOffIcon = bundleIcon(EyeOffFilled, EyeOffRegular);
+const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
 
 const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ object, className }) => {
     const classes = useStyles();
@@ -66,7 +85,7 @@ const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ object, c
         [dispatch, object],
     );
 
-    const Icon = object.hide ? EyeOffRegular : EyeRegular;
+    const Icon = object.hide ? EyeOffIcon : EyeIcon;
     const tooltip = object.hide ? 'Show' : 'Hide';
 
     return (
@@ -141,5 +160,13 @@ const useStyles = makeStyles({
 
     visible: {
         opacity: 1,
+    },
+
+    selectedButton: {
+        color: tokens.colorNeutralForegroundOnBrand,
+
+        ':hover': {
+            color: tokens.colorNeutralForegroundOnBrand,
+        },
     },
 });

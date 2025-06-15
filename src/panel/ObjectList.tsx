@@ -135,7 +135,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                     isDragging && isSelected && classes.draggingSelected,
                 )}
             >
-                <Component object={object} isDragging={isDragging} />
+                <Component object={object} isDragging={isDragging} isSelected={isSelected} />
             </div>
         </div>
     );
@@ -179,7 +179,7 @@ const useStyles = makeStyles({
     },
 
     selected: {
-        color: tokens.colorNeutralForegroundStaticInverted,
+        color: tokens.colorNeutralForegroundOnBrand,
         backgroundColor: tokens.colorBrandBackgroundSelected,
 
         ':hover': {
