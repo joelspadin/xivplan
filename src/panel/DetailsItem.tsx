@@ -1,4 +1,4 @@
-import { Button, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { Button, makeStyles, mergeClasses, tokens, typographyStyles } from '@fluentui/react-components';
 import {
     bundleIcon,
     DismissFilled,
@@ -8,9 +8,8 @@ import {
     EyeOffRegular,
     EyeRegular,
 } from '@fluentui/react-icons';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { useScene } from '../SceneProvider';
-import { getRecolorFilter } from '../color';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
 import { SceneObject } from '../scene';
 import { setOrOmit } from '../util';
@@ -19,8 +18,6 @@ import { detailsItemClassNames } from './detailsItemStyles';
 export interface DetailsItemProps {
     object: SceneObject;
     icon?: string | ReactNode;
-    color?: string;
-    filter?: string;
     name: string;
     children?: ReactNode;
     isNested?: boolean;
@@ -34,21 +31,18 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
     object,
     icon,
     name,
-    color,
-    filter,
     isNested,
     isDragging,
     isSelected,
     children,
 }) => {
     const classes = useStyles();
-    const iconFilter = useMemo(() => filter ?? (color ? getRecolorFilter(color) : undefined), [color, filter]);
 
     const size = isNested ? 20 : undefined;
 
     return (
-        <div className={classes.wrapper}>
-            <div>{icon && <PrefabIcon icon={icon} name={name} filter={iconFilter} width={size} height={size} />}</div>
+        <div className={mergeClasses(classes.wrapper, isNested && classes.nested)}>
+            <div>{icon && <PrefabIcon icon={icon} name={name} width={size} height={size} />}</div>
             {children ? children : <div className={classes.name}>{name}</div>}
             {!isNested && (
                 <div className={classes.buttons}>
@@ -144,6 +138,11 @@ const useStyles = makeStyles({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+    },
+
+    nested: {
+        gap: tokens.spacingHorizontalXS,
+        ...typographyStyles.caption1,
     },
 
     buttons: {

@@ -3,12 +3,12 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import React, { useMemo } from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/falloff.png';
+import Icon from '../../assets/zone/falloff.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
@@ -26,7 +26,7 @@ export const ZoneProximity: React.FC = () => {
         <PrefabIcon
             draggable
             name="Proximity AOE"
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -196,7 +196,14 @@ const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
 const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name="Proximity AOE" object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name="Proximity AOE"
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);

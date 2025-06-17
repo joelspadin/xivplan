@@ -2,12 +2,12 @@ import Konva from 'konva';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/line_knock_away.png';
+import Icon from '../../assets/zone/line_knock_away.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -27,7 +27,7 @@ export const ZoneLineKnockAway: React.FC = () => {
         <PrefabIcon
             draggable
             name="Line knock away"
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -149,7 +149,14 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayRenderer);
 
 const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name="Line knock away" object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name="Line knock away"
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);

@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { UserConfig, defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import svgr from 'vite-plugin-svgr';
 
 // https://vitejs.dev/config/
 const isProduction = process.env.NODE_ENV === 'production';
@@ -23,6 +24,15 @@ export default defineConfig({
     ...devOptions,
     plugins: [
         react(),
+        svgr({
+            svgrOptions: {
+                plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
+                svgoConfig: {
+                    floatPrecision: 2,
+                    plugins: ['prefixIds'],
+                },
+            },
+        }),
         VitePWA({
             strategies: 'generateSW',
             registerType: 'prompt',

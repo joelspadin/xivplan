@@ -1,12 +1,17 @@
 import React, { useMemo } from 'react';
 import { Group, RegularPolygon } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/polygon.png';
+import HexagonIcon from '../../assets/zone/hexagon.svg?react';
+import OcatgonIcon from '../../assets/zone/octagon.svg?react';
+import PentagonIcon from '../../assets/zone/pentagon.svg?react';
+import SeptagonIcon from '../../assets/zone/septagon.svg?react';
+import SquareIcon from '../../assets/zone/square.svg?react';
+import TriangleIcon from '../../assets/zone/triangle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { ObjectType, PolygonZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -20,13 +25,15 @@ const NAME = 'Regular Polygon';
 const DEFAULT_RADIUS = 50;
 const DEFAULT_SIDES = 6;
 
+// TODO: add an option to determine whether point or side is at top
+
 export const ZonePolygon: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<HexagonIcon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -94,8 +101,33 @@ const PolygonContainer: React.FC<RendererProps<PolygonZone>> = ({ object }) => {
 
 registerRenderer<PolygonZone>(ObjectType.Polygon, LayerName.Ground, PolygonContainer);
 
+function getIcon(sides: number) {
+    switch (sides) {
+        case 3:
+            return TriangleIcon;
+        case 4:
+            return SquareIcon;
+        case 5:
+            return PentagonIcon;
+        case 6:
+            return HexagonIcon;
+        case 7:
+            return SeptagonIcon;
+        default:
+            return OcatgonIcon;
+    }
+}
+
 const PolygonDetails: React.FC<ListComponentProps<PolygonZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    const Icon = getIcon(object.sides);
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<PolygonZone>(ObjectType.Polygon, PolygonDetails);

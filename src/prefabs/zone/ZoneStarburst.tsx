@@ -2,12 +2,18 @@ import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useMemo } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/starburst.png';
+import Icon from '../../assets/zone/starburst.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import {
+    CENTER_DOT_RADIUS,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    sceneVars,
+    SELECTED_PROPS,
+} from '../../render/sceneTheme';
 import { ObjectType, StarburstZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -29,7 +35,7 @@ export const ZoneStarburst: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -201,7 +207,14 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) 
 registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<StarburstZone>(ObjectType.Starburst, StarburstDetails);

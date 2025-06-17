@@ -21,7 +21,6 @@
     "@uiw/react-color-hue": "^2.5.5",
     "@uiw/react-color-saturation": "^2.5.5",
     "client-zip": "^2.5.0",
-    "colorize-filter": "^1.0.3",
     "colorjs.io": "^0.5.2",
     "history": "^5.3.0",
     "idb": "^8.0.3",
@@ -42,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
+    "@svgr/plugin-svgo": "^8.1.0",
     "@types/node": "^22.15.31",
     "@types/pako": "^2.0.3",
     "@types/react": "^18.3.23",
@@ -60,7 +60,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0",
     "vite": "^6.3.5",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "vite-plugin-svgr": "^4.3.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.28.1"

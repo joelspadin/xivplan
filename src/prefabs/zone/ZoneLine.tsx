@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
-import icon from '../../assets/zone/line.png';
+import Icon from '../../assets/zone/line.svg?react';
 import { getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
@@ -9,7 +9,13 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    sceneVars,
+    SELECTED_PROPS,
+} from '../../render/sceneTheme';
 import { LineZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -35,7 +41,7 @@ export const ZoneLine: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
                 setDragObject({
@@ -69,7 +75,14 @@ registerDropHandler<LineZone>(ObjectType.Line, (object, position) => {
 });
 
 const LineDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<LineZone>(ObjectType.Line, LineDetails);

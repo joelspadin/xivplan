@@ -1,6 +1,7 @@
 import { Context as KonvaContext } from 'konva/lib/Context';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { PropsWithChildren } from 'react';
+import { ImageConfig } from 'konva/lib/shapes/Image';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import {
@@ -24,9 +25,10 @@ import {
     Scene,
 } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
-import { degtorad, getLinearGridDivs } from '../util';
+import { useStyledSvg } from '../useStyledSvg';
+import { degtorad, getLinearGridDivs, getUrlFileExtension } from '../util';
 import { ArenaTickRenderer } from './ArenaTickRenderer';
-import { useSceneTheme } from './SceneTheme';
+import { useSceneTheme, useSceneThemeHtmlStyles } from './sceneTheme';
 
 export interface ArenaRendererProps {
     backgroundColor?: string;
@@ -36,7 +38,7 @@ export interface ArenaRendererProps {
 
 export const ArenaRenderer: React.FC<ArenaRendererProps> = ({ backgroundColor, simple }) => {
     const theme = useSceneTheme();
-    backgroundColor ??= theme.backgroundColor;
+    backgroundColor ??= theme.colorBackground;
 
     return (
         <>
@@ -95,16 +97,49 @@ const ArenaClip: React.FC<PropsWithChildren> = ({ children }) => {
 
 const BackgroundImage: React.FC = () => {
     const { scene } = useScene();
-    const [image] = useImageTracked(scene.arena.backgroundImage ?? '');
+
+    const url = scene.arena.backgroundImage ?? '';
+    const ext = useMemo(() => getUrlFileExtension(url), [url]);
+
+    if (!url) {
+        return null;
+    }
+
+    const opacity = (scene.arena.backgroundOpacity ?? 100) / 100;
+    const position = getCanvasArenaRect(scene);
+
+    switch (ext) {
+        case '.svg':
+            return <BackgroundImageSvg url={url} opacity={opacity} {...position} />;
+
+        default:
+            return <BackgroundImageBitmap url={url} opacity={opacity} {...position} />;
+    }
+};
+
+interface BackgroundImageProps extends Omit<ImageConfig, 'image'> {
+    url: string;
+}
+
+const BackgroundImageBitmap: React.FC<BackgroundImageProps> = ({ url, ...props }) => {
+    const [image] = useImageTracked(url);
 
     if (!image) {
         return null;
     }
 
-    const opacity = scene.arena.backgroundOpacity ?? 100;
-    const position = getCanvasArenaRect(scene);
+    return <Image image={image} {...props} />;
+};
 
-    return <Image image={image} opacity={opacity / 100} {...position} />;
+const BackgroundImageSvg: React.FC<BackgroundImageProps> = ({ url, ...props }) => {
+    const style = useSceneThemeHtmlStyles();
+    const [image] = useStyledSvg(url, style);
+
+    if (!image) {
+        return null;
+    }
+
+    return <Image image={image} {...props} />;
 };
 
 const BackgroundRenderer: React.FC = () => {

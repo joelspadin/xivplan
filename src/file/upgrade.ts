@@ -4,7 +4,7 @@ import {
     DEFAULT_IMAGE_OPACITY,
     DEFAULT_MARKER_OPACITY,
     DEFAULT_PARTY_OPACITY,
-} from '../render/SceneTheme';
+} from '../render/sceneTheme';
 import {
     DrawObject,
     EnemyObject,

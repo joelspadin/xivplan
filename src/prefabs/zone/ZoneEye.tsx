@@ -4,12 +4,12 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useMemo, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/eye.png';
+import Icon from '../../assets/zone/eye.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -17,6 +17,8 @@ import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
+
+// TODO: add an option for a "look towards" marker
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
@@ -28,7 +30,7 @@ export const ZoneEye: React.FC = () => {
         <PrefabIcon
             draggable
             name="Look away"
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -195,7 +197,14 @@ const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
 const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name="Look away" object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneEye]: object.color }} />}
+            name="Look away"
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);

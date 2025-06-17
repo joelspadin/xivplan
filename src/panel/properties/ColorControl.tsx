@@ -9,7 +9,7 @@ import {
     COLOR_MARKER_YELLOW,
     COLOR_SWATCHES,
     makeColorSwatch,
-} from '../../render/SceneTheme';
+} from '../../render/sceneTheme';
 import { ColoredObject, isMarker } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';

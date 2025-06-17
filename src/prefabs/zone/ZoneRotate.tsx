@@ -1,15 +1,15 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useMemo, useRef } from 'react';
+import React, { CSSProperties, RefObject, useMemo, useRef } from 'react';
 import { Circle, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import counterClockwise from '../../assets/zone/rotate_ccw.png';
-import clockwise from '../../assets/zone/rotate_cw.png';
+import CounterClockwiseIcon from '../../assets/zone/rotate_ccw.svg?react';
+import ClockwiseIcon from '../../assets/zone/rotate_cw.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { CENTER_DOT_RADIUS, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -30,7 +30,7 @@ export const ZoneRotateClockwise: React.FC = () => {
         <PrefabIcon
             draggable
             name="Rotating clockwise"
-            icon={clockwise}
+            icon={<ClockwiseIcon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -50,7 +50,7 @@ export const ZoneRotateCounterClockwise: React.FC = () => {
         <PrefabIcon
             draggable
             name="Rotating counter-clockwise"
-            icon={counterClockwise}
+            icon={<CounterClockwiseIcon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -147,9 +147,16 @@ registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerN
 
 const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
     const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
-    const icon = object.type === ObjectType.RotateCW ? clockwise : counterClockwise;
+    const Icon = object.type === ObjectType.RotateCW ? ClockwiseIcon : CounterClockwiseIcon;
 
-    return <DetailsItem icon={icon} name={name} object={object} color={object.color} {...props} />;
+    const style: CSSProperties = {
+        [sceneVars.colorZoneOrange]: object.color,
+        [sceneVars.colorZoneBlue]: object.color,
+    };
+
+    return (
+        <DetailsItem icon={<Icon width="100%" height="100%" style={style} />} name={name} object={object} {...props} />
+    );
 };
 
 registerListComponent<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], RotateDetails);

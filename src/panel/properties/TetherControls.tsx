@@ -1,9 +1,10 @@
-import { Field, Image } from '@fluentui/react-components';
+import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
-import { getTetherIcon, getTetherName } from '../../prefabs/TetherConfig';
+import { getTetherName } from '../../prefabs/TetherConfig';
+import { TetherIcon } from '../../prefabs/TetherIcon';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { Tether, TetherType } from '../../scene';
@@ -41,7 +42,7 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
                     <Segment
                         key={item}
                         value={item}
-                        icon={<Image src={getTetherIcon(item)} />}
+                        icon={<TetherIcon tetherType={item} />}
                         size="large"
                         title={getTetherName(item)}
                     />

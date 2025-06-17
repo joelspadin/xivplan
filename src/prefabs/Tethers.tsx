@@ -1,4 +1,4 @@
-import { Image, makeStyles } from '@fluentui/react-components';
+import { makeStyles } from '@fluentui/react-components';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
@@ -9,15 +9,14 @@ import { useCallback, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
 import { getObjectById, useScene } from '../SceneProvider';
-import { getRecolorFilter } from '../color';
 import { getCanvasCoord } from '../coord';
 import { EditMode } from '../editMode';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
-import { SELECTED_PROPS } from '../render/SceneTheme';
 import { LayerName } from '../render/layers';
+import { SELECTED_PROPS, sceneVars } from '../render/sceneTheme';
 import {
     FakeCursorObject,
     ObjectType,
@@ -39,15 +38,18 @@ import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
 import { HideCutoutGroup, HideGroup } from './HideGroup';
 import { MagnetMinus, MagnetPlus } from './Magnets';
+import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
-import { getTetherIcon, getTetherName, makeTether } from './TetherConfig';
+import { getTetherName, makeTether } from './TetherConfig';
+import { TetherIcon } from './TetherIcon';
 
 interface TetherButtonProps {
     tether: TetherType;
 }
 
 const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
+    const classes = useStyles();
     const [, setSelection] = useSelection();
     const [editMode, setEditMode] = useEditMode();
     const [tetherConfig, setTetherConfig] = useTetherConfig();
@@ -65,9 +67,15 @@ const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
     }, [checked, tether, setEditMode, setSelection, setTetherConfig]);
 
     const label = useMemo(() => getTetherName(tether), [tether]);
-    const icon = useMemo(() => getTetherIcon(tether), [tether]);
 
-    return <PrefabToggle label={label} icon={<Image src={icon} />} onClick={onClick} checked={checked} />;
+    return (
+        <PrefabToggle
+            label={label}
+            icon={{ children: <TetherIcon tetherType={tether} />, className: classes.icon }}
+            onClick={onClick}
+            checked={checked}
+        />
+    );
 };
 
 const INVALID_START_POS: Vector2d = { x: -20, y: 0 };
@@ -406,30 +414,38 @@ function getTargetNode(object: SceneObject | undefined) {
     return <UnknownTargetComponent />;
 }
 
-function getIconColorFilter(object: Tether) {
-    switch (object.tether) {
-        case TetherType.MinusMinus:
-        case TetherType.PlusMinus:
-        case TetherType.PlusPlus:
-            return undefined;
+// function getIconColorFilter(object: Tether) {
+//     switch (object.tether) {
+//         case TetherType.MinusMinus:
+//         case TetherType.PlusMinus:
+//         case TetherType.PlusPlus:
+//             return undefined;
 
-        default:
-            return getRecolorFilter(object.color);
-    }
-}
+//         default:
+//             return getRecolorFilter(object.color);
+//     }
+// }
 
 const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object, ...props }) => {
     const classes = useStyles();
     const { scene } = useScene();
-    const icon = getTetherIcon(object.tether);
     const name = getTetherName(object.tether);
-    const filter = React.useMemo(() => getIconColorFilter(object), [object]);
+    // const filter = React.useMemo(() => getIconColorFilter(object), [object]);
 
     const startObj = getObjectById(scene, object.startId);
     const endObj = getObjectById(scene, object.endId);
 
+    const style: React.CSSProperties = {
+        [sceneVars.colorZoneOrange]: object.color,
+    };
+
     return (
-        <DetailsItem object={object} icon={icon} name={name} filter={filter} {...props}>
+        <DetailsItem
+            object={object}
+            icon={<TetherIcon tetherType={object.tether} style={style} />}
+            name={name}
+            {...props}
+        >
             <div className={classes.targets}>
                 <div>{getTargetNode(startObj)}</div>
                 <div>{getTargetNode(endObj)}</div>
@@ -448,6 +464,12 @@ export const TetherPlusMinus: React.FC = () => <TetherButton tether={TetherType.
 export const TetherPlusPlus: React.FC = () => <TetherButton tether={TetherType.PlusPlus} />;
 
 const useStyles = makeStyles({
+    icon: {
+        width: `${PREFAB_ICON_SIZE}px`,
+        height: `${PREFAB_ICON_SIZE}px`,
+        margin: `-${(PREFAB_ICON_SIZE - 20) / 2}px`,
+    },
+
     targets: {
         display: 'grid',
         gridTemplate: 'auto / minmax(50%, min-content) min-content minmax(50%, min-content)',

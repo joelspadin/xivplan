@@ -6,7 +6,7 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
-import { DEFAULT_PARTY_OPACITY, SELECTED_PROPS } from '../render/SceneTheme';
+import { DEFAULT_PARTY_OPACITY, SELECTED_PROPS } from '../render/sceneTheme';
 import { ObjectType, PartyObject } from '../scene';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
