@@ -1,3 +1,4 @@
+import { DrawImageRegular } from '@fluentui/react-icons';
 import React, { useMemo } from 'react';
 import { Group, Line } from 'react-konva';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -53,7 +54,7 @@ export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object
 registerRenderer<DrawObject>(ObjectType.Draw, LayerName.Default, DrawObjectRenderer);
 
 export const DrawDetails: React.FC<ListComponentProps<DrawObject>> = (props) => {
-    return <DetailsItem name="Drawing" {...props} />;
+    return <DetailsItem icon={<DrawImageRegular color={props.object.color} />} name="Drawing" {...props} />;
 };
 
 registerListComponent<DrawObject>(ObjectType.Draw, DrawDetails);
