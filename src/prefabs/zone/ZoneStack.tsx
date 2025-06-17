@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Circle } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/stack.png';
+import Icon from '../../assets/zone/stack.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -27,7 +27,7 @@ export const ZoneStack: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -119,7 +119,14 @@ const StackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Stack, LayerName.Ground, StackContainer);
 
 const StackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<CircleZone>(ObjectType.Stack, StackDetails);

@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
+import { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
 import { RefObject, useRef } from 'react';
 import { Arc, Circle, Path, Text } from 'react-konva';
@@ -7,15 +8,14 @@ import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { LayerName } from '../render/layers';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
     DEFAULT_ENEMY_OPACITY,
-    EnemyTheme,
     SELECTED_PROPS,
     useSceneTheme,
-} from '../render/SceneTheme';
-import { LayerName } from '../render/layers';
+} from '../render/sceneTheme';
 import { EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
@@ -95,11 +95,12 @@ interface RingProps extends ShapeConfig {
     isSelected?: boolean;
 }
 
-interface EnemyLabelProps extends RingProps {
-    theme: EnemyTheme;
+interface EnemyLabelProps extends TextConfig {
+    name?: string;
+    radius: number;
 }
 
-const EnemyLabel: React.FC<EnemyLabelProps> = ({ name, radius, theme, ...props }) => {
+const EnemyLabel: React.FC<EnemyLabelProps> = ({ name, radius, ...props }) => {
     if (radius < 32) {
         return null;
     }
@@ -109,7 +110,6 @@ const EnemyLabel: React.FC<EnemyLabelProps> = ({ name, radius, theme, ...props }
 
     return (
         <Text
-            {...theme.text}
             text={name}
             width={radius * 2}
             height={radius * 2}
@@ -319,7 +319,7 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
             <HideGroup>
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
 
-                <EnemyLabel name={object.name} radius={radius} theme={theme.enemy} color={object.color} />
+                <EnemyLabel name={object.name} radius={radius} color={object.color} {...theme.enemyText} />
             </HideGroup>
 
             {renderRing(object, radius, rotation, groupRef, showHighlight)}

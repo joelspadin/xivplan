@@ -1,4 +1,3 @@
-import { generateFilter } from 'colorize-filter';
 import Color from 'colorjs.io';
 
 export interface HsvColor {
@@ -15,12 +14,6 @@ export interface RgbColor {
     r: number;
     g: number;
     b: number;
-}
-
-export function getRecolorFilter(color: string): string | undefined {
-    const hex = colorToHex(new Color(color));
-
-    return 'brightness(0) saturate(100%) ' + generateFilter(hex);
 }
 
 export function isValidColor(color: string) {

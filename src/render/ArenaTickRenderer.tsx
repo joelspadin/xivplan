@@ -4,7 +4,7 @@ import { getCanvasArenaEllipse, getCanvasArenaRect } from '../coord';
 import { RadialTicks, RectangularTicks, Scene, Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { degtorad, getLinearGridDivs } from '../util';
-import { useSceneTheme } from './SceneTheme';
+import { useSceneTheme } from './sceneTheme';
 
 const MAJOR_TICK_SIZE = 7;
 const MINOR_TICK_SIZE = 5;
@@ -115,7 +115,7 @@ const MajorTick: React.FC<TickProps> = ({ x, y, angle }) => {
             width={MAJOR_TICK_SIZE}
             height={MAJOR_TICK_SIZE}
             rotationDeg={angle + 45}
-            fill={theme.ticks.major}
+            fill={theme.colorBorderTickMajor}
         />
     );
 };
@@ -132,7 +132,7 @@ const MinorTick: React.FC<TickProps> = ({ x, y, angle }) => {
             width={MINOR_TICK_SIZE}
             height={MINOR_TICK_SIZE}
             rotationDeg={angle + 45}
-            fill={theme.ticks.minor}
+            fill={theme.colorBorderTickMinor}
         />
     );
 };

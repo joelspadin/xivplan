@@ -1,7 +1,7 @@
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle, Group, Rect, Shape } from 'react-konva';
-import { COLOR_ORANGE } from '../render/SceneTheme';
+import { COLOR_ORANGE } from '../render/sceneTheme';
 
 const PLUS_GRADIENT = [0.25, COLOR_ORANGE, 1, '#430900'];
 const PLUS_FILL = '#ffffff';

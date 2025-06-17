@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { EditMode } from './editMode';
-import { COLOR_YELLOW } from './render/SceneTheme';
+import { COLOR_YELLOW } from './render/sceneTheme';
 import { TetherType } from './scene';
 
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];

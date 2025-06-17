@@ -65,6 +65,19 @@ export function omit<T extends object, K extends keyof T>(obj: T, omitKey: K): O
     return Object.fromEntries(Object.entries(obj).filter(([key]) => key !== omitKey)) as Omit<T, K>;
 }
 
+type ObjectMapResult<T, V> = {
+    [k in keyof T]: V;
+};
+
+export function objectMap<T extends object, K extends keyof T, V>(
+    obj: T,
+    mapFn: (key: K, value: T[K]) => V,
+): ObjectMapResult<T, V> {
+    return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [key, mapFn(key as K, value)]),
+    ) as ObjectMapResult<T, V>;
+}
+
 type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | undefined ? T : never;
 
 export function setOrOmit<T extends object, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
@@ -81,6 +94,14 @@ export function commonValue<T, U>(objects: readonly T[], value: (object: T) => U
 
     const first = value(objects[0]);
     return objects.every((obj) => value(obj) === first) ? first : undefined;
+}
+
+export function getUrlFileExtension(url: string) {
+    const pathname = url.split(/[#?]/)[0] ?? '';
+
+    const dotIndex = pathname.lastIndexOf('.');
+
+    return dotIndex >= 0 ? pathname.substring(dotIndex) : '';
 }
 
 export function removeFileExtension(path: string) {

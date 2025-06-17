@@ -3,15 +3,15 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Group, Shape, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
-import icon from '../../assets/zone/cone.png';
+import Icon from '../../assets/zone/cone.svg?react';
 import { getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
 import { LayerName } from '../../render/layers';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS, sceneVars } from '../../render/sceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
@@ -38,7 +38,7 @@ export const ZoneCone: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
                 setDragObject({
@@ -193,7 +193,14 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);

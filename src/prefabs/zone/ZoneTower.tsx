@@ -2,12 +2,12 @@ import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useMemo } from 'react';
 import { Circle } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/meteor_tower.png';
+import Icon from '../../assets/zone/meteor_tower.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { ObjectType, TowerZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -27,7 +27,7 @@ export const ZoneTower: React.FC = () => {
         <PrefabIcon
             draggable
             name="Meteor/tower"
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -151,7 +151,14 @@ const TowerContainer: React.FC<RendererProps<TowerZone>> = ({ object }) => {
 registerRenderer<TowerZone>(ObjectType.Tower, LayerName.Ground, TowerContainer);
 
 const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name="Meteor/tower" object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name="Meteor/tower"
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<TowerZone>(ObjectType.Tower, TowerDetails);

@@ -1,5 +1,5 @@
-import { makeStyles, Text } from '@fluentui/react-components';
-import React, { useContext } from 'react';
+import { Text } from '@fluentui/react-components';
+import React from 'react';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
@@ -66,23 +66,16 @@ import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
 import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
-import { DarkModeContext } from '../ThemeContext';
 import { useControlStyles } from '../useControlStyles';
 import { ObjectGroup, Section } from './Section';
 
 export const PrefabsPanel: React.FC = () => {
-    const classes = useStyles();
     const controlClasses = useControlStyles();
-    const [darkMode] = useContext(DarkModeContext);
-
-    // AOE zone icons don't have much contrast with light theme background.
-    // Darken them a bit.
-    const zonesClass = darkMode ? '' : classes.darken;
 
     return (
         <div className={controlClasses.panel}>
             <Section title="Zones">
-                <ObjectGroup className={zonesClass}>
+                <ObjectGroup>
                     <ZoneRightTriangle />
                     <ZoneTriangle />
                     <ZoneSquare />
@@ -190,7 +183,7 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
             </Section>
             <Section title="Tethers">
-                <ObjectGroup className={zonesClass}>
+                <ObjectGroup>
                     <TetherLine />
                     <TetherClose />
                     <TetherFar />
@@ -207,9 +200,3 @@ export const PrefabsPanel: React.FC = () => {
         </div>
     );
 };
-
-const useStyles = makeStyles({
-    darken: {
-        filter: 'brightness(0.75) saturate(1.8)',
-    },
-});

@@ -1,12 +1,18 @@
 import React, { useMemo } from 'react';
 import { Circle, Group } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import icon from '../../assets/zone/knockback.png';
+import Icon from '../../assets/zone/knockback.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import {
+    CENTER_DOT_RADIUS,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    sceneVars,
+    SELECTED_PROPS,
+} from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -24,7 +30,7 @@ export const ZoneKnockback: React.FC = () => {
         <PrefabIcon
             draggable
             name="Circular knockback"
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -115,7 +121,14 @@ const KnockbackContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
 registerRenderer<CircleZone>(ObjectType.Knockback, LayerName.Ground, KnockbackContainer);
 
 const KnockbackDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name="Knockback" object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name="Knockback"
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<CircleZone>(ObjectType.Knockback, KnockbackDetails);

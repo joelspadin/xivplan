@@ -1,12 +1,18 @@
 import React, { useMemo } from 'react';
 import { Circle, Ring } from 'react-konva';
-import icon from '../../assets/zone/donut.png';
+import Icon from '../../assets/zone/donut.svg?react';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import {
+    CENTER_DOT_RADIUS,
+    DEFAULT_AOE_COLOR,
+    DEFAULT_AOE_OPACITY,
+    sceneVars,
+    SELECTED_PROPS,
+} from '../../render/sceneTheme';
 import { DonutZone, ObjectType } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -27,7 +33,7 @@ export const ZoneDonut: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={icon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -97,7 +103,14 @@ const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
 registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={icon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<DonutZone>(ObjectType.Donut, DonutDetails);

@@ -2,12 +2,12 @@ import { RectConfig } from 'konva/lib/shapes/Rect';
 import React, { useMemo } from 'react';
 import { Group, Line } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
-import rightTriangleIcon from '../../assets/zone/right_triangle.png';
+import Icon from '../../assets/zone/right_triangle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS } from '../../render/SceneTheme';
+import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { ObjectType, RectangleZone } from '../../scene';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -26,7 +26,7 @@ export const ZoneRightTriangle: React.FC = () => {
         <PrefabIcon
             draggable
             name={NAME}
-            icon={rightTriangleIcon}
+            icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
                     object: {
@@ -108,7 +108,14 @@ const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.RightTriangle, LayerName.Ground, RightTriangleRenderer);
 
 const RightTriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, ...props }) => {
-    return <DetailsItem icon={rightTriangleIcon} name={NAME} object={object} color={object.color} {...props} />;
+    return (
+        <DetailsItem
+            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            name={NAME}
+            object={object}
+            {...props}
+        />
+    );
 };
 
 registerListComponent<RectangleZone>(ObjectType.RightTriangle, RightTriangleDetails);

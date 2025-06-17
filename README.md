@@ -26,6 +26,21 @@ Using local storage means I don't have to pay for servers, and I can't mess up a
 
 If you are using a Chromium-based browser and you install the site as an app, then .xivplan files can also be opened directly in the app instead of using drag and drop.
 
+### Background Images
+
+When loading an SVG file as the arena background image, XIVPlan will inject the following CSS variables:
+
+| Variable                     | Description                                                  |
+| ---------------------------- | ------------------------------------------------------------ |
+| `--xiv-colorBackground`      | Color of the background outside the arena.                   |
+| `--xiv-colorArena`           | Color of the arena floor.                                    |
+| `--xiv-colorArenaLight`      | A slightly lighter arena floor color.                        |
+| `--xiv-colorArenaDark`       | A slightly darker arena floor color.                         |
+| `--xiv-colorBorder`          | Color of the border around the arena floor.                  |
+| `--xiv-colorBorderTickMajor` | Color of the major tick marks when border ticks are enabled. |
+| `--xiv-colorBorderTickMinor` | Color of the minor tick marks when border ticks are enabled. |
+| `--xiv-colorGrid`            | Color of grid lines.                                         |
+
 ## Alternatives
 
 [RaidPlan.io](https://raidplan.io/ffxiv) now supports FFXIV.

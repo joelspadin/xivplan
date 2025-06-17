@@ -48,6 +48,8 @@ export const PrefabIcon: React.FC<PrefabIconProps> = ({
 
 const useStyles = makeStyles({
     draggable: {
+        position: 'relative',
+        zIndex: 1,
         cursor: 'grab',
         touchAction: 'none',
     },
