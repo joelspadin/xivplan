@@ -246,5 +246,6 @@ export const COLOR_SWATCHES: ColorSwatchProps[] = [
     makeColorSwatch(COLOR_WHITE, 'white'),
     makeColorSwatch(COLOR_BLACK, 'black'),
     makeColorSwatch(COLOR_GRID, 'brown'),
+    makeColorSwatch(COLOR_ARENA, 'dark-brown'),
     makeColorSwatch(COLOR_BACKGROUND, 'background'),
 ];
