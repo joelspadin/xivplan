@@ -2,19 +2,26 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="600"
-   height="600"
-   viewBox="0 0 600 600"
-   version="1.1"
-   id="svg1"
-   xml:space="preserve"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
-   sodipodi:docname="arcadion3.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  version="1.1"
+  id="svg1"
+  xml:space="preserve"
+  inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+  sodipodi:docname="arcadion3.svg"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"><style
+     id="style1">.lightStroke { stroke:var(--xiv-colorArenaLight, #4c4034); }
+.darkStroke {
+    stroke:var(--xiv-colorArenaDark, #4352b21);
+}
+.dark { fill:var(--xiv-colorArenaDark, #352b21); }
+.light {   }
+</style><sodipodi:namedview
      id="namedview1"
      pagecolor="#40352c"
      bordercolor="#666666"
@@ -25,10 +32,10 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.4142136"
-     inkscape:cx="307.945"
+     inkscape:cx="308.6521"
      inkscape:cy="283.90337"
-     inkscape:window-width="1920"
-     inkscape:window-height="1129"
+     inkscape:window-width="2194"
+     inkscape:window-height="1163"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -43,7 +50,7 @@
        empcolor="#3f3fff"
        empopacity="0.25098039"
        color="#3f3fff"
-       opacity="0.1254902"
+       opacity="0.12549"
        empspacing="5"
        dotted="false"
        gridanglex="30"
@@ -60,11 +67,12 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"><circle
-       style="fill:none;fill-opacity:0.501377;stroke:#352b21;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:0.501377;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
        cx="160"
        cy="160"
-       r="156" /><use
+       r="156"
+       class="darkStroke" /><use
        x="0"
        y="0"
        xlink:href="#path1"
@@ -80,11 +88,12 @@
        xlink:href="#path1"
        id="use4"
        transform="translate(280,280)" /><circle
-       style="fill:none;fill-opacity:0.501377;stroke:#4c4034;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:0.501377;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="circle4"
        cx="160"
        cy="160"
-       r="312" /><use
+       r="312"
+       class="lightStroke" /><use
        x="0"
        y="0"
        xlink:href="#circle4"
@@ -100,11 +109,12 @@
        xlink:href="#circle4"
        id="use7"
        transform="translate(0,280)" /><circle
-       style="fill:#352b21;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="circle7"
        cx="160"
        cy="160"
-       r="6" /><use
+       r="6"
+       class="dark" /><use
        x="0"
        y="0"
        xlink:href="#circle7"

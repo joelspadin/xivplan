@@ -8,13 +8,18 @@
    version="1.1"
    id="svg1"
    xml:space="preserve"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
    sodipodi:docname="arcadion4-p2.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   xmlns:svg="http://www.w3.org/2000/svg"><style
+     id="style1">
+.path { 
+    stroke:var(--xiv-colorGrid, #6f5a48);
+}
+</style><sodipodi:namedview
      id="namedview1"
      pagecolor="#40352c"
      bordercolor="#666666"
@@ -25,10 +30,10 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.4142136"
-     inkscape:cx="295.21707"
+     inkscape:cx="295.57063"
      inkscape:cy="196.22213"
-     inkscape:window-width="1920"
-     inkscape:window-height="1129"
+     inkscape:window-width="2194"
+     inkscape:window-height="1163"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -43,7 +48,7 @@
        empcolor="#3f3fff"
        empopacity="0.25098039"
        color="#3f3fff"
-       opacity="0.1254902"
+       opacity="0.12549"
        empspacing="5"
        dotted="false"
        gridanglex="30"
@@ -60,7 +65,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"><rect
-       style="fill:none;fill-opacity:1;stroke:#6f5a48;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        id="rect1"
        width="75"
        height="75"
@@ -71,7 +76,8 @@
        inkscape:tile-w="75"
        inkscape:tile-h="75"
        inkscape:tile-x0="37.5"
-       inkscape:tile-y0="37.5" /><use
+       inkscape:tile-y0="37.5"
+       class="path" /><use
        x="0"
        y="0"
        inkscape:tiled-clone-of="#rect1"

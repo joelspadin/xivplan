@@ -114,7 +114,7 @@ const MajorTick: React.FC<TickProps> = ({ x, y, angle }) => {
             offsetY={MAJOR_TICK_SIZE / 2}
             width={MAJOR_TICK_SIZE}
             height={MAJOR_TICK_SIZE}
-            rotationDeg={angle + 45}
+            rotation={angle + 45}
             fill={theme.colorBorderTickMajor}
         />
     );
@@ -131,7 +131,7 @@ const MinorTick: React.FC<TickProps> = ({ x, y, angle }) => {
             offsetY={MINOR_TICK_SIZE / 2}
             width={MINOR_TICK_SIZE}
             height={MINOR_TICK_SIZE}
-            rotationDeg={angle + 45}
+            rotation={angle + 45}
             fill={theme.colorBorderTickMinor}
         />
     );
