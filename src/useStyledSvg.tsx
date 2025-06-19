@@ -1,5 +1,5 @@
 import { useAsync } from 'react-use';
-import { useImageTracked } from './useObjectLoading';
+import { useImageTracked, useObjectLoading } from './useObjectLoading';
 
 type Status = 'loaded' | 'loading' | 'failed';
 
@@ -19,7 +19,7 @@ async function getStyledSvg(url: string, style: string) {
 export function useStyledSvg(url: string, style = ''): [undefined | HTMLImageElement, Status] {
     const result = useAsync(() => getStyledSvg(url, style), [url, style]);
 
-    const dataUri = result.value ?? '';
+    useObjectLoading(result.loading);
 
-    return useImageTracked(dataUri);
+    return useImageTracked(result.value ?? '');
 }
