@@ -14,6 +14,13 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+  <style
+     id="style1">
+.tile { 
+    fill:var(--xiv-colorArena, #40352c);
+    stroke:var(--xiv-colorGrid, #6f5a48);
+}
+</style>
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#ffffff"
@@ -25,12 +32,12 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.210722"
-     inkscape:cx="472.03241"
-     inkscape:cy="473.68431"
-     inkscape:window-width="2194"
-     inkscape:window-height="1163"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
+     inkscape:cx="471.20644"
+     inkscape:cy="473.6843"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="1063"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -39,10 +46,10 @@
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
        id="filter35"
-       x="-0.0308"
-       y="-0.0308"
-       width="1.0616"
-       height="1.0816">
+       x="-0.0288"
+       y="-0.0288"
+       width="1.0576"
+       height="1.0776">
       <feFlood
          result="flood"
          in="SourceGraphic"
@@ -79,7 +86,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <circle
-       style="display:inline;fill:#40352c;stroke:#6f5a48;stroke-width:1;stroke-linecap:round;stroke-dasharray:none;filter:url(#filter35)"
+       style="display:inline;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
        id="circle1"
        cx="420"
        cy="680"
@@ -89,7 +96,8 @@
        inkscape:tile-h="261"
        inkscape:tile-x0="289.5"
        inkscape:tile-y0="549.5"
-       r="125" />
+       r="125"
+       class="tile" />
     <use
        x="0"
        y="0"

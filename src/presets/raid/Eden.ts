@@ -1,5 +1,4 @@
 import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../scene';
-import { SPOKES_45_DEGREES } from '../common';
 
 const PRESET_2: ArenaPreset = {
     name: "Eden's Gate: Descent (E2)",
@@ -34,12 +33,11 @@ const PRESET_8: ArenaPreset = {
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
     grid: {
-        type: GridType.CustomRadial,
-        rings: [120, 240],
-        spokes: SPOKES_45_DEGREES,
+        type: GridType.Radial,
+        angularDivs: 8,
+        radialDivs: 1,
     },
-    backgroundImage: '/arena/e8.png',
-    backgroundOpacity: 65,
+    backgroundImage: '/arena/e8.svg',
 };
 
 const PRESET_11: ArenaPreset = {

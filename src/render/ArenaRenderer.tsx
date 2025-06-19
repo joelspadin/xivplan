@@ -64,7 +64,7 @@ const Backdrop: React.FC<BackdropProps> = ({ color }) => {
     return <Rect fill={color} x={0} y={0} {...size} />;
 };
 
-function getArenaClip(scene: Scene): (context: KonvaContext) => void {
+function getArenaClip(scene: Scene): ((context: KonvaContext) => void) | undefined {
     const rect = getCanvasArenaRect(scene);
     const center = getCanvasCoord(scene, { x: 0, y: 0 });
 
@@ -78,18 +78,21 @@ function getArenaClip(scene: Scene): (context: KonvaContext) => void {
             };
 
         case ArenaShape.Rectangle:
-        case ArenaShape.None:
             return (ctx) => {
                 ctx.beginPath();
                 ctx.rect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
                 ctx.clip();
                 ctx.closePath();
             };
+
+        case ArenaShape.None:
+            return undefined;
     }
 }
 
 const ArenaClip: React.FC<PropsWithChildren> = ({ children }) => {
     const { scene } = useScene();
+
     const clip = getArenaClip(scene);
 
     return <Group clipFunc={clip}>{children}</Group>;
@@ -107,13 +110,14 @@ const BackgroundImage: React.FC = () => {
 
     const opacity = (scene.arena.backgroundOpacity ?? 100) / 100;
     const position = getCanvasArenaRect(scene);
+    const shadow = scene.arena.shape === ArenaShape.None ? SHADOW : {};
 
     switch (ext) {
         case '.svg':
-            return <BackgroundImageSvg url={url} opacity={opacity} {...position} />;
+            return <BackgroundImageSvg url={url} opacity={opacity} {...position} {...shadow} />;
 
         default:
-            return <BackgroundImageBitmap url={url} opacity={opacity} {...position} />;
+            return <BackgroundImageBitmap url={url} opacity={opacity} {...position} {...shadow} />;
     }
 };
 
@@ -260,7 +264,7 @@ const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
     return (
         <Shape
             sceneFunc={(ctx, shape) => {
-                clip(ctx);
+                clip?.(ctx);
 
                 ctx.beginPath();
 
@@ -327,7 +331,7 @@ const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> 
     return (
         <Shape
             sceneFunc={(context, shape) => {
-                clip(context);
+                clip?.(context);
 
                 context.beginPath();
 
@@ -363,7 +367,7 @@ const CustomRadialGridRenderer: React.FC<GridProps<CustomRadialGrid>> = ({ grid 
     return (
         <Shape
             sceneFunc={(ctx, shape) => {
-                clip(ctx);
+                clip?.(ctx);
 
                 ctx.beginPath();
 

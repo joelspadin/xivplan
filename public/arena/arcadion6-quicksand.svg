@@ -2,18 +2,24 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="600"
-   height="600"
-   viewBox="0 0 600 600"
-   version="1.1"
-   id="svg1"
-   xml:space="preserve"
-   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
-   sodipodi:docname="arcadion6-quicksand.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  version="1.1"
+  id="svg1"
+  xml:space="preserve"
+  inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+  sodipodi:docname="arcadion6-quicksand.svg"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"><style
+     id="style1">
+.dark {
+    stroke:var(--xiv-colorGrid, #6f5a48);
+    fill:var(--xiv-colorArenaDark, #352b21);
+}
+</style><sodipodi:namedview
      id="namedview1"
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -24,8 +30,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.210722"
-     inkscape:cx="372.91799"
-     inkscape:cy="331.62032"
+     inkscape:cx="373.74393"
+     inkscape:cy="265.54403"
      inkscape:window-width="2194"
      inkscape:window-height="1163"
      inkscape:window-x="1912"
@@ -36,8 +42,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"><circle
-       style="fill:#352b21;stroke:#6f5a48;stroke-linecap:round;fill-opacity:1;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
+       style="stroke-width:1;"
        id="path1"
        cx="300"
        cy="300"
-       r="345" /></g></svg>
+       r="345"
+       class="dark" /></g></svg>

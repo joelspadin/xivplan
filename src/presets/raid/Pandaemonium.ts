@@ -3,12 +3,12 @@ import { SPOKES_45_DEGREES } from '../common';
 
 const PRESET_7: ArenaPreset = {
     name: 'Abyssos: The Seventh Circle',
-    shape: ArenaShape.Rectangle,
+    shape: ArenaShape.None,
     width: 760,
     height: 700,
     padding: 50,
     grid: { type: GridType.None },
-    backgroundImage: '/arena/p7.png',
+    backgroundImage: '/arena/p7.svg',
 };
 
 const PRESET_9: ArenaPreset = {
@@ -26,12 +26,12 @@ const PRESET_9: ArenaPreset = {
 
 const PRESET_10: ArenaPreset = {
     name: 'Anabaseios: The Tenth Circle',
-    shape: ArenaShape.Rectangle,
+    shape: ArenaShape.None,
     width: 14 * 60,
     height: 12 * 60,
     padding: 50,
     grid: { type: GridType.None },
-    backgroundImage: '/arena/p10.png',
+    backgroundImage: '/arena/p10.svg',
 };
 
 const PRESET_10_CENTER: ArenaPreset = {
@@ -54,7 +54,7 @@ const PRESET_11: ArenaPreset = {
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
     grid: { type: GridType.None },
-    backgroundImage: '/arena/p11.png',
+    backgroundImage: '/arena/p11.svg',
 };
 
 const PRESET_12: ArenaPreset = {
@@ -68,37 +68,29 @@ const PRESET_12: ArenaPreset = {
         rows: 4,
         columns: 2,
     },
-    backgroundImage: '/arena/p12.png',
+    backgroundImage: '/arena/p12.svg',
 };
 
 const PRESET_12_CHECKERBOARD: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Checkerboard)',
     spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
-    shape: ArenaShape.Rectangle,
+    shape: ArenaShape.None,
     width: 600,
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
-    grid: {
-        type: GridType.Rectangular,
-        rows: 4,
-        columns: 2,
-    },
-    backgroundImage: '/arena/p12_checker.png',
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/p12_checker.svg',
 };
 
 const PRESET_12_CHECKERBOARD_2: ArenaPreset = {
     name: 'Anabaseios: The Twelfth Circle (Checkerboard Mirror)',
     spoilerFreeName: 'Anabaseios: The Twelfth Circle ████',
-    shape: ArenaShape.Rectangle,
+    shape: ArenaShape.None,
     width: 600,
     height: 600,
     padding: DEFAULT_ARENA_PADDING,
-    grid: {
-        type: GridType.Rectangular,
-        rows: 4,
-        columns: 2,
-    },
-    backgroundImage: '/arena/p12_checker2.png',
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/p12_checker2.svg',
 };
 
 const PRESET_12_OCTAGON: ArenaPreset = {
@@ -113,7 +105,7 @@ const PRESET_12_OCTAGON: ArenaPreset = {
         rows: [-225, 0, 225],
         columns: [0],
     },
-    backgroundImage: '/arena/p12_octagon.png',
+    backgroundImage: '/arena/p12_octagon.svg',
 };
 
 const PRESET_12_PHASE_2: ArenaPreset = {
@@ -128,7 +120,7 @@ const PRESET_12_PHASE_2: ArenaPreset = {
         rows: 3,
         columns: 2,
     },
-    backgroundImage: '/arena/p12-p2.png',
+    backgroundImage: '/arena/p12-p2.svg',
 };
 
 export const ARENA_PRESETS_RAID_PANDAEMONIUM = [

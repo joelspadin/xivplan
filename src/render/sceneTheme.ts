@@ -103,11 +103,11 @@ const COLOR_MAGNET_PLUS_SYMBOL_LIGHT = '#ffffff';
 const COLOR_MAGNET_MINUS_SYMBOL_LIGHT = '#ffffff';
 
 const COLOR_BACKGROUND = '#292929';
-const COLOR_ARENA = '#40352c';
-const COLOR_ARENA_LIGHT = '#4c4034';
-const COLOR_ARENA_DARK = '#352b21';
-const COLOR_GRID = '#6f5a48';
-const COLOR_BORDER = '#6f5a48';
+const COLOR_ARENA = '#40352c'; // var(--xiv-colorArena, #40352c)
+const COLOR_ARENA_LIGHT = '#4c4034'; // var(--xiv-colorArenaLight, #4c4034)
+const COLOR_ARENA_DARK = '#352b21'; // var(--xiv-colorArenaDark, #352b21)
+const COLOR_GRID = '#6f5a48'; // var(--xiv-colorGrid, #6f5a48)
+const COLOR_BORDER = '#6f5a48'; // var(--xiv-colorBorder, #6f5a48)
 const COLOR_TEXT = '#ffffff';
 
 const COLOR_TICK_MAJOR = 'rgb(186 227 255)';
