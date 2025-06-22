@@ -4,6 +4,8 @@ This page tracks notable changes made to XIVPlan. Not every change will be liste
 
 ## Jun 22, 2025
 
+- Added a control to change the outline color of text
+- Updated the appearance of color controls so the color picker button is inside the input field's border.
 - Adjusted the light theme to be a bit less red.
 - Changed the arena background color to be the same regardless of light or dark theme. This will be made customizable later.
 - Recreated many arena background images and object icons as SVGs.
