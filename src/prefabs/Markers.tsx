@@ -8,6 +8,7 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
+import { MarkerObject, ObjectType } from '../scene';
 import {
     COLOR_MARKER_BLUE,
     COLOR_MARKER_PURPLE,
@@ -15,8 +16,7 @@ import {
     COLOR_MARKER_YELLOW,
     DEFAULT_MARKER_OPACITY,
     SELECTED_PROPS,
-} from '../render/sceneTheme';
-import { MarkerObject, ObjectType } from '../scene';
+} from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';

@@ -1,5 +1,5 @@
-import { COLOR_FUSCHIA, COLOR_GREEN, COLOR_ORANGE } from '../render/sceneTheme';
 import { ObjectType, SceneObject, Tether, TetherType, isMoveable } from '../scene';
+import { COLOR_FUSCHIA, COLOR_GREEN, COLOR_ORANGE } from '../theme';
 import { combinations } from '../util';
 
 const DEFAULT_WIDTH = 6;

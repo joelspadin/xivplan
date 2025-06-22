@@ -9,6 +9,7 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
+import { EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
@@ -16,8 +17,7 @@ import {
     getEnemyTextConfig,
     SELECTED_PROPS,
     useSceneTheme,
-} from '../render/sceneTheme';
-import { EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
+} from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';

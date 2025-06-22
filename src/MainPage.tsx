@@ -10,7 +10,7 @@ import { StepSelect } from './StepSelect';
 import { DetailsPanel } from './panel/DetailsPanel';
 import { MainPanel } from './panel/MainPanel';
 import { SceneRenderer } from './render/SceneRenderer';
-import { MIN_STAGE_WIDTH } from './render/sceneTheme';
+import { MIN_STAGE_WIDTH } from './theme';
 import { useIsDirty } from './useIsDirty';
 import { removeFileExtension } from './util';
 

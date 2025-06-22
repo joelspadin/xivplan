@@ -22,7 +22,7 @@ import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
 import { useSpinChanged } from '../prefabs/useSpinChanged';
-import { useColorSwatches } from '../render/sceneTheme';
+import { useColorSwatches } from '../theme';
 import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';

@@ -1,7 +1,7 @@
 import { Field, makeStyles, mergeClasses, SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { sceneTokens } from './render/sceneTheme';
 import { SpinButton } from './SpinButton';
+import { sceneTokens } from './theme';
 import { useControlStyles } from './useControlStyles';
 
 const BOX_SIZE = 30;

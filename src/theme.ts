@@ -1,8 +1,8 @@
-import { ColorSwatchProps } from '@fluentui/react-components';
+import { ColorSwatchProps, Theme, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 import { ShapeConfig } from 'konva/lib/Shape';
 import { CSSProperties, useContext, useMemo } from 'react';
-import { DarkModeContext } from '../ThemeContext';
-import { objectMap } from '../util';
+import { DarkModeContext } from './ThemeContext';
+import { cssPropertiesToStyleString, themeToCssProperties, themeToCssVars, themeToTokensObject } from './themeUtil';
 
 export const MIN_STAGE_WIDTH = '400px';
 
@@ -55,25 +55,15 @@ export const SELECTED_PROPS: ShapeConfig = {
 };
 
 export interface SceneTheme {
-    // Arena colors
     colorBackground: string;
     colorArena: string;
     colorArenaLight: string;
     colorArenaDark: string;
+    colorGrid: string;
     colorBorder: string;
     colorBorderTickMajor: string;
     colorBorderTickMinor: string;
-    colorGrid: string;
     colorEnemyText: string;
-
-    // Object panel styles
-    colorZoneOrange: string;
-    colorZoneBlue: string;
-    colorZoneEye: string;
-    colorMagnetPlus: string;
-    colorMagnetPlusSymbol: string;
-    colorMagnetMinus: string;
-    colorMagnetMinusSymbol: string;
 }
 
 const sceneTheme: SceneTheme = {
@@ -81,74 +71,34 @@ const sceneTheme: SceneTheme = {
     colorArena: '#40352c', // var(--xiv-colorArena, #40352c)
     colorArenaLight: '#4c4034', // var(--xiv-colorArenaLight, #4c4034)
     colorArenaDark: '#352b21', // var(--xiv-colorArenaDark, #352b21)
+    colorGrid: '#6f5a48', // var(--xiv-colorGrid, #6f5a48)
     colorBorder: '#6f5a48', // var(--xiv-colorBorder, #6f5a48)
     colorBorderTickMajor: 'rgb(186 227 255)',
     colorBorderTickMinor: 'rgb(186 227 255 / 67%)',
-    colorGrid: '#6f5a48', // var(--xiv-colorGrid, #6f5a48)
     colorEnemyText: '#ffffff',
-
-    colorZoneOrange: '#ffa700',
-    colorZoneBlue: '#0058ff',
-    colorZoneEye: '#ff1200',
-    colorMagnetPlus: '#c68200',
-    colorMagnetPlusSymbol: '#000000',
-    colorMagnetMinus: '#0057f8',
-    colorMagnetMinusSymbol: '#ffffff',
 };
 
-const sceneThemeLight: SceneTheme = {
-    ...sceneTheme,
-
-    colorZoneOrange: '#f07900',
-    colorZoneBlue: '#0046ff',
-    colorZoneEye: '#ff0000',
-    colorMagnetPlus: '#c06100',
-    colorMagnetPlusSymbol: '#ffffff',
-    colorMagnetMinus: '#0047ff',
-    colorMagnetMinusSymbol: '#ffffff',
-};
-
-export const sceneVars: Record<keyof SceneTheme, `--${string}`> = objectMap(
-    sceneTheme,
-    (key) => `--xiv-${key}` as `--${string}`,
-);
-export const sceneTokens: Record<keyof SceneTheme, string> = objectMap(sceneVars, (_, value) => `var(${value})`);
+export const sceneVars = themeToCssVars(sceneTheme);
+export const sceneTokens = themeToTokensObject(sceneTheme);
 
 export function useSceneTheme(): SceneTheme {
-    const [darkMode] = useContext(DarkModeContext);
-
-    return darkMode ? sceneTheme : sceneThemeLight;
+    return sceneTheme;
 }
 
 /**
  * Gets the CSS variable definitions for the scene theme
  */
-export function useSceneThemeStyles(): CSSProperties {
+export function useSceneThemeStyle(): CSSProperties {
     const theme = useSceneTheme();
-
-    return useMemo(
-        () =>
-            Object.fromEntries(
-                (Object.entries(sceneVars) as [keyof SceneTheme, string][]).map(([key, name]) => {
-                    return [name, theme[key]];
-                }),
-            ),
-        [theme],
-    );
+    return useMemo(() => themeToCssProperties(theme), [theme]);
 }
 
 /**
  * Gets the CSS variable definitions for the scene theme as a string that can be inserted in an HTML stylesheet.
  */
-export function useSceneThemeHtmlStyles(selector = ':root'): string {
-    const styles = useSceneThemeStyles();
-    return useMemo(() => {
-        const vars = (Object.keys(styles) as (keyof typeof styles)[]).reduce((result, cssVar) => {
-            return `${result}${cssVar}: ${styles[cssVar]}; `;
-        }, '');
-
-        return `${selector} {${vars}}`;
-    }, [styles, selector]);
+export function useSceneThemeHtmlStyle(selector = ':root'): string {
+    const styles = useSceneThemeStyle();
+    return useMemo(() => cssPropertiesToStyleString(selector, styles), [selector, styles]);
 }
 
 export function getArenaShapeConfig(theme: SceneTheme): ShapeConfig {
@@ -171,6 +121,53 @@ export function getEnemyTextConfig(theme: SceneTheme): ShapeConfig {
         fill: theme.colorEnemyText,
         stroke: theme.colorArena,
     };
+}
+
+export interface PanelTheme {
+    colorZoneOrange: string;
+    colorZoneBlue: string;
+    colorZoneEye: string;
+    colorMagnetPlus: string;
+    colorMagnetPlusSymbol: string;
+    colorMagnetMinus: string;
+    colorMagnetMinusSymbol: string;
+}
+
+const darkPanelTheme: PanelTheme = {
+    colorZoneOrange: '#ffa700',
+    colorZoneBlue: '#0058ff',
+    colorZoneEye: '#ff1200',
+    colorMagnetPlus: '#c68200',
+    colorMagnetPlusSymbol: '#000000',
+    colorMagnetMinus: '#0057f8',
+    colorMagnetMinusSymbol: '#ffffff',
+};
+
+const lightPanelTheme: PanelTheme = {
+    colorZoneOrange: '#f07900',
+    colorZoneBlue: '#0046ff',
+    colorZoneEye: '#ff0000',
+    colorMagnetPlus: '#c06100',
+    colorMagnetPlusSymbol: '#ffffff',
+    colorMagnetMinus: '#0047ff',
+    colorMagnetMinusSymbol: '#ffffff',
+};
+
+export const panelVars = themeToCssVars(darkPanelTheme);
+export const panelTokens = themeToTokensObject(darkPanelTheme);
+
+export function usePanelTheme() {
+    const darkMode = useContext(DarkModeContext);
+
+    return darkMode ? darkPanelTheme : lightPanelTheme;
+}
+
+/**
+ * Gets the CSS variable definitions for the panel theme
+ */
+export function usePanelThemeStyle(): CSSProperties {
+    const theme = usePanelTheme();
+    return useMemo(() => themeToCssProperties(theme), [theme]);
 }
 
 export function makeColorSwatch(color: string, label: string): ColorSwatchProps {
@@ -201,4 +198,35 @@ export function useColorSwatches(): ColorSwatchProps[] {
         ],
         [theme],
     );
+}
+
+// ==== Fluent UI themes ====
+
+const darkTheme = webDarkTheme;
+
+// Colors adjusted to a more sepia tone that's easier on the eyes and is similar
+// to FFXIV's UI light theme.
+const lightTheme: Theme = {
+    ...webLightTheme,
+    colorSubtleBackgroundHover: '#d8d2c2',
+    colorSubtleBackgroundSelected: '#cec9b9',
+    colorNeutralBackground1: '#eee8d5',
+    colorNeutralBackground2: '#f2ebd9',
+    colorNeutralBackground3: '#fdf6e3',
+    colorNeutralBackground1Hover: '#d8d2c2',
+    colorNeutralBackground1Pressed: '#fdf6e3',
+    colorNeutralBackground1Selected: '#cec9b9',
+    colorNeutralBackground3Hover: '#eee8d5',
+    colorNeutralBackground3Pressed: '#d8d2c2',
+    colorNeutralBackground3Selected: '#cec9b9',
+    colorNeutralBackground6: '#d8d2c2',
+    colorNeutralBackgroundDisabled: '#fdf6e3',
+    colorNeutralStencil1: '#cec9b9',
+    colorNeutralStroke1: '#cebfab',
+    colorNeutralStroke3: '#cec9b9',
+    colorNeutralBackgroundAlpha: 'rgb(253 235 209 / 0.5)',
+};
+
+export function getFluentTheme(darkMode: boolean | undefined) {
+    return darkMode ? darkTheme : lightTheme;
 }

@@ -24,11 +24,11 @@ import {
     RectangularGrid,
     Scene,
 } from '../scene';
+import { getArenaShapeConfig, getGridShapeConfig, useSceneTheme, useSceneThemeHtmlStyle } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { useStyledSvg } from '../useStyledSvg';
 import { degtorad, getLinearGridDivs, getUrlFileExtension } from '../util';
 import { ArenaTickRenderer } from './ArenaTickRenderer';
-import { getArenaShapeConfig, getGridShapeConfig, useSceneTheme, useSceneThemeHtmlStyles } from './sceneTheme';
 
 export interface ArenaRendererProps {
     backgroundColor?: string;
@@ -136,7 +136,7 @@ const BackgroundImageBitmap: React.FC<BackgroundImageProps> = ({ url, ...props }
 };
 
 const BackgroundImageSvg: React.FC<BackgroundImageProps> = ({ url, ...props }) => {
-    const style = useSceneThemeHtmlStyles();
+    const style = useSceneThemeHtmlStyle();
     const [image] = useStyledSvg(url, style);
 
     if (!image) {

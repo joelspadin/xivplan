@@ -1,11 +1,5 @@
 import { Vector2d } from 'konva/lib/types';
 import {
-    DEFAULT_ENEMY_OPACITY,
-    DEFAULT_IMAGE_OPACITY,
-    DEFAULT_MARKER_OPACITY,
-    DEFAULT_PARTY_OPACITY,
-} from '../render/sceneTheme';
-import {
     DrawObject,
     EnemyObject,
     EnemyRingStyle,
@@ -23,6 +17,7 @@ import {
     isMarker,
     isParty,
 } from '../scene';
+import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
 
 export function upgradeScene(scene: Scene): Scene {
     return {

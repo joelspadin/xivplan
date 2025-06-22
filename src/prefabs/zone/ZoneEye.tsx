@@ -9,8 +9,8 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { panelVars, SELECTED_PROPS } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -199,7 +199,7 @@ registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
-            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneEye]: object.color }} />}
+            icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneEye]: object.color }} />}
             name="Look away"
             object={object}
             {...props}

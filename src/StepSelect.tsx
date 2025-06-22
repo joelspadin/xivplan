@@ -34,8 +34,8 @@ import React, { HTMLAttributes, useCallback, useMemo, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
-import { MIN_STAGE_WIDTH } from './render/sceneTheme';
 import { Scene } from './scene';
+import { MIN_STAGE_WIDTH } from './theme';
 
 export const StepSelect: React.FC = () => {
     const classes = useStyles();

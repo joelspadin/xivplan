@@ -8,8 +8,8 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
@@ -198,7 +198,7 @@ registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityCo
 const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
-            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
             name="Proximity AOE"
             object={object}
             {...props}

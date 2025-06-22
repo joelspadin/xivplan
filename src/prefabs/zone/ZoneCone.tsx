@@ -11,8 +11,8 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS, sceneVars } from '../../render/sceneTheme';
 import { ConeZone, ObjectType } from '../../scene';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
@@ -195,7 +195,7 @@ registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
-            icon={<Icon width="100%" height="100%" style={{ [sceneVars.colorZoneOrange]: object.color }} />}
+            icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
             name={NAME}
             object={object}
             {...props}

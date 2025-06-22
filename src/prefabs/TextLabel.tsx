@@ -9,8 +9,8 @@ import { ListComponentProps, registerListComponent } from '../panel/ListComponen
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
-import { SELECTED_PROPS, useSceneTheme } from '../render/sceneTheme';
 import { ObjectType, TextObject } from '../scene';
+import { SELECTED_PROPS, useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';

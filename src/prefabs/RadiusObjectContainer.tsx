@@ -4,8 +4,8 @@ import { useScene } from '../SceneProvider';
 import { getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
-import { CENTER_DOT_RADIUS } from '../render/sceneTheme';
 import { InnerRadiusObject, RadiusObject, SceneObject, UnknownObject, isRotateable } from '../scene';
+import { CENTER_DOT_RADIUS } from '../theme';
 import { distance } from '../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
+import { ColoredObject, isMarker } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import {
     COLOR_MARKER_BLUE,
@@ -9,8 +10,7 @@ import {
     COLOR_MARKER_YELLOW,
     makeColorSwatch,
     useColorSwatches,
-} from '../../render/sceneTheme';
-import { ColoredObject, isMarker } from '../../scene';
+} from '../../theme';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 

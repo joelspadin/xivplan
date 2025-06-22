@@ -16,7 +16,6 @@ import { ListComponentProps, getListComponent, registerListComponent } from '../
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
-import { SELECTED_PROPS, sceneVars } from '../render/sceneTheme';
 import {
     FakeCursorObject,
     ObjectType,
@@ -32,6 +31,7 @@ import {
     isZone,
 } from '../scene';
 import { selectNone, useIsSelected, useSelection } from '../selection';
+import { SELECTED_PROPS, panelVars } from '../theme';
 import { useEditMode } from '../useEditMode';
 import { useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
@@ -414,29 +414,16 @@ function getTargetNode(object: SceneObject | undefined) {
     return <UnknownTargetComponent />;
 }
 
-// function getIconColorFilter(object: Tether) {
-//     switch (object.tether) {
-//         case TetherType.MinusMinus:
-//         case TetherType.PlusMinus:
-//         case TetherType.PlusPlus:
-//             return undefined;
-
-//         default:
-//             return getRecolorFilter(object.color);
-//     }
-// }
-
 const TetherDetails: React.FC<ListComponentProps<Tether>> = ({ object, ...props }) => {
     const classes = useStyles();
     const { scene } = useScene();
     const name = getTetherName(object.tether);
-    // const filter = React.useMemo(() => getIconColorFilter(object), [object]);
 
     const startObj = getObjectById(scene, object.startId);
     const endObj = getObjectById(scene, object.endId);
 
     const style: React.CSSProperties = {
-        [sceneVars.colorZoneOrange]: object.color,
+        [panelVars.colorZoneOrange]: object.color,
     };
 
     return (

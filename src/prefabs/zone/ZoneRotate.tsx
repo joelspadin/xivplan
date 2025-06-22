@@ -9,8 +9,8 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { CENTER_DOT_RADIUS, sceneVars, SELECTED_PROPS } from '../../render/sceneTheme';
 import { CircleZone, ObjectType } from '../../scene';
+import { CENTER_DOT_RADIUS, panelVars, SELECTED_PROPS } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -150,8 +150,8 @@ const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...pr
     const Icon = object.type === ObjectType.RotateCW ? ClockwiseIcon : CounterClockwiseIcon;
 
     const style: CSSProperties = {
-        [sceneVars.colorZoneOrange]: object.color,
-        [sceneVars.colorZoneBlue]: object.color,
+        [panelVars.colorZoneOrange]: object.color,
+        [panelVars.colorZoneBlue]: object.color,
     };
 
     return (
