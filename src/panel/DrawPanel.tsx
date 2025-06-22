@@ -22,7 +22,7 @@ import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
 import { useSpinChanged } from '../prefabs/useSpinChanged';
-import { COLOR_SWATCHES } from '../render/sceneTheme';
+import { useColorSwatches } from '../render/sceneTheme';
 import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
 import { useEditMode } from '../useEditMode';
@@ -36,6 +36,7 @@ type ToolButtonPropsGetter = (mode: EditMode) => ToggleButtonProps;
 export const DrawPanel: React.FC = () => {
     const classes = useStyles();
     const controlClasses = useControlStyles();
+    const colorSwatches = useColorSwatches();
     const [editMode, setEditMode] = useEditMode();
     const [config, setConfig] = useDrawConfig();
 
@@ -95,7 +96,7 @@ export const DrawPanel: React.FC = () => {
                 debounceTime={0}
             />
             <CompactSwatchColorPicker
-                swatches={COLOR_SWATCHES}
+                swatches={colorSwatches}
                 selectedValue={config.color}
                 onSelectionChange={(ev, data) => setColor(data.selectedSwatch)}
             />

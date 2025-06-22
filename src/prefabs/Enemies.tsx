@@ -7,12 +7,13 @@ import { Arc, Circle, Path, Text } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
     DEFAULT_ENEMY_OPACITY,
+    getEnemyTextConfig,
     SELECTED_PROPS,
     useSceneTheme,
 } from '../render/sceneTheme';
@@ -313,13 +314,14 @@ function renderRing(
 const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef, isDragging }) => {
     const showHighlight = useShowHighlight(object);
     const theme = useSceneTheme();
+    const textConfig = getEnemyTextConfig(theme);
 
     return (
         <>
             <HideGroup>
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
 
-                <EnemyLabel name={object.name} radius={radius} color={object.color} {...theme.enemyText} />
+                <EnemyLabel name={object.name} radius={radius} color={object.color} {...textConfig} />
             </HideGroup>
 
             {renderRing(object, radius, rotation, groupRef, showHighlight)}

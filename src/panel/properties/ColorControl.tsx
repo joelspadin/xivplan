@@ -7,8 +7,8 @@ import {
     COLOR_MARKER_PURPLE,
     COLOR_MARKER_RED,
     COLOR_MARKER_YELLOW,
-    COLOR_SWATCHES,
     makeColorSwatch,
+    useColorSwatches,
 } from '../../render/sceneTheme';
 import { ColoredObject, isMarker } from '../../scene';
 import { commonValue } from '../../util';
@@ -38,6 +38,7 @@ const MARKER_SWATCHES = [
 
 export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
     const { dispatch } = useScene();
+    const colorSwatches = useColorSwatches();
 
     const color = useMemo(() => commonValue(objects, (obj) => obj.color), [objects]);
     const swatches = useMemo(() => {
@@ -45,8 +46,8 @@ export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>>
             return MARKER_SWATCHES;
         }
 
-        return COLOR_SWATCHES;
-    }, [objects]);
+        return colorSwatches;
+    }, [objects, colorSwatches]);
 
     const setColor = useCallback(
         (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) }),

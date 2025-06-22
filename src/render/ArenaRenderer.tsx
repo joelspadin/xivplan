@@ -28,7 +28,7 @@ import { useImageTracked } from '../useObjectLoading';
 import { useStyledSvg } from '../useStyledSvg';
 import { degtorad, getLinearGridDivs, getUrlFileExtension } from '../util';
 import { ArenaTickRenderer } from './ArenaTickRenderer';
-import { useSceneTheme, useSceneThemeHtmlStyles } from './sceneTheme';
+import { getArenaShapeConfig, getGridShapeConfig, useSceneTheme, useSceneThemeHtmlStyles } from './sceneTheme';
 
 export interface ArenaRendererProps {
     backgroundColor?: string;
@@ -171,13 +171,15 @@ const SHADOW: ShapeConfig = {
 const CircularBackground: React.FC = () => {
     const position = useCanvasArenaEllipse();
     const theme = useSceneTheme();
+    const shapeConfig = getArenaShapeConfig(theme);
 
-    return <Ellipse {...position} {...theme.arena} {...SHADOW} />;
+    return <Ellipse {...position} {...shapeConfig} {...SHADOW} />;
 };
 
 const RectangularBackground: React.FC = () => {
     const position = useCanvasArenaRect();
     const theme = useSceneTheme();
+    const shapeConfig = getArenaShapeConfig(theme);
 
     // Align to pixel makes the rectangle one pixel wider than intended.
     const alignedPosition = {
@@ -187,7 +189,7 @@ const RectangularBackground: React.FC = () => {
         height: position.height - 1,
     };
 
-    return <Rect {...alignedPosition} {...theme.arena} {...SHADOW} {...ALIGN_TO_PIXEL} />;
+    return <Rect {...alignedPosition} {...shapeConfig} {...SHADOW} {...ALIGN_TO_PIXEL} />;
 };
 
 const GridRenderer: React.FC = () => {
@@ -255,8 +257,10 @@ function getSpokeGridDivs(divs: number, startAngle: number | undefined, radiusX:
 const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
     const { scene } = useScene();
+
     const clip = getArenaClip(scene);
     const position = getCanvasArenaEllipse(scene);
+    const shapeConfig = getGridShapeConfig(theme);
 
     const rings = getRingGridDivs(grid.radialDivs, position.radiusX, position.radiusY);
     const spokes = getSpokeGridDivs(grid.angularDivs, grid.startAngle, position.radiusX, position.radiusY);
@@ -283,7 +287,7 @@ const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
                     ctx.fillStrokeShape(shape);
                 }
             }}
-            {...theme.grid}
+            {...shapeConfig}
             {...ALIGN_TO_PIXEL}
         />
     );
@@ -294,6 +298,7 @@ const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid })
     const { scene } = useScene();
 
     const position = getCanvasArenaRect(scene);
+    const shapeConfig = getGridShapeConfig(theme);
 
     const rows = getLinearGridDivs(grid.rows, position.y, position.height);
     const cols = getLinearGridDivs(grid.columns, position.x, position.width);
@@ -316,7 +321,7 @@ const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid })
                 ctx.closePath();
                 ctx.fillStrokeShape(shape);
             }}
-            {...theme.grid}
+            {...shapeConfig}
             {...ALIGN_TO_PIXEL}
         />
     );
@@ -325,8 +330,10 @@ const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid })
 const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
     const { scene } = useScene();
+
     const clip = getArenaClip(scene);
     const position = getCanvasArenaRect(scene);
+    const shapeConfig = getGridShapeConfig(theme);
 
     return (
         <Shape
@@ -350,7 +357,7 @@ const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> 
                 context.closePath();
                 context.fillStrokeShape(shape);
             }}
-            {...theme.grid}
+            {...shapeConfig}
             {...ALIGN_TO_PIXEL}
         />
     );
@@ -359,8 +366,10 @@ const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> 
 const CustomRadialGridRenderer: React.FC<GridProps<CustomRadialGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
     const { scene } = useScene();
+
     const clip = getArenaClip(scene);
     const position = getCanvasArenaEllipse(scene);
+    const shapeConfig = getGridShapeConfig(theme);
 
     const spokes = grid.spokes.map((angle) => circlePointAtAngle(degtorad(angle), position.radiusX, position.radiusY));
 
@@ -386,7 +395,7 @@ const CustomRadialGridRenderer: React.FC<GridProps<CustomRadialGrid>> = ({ grid 
                     ctx.fillStrokeShape(shape);
                 }
             }}
-            {...theme.grid}
+            {...shapeConfig}
             {...ALIGN_TO_PIXEL}
         />
     );

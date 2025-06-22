@@ -69,7 +69,7 @@ type ObjectMapResult<T, V> = {
     [k in keyof T]: V;
 };
 
-export function objectMap<T extends object, K extends keyof T, V>(
+export function objectMap<V, T extends object, K extends keyof T>(
     obj: T,
     mapFn: (key: K, value: T[K]) => V,
 ): ObjectMapResult<T, V> {

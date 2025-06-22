@@ -232,7 +232,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                                     fontSize={measuredFontSize}
                                     lineHeight={LINE_HEIGHT}
                                     fill={object.color}
-                                    stroke={theme.arena.fill}
+                                    stroke={theme.colorArena}
                                     strokeWidth={strokeWidth}
                                     fillAfterStrokeEnabled
                                 />
