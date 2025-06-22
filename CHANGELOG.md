@@ -2,9 +2,22 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Jun 22, 2025
+
+- Adjusted the light theme to be a bit less red.
+- Changed the arena background color to be the same regardless of light or dark theme. This will be made customizable later.
+- Recreated many arena background images and object icons as SVGs.
+  - This also fixes an issue where sometimes the icons in the scene panel were a slightly wrong color.
+- Arrow, text, and tether icons are now colored to match the object color in the scene panel.
+- Added icons for drawing objects in the scene panel.
+- Added a color swatch that matches the arena floor color to the color control in the properties panel.
+- Fixed an issue where the outer 1 px of the background image was cut off when the arena shape was set to "none".
+- A drop shadow is now applied to the background image when the arena shape is set to "none".
+  - This provides a consistent style to the other arena shapes when there are multiple platforms.
+
 ## Jun 14, 2025
 
-- Fixed shotcut keys for creating tethers.
+- Fixed shortcut keys for creating tethers.
 - Updated all object types to support transparency.
 - Objects can now be shown/hidden with the `H` key, clicking the button next to the opacity slider, or clicking the button on the item in the scene list.
 
