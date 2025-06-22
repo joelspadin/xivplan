@@ -30,6 +30,7 @@ const Icon = DrawTextRegular;
 
 export const TextLabel: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const theme = useSceneTheme();
 
     return (
         <PrefabIcon
@@ -41,6 +42,7 @@ export const TextLabel: React.FC = () => {
                     object: {
                         type: ObjectType.Text,
                         text: DEFAULT_TEXT,
+                        stroke: theme.colorArena,
                     },
                     offset: getDragOffset(e),
                 });
@@ -168,7 +170,6 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
 };
 
 const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
-    const theme = useSceneTheme();
     const showHighlight = useShowHighlight(object);
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
@@ -232,7 +233,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                                     fontSize={measuredFontSize}
                                     lineHeight={LINE_HEIGHT}
                                     fill={object.color}
-                                    stroke={theme.colorArena}
+                                    stroke={object.stroke}
                                     strokeWidth={strokeWidth}
                                     fillAfterStrokeEnabled
                                 />

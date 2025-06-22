@@ -10,12 +10,14 @@ import {
     Scene,
     SceneObject,
     SceneStep,
+    TextObject,
     isDrawObject,
     isEnemy,
     isExaflareZone,
     isImageObject,
     isMarker,
     isParty,
+    isText,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
 
@@ -56,6 +58,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isMarker(object)) {
         object = upgradeMarker(object);
+    }
+
+    if (isText(object)) {
+        object = upgradeText(object);
     }
 
     return object;
@@ -115,6 +121,8 @@ function upgradeDrawObject(object: DrawObject | DrawObjectV1): DrawObject {
     return object;
 }
 
+// opacity property was added to ImageObject
+// status icons from legacy XIVAPI did not support CORS and would not render.
 function upgradeImageObject<T extends ImageObject>(object: T): T {
     // Replace status icons from XIVAPI with ones from the beta API that support CORS.
     const image = object.image.replace(/https:\/\/xivapi.com\/i\/(\w+)\/(\w+)\.png/, (match, folder, name) => {
@@ -128,19 +136,19 @@ function upgradeImageObject<T extends ImageObject>(object: T): T {
     };
 }
 
-const LEGACY_SPACING = 60;
-
+// spacing property was added to ExaflareZone
 type LegacyExaflareZone = Omit<ExaflareZone, 'spacing'> & {
     spacing?: number;
 };
 
 function upgradeExaflareZone(object: LegacyExaflareZone): ExaflareZone {
     return {
-        spacing: LEGACY_SPACING,
+        spacing: 60,
         ...object,
     };
 }
 
+// opacity property was added to MarkerObject
 type LegacyMarkerObject = Omit<MarkerObject, 'opacity'> & {
     opacity?: number;
 };
@@ -152,6 +160,7 @@ function upgradeMarker(object: LegacyMarkerObject): MarkerObject {
     };
 }
 
+// opacity property was added to PartyObject
 type LegacyPartyObject = Omit<PartyObject, 'opacity'> & {
     opacity?: number;
 };
@@ -159,6 +168,18 @@ type LegacyPartyObject = Omit<PartyObject, 'opacity'> & {
 function upgradeParty(object: LegacyPartyObject): PartyObject {
     return {
         opacity: DEFAULT_PARTY_OPACITY,
+        ...object,
+    };
+}
+
+// stroke property was added to TextObject
+type LegacyTextObject = Omit<TextObject, 'stroke'> & {
+    stroke?: string;
+};
+
+function upgradeText(object: LegacyTextObject): TextObject {
+    return {
+        stroke: '#40352c',
         ...object,
     };
 }

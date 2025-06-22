@@ -46,6 +46,7 @@ import { LineSizeControl } from './properties/LineControls';
 import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
 import { OpacityControl } from './properties/OpacityControl';
+import { OutlineControl, OutlineSwatchControl } from './properties/OutlineControl';
 import { PartyIconControl } from './properties/PartyControls';
 import { PolygonSidesControl } from './properties/PolygonControls';
 import { PositionControl } from './properties/PositionControl';
@@ -124,6 +125,10 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />
             </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />
+            <div className={mergeClasses(classes.row, classes.alignTop)}>
+                <ControlCondition objects={objects} test={isText} control={OutlineControl} className={classes.grow} />
+            </div>
+            <ControlCondition objects={objects} test={isText} control={OutlineSwatchControl} />
             <div className={mergeClasses(classes.row)}>
                 <OpacityControl objects={objects} className={classes.grow} />
                 <HideControl objects={objects} />

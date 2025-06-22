@@ -198,6 +198,7 @@ export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 export interface TextObject extends MoveableObject, RotateableObject, ColoredObject, BaseObject {
     readonly type: ObjectType.Text;
     readonly text: string;
+    readonly stroke: string;
     readonly fontSize: number;
     readonly align: string;
 }
