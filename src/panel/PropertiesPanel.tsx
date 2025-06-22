@@ -27,7 +27,6 @@ import {
     isTether,
     isText,
     isTowerZone,
-    isTransparent,
     supportsHollow,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
@@ -126,13 +125,8 @@ const Controls: React.FC = () => {
             </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />
             <div className={mergeClasses(classes.row)}>
-                <ControlCondition
-                    objects={objects}
-                    test={isTransparent}
-                    control={OpacityControl}
-                    className={classes.grow}
-                />
-                <ControlCondition objects={objects} test={isTransparent} control={HideControl} />
+                <OpacityControl objects={objects} className={classes.grow} />
+                <HideControl objects={objects} />
             </div>
             <ControlCondition objects={objects} test={isDrawObject} control={DrawObjectBrushControl} />
             <ControlCondition objects={objects} test={isText} control={TextStyleControl} />

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { OpacitySlider } from '../../OpacitySlider';
+import { SceneObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { TransparentObject } from '../../scene';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-export const OpacityControl: React.FC<PropertiesControlProps<TransparentObject>> = ({ objects, className }) => {
+export const OpacityControl: React.FC<PropertiesControlProps<SceneObject>> = ({ objects, className }) => {
     const { dispatch } = useScene();
 
     const opacity = useMemo(() => commonValue(objects, (obj) => obj.opacity), [objects]);

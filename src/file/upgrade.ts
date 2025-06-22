@@ -61,7 +61,17 @@ function upgradeObject(object: SceneObject): SceneObject {
     return object;
 }
 
-function getRingStyle<T extends EnemyObject>(object: T): EnemyRingStyle {
+// EnemyObject was changed from { rotation?: number }
+// to { rotation: number, omniDirection: boolean, opacity: number }, then
+// to { rotation: number, ring: EnemyRingStyle, opacity: number }
+type LegacyEnemyObject = Omit<EnemyObject, 'opacity' | 'rotation' | 'ring'> & {
+    opacity?: number;
+    rotation?: number;
+    omniDirection?: boolean;
+    ring?: EnemyRingStyle;
+};
+
+function getRingStyle<T extends LegacyEnemyObject>(object: T): EnemyRingStyle {
     if (object.rotation === undefined) {
         return EnemyRingStyle.NoDirection;
     }
@@ -73,10 +83,7 @@ function getRingStyle<T extends EnemyObject>(object: T): EnemyRingStyle {
     return EnemyRingStyle.Directional;
 }
 
-function upgradeEnemy<T extends EnemyObject>(object: T): T {
-    // enemy was changed from { rotation?: number }
-    // to { rotation: number, omniDirection: boolean, opacity: number }, then
-    // to { rotation: number, ring: EnemyRingStyle, opacity: number }
+function upgradeEnemy(object: LegacyEnemyObject): EnemyObject {
     return {
         ...object,
         rotation: object.rotation ?? 0,
@@ -85,19 +92,20 @@ function upgradeEnemy<T extends EnemyObject>(object: T): T {
     };
 }
 
-interface DrawObjectV1 {
+// DrawObject was changed from { points: Vector2d[] }
+// to { points: number[] }
+type DrawObjectV1 = Omit<DrawObject, 'points'> & {
     points: readonly Vector2d[];
+};
+
+function isDrawObjectV1(object: DrawObject | DrawObjectV1): object is DrawObjectV1 {
+    return object.points.length > 0 && typeof object.points[0] === 'object';
 }
 
-function upgradeDrawObject<T extends DrawObject>(object: T): T {
-    // draw object was changed from { points: Vector2d[] }
-    // to { points: number[] }
-
-    if (typeof object.points[0] === 'object') {
-        const v1 = object as unknown as DrawObjectV1;
-
+function upgradeDrawObject(object: DrawObject | DrawObjectV1): DrawObject {
+    if (isDrawObjectV1(object)) {
         const points: number[] = [];
-        for (const point of v1.points) {
+        for (const point of object.points) {
             points.push(point.x, point.y);
         }
 
@@ -114,28 +122,43 @@ function upgradeImageObject<T extends ImageObject>(object: T): T {
     });
 
     return {
+        opacity: DEFAULT_IMAGE_OPACITY,
         ...object,
         image,
-        opacity: object.opacity ?? DEFAULT_IMAGE_OPACITY,
     };
 }
 
 const LEGACY_SPACING = 60;
 
-function upgradeExaflareZone(object: ExaflareZone): ExaflareZone {
-    return { ...object, spacing: object.spacing ?? LEGACY_SPACING };
-}
+type LegacyExaflareZone = Omit<ExaflareZone, 'spacing'> & {
+    spacing?: number;
+};
 
-function upgradeMarker(object: MarkerObject): MarkerObject {
+function upgradeExaflareZone(object: LegacyExaflareZone): ExaflareZone {
     return {
+        spacing: LEGACY_SPACING,
         ...object,
-        opacity: object.opacity ?? DEFAULT_MARKER_OPACITY,
     };
 }
 
-function upgradeParty(object: PartyObject): PartyObject {
+type LegacyMarkerObject = Omit<MarkerObject, 'opacity'> & {
+    opacity?: number;
+};
+
+function upgradeMarker(object: LegacyMarkerObject): MarkerObject {
     return {
+        opacity: DEFAULT_MARKER_OPACITY,
         ...object,
-        opacity: object.opacity ?? DEFAULT_PARTY_OPACITY,
+    };
+}
+
+type LegacyPartyObject = Omit<PartyObject, 'opacity'> & {
+    opacity?: number;
+};
+
+function upgradeParty(object: LegacyPartyObject): PartyObject {
+    return {
+        opacity: DEFAULT_PARTY_OPACITY,
+        ...object,
     };
 }
