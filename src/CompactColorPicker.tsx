@@ -20,18 +20,22 @@ import { isValidColor } from './color';
 const DEFAULT_DEBOUNCE_TIME = 500;
 
 export interface CompactColorPickerProps {
-    debounceTime?: number;
+    className?: string;
     label?: string;
+    placeholder?: string;
+    debounceTime?: number;
+    disabled?: boolean;
     color: string;
     onChange?: (color: string) => void;
-    placeholder?: string;
 }
 
 export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
-    debounceTime,
+    className,
     color,
-    onChange,
+    debounceTime,
+    disabled,
     label,
+    onChange,
     placeholder,
 }) => {
     debounceTime = debounceTime ?? DEFAULT_DEBOUNCE_TIME;
@@ -76,7 +80,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
         <>
             <Field
                 label={label}
-                className={classes.field}
+                className={mergeClasses(classes.field, className)}
                 validationMessage={colorValid ? undefined : 'Invalid color'}
                 validationState={colorValid ? 'none' : 'error'}
             >
@@ -103,6 +107,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
                     value={color}
                     onChange={(ev, data) => setColorText(data.value)}
                     placeholder={placeholder ?? '#000000'}
+                    disabled={disabled}
                 />
             </Field>
         </>

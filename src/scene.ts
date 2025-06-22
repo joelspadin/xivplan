@@ -195,9 +195,12 @@ export interface ArrowObject extends ResizeableObject, ColoredObject, BaseObject
 }
 export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 
+export type TextStyle = 'outline' | 'shadow' | 'plain';
+
 export interface TextObject extends MoveableObject, RotateableObject, ColoredObject, BaseObject {
     readonly type: ObjectType.Text;
     readonly text: string;
+    readonly style: TextStyle;
     readonly stroke: string;
     readonly fontSize: number;
     readonly align: string;

@@ -11,6 +11,7 @@ import {
     SceneObject,
     SceneStep,
     TextObject,
+    TextStyle,
     isDrawObject,
     isEnemy,
     isExaflareZone,
@@ -172,14 +173,16 @@ function upgradeParty(object: LegacyPartyObject): PartyObject {
     };
 }
 
-// stroke property was added to TextObject
-type LegacyTextObject = Omit<TextObject, 'stroke'> & {
+// stroke and style properties were added to TextObject
+type LegacyTextObject = Omit<TextObject, 'stroke' | 'style'> & {
     stroke?: string;
+    style?: TextStyle;
 };
 
 function upgradeText(object: LegacyTextObject): TextObject {
     return {
         stroke: '#40352c',
+        style: 'outline',
         ...object,
     };
 }

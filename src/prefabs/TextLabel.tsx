@@ -1,5 +1,6 @@
 import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
+import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
@@ -13,6 +14,7 @@ import { ObjectType, TextObject } from '../scene';
 import { SELECTED_PROPS, useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
+import { clamp } from '../util';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
@@ -60,6 +62,7 @@ registerDropHandler<TextObject>(ObjectType.Text, (object, position) => {
             fontSize: DEFAULT_FONT_SIZE,
             color: DEFAULT_TEXT_COLOR,
             opacity: DEFAULT_TEXT_OPACITY,
+            style: 'outline',
             rotation: 0,
             ...object,
             ...position,
@@ -201,7 +204,18 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
         setCacheKey(cacheKey + 1);
     }
 
-    const strokeWidth = Math.max(1, measuredFontSize / 8);
+    const strokeWidth = object.style === 'outline' ? Math.ceil(clamp(measuredFontSize / 15, 2, 8)) : 0;
+    const highlightStrokeWidth = (SELECTED_PROPS.strokeWidth ?? 0) + strokeWidth;
+
+    const shadow: ShapeConfig =
+        object.style === 'shadow'
+            ? {
+                  shadowColor: object.stroke,
+                  shadowOpacity: 0.5,
+                  shadowOffsetY: 3,
+                  shadowBlur: 4,
+              }
+            : {};
 
     return (
         <>
@@ -218,7 +232,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                                 fontSize={measuredFontSize}
                                 lineHeight={LINE_HEIGHT}
                                 {...SELECTED_PROPS}
-                                strokeWidth={strokeWidth}
+                                strokeWidth={highlightStrokeWidth}
                             />
                         )}
 
@@ -236,6 +250,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                                     stroke={object.stroke}
                                     strokeWidth={strokeWidth}
                                     fillAfterStrokeEnabled
+                                    {...shadow}
                                 />
                             </CompositeReplaceGroup>
                         </HideCutoutGroup>

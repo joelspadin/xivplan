@@ -46,7 +46,6 @@ import { LineSizeControl } from './properties/LineControls';
 import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
 import { OpacityControl } from './properties/OpacityControl';
-import { OutlineControl, OutlineSwatchControl } from './properties/OutlineControl';
 import { PartyIconControl } from './properties/PartyControls';
 import { PolygonSidesControl } from './properties/PolygonControls';
 import { PositionControl } from './properties/PositionControl';
@@ -55,7 +54,7 @@ import { RotationControl } from './properties/RotationControl';
 import { SizeControl } from './properties/SizeControl';
 import { StarburstSpokeCountControl, StarburstSpokeWidthControl } from './properties/StarburstControls';
 import { TetherTypeControl, TetherWidthControl } from './properties/TetherControls';
-import { TextStyleControl, TextValueControl } from './properties/TextControls';
+import { TextLayoutControl, TextOutlineControl, TextValueControl } from './properties/TextControls';
 import { TowerCountControl } from './properties/TowerControls';
 
 export interface PropertiesPanelProps {
@@ -125,16 +124,13 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />
             </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />
-            <div className={mergeClasses(classes.row, classes.alignTop)}>
-                <ControlCondition objects={objects} test={isText} control={OutlineControl} className={classes.grow} />
-            </div>
-            <ControlCondition objects={objects} test={isText} control={OutlineSwatchControl} />
+            <ControlCondition objects={objects} test={isText} control={TextOutlineControl} />
             <div className={mergeClasses(classes.row)}>
                 <OpacityControl objects={objects} className={classes.grow} />
                 <HideControl objects={objects} />
             </div>
             <ControlCondition objects={objects} test={isDrawObject} control={DrawObjectBrushControl} />
-            <ControlCondition objects={objects} test={isText} control={TextStyleControl} />
+            <ControlCondition objects={objects} test={isText} control={TextLayoutControl} />
 
             {/* Position/Size */}
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
