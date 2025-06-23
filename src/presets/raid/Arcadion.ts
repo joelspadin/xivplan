@@ -163,6 +163,17 @@ const PRESET_8_SAVAGE_PHASE_2: ArenaPreset = {
     backgroundImage: '/arena/arcadion8-sp2.svg',
 };
 
+const PRESET_8_SAVAGE_PHASE_2_MIRROR: ArenaPreset = {
+    name: 'AAC Cruiserweight M4 (Savage Phase 2 Mirror)',
+    spoilerFreeName: 'AAC Cruiserweight M4 ████',
+    shape: ArenaShape.None,
+    width: 840,
+    height: 840,
+    padding: 0,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/arcadion8-sp2-mirror.svg',
+};
+
 export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_2,
     PRESET_3,
@@ -179,4 +190,5 @@ export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_8,
     PRESET_8_PHASE_2,
     PRESET_8_SAVAGE_PHASE_2,
+    PRESET_8_SAVAGE_PHASE_2_MIRROR,
 ];

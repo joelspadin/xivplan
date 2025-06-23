@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="840"
+   height="840"
+   viewBox="0 0 840 840"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="arcadion8-sp2-mirror.svg"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <style
+     id="style1">
+.tile { 
+    fill:var(--xiv-colorArena, #40352c);
+    stroke:var(--xiv-colorGrid, #6f5a48);
+}
+</style>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.85610974"
+     inkscape:cx="471.90212"
+     inkscape:cy="387.21672"
+     inkscape:window-width="2194"
+     inkscape:window-height="1163"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter35"
+       x="-0.0288"
+       y="-0.0288"
+       width="1.0576"
+       height="1.0776">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.250980"
+         flood-color="rgb(0,0,0)"
+         id="feFlood34" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="3.000000"
+         id="feGaussianBlur34" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="0.000000"
+         dy="5"
+         id="feOffset34" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite34" />
+      <feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite35" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="display:inline;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       id="circle1"
+       cx="-420"
+       cy="-160"
+       inkscape:tile-cx="420"
+       inkscape:tile-cy="420"
+       inkscape:tile-w="261"
+       inkscape:tile-h="261"
+       inkscape:tile-x0="289.5"
+       inkscape:tile-y0="549.5"
+       r="125"
+       class="tile"
+       inkscape:transform-center-y="-260"
+       transform="scale(-1)" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#circle1"
+       xlink:href="#circle1"
+       transform="translate(247.27469,179.65558)"
+       id="use31"
+       inkscape:transform-center-x="-247.27469"
+       inkscape:transform-center-y="439.65558" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#circle1"
+       xlink:href="#circle1"
+       transform="translate(152.82417,470.34442)"
+       id="use32"
+       inkscape:transform-center-x="-152.82417"
+       inkscape:transform-center-y="730.34442" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#circle1"
+       xlink:href="#circle1"
+       transform="translate(-152.82417,470.34442)"
+       id="use33"
+       inkscape:transform-center-x="152.82417"
+       inkscape:transform-center-y="730.34442" />
+    <use
+       x="0"
+       y="0"
+       inkscape:tiled-clone-of="#circle1"
+       xlink:href="#circle1"
+       transform="translate(-247.27469,179.65558)"
+       id="use34"
+       inkscape:transform-center-x="247.27469"
+       inkscape:transform-center-y="439.65558" />
+  </g>
+</svg>
