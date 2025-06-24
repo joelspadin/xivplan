@@ -3,25 +3,21 @@ import { UserConfig, defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 
-// https://vitejs.dev/config/
-const isProduction = process.env.NODE_ENV === 'production';
+const productionOptions: UserConfig = {};
 
-let devOptions: Partial<UserConfig> | undefined;
-if (!isProduction) {
-    devOptions = {
-        esbuild: {
-            minifyIdentifiers: false,
+const developmentOptions: UserConfig = {
+    esbuild: {
+        minifyIdentifiers: false,
+    },
+    resolve: {
+        alias: {
+            'react-dom$': 'react-dom/profiling',
         },
-        resolve: {
-            alias: {
-                'react-dom$': 'react-dom/profiling',
-            },
-        },
-    };
-}
+    },
+};
 
-export default defineConfig({
-    ...devOptions,
+export default defineConfig(({ mode }) => ({
+    ...(mode === 'production' ? productionOptions : developmentOptions),
     plugins: [
         react(),
         svgr({
@@ -101,4 +97,4 @@ export default defineConfig({
             },
         }),
     ],
-});
+}));
