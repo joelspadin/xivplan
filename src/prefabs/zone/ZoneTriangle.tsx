@@ -21,8 +21,6 @@ const NAME = 'Triangle';
 const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
-// TODO: replace with 3 point polygon, but keep legacy renderer for old plans
-
 export const ZoneTriangle: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
