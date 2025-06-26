@@ -37,8 +37,6 @@ const ThemeProviderInner: React.FC<ThemeProviderInnerProps> = ({ darkMode, child
         [sceneStyles, panelStyles],
     );
 
-    console.log(style);
-
     return (
         <FluentProvider theme={getFluentTheme(darkMode)} style={style}>
             {children}
