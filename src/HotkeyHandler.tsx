@@ -59,9 +59,22 @@ function pasteObjects(
 }
 
 function toggleHide(objects: readonly SceneObject[], dispatch: Dispatch<SceneAction>) {
-    const show = commonValue(objects, (obj) => !obj.hide);
+    const hide = commonValue(objects, (obj) => obj.hide ?? false);
 
-    dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', !!show)) });
+    const newValue = hide === undefined ? false : !hide;
+
+    console.log('hide', hide, newValue);
+
+    dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)) });
+}
+
+function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAction>) {
+    const moveable = objects.filter(isMoveable);
+    const pinned = commonValue(moveable, (obj) => obj.pinned ?? false);
+
+    const newValue = pinned === undefined ? false : !pinned;
+
+    dispatch({ type: 'update', value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)) });
 }
 
 const SelectionActionHandler: React.FC = () => {
@@ -191,6 +204,21 @@ const SelectionActionHandler: React.FC = () => {
             }
 
             toggleHide(getSelectedObjects(step, selection), dispatch);
+        },
+        { useKey: true },
+        [step, dispatch, selection],
+    );
+
+    useHotkeys(
+        'l',
+        { category: CATEGORY_SELECTION, help: 'Lock/unlock selected object positions' },
+        (e) => {
+            // This will fire together with CTRL+L, so ignore it in that case.
+            if (!selection.size || e.ctrlKey) {
+                return;
+            }
+
+            toggleLock(getSelectedObjects(step, selection), dispatch);
         },
         { useKey: true },
         [step, dispatch, selection],
