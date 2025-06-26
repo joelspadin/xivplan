@@ -2,6 +2,17 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Jun 25, 2025
+
+- Updated the appearance of meteor/tower objects to have more space between the pillars and arrange the pillars for a 3-stack in a triangle.
+- Updated the player count selection for meteor/tower objects to be easier to use.
+- Added an option to change the orientation of polygon objects so that a side faces upwards instead of a point.
+- Added a hotkey so objects' positions can be locked/unlocked with the `L` key.
+
+## Jun 23, 2025
+
+- Added a mirrored preset for Arcadion M8.
+
 ## Jun 22, 2025
 
 - Added a control to change the outline color of text.
