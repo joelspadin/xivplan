@@ -7,6 +7,8 @@ import {
     ImageObject,
     MarkerObject,
     PartyObject,
+    PolygonOrientation,
+    PolygonZone,
     Scene,
     SceneObject,
     SceneStep,
@@ -18,6 +20,7 @@ import {
     isImageObject,
     isMarker,
     isParty,
+    isPolygonZone,
     isText,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
@@ -63,6 +66,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isText(object)) {
         object = upgradeText(object);
+    }
+
+    if (isPolygonZone(object)) {
+        object = upgradePolygon(object);
     }
 
     return object;
@@ -183,6 +190,18 @@ function upgradeText(object: LegacyTextObject): TextObject {
     return {
         stroke: '#40352c',
         style: 'outline',
+        ...object,
+    };
+}
+
+// orient property was added to PolygonZone
+type LegacyPolygonZone = Omit<PolygonZone, 'orient'> & {
+    orient?: PolygonOrientation;
+};
+
+function upgradePolygon(object: LegacyPolygonZone): PolygonZone {
+    return {
+        orient: 'point',
         ...object,
     };
 }

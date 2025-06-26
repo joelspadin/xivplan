@@ -216,6 +216,9 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
         return { radius, rotation, innerRadius };
     },
     onRenderBorder: (object, state, { allowRotate, allowInnerRadius }) => {
+        const innerRadius = Math.min(state.radius, state.innerRadius);
+        const outerRadius = Math.max(state.radius, state.innerRadius);
+
         return (
             <>
                 {allowRotate && (
@@ -227,7 +230,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                 )}
                 {allowInnerRadius && (
                     <Circle
-                        radius={state.innerRadius - OUTSET}
+                        radius={innerRadius - OUTSET}
                         stroke={CONTROL_POINT_BORDER_COLOR}
                         strokeWidth={1}
                         fillEnabled={false}
@@ -235,7 +238,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                 )}
                 <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
                 <Circle
-                    radius={state.radius + OUTSET}
+                    radius={outerRadius + OUTSET}
                     stroke={CONTROL_POINT_BORDER_COLOR}
                     strokeWidth={1}
                     fillEnabled={false}

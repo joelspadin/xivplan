@@ -25,8 +25,6 @@ const NAME = 'Regular Polygon';
 const DEFAULT_RADIUS = 50;
 const DEFAULT_SIDES = 6;
 
-// TODO: add an option to determine whether point or side is at top
-
 export const ZonePolygon: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     return (
@@ -55,10 +53,11 @@ registerDropHandler<PolygonZone>(ObjectType.Polygon, (object, position) => {
             opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
             sides: DEFAULT_SIDES,
+            orient: 'point',
             rotation: 0,
             ...object,
             ...position,
-        },
+        } as PolygonZone,
     };
 });
 
@@ -74,8 +73,10 @@ const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotat
         [object.color, object.opacity, radius, object.hollow],
     );
 
+    const orientRotation = object.orient === 'side' ? 180 / object.sides : 0;
+
     return (
-        <Group rotation={rotation}>
+        <Group rotation={rotation + orientRotation}>
             {isSelected && (
                 <RegularPolygon
                     radius={radius + style.strokeWidth / 2}
@@ -101,29 +102,31 @@ const PolygonContainer: React.FC<RendererProps<PolygonZone>> = ({ object }) => {
 
 registerRenderer<PolygonZone>(ObjectType.Polygon, LayerName.Ground, PolygonContainer);
 
-function getIcon(sides: number) {
+function getIconAndName(sides: number): [typeof TriangleIcon, string] {
     switch (sides) {
         case 3:
-            return TriangleIcon;
+            return [TriangleIcon, 'Triangle'];
         case 4:
-            return SquareIcon;
+            return [SquareIcon, 'Square'];
         case 5:
-            return PentagonIcon;
+            return [PentagonIcon, 'Pentagon'];
         case 6:
-            return HexagonIcon;
+            return [HexagonIcon, 'Hexagon'];
         case 7:
-            return SeptagonIcon;
+            return [SeptagonIcon, 'Septagon'];
+        case 8:
+            return [OcatgonIcon, 'Octagon'];
         default:
-            return OcatgonIcon;
+            return [OcatgonIcon, 'Polygon'];
     }
 }
 
 const PolygonDetails: React.FC<ListComponentProps<PolygonZone>> = ({ object, ...props }) => {
-    const Icon = getIcon(object.sides);
+    const [Icon, name] = getIconAndName(object.sides);
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={name}
             object={object}
             {...props}
         />

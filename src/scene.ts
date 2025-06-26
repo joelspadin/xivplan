@@ -307,9 +307,12 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.RightTriangle,
 );
 
+export type PolygonOrientation = 'point' | 'side';
+
 export interface PolygonZone extends RadiusObject, ColoredObject, HollowObject, RotateableObject, BaseObject {
     readonly type: ObjectType.Polygon;
     readonly sides: number;
+    readonly orient: PolygonOrientation;
 }
 export const isPolygonZone = makeObjectTest<PolygonZone>(ObjectType.Polygon);
 

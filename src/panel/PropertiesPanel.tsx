@@ -47,7 +47,7 @@ import { MarkerShapeControl } from './properties/MarkerControls';
 import { NameControl } from './properties/NameControl';
 import { OpacityControl } from './properties/OpacityControl';
 import { PartyIconControl } from './properties/PartyControls';
-import { PolygonSidesControl } from './properties/PolygonControls';
+import { PolygonOrientationControl, PolygonSidesControl } from './properties/PolygonControls';
 import { PositionControl } from './properties/PositionControl';
 import { InnerRadiusControl, RadiusControl } from './properties/RadiusControl';
 import { RotationControl } from './properties/RotationControl';
@@ -148,9 +148,9 @@ const Controls: React.FC = () => {
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
-                <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
-                <ControlCondition objects={objects} test={isPolygonZone} control={PolygonSidesControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareSpacingControl} />
+                <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />
+
                 <ControlCondition
                     objects={objects}
                     test={(x) => isArcZone(x) || isConeZone(x)}
@@ -159,6 +159,10 @@ const Controls: React.FC = () => {
             </div>
 
             {/* Special options */}
+            <div className={mergeClasses(classes.row, classes.rightGap)}>
+                <ControlCondition objects={objects} test={isPolygonZone} control={PolygonSidesControl} />
+                <ControlCondition objects={objects} test={isPolygonZone} control={PolygonOrientationControl} />
+            </div>
             <ControlCondition objects={objects} test={isParty} control={PartyIconControl} />
             <ControlCondition objects={objects} test={isTether} control={TetherWidthControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
