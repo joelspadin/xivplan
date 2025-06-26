@@ -172,12 +172,15 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
         [object.color, object.opacity, outerRadius, object.hollow],
     );
 
+    const highlightInnerRadius = Math.min(outerRadius, innerRadius);
+    const highlightOuterRadius = Math.max(outerRadius, innerRadius);
+
     return (
         <Group rotation={rotation - 90 - coneAngle / 2}>
             {isSelected && (
                 <OffsetArc
-                    outerRadius={outerRadius}
-                    innerRadius={innerRadius}
+                    outerRadius={highlightOuterRadius}
+                    innerRadius={highlightInnerRadius}
                     angle={coneAngle}
                     shapeOffset={style.strokeWidth / 2}
                     {...SELECTED_PROPS}
@@ -372,13 +375,16 @@ const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
         return { radius, innerRadius, rotation, coneAngle };
     },
     onRenderBorder: (object, state) => {
+        const innerRadius = Math.min(state.radius, state.innerRadius);
+        const outerRadius = Math.max(state.radius, state.innerRadius);
+
         return (
             <>
                 <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
                 <OffsetArc
                     rotation={-90 - state.coneAngle / 2}
-                    outerRadius={state.radius}
-                    innerRadius={state.innerRadius}
+                    outerRadius={outerRadius}
+                    innerRadius={innerRadius}
                     angle={state.coneAngle}
                     shapeOffset={1}
                     stroke={CONTROL_POINT_BORDER_COLOR}

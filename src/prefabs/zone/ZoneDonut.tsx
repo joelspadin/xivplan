@@ -68,12 +68,15 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
         [object.color, object.opacity, radius],
     );
 
+    const highlightInnerRadius = Math.min(radius, innerRadius);
+    const highlightOuterRadius = Math.max(radius, innerRadius);
+
     return (
         <>
             {showHighlight && (
                 <Ring
-                    innerRadius={innerRadius - style.strokeWidth / 2}
-                    outerRadius={radius + style.strokeWidth / 2}
+                    innerRadius={highlightInnerRadius - style.strokeWidth / 2}
+                    outerRadius={highlightOuterRadius + style.strokeWidth / 2}
                     {...SELECTED_PROPS}
                 />
             )}
