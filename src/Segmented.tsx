@@ -8,6 +8,7 @@ import {
     radioClassNames,
     shorthands,
     tokens,
+    typographyStyles,
 } from '@fluentui/react-components';
 import { iconFilledClassName, iconRegularClassName } from '@fluentui/react-icons';
 import React, { ReactNode } from 'react';
@@ -27,7 +28,7 @@ export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, ...pro
 
 export interface SegmentProps extends RadioProps {
     icon?: ReactNode;
-    size?: 'medium' | 'large';
+    size?: 'medium' | 'mediumText' | 'large';
 }
 
 export const Segment: React.FC<SegmentProps> = ({ className, icon, size, title, ...props }) => {
@@ -141,6 +142,12 @@ const useStyles = makeStyles({
         minWidth: '34px',
         minHeight: '32px',
         fontSize: '20px',
+    },
+
+    mediumText: {
+        minWidth: '34px',
+        minHeight: '32px',
+        ...typographyStyles.body2,
     },
 
     large: {

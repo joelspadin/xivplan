@@ -10,6 +10,7 @@ import { LayerName } from '../../render/layers';
 import { ObjectType, TowerZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
+import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -69,45 +70,28 @@ const CountZone: React.FC<CircleConfig> = (props) => {
 };
 
 function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
-    switch (count) {
-        case 1:
-            return [{ radius: radius * 0.5 }];
-
-        case 2: {
-            const r = radius * 0.9;
-
-            return Array.from({ length: count }).map((_, i) => ({
-                x: (-0.5 + i) * r,
-                radius: r / count,
-            }));
-        }
-
-        case 3: {
-            const r = radius * 0.9;
-            const scale = 2 / 3;
-
-            return Array.from({ length: count }).map((_, i) => ({
-                x: scale * (i - 1) * r,
-                radius: r / count,
-            }));
-        }
-
-        case 4:
-            return Array.from({ length: count }).map((_, i) => {
-                const angle = (Math.PI / 4) * (i * 2 - 1);
-                const r = radius * 0.5;
-                const x = Math.cos(angle) * r;
-                const y = Math.sin(angle) * r;
-
-                return {
-                    x,
-                    y,
-                    radius: radius * 0.35,
-                };
-            });
+    if (count === 1) {
+        return [{ radius: radius * 0.45 }];
     }
 
-    return [];
+    const angleOffset = 180 / count + 90;
+    const size = 0.35 - (count - 2) * 0.02;
+    const center = 0.42 + (count - 2) * 0.05;
+    const r = center * radius;
+
+    return Array.from({ length: count }).map((_, i) => {
+        const angle = (360 / count) * i - angleOffset;
+
+        const rad = degtorad(angle);
+        const x = Math.cos(rad) * r;
+        const y = Math.sin(rad) * r;
+
+        return {
+            x,
+            y,
+            radius: radius * size,
+        };
+    });
 }
 
 interface TowerRendererProps extends RendererProps<TowerZone> {

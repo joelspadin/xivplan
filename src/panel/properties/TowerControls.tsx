@@ -1,15 +1,11 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
-import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
+import { Segment, SegmentedGroup } from '../../Segmented';
 import { TowerZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
-
-const MIN_COUNT = 1;
-const MAX_COUNT = 4;
 
 export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({ objects }) => {
     const classes = useControlStyles();
@@ -17,22 +13,25 @@ export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({
 
     const count = useMemo(() => commonValue(objects, (obj) => obj.count), [objects]);
 
-    const onCountChanged = useSpinChanged((count: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) }),
+    const handleChanged = useCallback(
+        (count: number) => {
+            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) });
+        },
+        [dispatch, objects],
     );
 
-    const soakSuffix = count === 1 ? ' player' : ' players';
-
     return (
-        <Field label="Soak count" className={classes.cell}>
-            <SpinButtonUnits
-                value={count}
-                onChange={onCountChanged}
-                min={MIN_COUNT}
-                max={MAX_COUNT}
-                step={1}
-                suffix={soakSuffix}
-            />
+        <Field label="Player count" className={classes.cell}>
+            <SegmentedGroup
+                name="player-count"
+                value={String(count)}
+                onChange={(ev, data) => handleChanged(parseInt(data.value))}
+            >
+                <Segment value="1" icon="1" size="mediumText" title="One player" />
+                <Segment value="2" icon="2" size="mediumText" title="Two players" />
+                <Segment value="3" icon="3" size="mediumText" title="Three players" />
+                <Segment value="4" icon="4" size="mediumText" title="Four players" />
+            </SegmentedGroup>
         </Field>
     );
 };
