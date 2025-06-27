@@ -1,7 +1,7 @@
 import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
@@ -100,7 +100,7 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (showResizer && trRef.current && nodeRef.current) {
             trRef.current.nodes([nodeRef.current]);
             trRef.current.getLayer()?.batchDraw();
@@ -180,7 +180,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const [cacheKey, setCacheKey] = useState(0);
 
     const textRef = useRef<Konva.Text>(null);
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (textRef.current) {
             setSize(measureText(textRef.current, object.text, object.fontSize, LINE_HEIGHT));
             setMeasuredFontSize(object.fontSize);

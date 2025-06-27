@@ -1,5 +1,5 @@
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getPointerPosition } from '../coord';
@@ -27,7 +27,7 @@ const TetherEditLayer: React.FC = () => {
 
     const onMouseMove = useCallback(() => setCursor(getPointerPosition(scene, stage)), [scene, stage, setCursor]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (stage) {
             setDefaultCursor('alias');
             stage.container().style.cursor = 'alias';

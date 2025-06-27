@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { Box } from 'konva/lib/shapes/Transformer';
-import React, { RefObject, useCallback, useEffect, useRef } from 'react';
+import React, { RefObject, useCallback, useLayoutEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { ControlsPortal } from '../render/Portals';
@@ -44,7 +44,7 @@ export const Resizer: React.FC<ResizerProps> = ({
 
     const anchorSize = clamp((object.width + object.height) / 10, MIN_ANCHOR_SIZE, MAX_ANCHOR_SIZE);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (showResizer && trRef.current && nodeRef.current) {
             trRef.current.nodes([nodeRef.current]);
             trRef.current.getLayer()?.batchDraw();

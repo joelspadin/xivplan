@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, rotateCoord } from '../coord';
@@ -149,7 +149,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
             [onActive, setTransform, getPointerPos, object, rotation, props],
         );
 
-        useEffect(() => {
+        useLayoutEffect(() => {
             if (!transform) {
                 return;
             }

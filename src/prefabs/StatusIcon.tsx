@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
@@ -57,7 +57,7 @@ const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
 
     const [textNode, setTextNode] = useState<Konva.Text | null>(null);
     const [textWidth, setTextWidth] = useState(width);
-    useEffect(() => {
+    useLayoutEffect(() => {
         setTextWidth(textNode?.measureSize(text).width ?? width);
     }, [textNode, text, fontSize, width, setTextWidth]);
 

@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { Line, Rect } from 'react-konva';
 import simplify from 'simplify-js';
 import { DrawConfig } from '../EditModeContext';
@@ -71,7 +71,7 @@ const DrawTargetLayer: React.FC = () => {
     const [, setDefaultCursor] = useDefaultCursor();
     const stage = useStage();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (stage) {
             setDefaultCursor('crosshair');
             stage.container().style.cursor = 'crosshair';
