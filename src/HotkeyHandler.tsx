@@ -63,8 +63,6 @@ function toggleHide(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
 
     const newValue = hide === undefined ? false : !hide;
 
-    console.log('hide', hide, newValue);
-
     dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)) });
 }
 
