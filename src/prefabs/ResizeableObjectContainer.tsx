@@ -30,7 +30,7 @@ export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps>
     const [dragging, setDragging] = useState(false);
     const shapeRef = useRef<Konva.Group>(null);
 
-    useKonvaCache(shapeRef, !!cache, [cacheKey, object]);
+    useKonvaCache(shapeRef, { enabled: !!cache }, [cacheKey, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
