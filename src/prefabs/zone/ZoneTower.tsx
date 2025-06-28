@@ -10,11 +10,11 @@ import { LayerName } from '../../render/layers';
 import { ObjectType, TowerZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
+import { getStackCircleProps, STACK_CIRCLE_INSET } from './stackUtil';
 import { getZoneStyle } from './style';
 
 const DEFAULT_COLOR = '#bae3ff';
@@ -69,31 +69,6 @@ const CountZone: React.FC<CircleConfig> = (props) => {
     );
 };
 
-function getCountZones(radius: number, count: number): Partial<CircleConfig>[] {
-    if (count === 1) {
-        return [{ radius: radius * 0.45 }];
-    }
-
-    const angleOffset = 180 / count + 90;
-    const size = 0.35 - (count - 2) * 0.02;
-    const center = 0.42 + (count - 2) * 0.05;
-    const r = center * radius;
-
-    return Array.from({ length: count }).map((_, i) => {
-        const angle = (360 / count) * i - angleOffset;
-
-        const rad = degtorad(angle);
-        const x = Math.cos(rad) * r;
-        const y = Math.sin(rad) * r;
-
-        return {
-            x,
-            y,
-            radius: radius * size,
-        };
-    });
-}
-
 interface TowerRendererProps extends RendererProps<TowerZone> {
     radius: number;
     isDragging?: boolean;
@@ -106,7 +81,7 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDraggin
         [object.color, object.opacity, radius],
     );
 
-    const zones = useMemo(() => getCountZones(radius, object.count), [radius, object.count]);
+    const towers = useMemo(() => getStackCircleProps(radius, object.count, STACK_CIRCLE_INSET), [radius, object.count]);
 
     return (
         <>
@@ -114,7 +89,7 @@ const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDraggin
 
             <HideGroup>
                 <Circle radius={radius} {...style} opacity={0.75} />
-                {zones.map((props, i) => (
+                {towers.map((props, i) => (
                     <CountZone key={i} {...props} {...style} listening={false} />
                 ))}
 

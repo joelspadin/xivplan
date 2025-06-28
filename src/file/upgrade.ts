@@ -12,6 +12,7 @@ import {
     Scene,
     SceneObject,
     SceneStep,
+    StackZone,
     TextObject,
     TextStyle,
     isDrawObject,
@@ -21,6 +22,7 @@ import {
     isMarker,
     isParty,
     isPolygonZone,
+    isStackZone,
     isText,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
@@ -70,6 +72,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isPolygonZone(object)) {
         object = upgradePolygon(object);
+    }
+
+    if (isStackZone(object)) {
+        object = upgradeStackZone(object);
     }
 
     return object;
@@ -202,6 +208,19 @@ type LegacyPolygonZone = Omit<PolygonZone, 'orient'> & {
 function upgradePolygon(object: LegacyPolygonZone): PolygonZone {
     return {
         orient: 'point',
+        ...object,
+    };
+}
+
+// StackZone was split off from CircleZone
+// count property was added
+type LegacyStackZone = Omit<StackZone, 'count'> & {
+    count?: number;
+};
+
+function upgradeStackZone(object: LegacyStackZone): StackZone {
+    return {
+        count: 1,
         ...object,
     };
 }

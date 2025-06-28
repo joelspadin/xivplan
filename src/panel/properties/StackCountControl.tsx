@@ -2,12 +2,14 @@ import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
-import { TowerZone } from '../../scene';
+import { StackCountObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
-export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({ objects }) => {
+const STACK_VALUES = [1, 2, 3, 4];
+
+export const StackCountControl: React.FC<PropertiesControlProps<StackCountObject>> = ({ objects }) => {
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
@@ -27,11 +29,24 @@ export const TowerCountControl: React.FC<PropertiesControlProps<TowerZone>> = ({
                 value={String(count)}
                 onChange={(ev, data) => handleChanged(parseInt(data.value))}
             >
-                <Segment value="1" icon="1" size="mediumText" title="One player" />
-                <Segment value="2" icon="2" size="mediumText" title="Two players" />
-                <Segment value="3" icon="3" size="mediumText" title="Three players" />
-                <Segment value="4" icon="4" size="mediumText" title="Four players" />
+                {STACK_VALUES.map((i) => (
+                    <Segment
+                        key={i}
+                        value={i.toString()}
+                        icon={i.toString()}
+                        size="mediumText"
+                        title={getItemTitle(i)}
+                    />
+                ))}
             </SegmentedGroup>
         </Field>
     );
 };
+
+const NUMBERS = ['One', 'Two', 'Three', 'Four'];
+
+function getItemTitle(count: number) {
+    const number = NUMBERS[count - 1] ?? '';
+
+    return `${number} Player${count == 1 ? 's' : ''}`;
+}

@@ -2,6 +2,11 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Jun 28, 2025
+
+- Added a control to set the number of players required in a stack AOE.
+- Fixed parts of tether arrow heads getting cut off.
+
 ## Jun 25, 2025
 
 - Updated the appearance of meteor/tower objects to have more space between the pillars and arrange the pillars for a 3-stack in a triangle.

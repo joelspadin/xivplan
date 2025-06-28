@@ -26,8 +26,8 @@ import {
     isStarburstZone,
     isTether,
     isText,
-    isTowerZone,
     supportsHollow,
+    supportsStackCount,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
 import { useControlStyles } from '../useControlStyles';
@@ -52,10 +52,10 @@ import { PositionControl } from './properties/PositionControl';
 import { InnerRadiusControl, RadiusControl } from './properties/RadiusControl';
 import { RotationControl } from './properties/RotationControl';
 import { SizeControl } from './properties/SizeControl';
+import { StackCountControl } from './properties/StackCountControl';
 import { StarburstSpokeCountControl, StarburstSpokeWidthControl } from './properties/StarburstControls';
 import { TetherTypeControl, TetherWidthControl } from './properties/TetherControls';
 import { TextLayoutControl, TextOutlineControl, TextValueControl } from './properties/TextControls';
-import { TowerCountControl } from './properties/TowerControls';
 
 export interface PropertiesPanelProps {
     className?: string;
@@ -166,7 +166,7 @@ const Controls: React.FC = () => {
             <ControlCondition objects={objects} test={isParty} control={PartyIconControl} />
             <ControlCondition objects={objects} test={isTether} control={TetherWidthControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
-                <ControlCondition objects={objects} test={isTowerZone} control={TowerCountControl} />
+                <ControlCondition objects={objects} test={supportsStackCount} control={StackCountControl} />
             </div>
             <ControlCondition objects={objects} test={isText} control={TextValueControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>

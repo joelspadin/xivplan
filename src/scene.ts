@@ -175,6 +175,10 @@ export interface ImageObject extends ResizeableObject {
     readonly image: string;
 }
 
+export interface StackCountObject {
+    readonly count: number;
+}
+
 /**
  * Special object for treating the cursor location as a tether target.
  */
@@ -243,7 +247,6 @@ export function isActor(object: UnknownObject): object is Actor {
 export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
         | ObjectType.Circle
-        | ObjectType.Stack
         | ObjectType.Proximity
         | ObjectType.Knockback
         | ObjectType.RotateCW
@@ -252,13 +255,17 @@ export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, B
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
-    ObjectType.Stack,
     ObjectType.Proximity,
     ObjectType.Knockback,
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
     ObjectType.Eye,
 );
+
+export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
+    readonly type: ObjectType.Stack;
+}
+export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
 
 export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObject, BaseObject {
     readonly type: ObjectType.Donut;
@@ -330,9 +337,8 @@ export interface StarburstZone extends RadiusObject, RotateableObject, ColoredOb
 }
 export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburst);
 
-export interface TowerZone extends RadiusObject, ColoredObject, BaseObject {
+export interface TowerZone extends RadiusObject, ColoredObject, StackCountObject, BaseObject {
     readonly type: ObjectType.Tower;
-    readonly count: number;
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
@@ -449,6 +455,11 @@ export const supportsHollow = makeObjectTest<HollowObject & UnknownObject>(
     ObjectType.RightTriangle,
     ObjectType.Polygon,
 );
+
+export function supportsStackCount<T>(object: T): object is StackCountObject & T {
+    const obj = object as StackCountObject & T;
+    return obj && typeof obj.count === 'number';
+}
 
 export type SceneObject = UnknownObject | Zone | Marker | Actor | IconObject | Tether;
 

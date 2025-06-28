@@ -43,3 +43,12 @@ export function getShadowColor(color: string): string | undefined {
         .set({ s: (s) => s - 10, v: 30 })
         .display();
 }
+
+export function getSphericalGradientStops(color: string) {
+    const center = new Color(color);
+
+    const top = new Color(center.clone().lighten(0.25));
+    const bottom = new Color(center.clone().darken(0.15));
+
+    return [0, top.display(), 0.5, color, 1, bottom.display()];
+}
