@@ -4,6 +4,7 @@ This page tracks notable changes made to XIVPlan. Not every change will be liste
 
 ## Jun 28, 2025
 
+- Added a control to change a "look away" marker into a "look towards" marker.
 - Added a control to set the number of players required in a stack AOE.
 - Fixed parts of tether arrow heads getting cut off.
 

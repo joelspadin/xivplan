@@ -250,8 +250,7 @@ export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, B
         | ObjectType.Proximity
         | ObjectType.Knockback
         | ObjectType.RotateCW
-        | ObjectType.RotateCCW
-        | ObjectType.Eye;
+        | ObjectType.RotateCCW;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
@@ -259,13 +258,18 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Knockback,
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
-    ObjectType.Eye,
 );
 
 export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type: ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
+
+export interface EyeObject extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+    readonly type: ObjectType.Eye;
+    readonly invert?: boolean;
+}
+export const isEye = makeObjectTest<EyeObject>(ObjectType.Eye);
 
 export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObject, BaseObject {
     readonly type: ObjectType.Donut;

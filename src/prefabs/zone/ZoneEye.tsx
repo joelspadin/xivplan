@@ -9,7 +9,7 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { CircleZone, ObjectType } from '../../scene';
+import { EyeObject, ObjectType } from '../../scene';
 import { panelVars, SELECTED_PROPS } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -17,8 +17,6 @@ import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
-
-// TODO: add an option for a "look towards" marker
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
@@ -43,7 +41,7 @@ export const ZoneEye: React.FC = () => {
     );
 };
 
-registerDropHandler<CircleZone>(ObjectType.Eye, (object, position) => {
+registerDropHandler<EyeObject>(ObjectType.Eye, (object, position) => {
     return {
         type: 'add',
         object: {
@@ -53,7 +51,7 @@ registerDropHandler<CircleZone>(ObjectType.Eye, (object, position) => {
             radius: DEFAULT_RADIUS,
             ...object,
             ...position,
-        },
+        } as EyeObject,
     };
 });
 
@@ -79,7 +77,7 @@ function getIrisGradient(color: string) {
     return [0, eye, 0.1, eye, 0.14, insideStr, 0.18, middleStr, 1, edgeStr];
 }
 
-function getEyeGradient(color: string) {
+function getEyeGradient(color: string, invert?: boolean) {
     const c = new Color(color);
 
     const inside = c.toString();
@@ -92,7 +90,7 @@ function getEyeGradient(color: string) {
         .set({ v: (v) => v - 80 })
         .display();
 
-    return [0.14, inside, 0.18, middle, 1, edge];
+    return [0.14, invert ? middle : inside, 0.18, middle, 1, edge];
 }
 
 function getHighlightColor(color: string) {
@@ -122,7 +120,7 @@ function getStrokeColor(color: string) {
 const OUTER_EYE_PATH = 'M22 0Q13-9 0-9T-22 0Q-13 9 0 9T22 0Z';
 const INNER_EYE_PATH = 'M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z';
 
-interface EyeRendererProps extends RendererProps<CircleZone> {
+interface EyeRendererProps extends RendererProps<EyeObject> {
     radius: number;
     groupRef: RefObject<Konva.Group>;
 }
@@ -132,11 +130,11 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
     const scale = radius / 20;
     const eyeStyle = useMemo(() => {
         return {
-            fillRadialGradientColorStops: getEyeGradient(object.color),
+            fillRadialGradientColorStops: getEyeGradient(object.color, object.invert),
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: 15,
         } as ShapeConfig;
-    }, [object.color]);
+    }, [object.color, object.invert]);
     const irisStyle = useMemo(() => {
         return {
             fillRadialGradientColorStops: getIrisGradient(object.color),
@@ -176,7 +174,7 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
                             opacity={0.7}
                             lineCap="round"
                         />
-                        <Circle radius={10} {...irisStyle} />
+                        {object.invert ? <QuestionMark /> : <Circle radius={10} {...irisStyle} />}
                     </HideGroup>
                 </Group>
             </Group>
@@ -184,7 +182,31 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
     );
 };
 
-const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
+const QUESTION_PATH = `
+    M-17.5-15c0 5 2 5 3 5 3 0 5.5-1 5.5-7s4.5-8.5 9-8.5C5.5-25.5 9.5-21 9.5-13.5 9.5-5-2-3-2 11
+    c0 4 0 7 2 7 2 0 2-3 2-7C2-2 17.5 0 17.5-14 17.5-24 11.5-29 0-29-14.5-29-17.5-19.5-17.5-15Z
+    M0 20.5c-2.5 0-4 1.5-4 3.5 0 3 1.5 6 4 6s4-3 4-6c0-2-1.5-3.5-4-3.5Z`;
+const QUESTION_SCALE = 24 / 60;
+const QUESTION_SHADOW_COLOR = '#e868e6';
+
+const QuestionMark: React.FC = () => {
+    return (
+        <Path
+            data={QUESTION_PATH}
+            scaleX={QUESTION_SCALE}
+            scaleY={QUESTION_SCALE}
+            stroke={QUESTION_SHADOW_COLOR}
+            strokeWidth={2}
+            fillAfterStrokeEnabled
+            shadowColor={QUESTION_SHADOW_COLOR}
+            shadowBlur={4}
+            shadowForStrokeEnabled
+            fill="#ffffff"
+        />
+    );
+};
+
+const EyeContainer: React.FC<RendererProps<EyeObject>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
 
     return (
@@ -194,17 +216,17 @@ const EyeContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Eye, LayerName.Ground, EyeContainer);
+registerRenderer<EyeObject>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
-const EyeDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
+const EyeDetails: React.FC<ListComponentProps<EyeObject>> = ({ object, ...props }) => {
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneEye]: object.color }} />}
-            name="Look away"
+            name={object.invert ? 'Look towards' : 'Look away'}
             object={object}
             {...props}
         />
     );
 };
 
-registerListComponent<CircleZone>(ObjectType.Eye, EyeDetails);
+registerListComponent<EyeObject>(ObjectType.Eye, EyeDetails);

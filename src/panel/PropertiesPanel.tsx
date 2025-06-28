@@ -11,6 +11,7 @@ import {
     isDrawObject,
     isEnemy,
     isExaflareZone,
+    isEye,
     isIcon,
     isImageObject,
     isInnerRadiusObject,
@@ -38,6 +39,7 @@ import { ColorControl, ColorSwatchControl } from './properties/ColorControl';
 import { ConeAngleControl } from './properties/ConeControls';
 import { EnemyRingControl } from './properties/EnemyControls';
 import { ExaflareLengthControl, ExaflareSpacingControl } from './properties/ExaflareControls';
+import { EyeInvertControl } from './properties/EyeControls';
 import { HideControl } from './properties/HideControl';
 import { HollowControl } from './properties/HollowControl';
 import { IconStacksControl, IconTimeControl } from './properties/IconControls';
@@ -168,6 +170,7 @@ const Controls: React.FC = () => {
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={supportsStackCount} control={StackCountControl} />
             </div>
+            <ControlCondition objects={objects} test={isEye} control={EyeInvertControl} />
             <ControlCondition objects={objects} test={isText} control={TextValueControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={isIcon} control={IconStacksControl} />
