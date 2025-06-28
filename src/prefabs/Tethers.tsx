@@ -9,6 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
 import { getObjectById, useScene } from '../SceneProvider';
+import { getArrowStrokeExtent } from '../arrowUtil';
 import { getCanvasCoord } from '../coord';
 import { EditMode } from '../editMode';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -33,7 +34,7 @@ import {
 import { selectNone, useIsSelected, useSelection } from '../selection';
 import { SELECTED_PROPS, panelVars } from '../theme';
 import { useEditMode } from '../useEditMode';
-import { useKonvaCache } from '../useKonvaCache';
+import { UseKonvaCacheOptions, useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
 import { HideCutoutGroup, HideGroup } from './HideGroup';
@@ -173,6 +174,9 @@ const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighligh
     );
 };
 
+const POINTER_LENGTH = 10;
+const POINTER_WIDTH = 10;
+
 const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
     const [start, end] = getTetherPoints(scene, startObject, endObject);
     const center = vecMult(vecAdd(start, end), 0.5);
@@ -187,6 +191,8 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
         strokeWidth: object.width,
         lineCap: 'round',
         pointerAtEnding: true,
+        pointerLength: POINTER_LENGTH,
+        pointerWidth: POINTER_WIDTH,
     };
 
     const arrowProps1: ArrowConfig = {
@@ -215,7 +221,10 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
 };
 
 const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
-    const [start, end] = getTetherPoints(scene, startObject, endObject, object.width);
+    // Shrink the tether by the amount that the stroke extends past the tips of the arrows.
+    const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
+
+    const [start, end] = getTetherPoints(scene, startObject, endObject, extent.top * 2);
 
     const arrowProps: ArrowConfig = {
         points: [start.x, start.y, end.x, end.y],
@@ -225,6 +234,8 @@ const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight
         lineCap: 'round',
         pointerAtBeginning: true,
         pointerAtEnding: true,
+        pointerLength: POINTER_LENGTH,
+        pointerWidth: POINTER_WIDTH,
     };
 
     return (
@@ -329,6 +340,20 @@ function getRenderer(type: TetherType) {
     }
 }
 
+function getCacheConfig(object: Tether): UseKonvaCacheOptions {
+    switch (object.tether) {
+        case TetherType.Close:
+        case TetherType.Far: {
+            const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
+
+            return { offset: Math.max(extent.top, extent.side) };
+        }
+
+        default:
+            return {};
+    }
+}
+
 const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const showHighlight = useIsSelected(object);
     const groupRef = React.useRef<Konva.Group>(null);
@@ -338,12 +363,13 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const startObject = getObjectById(scene, object.startId);
     const endObject = getObjectById(scene, object.endId);
 
+    const cacheConfig = getCacheConfig(object);
     const Renderer = getRenderer(object.tether);
 
     const isSelectable = editMode === EditMode.Normal;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useKonvaCache(groupRef, [object, startObject, endObject, showHighlight]);
+    useKonvaCache(groupRef, cacheConfig, [object, startObject, endObject, showHighlight]);
 
     return (
         <SelectableObject object={object}>

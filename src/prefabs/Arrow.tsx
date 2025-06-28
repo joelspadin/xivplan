@@ -3,6 +3,7 @@ import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { getArrowStrokeExtent } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -75,13 +76,10 @@ const HIGHLIGHT_STROKE_WIDTH = STROKE_WIDTH + (SELECTED_PROPS.strokeWidth ?? 0);
 const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
 
-    // respect the stroke width when calculating the pointer width to avoid cropping
     const pointerLength = DEFAULT_ARROW_HEIGHT * 0.15;
-    const tangent = pointerLength / (DEFAULT_ARROW_WIDTH * 0.5);
-    const cotangent = 1 / tangent;
-    const cosecant = 1 / Math.sin(Math.atan(tangent));
-    const lengthOffset = STROKE_WIDTH * 0.5 * (1 + cosecant);
-    const widthOffset = STROKE_WIDTH * (cotangent + cosecant);
+
+    // respect the stroke width when calculating the pointer size to avoid cropping
+    const extent = getArrowStrokeExtent(pointerLength, DEFAULT_ARROW_WIDTH, STROKE_WIDTH);
 
     const arrowProps: ArrowConfig = {
         points: POINTS,
@@ -89,8 +87,8 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
         height: DEFAULT_ARROW_HEIGHT,
         scaleX: object.width / DEFAULT_ARROW_WIDTH,
         scaleY: object.height / DEFAULT_ARROW_HEIGHT,
-        pointerLength: pointerLength - lengthOffset,
-        pointerWidth: DEFAULT_ARROW_WIDTH - widthOffset,
+        pointerLength: pointerLength - extent.top - extent.bottom,
+        pointerWidth: DEFAULT_ARROW_WIDTH - extent.side * 2,
         strokeWidth: STROKE_WIDTH,
         lineCap: 'round',
         pointerAtBeginning: !!object.arrowBegin,
