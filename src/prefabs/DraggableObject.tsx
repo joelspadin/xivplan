@@ -1,5 +1,4 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import { Vector2d } from 'konva/lib/types';
 import React, { ReactNode, useCallback, useState } from 'react';
 import { CursorGroup } from '../CursorGroup';
 import { useScene } from '../SceneProvider';
@@ -8,13 +7,14 @@ import { EditMode } from '../editMode';
 import { MoveableObject, UnknownObject } from '../scene';
 import { selectSingle, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
+import { DraggableCenterContext } from './DraggableCenterContext';
 import { SelectableObject } from './SelectableObject';
 import { TetherTarget } from './TetherTarget';
 
 export interface DraggableObjectProps {
     object: MoveableObject & UnknownObject;
     onActive?: React.Dispatch<boolean>;
-    children?: ReactNode | ((center: Vector2d) => React.ReactElement);
+    children?: ReactNode;
 }
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActive, children }) => {
@@ -54,19 +54,21 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
     );
 
     return (
-        <SelectableObject object={object}>
-            <TetherTarget object={object}>
-                <CursorGroup
-                    {...center}
-                    cursor={isDraggable ? 'move' : undefined}
-                    draggable={isDraggable}
-                    onDragStart={onDragStart}
-                    onDragMove={(e) => setDragCenter(e.target.position())}
-                    onDragEnd={onDragEnd}
-                >
-                    {typeof children === 'function' ? children?.(dragging ? dragCenter : center) : children}
-                </CursorGroup>
-            </TetherTarget>
-        </SelectableObject>
+        <DraggableCenterContext.Provider value={dragging ? dragCenter : center}>
+            <SelectableObject object={object}>
+                <TetherTarget object={object}>
+                    <CursorGroup
+                        {...center}
+                        cursor={isDraggable ? 'move' : undefined}
+                        draggable={isDraggable}
+                        onDragStart={onDragStart}
+                        onDragMove={(e) => setDragCenter(e.target.position())}
+                        onDragEnd={onDragEnd}
+                    >
+                        {children}
+                    </CursorGroup>
+                </TetherTarget>
+            </SelectableObject>
+        </DraggableCenterContext.Provider>
     );
 };
