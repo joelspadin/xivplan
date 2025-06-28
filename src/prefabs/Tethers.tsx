@@ -344,6 +344,7 @@ function getCacheConfig(object: Tether): UseKonvaCacheOptions {
     switch (object.tether) {
         case TetherType.Close:
         case TetherType.Far: {
+            // Cached area needs to be extended so the stroke around the arrow heads isn't cropped.
             const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
 
             return { offset: Math.max(extent.top, extent.side) };
