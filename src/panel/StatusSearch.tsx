@@ -37,7 +37,7 @@ interface Page {
 
 export type Language = 'en' | 'ja' | 'de' | 'fr';
 
-const API_ENDPOINT = 'https://beta.xivapi.com/api/1';
+const API_ENDPOINT = 'https://v2.xivapi.com/api';
 const SEARCH_URL = `${API_ENDPOINT}/search`;
 const ASSET_URL = `${API_ENDPOINT}/asset`;
 

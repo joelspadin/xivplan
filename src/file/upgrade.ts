@@ -135,13 +135,23 @@ function upgradeDrawObject(object: DrawObject | DrawObjectV1): DrawObject {
     return object;
 }
 
-// opacity property was added to ImageObject
-// status icons from legacy XIVAPI did not support CORS and would not render.
+const DEPRECATED_IMAGE_PATTERNS = [
+    /https:\/\/xivapi\.com\/i\/(\w+)\/(\w+)\.png/,
+    /https:\/\/beta\.xivapi\.com\/api\/1\/.*\/(\w+)\/(\w+)\.tex\?format=png/,
+];
+
+// opacity property was added to ImageObject.
+// Status icons from legacy XIVAPI did not support CORS and would not render.
+// The beta XIVAPI is now broken and replaced by V2.
 function upgradeImageObject<T extends ImageObject>(object: T): T {
-    // Replace status icons from XIVAPI with ones from the beta API that support CORS.
-    const image = object.image.replace(/https:\/\/xivapi.com\/i\/(\w+)\/(\w+)\.png/, (match, folder, name) => {
-        return `https://beta.xivapi.com/api/1/asset/ui/icon/${folder}/${name}.tex?format=png`;
-    });
+    // Replace status icons from the XIVAPI V1 or beta APIs with ones from the V2 API.
+    let image = object.image;
+
+    for (const pattern of DEPRECATED_IMAGE_PATTERNS) {
+        image = image.replace(pattern, (match, folder, name) => {
+            return `https://v2.xivapi.com/api/asset/ui/icon/${folder}/${name}.tex?format=png`;
+        });
+    }
 
     return {
         opacity: DEFAULT_IMAGE_OPACITY,
