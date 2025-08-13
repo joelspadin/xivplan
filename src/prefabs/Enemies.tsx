@@ -190,7 +190,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
 
     return (
         <>
-            {isSelected && <Circle radius={radius + outerProps.strokeWidth / 2} {...SELECTED_PROPS} />}
+            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
 
             <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
