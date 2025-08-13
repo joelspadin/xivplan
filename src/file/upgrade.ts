@@ -107,7 +107,7 @@ function upgradeEnemy(object: LegacyEnemyObject): EnemyObject {
     return {
         ...object,
         rotation: object.rotation ?? 0,
-        ring: getRingStyle(object),
+        ring: object.ring ?? getRingStyle(object),
         opacity: object.opacity ?? DEFAULT_ENEMY_OPACITY,
     };
 }
