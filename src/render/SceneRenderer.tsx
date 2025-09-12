@@ -40,11 +40,11 @@ export const SceneRenderer: React.FC = () => {
     return (
         <DropTarget stage={stage}>
             <Stage {...size} ref={stageRef} onClick={onClickStage}>
-                <StageContext.Provider value={stage}>
+                <StageContext value={stage}>
                     <DefaultCursorProvider>
                         <SceneContents />
                     </DefaultCursorProvider>
-                </StageContext.Provider>
+                </StageContext>
             </Stage>
         </DropTarget>
     );
@@ -108,11 +108,11 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
     return (
         <Stage ref={ref} x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
             <DefaultCursorProvider>
-                <SceneContext.Provider value={sceneContext}>
-                    <SelectionContext.Provider value={selectionContext}>
+                <SceneContext value={sceneContext}>
+                    <SelectionContext value={selectionContext}>
                         <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
-                    </SelectionContext.Provider>
-                </SceneContext.Provider>
+                    </SelectionContext>
+                </SceneContext>
             </DefaultCursorProvider>
         </Stage>
     );

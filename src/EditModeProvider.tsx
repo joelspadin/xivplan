@@ -16,10 +16,10 @@ export const EditModeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const tetherConfig = useState<TetherConfig>(DEFAULT_TETHER_CONFIG);
 
     return (
-        <EditModeContext.Provider value={editMode}>
-            <DrawConfigContext.Provider value={drawConfig}>
-                <TetherConfigContext.Provider value={tetherConfig}>{children}</TetherConfigContext.Provider>
-            </DrawConfigContext.Provider>
-        </EditModeContext.Provider>
+        <EditModeContext value={editMode}>
+            <DrawConfigContext value={drawConfig}>
+                <TetherConfigContext value={tetherConfig}>{children}</TetherConfigContext>
+            </DrawConfigContext>
+        </EditModeContext>
     );
 };

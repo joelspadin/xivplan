@@ -15,9 +15,9 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }, [classes, darkMode]);
 
     return (
-        <DarkModeContext.Provider value={[!!darkMode, setDarkMode]}>
+        <DarkModeContext value={[!!darkMode, setDarkMode]}>
             <ThemeProviderInner darkMode={darkMode}>{children}</ThemeProviderInner>
-        </DarkModeContext.Provider>
+        </DarkModeContext>
     );
 };
 

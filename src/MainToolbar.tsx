@@ -57,9 +57,9 @@ export const MainToolbar: React.FC = () => {
 
     return (
         <>
-            <DialogOpenContext.Provider value={setOpenFileOpen}>
+            <DialogOpenContext value={setOpenFileOpen}>
                 <OpenDialog open={openFileOpen} onOpenChange={(ev, data) => setOpenFileOpen(data.open)} />
-            </DialogOpenContext.Provider>
+            </DialogOpenContext>
 
             <InPortal node={toolbarNode}>
                 <Toolbar className={classes.toolbar}>
@@ -197,9 +197,9 @@ const SaveButton: React.FC = () => {
                     </MenuList>
                 </MenuPopover>
             </Menu>
-            <DialogOpenContext.Provider value={setSaveAsOpen}>
+            <DialogOpenContext value={setSaveAsOpen}>
                 <SaveAsDialog open={saveAsOpen} onOpenChange={(ev, data) => setSaveAsOpen(data.open)} />
-            </DialogOpenContext.Provider>
+            </DialogOpenContext>
         </>
     );
 };

@@ -37,5 +37,5 @@ export const ObjectLoadingProvider: React.FC<PropsWithChildren> = ({ children })
         [isLoading, setLoading, clearLoading],
     );
 
-    return <ObjectLoadingContext.Provider value={state}>{children}</ObjectLoadingContext.Provider>;
+    return <ObjectLoadingContext value={state}>{children}</ObjectLoadingContext>;
 };

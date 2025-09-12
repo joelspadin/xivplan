@@ -54,7 +54,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
     );
 
     return (
-        <DraggableCenterContext.Provider value={dragging ? dragCenter : center}>
+        <DraggableCenterContext value={dragging ? dragCenter : center}>
             <SelectableObject object={object}>
                 <TetherTarget object={object}>
                     <CursorGroup
@@ -69,6 +69,6 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
                     </CursorGroup>
                 </TetherTarget>
             </SelectableObject>
-        </DraggableCenterContext.Provider>
+        </DraggableCenterContext>
     );
 };

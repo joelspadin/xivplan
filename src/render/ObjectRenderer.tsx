@@ -19,9 +19,9 @@ export const ObjectRenderer: React.FC<ObjectRendererProps> = ({ objects, layer }
 
                 const Component = getRenderer(object);
                 return (
-                    <ObjectContext.Provider key={object.id} value={object}>
+                    <ObjectContext key={object.id} value={object}>
                         <Component object={object} />
-                    </ObjectContext.Provider>
+                    </ObjectContext>
                 );
             })}
         </>

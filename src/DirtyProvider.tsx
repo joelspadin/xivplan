@@ -22,13 +22,13 @@ export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const isDirty = scene !== savedState;
 
     return (
-        <SavedStateContext.Provider value={setSavedState}>
-            <DirtyContext.Provider value={isDirty}>
+        <SavedStateContext value={setSavedState}>
+            <DirtyContext value={isDirty}>
                 {children}
 
                 <NavLockPrompt locked={isDirty} />
-            </DirtyContext.Provider>
-        </SavedStateContext.Provider>
+            </DirtyContext>
+        </SavedStateContext>
     );
 };
 

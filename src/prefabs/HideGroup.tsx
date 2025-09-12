@@ -11,7 +11,7 @@ export interface HideGroupProps extends GroupConfig, RefAttributes<Konva.Group> 
 /**
  * If the object is hidden, hides this part of it.
  *
- * This may only be used inside an <ObjectContext.Provider>
+ * This may only be used inside an <ObjectContext>
  */
 export const HideGroup: React.FC<HideGroupProps> = ({ children, ref, listening, opacity, ...props }) => {
     const hide = useObject().hide;
@@ -27,7 +27,7 @@ export const HideGroup: React.FC<HideGroupProps> = ({ children, ref, listening, 
  * Similar to HideGroup, except it cuts the shape out of the underlying content instead of just making it transparent.
  * This can be used when the object's highlight is a layer under the object instead of just an outline.
  *
- * This may only be used inside an <ObjectContext.Provider>
+ * This may only be used inside an <ObjectContext>
  */
 export const HideCutoutGroup: React.FC<HideGroupProps> = ({
     children,

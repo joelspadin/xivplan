@@ -14,9 +14,9 @@ export const DialogOpenContext = createContext<DialogOpenState>(() => {});
     const [open, setOpen] = useState(false);
 
     return (
-        <DialogOpenContext.Provider value={setOpen}>
+        <DialogOpenContext value={setOpen}>
             <MyCustomDialog open={open} />
-        </DialogOpenContext.Provider>
+        </DialogOpenContext>
     );
 
     // MyCustomDialog

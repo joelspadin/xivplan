@@ -48,7 +48,7 @@ export function createUndoContext<S, A extends object>(
             future: [],
         });
 
-        return <Context.Provider value={value}>{children}</Context.Provider>;
+        return <Context value={value}>{children}</Context>;
     };
 
     function usePresent(): [state: S, dispatch: Dispatch<A>] {

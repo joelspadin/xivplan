@@ -202,9 +202,9 @@ export const SceneProvider: React.FC<SceneProviderProps> = ({ initialScene, chil
     );
 
     return (
-        <SourceContext.Provider value={source}>
+        <SourceContext value={source}>
             <UndoProvider initialState={initialState}>{children}</UndoProvider>
-        </SourceContext.Provider>
+        </SourceContext>
     );
 };
 

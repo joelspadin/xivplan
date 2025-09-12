@@ -4,5 +4,5 @@ import { HelpContext } from './HelpContext';
 export const HelpProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const context = useState(false);
 
-    return <HelpContext.Provider value={context}>{children}</HelpContext.Provider>;
+    return <HelpContext value={context}>{children}</HelpContext>;
 };
