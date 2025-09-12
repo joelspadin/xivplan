@@ -167,7 +167,7 @@ const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, .
 
 interface DirectionalRingProps extends RingProps {
     rotation: number;
-    groupRef: RefObject<Konva.Group>;
+    groupRef: RefObject<Konva.Group | null>;
 }
 
 const DirectionalRing: React.FC<DirectionalRingProps> = ({
@@ -263,7 +263,7 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
 interface EnemyRendererProps extends RendererProps<EnemyObject> {
     radius: number;
     rotation: number;
-    groupRef: RefObject<Konva.Group>;
+    groupRef: RefObject<Konva.Group | null>;
     isDragging?: boolean;
 }
 
@@ -271,7 +271,7 @@ function renderRing(
     object: EnemyObject,
     radius: number,
     rotation: number,
-    groupRef: RefObject<Konva.Group>,
+    groupRef: RefObject<Konva.Group | null>,
     showHighlight: boolean,
 ) {
     switch (object.ring) {

@@ -88,7 +88,7 @@ const ARROW_ANGLES = [45, 90, 135, 225, 270, 315];
 interface RotateRendererProps extends RendererProps<CircleZone> {
     radius: number;
     isDragging?: boolean;
-    groupRef: RefObject<Konva.Group>;
+    groupRef: RefObject<Konva.Group | null>;
 }
 
 const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef, isDragging }) => {

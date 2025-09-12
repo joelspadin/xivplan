@@ -30,7 +30,7 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { HTMLAttributes, useCallback, useMemo, useState } from 'react';
+import React, { HTMLAttributes, RefAttributes, useCallback, useMemo, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
@@ -250,7 +250,7 @@ const ReorderStepsList: React.FC<ReorderStepsListProps> = ({ scene, order, onOrd
     );
 };
 
-interface StepItemProps extends HTMLAttributes<HTMLDivElement> {
+interface StepItemProps extends HTMLAttributes<HTMLDivElement>, RefAttributes<HTMLDivElement> {
     scene: Scene;
     step: StepOrderItem;
 }
@@ -274,7 +274,7 @@ const ReorderableStepItem: React.FC<StepItemProps> = ({ scene, step }) => {
     );
 };
 
-const StepItem = React.forwardRef<HTMLDivElement, StepItemProps>(({ scene, step, className, ...props }, ref) => {
+const StepItem: React.FC<StepItemProps> = ({ ref, scene, step, className, ...props }) => {
     const classes = useStyles();
     const stepText = `Step ${getStepText(step.index)}`;
 
@@ -291,8 +291,7 @@ const StepItem = React.forwardRef<HTMLDivElement, StepItemProps>(({ scene, step,
             />
         </div>
     );
-});
-StepItem.displayName = 'StepItem';
+};
 
 const useStyles = makeStyles({
     root: {

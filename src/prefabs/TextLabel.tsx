@@ -87,7 +87,7 @@ function measureText(
 
 interface TextResizerProps {
     object: TextObject;
-    nodeRef: RefObject<Konva.Group>;
+    nodeRef: RefObject<Konva.Group | null>;
     dragging?: boolean;
     children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
 }

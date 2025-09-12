@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren, useCallback, useContext, useState } from 'react';
+import React, { PropsWithChildren, RefAttributes, useCallback, useContext, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
@@ -50,7 +50,7 @@ export const SceneRenderer: React.FC = () => {
     );
 };
 
-export interface ScenePreviewProps {
+export interface ScenePreviewProps extends RefAttributes<Konva.Stage> {
     scene: Scene;
     stepIndex?: number;
     width?: number;
@@ -60,58 +60,63 @@ export interface ScenePreviewProps {
     simple?: boolean;
 }
 
-export const ScenePreview = React.forwardRef<Konva.Stage, ScenePreviewProps>(
-    ({ scene, stepIndex, width, height, backgroundColor, simple }, ref) => {
-        const size = getCanvasSize(scene);
-        let scale = 1;
-        let x = 0;
-        let y = 0;
+export const ScenePreview: React.FC<ScenePreviewProps> = ({
+    ref,
+    scene,
+    stepIndex,
+    width,
+    height,
+    backgroundColor,
+    simple,
+}) => {
+    const size = getCanvasSize(scene);
+    let scale = 1;
+    let x = 0;
+    let y = 0;
 
-        if (width) {
-            scale = Math.min(scale, width / size.width);
-        }
-        if (height) {
-            scale = Math.min(scale, height / size.height);
-        }
+    if (width) {
+        scale = Math.min(scale, width / size.width);
+    }
+    if (height) {
+        scale = Math.min(scale, height / size.height);
+    }
 
-        size.width *= scale;
-        size.height *= scale;
+    size.width *= scale;
+    size.height *= scale;
 
-        if (width) {
-            x = (width - size.width) / 2;
-        }
-        if (height) {
-            y = (height - size.height) / 2;
-        }
+    if (width) {
+        x = (width - size.width) / 2;
+    }
+    if (height) {
+        y = (height - size.height) / 2;
+    }
 
-        const sceneContext: UndoContext<EditorState, SceneAction> = [
-            {
-                present: {
-                    scene,
-                    currentStep: stepIndex ?? 0,
-                },
-                past: [],
-                future: [],
+    const sceneContext: UndoContext<EditorState, SceneAction> = [
+        {
+            present: {
+                scene,
+                currentStep: stepIndex ?? 0,
             },
-            () => undefined,
-        ];
+            past: [],
+            future: [],
+        },
+        () => undefined,
+    ];
 
-        const selectionContext: SelectionState = [new Set<number>(), () => {}];
+    const selectionContext: SelectionState = [new Set<number>(), () => {}];
 
-        return (
-            <Stage ref={ref} x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
-                <DefaultCursorProvider>
-                    <SceneContext.Provider value={sceneContext}>
-                        <SelectionContext.Provider value={selectionContext}>
-                            <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
-                        </SelectionContext.Provider>
-                    </SceneContext.Provider>
-                </DefaultCursorProvider>
-            </Stage>
-        );
-    },
-);
-ScenePreview.displayName = 'ScenePreview';
+    return (
+        <Stage ref={ref} x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
+            <DefaultCursorProvider>
+                <SceneContext.Provider value={sceneContext}>
+                    <SelectionContext.Provider value={selectionContext}>
+                        <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
+                    </SelectionContext.Provider>
+                </SceneContext.Provider>
+            </DefaultCursorProvider>
+        </Stage>
+    );
+};
 
 interface SceneContentsProps {
     listening?: boolean;

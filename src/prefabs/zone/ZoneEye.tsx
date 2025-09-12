@@ -122,7 +122,7 @@ const INNER_EYE_PATH = 'M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z';
 
 interface EyeRendererProps extends RendererProps<EyeObject> {
     radius: number;
-    groupRef: RefObject<Konva.Group>;
+    groupRef: RefObject<Konva.Group | null>;
 }
 
 const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {

@@ -19,7 +19,11 @@ const developmentOptions: UserConfig = {
 export default defineConfig(({ mode }) => ({
     ...(mode === 'production' ? productionOptions : developmentOptions),
     plugins: [
-        react(),
+        react({
+            babel: {
+                plugins: ['babel-plugin-react-compiler'],
+            },
+        }),
         svgr({
             svgrOptions: {
                 plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],

@@ -1,10 +1,10 @@
 import Konva from 'konva';
 import { GroupConfig } from 'konva/lib/Group';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, RefAttributes } from 'react';
 import { Group } from 'react-konva';
 import { useObject } from './useObject';
 
-export interface HideGroupProps extends GroupConfig {
+export interface HideGroupProps extends GroupConfig, RefAttributes<Konva.Group> {
     children: ReactNode;
 }
 
@@ -13,18 +13,15 @@ export interface HideGroupProps extends GroupConfig {
  *
  * This may only be used inside an <ObjectContext.Provider>
  */
-export const HideGroup = React.forwardRef<Konva.Group, HideGroupProps>(
-    ({ children, listening, opacity, ...props }, ref) => {
-        const hide = useObject().hide;
+export const HideGroup: React.FC<HideGroupProps> = ({ children, ref, listening, opacity, ...props }) => {
+    const hide = useObject().hide;
 
-        return (
-            <Group ref={ref} listening={hide ? false : listening} opacity={hide ? 0 : opacity} {...props}>
-                {children}
-            </Group>
-        );
-    },
-);
-HideGroup.displayName = 'HideGroup';
+    return (
+        <Group ref={ref} listening={hide ? false : listening} opacity={hide ? 0 : opacity} {...props}>
+            {children}
+        </Group>
+    );
+};
 
 /**
  * Similar to HideGroup, except it cuts the shape out of the underlying content instead of just making it transparent.
@@ -32,20 +29,23 @@ HideGroup.displayName = 'HideGroup';
  *
  * This may only be used inside an <ObjectContext.Provider>
  */
-export const HideCutoutGroup = React.forwardRef<Konva.Group, HideGroupProps>(
-    ({ children, listening, globalCompositeOperation, ...props }, ref) => {
-        const hide = useObject().hide;
+export const HideCutoutGroup: React.FC<HideGroupProps> = ({
+    children,
+    ref,
+    listening,
+    globalCompositeOperation,
+    ...props
+}) => {
+    const hide = useObject().hide;
 
-        return (
-            <Group
-                ref={ref}
-                listening={hide ? false : listening}
-                globalCompositeOperation={hide ? 'destination-out' : globalCompositeOperation}
-                {...props}
-            >
-                {children}
-            </Group>
-        );
-    },
-);
-HideCutoutGroup.displayName = 'HideCutoutGroup';
+    return (
+        <Group
+            ref={ref}
+            listening={hide ? false : listening}
+            globalCompositeOperation={hide ? 'destination-out' : globalCompositeOperation}
+            {...props}
+        >
+            {children}
+        </Group>
+    );
+};

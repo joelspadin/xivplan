@@ -64,7 +64,7 @@ export function useAsyncModal<Args = void, Result = boolean>(
 ): ModalState<Args, Result> {
     const [open, setOpen] = useState(false);
 
-    const promiseRef = useRef<PromiseRef<Args, Result>>();
+    const promiseRef = useRef<PromiseRef<Args, Result>>(null);
 
     const openModal = useCallback(
         (args: Args) => {
@@ -77,7 +77,7 @@ export function useAsyncModal<Args = void, Result = boolean>(
     );
 
     const renderModal = useCallback(() => {
-        if (promiseRef.current === undefined) {
+        if (promiseRef.current === null) {
             return null;
         }
 

@@ -15,7 +15,7 @@ export type UseKonvaCacheOptions = CacheConfig & {
  * @param ref Ref to the node to cache
  * @param deps Dependency list
  */
-export function useKonvaCache(ref: React.RefObject<Node>, deps: DependencyList): void;
+export function useKonvaCache(ref: React.RefObject<Node | null>, deps: DependencyList): void;
 /**
  * Caches the given Konva node, refreshing the cache whenever the dependencies change.
  *
@@ -23,9 +23,13 @@ export function useKonvaCache(ref: React.RefObject<Node>, deps: DependencyList):
  * @param options Configuration for caching, as well as whether caching should be enabled
  * @param deps Dependency list
  */
-export function useKonvaCache(ref: React.RefObject<Node>, options: UseKonvaCacheOptions, deps: DependencyList): void;
 export function useKonvaCache(
-    ref: React.RefObject<Node>,
+    ref: React.RefObject<Node | null>,
+    options: UseKonvaCacheOptions,
+    deps: DependencyList,
+): void;
+export function useKonvaCache(
+    ref: React.RefObject<Node | null>,
     configOrDeps: UseKonvaCacheOptions | DependencyList,
     maybeDeps?: DependencyList,
 ) {

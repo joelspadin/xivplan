@@ -18,7 +18,7 @@ const MAX_ANCHOR_SIZE = 10;
 
 export interface ResizerProps {
     object: ResizeableObject & UnknownObject;
-    nodeRef: RefObject<Konva.Group>;
+    nodeRef: RefObject<Konva.Group | null>;
     dragging?: boolean;
     minWidth?: number;
     minHeight?: number;
