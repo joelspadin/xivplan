@@ -1,5 +1,5 @@
 import { FluentProvider, makeStyles } from '@fluentui/react-components';
-import React, { PropsWithChildren, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import { useLocalStorage, useMedia } from 'react-use';
 import { getFluentTheme, usePanelThemeStyle, useSceneThemeStyle } from './theme';
 import { DarkModeContext } from './ThemeContext';
@@ -29,16 +29,8 @@ const ThemeProviderInner: React.FC<ThemeProviderInnerProps> = ({ darkMode, child
     const sceneStyles = useSceneThemeStyle();
     const panelStyles = usePanelThemeStyle();
 
-    const style = useMemo(
-        () => ({
-            ...sceneStyles,
-            ...panelStyles,
-        }),
-        [sceneStyles, panelStyles],
-    );
-
     return (
-        <FluentProvider theme={getFluentTheme(darkMode)} style={style}>
+        <FluentProvider theme={getFluentTheme(darkMode)} style={{ ...sceneStyles, ...panelStyles }}>
             {children}
         </FluentProvider>
     );

@@ -1,5 +1,5 @@
 import { SpinButton, SpinButtonChangeEvent, SpinButtonOnChangeData } from '@fluentui/react-components';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { CustomSpinButtonProps } from './SpinButton';
 import { formatNumber, fractionDigitsToStep, round } from './util';
 
@@ -33,29 +33,26 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({
 
     const displayValue = value === undefined ? '' : `${formatNumber(value, fractionDigits)}${suffix}`;
 
-    const wrappedOnChange = useCallback(
-        (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
-            if (data.value === undefined && data.displayValue) {
-                let value = getNumericPart(data.displayValue);
+    const wrappedOnChange = (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
+        if (data.value === undefined && data.displayValue) {
+            let value = getNumericPart(data.displayValue);
 
-                if (value !== undefined) {
-                    value = round(value, fractionDigitsToStep(fractionDigits));
+            if (value !== undefined) {
+                value = round(value, fractionDigitsToStep(fractionDigits));
 
-                    if (props.min !== undefined) {
-                        value = Math.max(value, props.min);
-                    }
-                    if (props.max !== undefined) {
-                        value = Math.min(value, props.max);
-                    }
+                if (props.min !== undefined) {
+                    value = Math.max(value, props.min);
                 }
-
-                data.value = value;
+                if (props.max !== undefined) {
+                    value = Math.min(value, props.max);
+                }
             }
 
-            onChange?.(event, data);
-        },
-        [onChange, fractionDigits, props.min, props.max],
-    );
+            data.value = value;
+        }
+
+        onChange?.(event, data);
+    };
 
     return <SpinButton {...props} value={value ?? 0} displayValue={displayValue} onChange={wrappedOnChange} />;
 };

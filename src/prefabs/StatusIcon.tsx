@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
@@ -40,17 +40,19 @@ interface IconTimerProps {
     height: number;
 }
 
-const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
-    const text = useMemo(() => {
-        if (time < 60) {
-            return time.toString();
-        }
-        if (time < 3600) {
-            return `${Math.floor(time / 60)}m`;
-        }
+function getIconTimerText(seconds: number) {
+    if (seconds < 60) {
+        return seconds.toString();
+    }
+    if (seconds < 3600) {
+        return `${Math.floor(seconds / 60)}m`;
+    }
 
-        return `${Math.floor(time / 3600)}h`;
-    }, [time]);
+    return `${Math.floor(seconds / 3600)}h`;
+}
+
+const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
+    const text = getIconTimerText(time);
 
     const fontSize = Math.max(14, height / 3);
     const strokeWidth = Math.max(1, fontSize / 8);

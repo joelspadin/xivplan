@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knockback.svg?react';
@@ -68,11 +68,9 @@ const ARROW_H = 15;
 const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
-        [object.color, object.opacity, object.width, object.height],
-    );
-    const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
+    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height));
+
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
     const { fill, ...stroke } = style;
 
     const arrowRef = useRef<Konva.Group>(null);

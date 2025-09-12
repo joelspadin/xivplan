@@ -1,5 +1,4 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
-import { useMemo } from 'react';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { LineZone } from '../../scene';
@@ -13,8 +12,8 @@ export const LineSizeControl: React.FC<PropertiesControlProps<LineZone>> = ({ ob
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
-    const length = useMemo(() => commonValue(objects, (obj) => obj.length), [objects]);
+    const width = commonValue(objects, (obj) => obj.width);
+    const length = commonValue(objects, (obj) => obj.length);
 
     const onWidthChanged = useSpinChanged((width: number) => {
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) });

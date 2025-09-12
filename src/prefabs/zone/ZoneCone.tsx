@@ -1,5 +1,5 @@
 import { WedgeConfig } from 'konva/lib/shapes/Wedge';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Group, Shape, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
@@ -76,31 +76,27 @@ interface OffsetWedgeProps extends WedgeConfig {
 }
 
 const OffsetWedge: React.FC<OffsetWedgeProps> = ({ radius, angle, shapeOffset, ...props }) => {
-    const { offsetRadius, angleRad, pointX, pointY, cornerX1, cornerY1, cornerX2, cornerY2 } = useMemo(() => {
-        const angleRad = degtorad(angle);
-        const offsetRadius = radius + shapeOffset;
+    const angleRad = degtorad(angle);
+    const offsetRadius = radius + shapeOffset;
 
-        const arcX1 = offsetRadius;
-        const arcY1 = 0;
-        const arcX2 = offsetRadius * Math.cos(angleRad);
-        const arcY2 = offsetRadius * Math.sin(angleRad);
+    const arcX1 = offsetRadius;
+    const arcY1 = 0;
+    const arcX2 = offsetRadius * Math.cos(angleRad);
+    const arcY2 = offsetRadius * Math.sin(angleRad);
 
-        const cornerX1 = arcX1;
-        const cornerY1 = arcY1 - shapeOffset;
-        const cornerX2 = arcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
-        const cornerY2 = arcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
+    const cornerX1 = arcX1;
+    const cornerY1 = arcY1 - shapeOffset;
+    const cornerX2 = arcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
+    const cornerY2 = arcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
 
-        // At 360 degrees, divisor goes to 0. Put the point in the center.
-        // At <= 15 degrees, pointDist becomes large and shows a gap with the
-        // non-offset shape. Limit pointDist to prevent that.
-        const divisor = Math.sin(angleRad / 2);
-        const pointDist = Math.min(shapeOffset * 2, divisor <= 0.001 ? 0 : shapeOffset / divisor);
+    // At 360 degrees, divisor goes to 0. Put the point in the center.
+    // At <= 15 degrees, pointDist becomes large and shows a gap with the
+    // non-offset shape. Limit pointDist to prevent that.
+    const divisor = Math.sin(angleRad / 2);
+    const pointDist = Math.min(shapeOffset * 2, divisor <= 0.001 ? 0 : shapeOffset / divisor);
 
-        const pointX = -pointDist * Math.cos(angleRad / 2);
-        const pointY = -pointDist * Math.sin(angleRad / 2);
-
-        return { offsetRadius, angleRad, pointX, pointY, cornerX1, cornerY1, cornerX2, cornerY2 };
-    }, [radius, angle, shapeOffset]);
+    const pointX = -pointDist * Math.cos(angleRad / 2);
+    const pointY = -pointDist * Math.sin(angleRad / 2);
 
     return (
         <Shape
@@ -128,10 +124,7 @@ interface ConeRendererProps extends RendererProps<ConeZone> {
 
 const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, coneAngle }) => {
     const isSelected = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
-        [object.color, object.opacity, radius, object.hollow],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
         <Group rotation={rotation - 90 - coneAngle / 2}>
@@ -160,19 +153,16 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
-    const updateObject = useCallback(
-        (state: ConeState) => {
-            state.rotation = Math.round(state.rotation);
-            state.coneAngle = Math.round(state.coneAngle);
+    const updateObject = (state: ConeState) => {
+        state.rotation = Math.round(state.rotation);
+        state.coneAngle = Math.round(state.coneAngle);
 
-            if (!stateChanged(object, state)) {
-                return;
-            }
+        if (!stateChanged(object, state)) {
+            return;
+        }
 
-            dispatch({ type: 'update', value: { ...object, ...state } });
-        },
-        [dispatch, object],
-    );
+        dispatch({ type: 'update', value: { ...object, ...state } });
+    };
 
     return (
         <ActivePortal isActive={dragging || resizing}>

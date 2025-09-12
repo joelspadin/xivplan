@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/square.svg?react';
@@ -59,10 +59,7 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
 
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
-        [object],
-    );
+    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
 
     const highlightOffset = style.strokeWidth;
     const highlightWidth = object.width + highlightOffset;

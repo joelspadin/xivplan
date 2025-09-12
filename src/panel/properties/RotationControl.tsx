@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -12,11 +12,8 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const rotation = useMemo(() => commonValue(objects, (obj) => obj.rotation), [objects]);
-    const noDirection = useMemo(
-        () => commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection),
-        [objects],
-    );
+    const rotation = commonValue(objects, (obj) => obj.rotation);
+    const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
 
     const onRotationChanged = useSpinChanged((rotation: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, rotation })) }),

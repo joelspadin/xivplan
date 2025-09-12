@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { CSSProperties, RefObject, useMemo, useRef } from 'react';
+import React, { CSSProperties, RefObject, useRef } from 'react';
 import { Circle, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import CounterClockwiseIcon from '../../assets/zone/rotate_ccw.svg?react';
@@ -95,23 +95,18 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
     const showHighlight = useShowHighlight(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
-    const style = useMemo(
-        () => getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow),
-        [object.color, object.opacity, object.hollow, radius],
-    );
+    const style = getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow);
 
-    const arrow = useMemo(() => {
-        const scale = radius * ARROW_SCALE;
+    const scale = radius * ARROW_SCALE;
 
-        return {
-            ...getArrowStyle(object.color, 100),
-            offsetX: -1 / ARROW_SCALE,
-            scaleX: scale,
-            scaleY: scale * (isClockwise ? -1 : 1),
-            stroke: getShadowColor(object.color),
-            strokeWidth: radius / 15,
-        } as ShapeConfig;
-    }, [object.color, radius, isClockwise]);
+    const arrow: ShapeConfig = {
+        ...getArrowStyle(object.color, 100),
+        offsetX: -1 / ARROW_SCALE,
+        scaleX: scale,
+        scaleY: scale * (isClockwise ? -1 : 1),
+        stroke: getShadowColor(object.color),
+        strokeWidth: radius / 15,
+    };
 
     // Cache so overlapping shapes with opacity appear as one object.
     useKonvaCache(groupRef, [object, radius, arrow, isDragging]);

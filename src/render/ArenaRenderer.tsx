@@ -1,7 +1,7 @@
 import { Context as KonvaContext } from 'konva/lib/Context';
 import { ShapeConfig } from 'konva/lib/Shape';
 import { ImageConfig } from 'konva/lib/shapes/Image';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import {
@@ -102,7 +102,7 @@ const BackgroundImage: React.FC = () => {
     const { scene } = useScene();
 
     const url = scene.arena.backgroundImage ?? '';
-    const ext = useMemo(() => getUrlFileExtension(url), [url]);
+    const ext = getUrlFileExtension(url);
 
     if (!url) {
         return null;

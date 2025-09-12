@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { ColoredObject, isMarker } from '../../scene';
@@ -17,12 +17,10 @@ import { PropertiesControlProps } from '../PropertiesControl';
 export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const color = useMemo(() => commonValue(objects, (obj) => obj.color), [objects]);
+    const color = commonValue(objects, (obj) => obj.color);
 
-    const onColorChanged = useCallback(
-        (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) }),
-        [dispatch, objects],
-    );
+    const onColorChanged = (color: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) });
 
     return <CompactColorPicker label="Color" color={color ?? ''} onChange={onColorChanged} />;
 };
@@ -38,19 +36,10 @@ export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>>
     const { dispatch } = useScene();
     const colorSwatches = useColorSwatches();
 
-    const color = useMemo(() => commonValue(objects, (obj) => obj.color), [objects]);
-    const swatches = useMemo(() => {
-        if (objects.every(isMarker)) {
-            return MARKER_SWATCHES;
-        }
+    const color = commonValue(objects, (obj) => obj.color);
+    const swatches = objects.every(isMarker) ? MARKER_SWATCHES : colorSwatches;
 
-        return colorSwatches;
-    }, [objects, colorSwatches]);
-
-    const setColor = useCallback(
-        (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) }),
-        [dispatch, objects],
-    );
+    const setColor = (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) });
 
     return (
         <CompactSwatchColorPicker

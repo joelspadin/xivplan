@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getPointerAngle, snapAngle } from '../coord';
@@ -52,28 +52,25 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     const [isResizing, setResizing] = useState(false);
     const [isDragging, setDragging] = useState(false);
 
-    const updateObject = useCallback(
-        (state: RadiusObjectState) => {
-            state.rotation = Math.round(state.rotation);
+    const updateObject = (state: RadiusObjectState) => {
+        state.rotation = Math.round(state.rotation);
 
-            if (!stateChanged(object, state)) {
-                return;
-            }
+        if (!stateChanged(object, state)) {
+            return;
+        }
 
-            const update: Partial<RadiusObjectState> = { radius: state.radius };
+        const update: Partial<RadiusObjectState> = { radius: state.radius };
 
-            if (isRotateable(object)) {
-                update.rotation = state.rotation;
-            }
-            if (isInnerRadiusObject(object)) {
-                update.innerRadius = state.innerRadius;
-            }
+        if (isRotateable(object)) {
+            update.rotation = state.rotation;
+        }
+        if (isInnerRadiusObject(object)) {
+            update.innerRadius = state.innerRadius;
+        }
 
-            dispatch({ type: 'update', value: { ...object, ...update } as SceneObject });
-            onTransformEnd?.(state);
-        },
-        [dispatch, onTransformEnd, object],
-    );
+        dispatch({ type: 'update', value: { ...object, ...update } as SceneObject });
+        onTransformEnd?.(state);
+    };
 
     return (
         <ActivePortal isActive={isDragging || isResizing}>

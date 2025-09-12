@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
 import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
@@ -43,20 +43,17 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     const [isResizing, setResizing] = useState(false);
     const [isDragging, setDragging] = useState(false);
 
-    const updateObject = useCallback(
-        (state: StarburstObjectState) => {
-            state.rotation = Math.round(state.rotation);
-            state.spokeWidth = Math.round(state.spokeWidth);
+    const updateObject = (state: StarburstObjectState) => {
+        state.rotation = Math.round(state.rotation);
+        state.spokeWidth = Math.round(state.spokeWidth);
 
-            if (!stateChanged(object, state)) {
-                return;
-            }
+        if (!stateChanged(object, state)) {
+            return;
+        }
 
-            dispatch({ type: 'update', value: { ...object, ...state } });
-            onTransformEnd?.(state);
-        },
-        [dispatch, onTransformEnd, object],
-    );
+        dispatch({ type: 'update', value: { ...object, ...state } });
+        onTransformEnd?.(state);
+    };
 
     return (
         <ActivePortal isActive={isDragging || isResizing}>

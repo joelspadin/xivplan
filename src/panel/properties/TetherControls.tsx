@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
@@ -24,12 +24,10 @@ const TETHER_TYPES = [
 export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const tether = useMemo(() => commonValue(objects, (obj) => obj.tether), [objects]);
+    const tether = commonValue(objects, (obj) => obj.tether);
 
-    const onTetherChanged = useCallback(
-        (tether: TetherType) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, tether })) }),
-        [dispatch, objects],
-    );
+    const onTetherChanged = (tether: TetherType) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, tether })) });
 
     return (
         <Field label="Tether type">
@@ -56,7 +54,7 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
+    const width = commonValue(objects, (obj) => obj.width);
 
     const onWidthChanged = useSpinChanged((width: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),

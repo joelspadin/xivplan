@@ -1,5 +1,5 @@
 import { Button, Image, Label, makeStyles, tokens } from '@fluentui/react-components';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Job, getJob, getJobIconUrl } from '../../jobs';
 import { PartyObject } from '../../scene';
@@ -19,11 +19,8 @@ export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = (
     const classes = useStyles();
     const { dispatch } = useScene();
 
-    const onClick = useCallback(
-        (name: string, image: string) =>
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name, image })) }),
-        [dispatch, objects],
-    );
+    const onClick = (name: string, image: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name, image })) });
 
     return (
         <div>

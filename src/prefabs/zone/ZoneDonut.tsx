@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle, Ring } from 'react-konva';
 import Icon from '../../assets/zone/donut.svg?react';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
@@ -63,10 +63,7 @@ interface DonutRendererProps extends RendererProps<DonutZone> {
 
 const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2),
-        [object.color, object.opacity, radius],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const highlightInnerRadius = Math.min(radius, innerRadius);
     const highlightOuterRadius = Math.max(radius, innerRadius);

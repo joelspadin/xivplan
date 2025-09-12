@@ -38,7 +38,7 @@ import {
     MoreHorizontalRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useAsync } from 'react-use';
 import { getPlanFolder, showOpenPlanPicker, showPlanFolderPicker } from './filesystem';
 
@@ -94,9 +94,7 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
     const [folder, setFolderInner] = useState(planFolder);
     const [selectedRows, setSelectedRowsInner] = useState(new Set<TableRowId>());
 
-    const parents = useMemo(() => {
-        return folder ? tree.getPath(folder).split('/') : [];
-    }, [tree, folder]);
+    const parents = folder ? tree.getPath(folder).split('/') : [];
 
     const items = useAsync(async () => {
         return root && folder ? await tree.getEntries(root, folder) : [];
@@ -104,82 +102,64 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
 
     // Fire selection changed event whenever the list of items changes, or the
     // selected item changes.
-    const fireSelectionChanged = useCallback(
-        (selection: Set<TableRowId>) => {
-            const selectedFile = findSelectedFile(items.value ?? [], selection);
-            onSelectionChanged?.(selectedFile);
-        },
-        [items.value, onSelectionChanged],
-    );
+    const fireSelectionChanged = (selection: Set<TableRowId>) => {
+        const selectedFile = findSelectedFile(items.value ?? [], selection);
+        onSelectionChanged?.(selectedFile);
+    };
 
-    const setSelectedRows = useCallback(
-        (value: Set<TableRowId>) => {
-            setSelectedRowsInner(value);
-            fireSelectionChanged(value);
-        },
-        [setSelectedRowsInner, fireSelectionChanged],
-    );
+    const setSelectedRows = (value: Set<TableRowId>) => {
+        setSelectedRowsInner(value);
+        fireSelectionChanged(value);
+    };
 
-    const setFolder = useCallback(
-        (handle: FileSystemDirectoryHandle | undefined) => {
-            setFolderInner(handle);
-            setSelectedRows(new Set());
-        },
-        [setFolderInner, setSelectedRows],
-    );
+    const setFolder = (handle: FileSystemDirectoryHandle | undefined) => {
+        setFolderInner(handle);
+        setSelectedRows(new Set());
+    };
 
-    const setRoot = useCallback(
-        (handle: FileSystemDirectoryHandle | undefined) => {
-            setRootInner(handle);
-            setFolder(handle);
-            setTree(new DirectoryTree());
-        },
-        [setRootInner, setFolder, setTree],
-    );
+    const setRoot = (handle: FileSystemDirectoryHandle | undefined) => {
+        setRootInner(handle);
+        setFolder(handle);
+        setTree(new DirectoryTree());
+    };
 
-    const navigateToParent = useCallback(
-        (index?: number) => {
-            index = index ?? parents.length - 1;
+    const navigateToParent = (index?: number) => {
+        index = index ?? parents.length - 1;
 
-            const path = parents.slice(0, index + 1).join('/');
-            if (path) {
-                const folder = tree.findParent(path);
-                if (folder) {
-                    setFolder(folder);
-                }
+        const path = parents.slice(0, index + 1).join('/');
+        if (path) {
+            const folder = tree.findParent(path);
+            if (folder) {
+                setFolder(folder);
             }
-        },
-        [tree, parents, setFolder],
-    );
+        }
+    };
 
-    const handleDoubleClick = useCallback(
-        (item: Item) => {
-            switch (item.handle.kind) {
-                case 'directory':
-                    setFolder(item.handle);
-                    break;
+    const handleDoubleClick = (item: Item) => {
+        switch (item.handle.kind) {
+            case 'directory':
+                setFolder(item.handle);
+                break;
 
-                case 'file':
-                    onFileSelected?.(item.handle);
-                    break;
-            }
-        },
-        [setFolder, onFileSelected],
-    );
+            case 'file':
+                onFileSelected?.(item.handle);
+                break;
+        }
+    };
 
-    const pickFolder = useCallback(async () => {
+    const pickFolder = async () => {
         const handle = await showPlanFolderPicker();
         if (handle) {
             setRoot(handle);
         }
-    }, [setRoot]);
+    };
 
-    const pickFile = useCallback(async () => {
+    const pickFile = async () => {
         const handle = await showOpenPlanPicker();
         if (handle) {
             onFileSelected?.(handle);
         }
-    }, [onFileSelected]);
+    };
 
     // TODO: add keyboard navigation
 
@@ -365,7 +345,7 @@ interface ParentBreadcrumbProps {
 const ParentBreadcrumb: React.FC<ParentBreadcrumbProps> = ({ parents, navigateToParent }) => {
     const classes = useStyles();
 
-    const items: ParentItem[] = useMemo(() => parents.map((name, index) => ({ name, index })), [parents]);
+    const items: ParentItem[] = parents.map((name, index) => ({ name, index }));
 
     const { startDisplayedItems, overflowItems, endDisplayedItems } = partitionBreadcrumbItems({
         items,

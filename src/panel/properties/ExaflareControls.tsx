@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
@@ -19,7 +19,7 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const length = useMemo(() => commonValue(objects, (obj) => obj.length), [objects]);
+    const length = commonValue(objects, (obj) => obj.length);
 
     const onLengthChanged = useSpinChanged((length: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
@@ -42,7 +42,7 @@ export const ExaflareSpacingControl: React.FC<PropertiesControlProps<ExaflareZon
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const spacing = useMemo(() => commonValue(objects, (obj) => obj.spacing), [objects]);
+    const spacing = commonValue(objects, (obj) => obj.spacing);
 
     const onSpacingChanged = useSpinChanged((spacing: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spacing })) }),

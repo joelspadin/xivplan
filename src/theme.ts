@@ -1,6 +1,6 @@
 import { ColorSwatchProps, Theme, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 import { ShapeConfig } from 'konva/lib/Shape';
-import { CSSProperties, useContext, useMemo } from 'react';
+import { CSSProperties, useContext } from 'react';
 import { DarkModeContext } from './ThemeContext';
 import { cssPropertiesToStyleString, themeToCssProperties, themeToCssVars, themeToTokensObject } from './themeUtil';
 
@@ -90,7 +90,7 @@ export function useSceneTheme(): SceneTheme {
  */
 export function useSceneThemeStyle(): CSSProperties {
     const theme = useSceneTheme();
-    return useMemo(() => themeToCssProperties(theme), [theme]);
+    return themeToCssProperties(theme);
 }
 
 /**
@@ -98,7 +98,7 @@ export function useSceneThemeStyle(): CSSProperties {
  */
 export function useSceneThemeHtmlStyle(selector = ':root'): string {
     const styles = useSceneThemeStyle();
-    return useMemo(() => cssPropertiesToStyleString(selector, styles), [selector, styles]);
+    return cssPropertiesToStyleString(selector, styles);
 }
 
 export function getArenaShapeConfig(theme: SceneTheme): ShapeConfig {
@@ -167,7 +167,7 @@ export function usePanelTheme() {
  */
 export function usePanelThemeStyle(): CSSProperties {
     const theme = usePanelTheme();
-    return useMemo(() => themeToCssProperties(theme), [theme]);
+    return themeToCssProperties(theme);
 }
 
 export function makeColorSwatch(color: string, label: string): ColorSwatchProps {
@@ -177,27 +177,24 @@ export function makeColorSwatch(color: string, label: string): ColorSwatchProps 
 export function useColorSwatches(): ColorSwatchProps[] {
     const theme = useSceneTheme();
 
-    return useMemo(
-        () => [
-            makeColorSwatch(COLOR_RED, 'red'),
-            makeColorSwatch(COLOR_ORANGE, 'orange'),
-            makeColorSwatch(COLOR_YELLOW, 'yellow'),
-            makeColorSwatch(COLOR_GREEN, 'green'),
-            makeColorSwatch(COLOR_CYAN, 'cyan'),
-            makeColorSwatch(COLOR_BLUE, 'blue'),
-            makeColorSwatch(COLOR_VIOLET, 'violet'),
-            makeColorSwatch(COLOR_PINK, 'pink'),
-            makeColorSwatch(COLOR_FUSCHIA, 'fuschia'),
-            makeColorSwatch(COLOR_BLUE_WHITE, 'blueish-white'),
-            makeColorSwatch(COLOR_DARK_PURPLE, 'dark-purple'),
-            makeColorSwatch(COLOR_WHITE, 'white'),
-            makeColorSwatch(COLOR_BLACK, 'black'),
-            makeColorSwatch(theme.colorGrid, 'grid'),
-            makeColorSwatch(theme.colorArena, 'arena'),
-            makeColorSwatch(theme.colorBackground, 'background'),
-        ],
-        [theme],
-    );
+    return [
+        makeColorSwatch(COLOR_RED, 'red'),
+        makeColorSwatch(COLOR_ORANGE, 'orange'),
+        makeColorSwatch(COLOR_YELLOW, 'yellow'),
+        makeColorSwatch(COLOR_GREEN, 'green'),
+        makeColorSwatch(COLOR_CYAN, 'cyan'),
+        makeColorSwatch(COLOR_BLUE, 'blue'),
+        makeColorSwatch(COLOR_VIOLET, 'violet'),
+        makeColorSwatch(COLOR_PINK, 'pink'),
+        makeColorSwatch(COLOR_FUSCHIA, 'fuschia'),
+        makeColorSwatch(COLOR_BLUE_WHITE, 'blueish-white'),
+        makeColorSwatch(COLOR_DARK_PURPLE, 'dark-purple'),
+        makeColorSwatch(COLOR_WHITE, 'white'),
+        makeColorSwatch(COLOR_BLACK, 'black'),
+        makeColorSwatch(theme.colorGrid, 'grid'),
+        makeColorSwatch(theme.colorArena, 'arena'),
+        makeColorSwatch(theme.colorBackground, 'background'),
+    ];
 }
 
 // ==== Fluent UI themes ====

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/circle.svg?react';
@@ -60,10 +60,7 @@ interface CircleRendererProps extends RendererProps<CircleZone> {
 
 const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
-        [object.color, object.opacity, object.hollow, radius],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
         <>

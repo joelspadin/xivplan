@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { IconObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
@@ -13,7 +13,7 @@ export const IconTimeControl: React.FC<PropertiesControlProps<IconObject>> = ({ 
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const time = useMemo(() => commonValue(objects, (obj) => obj.time ?? 0), [objects]);
+    const time = commonValue(objects, (obj) => obj.time ?? 0);
 
     const onChange = useSpinChanged((time: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, time })) }),
@@ -30,8 +30,8 @@ export const IconStacksControl: React.FC<PropertiesControlProps<IconObject>> = (
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const stacks = useMemo(() => commonValue(objects, getStackCount), [objects]);
-    const maxStacks = useMemo(() => Math.min(...objects.map((obj) => obj.maxStacks ?? 0)), [objects]);
+    const stacks = commonValue(objects, getStackCount);
+    const maxStacks = Math.min(...objects.map((obj) => obj.maxStacks ?? 0));
 
     const onChange = useSpinChanged((value: number) => {
         dispatch({ type: 'update', value: objects.map((obj) => setStacks(obj, value)) });

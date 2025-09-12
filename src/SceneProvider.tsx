@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useMemo, useState } from 'react';
+import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -193,13 +193,10 @@ export interface SceneProviderProps extends PropsWithChildren {
 export const SceneProvider: React.FC<SceneProviderProps> = ({ initialScene, children }) => {
     const source = useState<FileSource | undefined>();
 
-    const initialState: EditorState = useMemo(
-        () => ({
-            scene: initialScene ?? DEFAULT_SCENE,
-            currentStep: 0,
-        }),
-        [initialScene],
-    );
+    const initialState: EditorState = {
+        scene: initialScene ?? DEFAULT_SCENE,
+        currentStep: 0,
+    };
 
     return (
         <SourceContext value={source}>
@@ -244,14 +241,11 @@ export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
     const setSavedState = useSetSavedState();
     const [, setSource] = useContext(SourceContext);
 
-    return React.useCallback(
-        (scene: Scene, source?: FileSource) => {
-            reset({ scene, currentStep: 0 });
-            setSavedState(scene);
-            setSource(source);
-        },
-        [reset, setSavedState, setSource],
-    );
+    return (scene: Scene, source?: FileSource) => {
+        reset({ scene, currentStep: 0 });
+        setSavedState(scene);
+        setSource(source);
+    };
 }
 
 export function useSetSource(): Dispatch<SetStateAction<FileSource | undefined>> {

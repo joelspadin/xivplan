@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren, RefAttributes, useCallback, useContext, useState } from 'react';
+import React, { PropsWithChildren, RefAttributes, useContext, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
@@ -25,15 +25,12 @@ export const SceneRenderer: React.FC = () => {
     const size = getCanvasSize(scene);
     const [stage, stageRef] = useState<Konva.Stage | null>(null);
 
-    const onClickStage = useCallback(
-        (e: KonvaEventObject<MouseEvent>) => {
-            // Clicking on nothing (with no modifier keys held) should cancel selection.
-            if (!e.evt.ctrlKey && !e.evt.shiftKey) {
-                setSelection(selectNone());
-            }
-        },
-        [setSelection],
-    );
+    const onClickStage = (e: KonvaEventObject<MouseEvent>) => {
+        // Clicking on nothing (with no modifier keys held) should cancel selection.
+        if (!e.evt.ctrlKey && !e.evt.shiftKey) {
+            setSelection(selectNone());
+        }
+    };
 
     // console.log(scene);
 
@@ -162,33 +159,30 @@ const DropTarget: React.FC<DropTargetProps> = ({ stage, children }) => {
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
 
-    const onDrop = useCallback(
-        (e: React.DragEvent) => {
-            e.preventDefault();
+    const onDrop = (e: React.DragEvent) => {
+        e.preventDefault();
 
-            if (!dragObject || !stage) {
-                return;
-            }
+        if (!dragObject || !stage) {
+            return;
+        }
 
-            setDragObject(null);
-            stage.setPointersPositions(e);
+        setDragObject(null);
+        stage.setPointersPositions(e);
 
-            const position = stage.getPointerPosition();
-            if (!position) {
-                return;
-            }
+        const position = stage.getPointerPosition();
+        if (!position) {
+            return;
+        }
 
-            position.x -= dragObject.offset.x;
-            position.y -= dragObject.offset.y;
+        position.x -= dragObject.offset.x;
+        position.y -= dragObject.offset.y;
 
-            const action = getDropAction(dragObject, getSceneCoord(scene, position));
-            if (action) {
-                dispatch(action);
-                setSelection(selectNewObjects(scene, 1));
-            }
-        },
-        [scene, stage, dispatch, setSelection, dragObject, setDragObject],
-    );
+        const action = getDropAction(dragObject, getSceneCoord(scene, position));
+        if (action) {
+            dispatch(action);
+            setSelection(selectNewObjects(scene, 1));
+        }
+    };
 
     return (
         <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>

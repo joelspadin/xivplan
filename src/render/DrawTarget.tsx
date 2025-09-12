@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { Line, Rect } from 'react-konva';
 import simplify from 'simplify-js';
 import { DrawConfig } from '../EditModeContext';
@@ -83,34 +83,28 @@ const DrawTargetLayer: React.FC = () => {
         }
     }, [stage, setDefaultCursor]);
 
-    const onMouseDown = useCallback(
-        (e: KonvaEventObject<MouseEvent>) => {
-            setSelection(selectNone());
+    const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+        setSelection(selectNone());
 
-            const pos = getPointerPosition(scene, e.target.getStage());
-            if (pos) {
-                setIsDrawing(true);
-                setPoints([pos]);
-            }
-        },
-        [scene, setSelection, setIsDrawing, setPoints],
-    );
+        const pos = getPointerPosition(scene, e.target.getStage());
+        if (pos) {
+            setIsDrawing(true);
+            setPoints([pos]);
+        }
+    };
 
-    const onMouseMove = useCallback(
-        (e: KonvaEventObject<MouseEvent>) => {
-            if (!isDrawing) {
-                return;
-            }
+    const onMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+        if (!isDrawing) {
+            return;
+        }
 
-            const pos = getPointerPosition(scene, e.target.getStage());
-            if (pos) {
-                setPoints([...points, pos]);
-            }
-        },
-        [scene, isDrawing, points, setPoints],
-    );
+        const pos = getPointerPosition(scene, e.target.getStage());
+        if (pos) {
+            setPoints([...points, pos]);
+        }
+    };
 
-    const onMouseUp = useCallback(() => {
+    const onMouseUp = () => {
         if (!isDrawing) {
             return;
         }
@@ -122,9 +116,9 @@ const DrawTargetLayer: React.FC = () => {
             dispatch({ type: 'add', object });
             setSelection(selectNewObjects(scene, 1));
         }
-    }, [config, scene, dispatch, setSelection, isDrawing, setIsDrawing, points]);
+    };
 
-    const linePoints = useMemo(() => convertPoints(scene, points), [scene, points]);
+    const linePoints = convertPoints(scene, points);
 
     return (
         <>

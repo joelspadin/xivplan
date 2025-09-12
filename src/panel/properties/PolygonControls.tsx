@@ -1,6 +1,6 @@
 import { Field, makeStyles } from '@fluentui/react-components';
 import { bundleIcon, SquareFilled, SquareRegular } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
@@ -17,7 +17,7 @@ export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> 
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const spokes = useMemo(() => commonValue(objects, (obj) => obj.sides), [objects]);
+    const spokes = commonValue(objects, (obj) => obj.sides);
 
     const onSidesChanged = useSpinChanged((sides: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, sides })) }),
@@ -41,12 +41,10 @@ export const PolygonOrientationControl: React.FC<PropertiesControlProps<PolygonZ
     const controlClasses = useControlStyles();
     const { dispatch } = useScene();
 
-    const orient = useMemo(() => commonValue(objects, (obj) => obj.orient), [objects]);
+    const orient = commonValue(objects, (obj) => obj.orient);
 
-    const handleChanged = useCallback(
-        (orient: PolygonOrientation) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, orient })) }),
-        [dispatch, objects],
-    );
+    const handleChanged = (orient: PolygonOrientation) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, orient })) });
 
     return (
         <Field label="Orientation" className={controlClasses.cell}>

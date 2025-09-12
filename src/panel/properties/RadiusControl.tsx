@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -12,8 +12,8 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const radius = useMemo(() => commonValue(objects, (obj) => obj.radius), [objects]);
-    const hasInnerRadius = useMemo(() => objects[0] && isInnerRadiusObject(objects[0]), [objects]);
+    const radius = commonValue(objects, (obj) => obj.radius);
+    const hasInnerRadius = objects.every(isInnerRadiusObject);
 
     const onRadiusChanged = useSpinChanged((radius: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, radius })) }),
@@ -32,7 +32,7 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const innerRadius = useMemo(() => commonValue(objects, (obj) => obj.innerRadius), [objects]);
+    const innerRadius = commonValue(objects, (obj) => obj.innerRadius);
 
     const onInnerRadiusChanged = useSpinChanged((innerRadius: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, innerRadius })) }),

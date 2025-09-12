@@ -1,12 +1,4 @@
-import React, {
-    ComponentType,
-    createContext,
-    Dispatch,
-    PropsWithChildren,
-    useCallback,
-    useContext,
-    useReducer,
-} from 'react';
+import React, { ComponentType, createContext, Dispatch, PropsWithChildren, useContext, useReducer } from 'react';
 import { createUndoReducer, redoAction, resetAction, undoAction, UndoRedoAction, UndoRedoState } from './undoReducer';
 
 export interface UndoProviderProps<S> extends PropsWithChildren {
@@ -64,8 +56,8 @@ export function createUndoContext<S, A extends object>(
     function useUndoRedo(): [undo: UndoRedoFunc, redo: UndoRedoFunc] {
         const [, dispatch] = useContext(Context);
 
-        const undo = useCallback(() => dispatch(undoAction()), [dispatch]) as UndoRedoFunc;
-        const redo = useCallback(() => dispatch(redoAction()), [dispatch]) as UndoRedoFunc;
+        const undo = () => dispatch(undoAction());
+        const redo = () => dispatch(redoAction());
 
         return [undo, redo];
     }
@@ -81,7 +73,7 @@ export function createUndoContext<S, A extends object>(
     function useReset(): Dispatch<S> {
         const [, dispatch] = useContext(Context);
 
-        return useCallback((state: S) => dispatch(resetAction(state)), [dispatch]);
+        return (state: S) => dispatch(resetAction(state));
     }
 
     return { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset };

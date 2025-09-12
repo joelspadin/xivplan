@@ -1,6 +1,6 @@
 import { Field } from '@fluentui/react-components';
 import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { MarkerObject } from '../../scene';
@@ -13,14 +13,11 @@ const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
 export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const shape = useMemo(() => commonValue(objects, (obj) => obj.shape), [objects]);
+    const shape = commonValue(objects, (obj) => obj.shape);
 
-    const onShapeChanged = useCallback(
-        (shape: string) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, shape })) });
-        },
-        [dispatch, objects],
-    );
+    const onShapeChanged = (shape: string) => {
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, shape })) });
+    };
 
     return (
         <Field label="Shape">

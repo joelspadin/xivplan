@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_stack.svg?react';
@@ -76,18 +76,16 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
     const patternWidth = object.width;
     const patternHeight = object.width / 2;
 
-    const arrow = useMemo(() => {
-        const width = patternWidth * ARROW_SIZE_FRAC;
-        const height = width * ARROW_HEIGHT_FRAC;
+    const width = patternWidth * ARROW_SIZE_FRAC;
+    const height = width * ARROW_HEIGHT_FRAC;
 
-        return {
-            ...getArrowStyle(object.color, object.opacity * 2),
-            width,
-            height,
-            y: patternHeight / 2,
-            chevronAngle: CHEVRON_ANGLE,
-        } as ChevronConfig;
-    }, [object.color, object.opacity, patternWidth, patternHeight]);
+    const arrow: ChevronConfig = {
+        ...getArrowStyle(object.color, object.opacity * 2),
+        width,
+        height,
+        y: patternHeight / 2,
+        chevronAngle: CHEVRON_ANGLE,
+    };
 
     const arrowRef = useRef<Konva.Group>(null);
     useEffect(() => {

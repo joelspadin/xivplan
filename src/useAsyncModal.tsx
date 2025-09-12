@@ -1,5 +1,5 @@
 import { DialogProps } from '@fluentui/react-components';
-import { ReactNode, useCallback, useRef, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 
 export type ModalProps = Omit<DialogProps, 'children'>;
 
@@ -66,17 +66,14 @@ export function useAsyncModal<Args = void, Result = boolean>(
 
     const promiseRef = useRef<PromiseRef<Args, Result>>(null);
 
-    const openModal = useCallback(
-        (args: Args) => {
-            return new Promise<Result>((resolve) => {
-                promiseRef.current = { resolve, args };
-                setOpen(true);
-            });
-        },
-        [setOpen],
-    );
+    const openModal = (args: Args) => {
+        return new Promise<Result>((resolve) => {
+            promiseRef.current = { resolve, args };
+            setOpen(true);
+        });
+    };
 
-    const renderModal = useCallback(() => {
+    const renderModal = () => {
         if (promiseRef.current === null) {
             return null;
         }
@@ -87,7 +84,7 @@ export function useAsyncModal<Args = void, Result = boolean>(
         };
 
         return render(resolve, { open }, promiseRef.current.args);
-    }, [open, render]);
+    };
 
     return [openModal, renderModal];
 }
@@ -99,16 +96,16 @@ type OpenChangeCallback = Required<DialogProps>['onOpenChange'];
  *
  * Resolves to true if the user closes the dialog by clicking an element with the given ID, else false.
  */
-export function useAsyncModalResolveCallback(confirmId: string, resolve: (result: boolean) => void) {
-    return useCallback<OpenChangeCallback>(
-        (ev, data) => {
-            if (data.type === 'escapeKeyDown') {
-                resolve(false);
-            } else {
-                const target = ev.target as HTMLElement;
-                resolve(target.id === confirmId);
-            }
-        },
-        [confirmId, resolve],
-    );
+export function useAsyncModalResolveCallback(
+    confirmId: string,
+    resolve: (result: boolean) => void,
+): OpenChangeCallback {
+    return (ev, data) => {
+        if (data.type === 'escapeKeyDown') {
+            resolve(false);
+        } else {
+            const target = ev.target as HTMLElement;
+            resolve(target.id === confirmId);
+        }
+    };
 }

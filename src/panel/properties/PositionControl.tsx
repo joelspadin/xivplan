@@ -1,6 +1,6 @@
 import { Field, ToggleButton, Tooltip } from '@fluentui/react-components';
 import { LockClosedRegular, LockMultipleRegular, LockOpenRegular } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -13,14 +13,12 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const x = useMemo(() => commonValue(objects, (obj) => obj.x), [objects]);
-    const y = useMemo(() => commonValue(objects, (obj) => obj.y), [objects]);
-    const pinned = useMemo(() => commonValue(objects, (obj) => !!obj.pinned), [objects]);
+    const x = commonValue(objects, (obj) => obj.x);
+    const y = commonValue(objects, (obj) => obj.y);
+    const pinned = commonValue(objects, (obj) => !!obj.pinned);
 
-    const onTogglePinned = useCallback(
-        () => dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'pinned', !pinned)) }),
-        [dispatch, objects, pinned],
-    );
+    const onTogglePinned = () =>
+        dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'pinned', !pinned)) });
 
     const onXChanged = useSpinChanged((x: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, x })) }),

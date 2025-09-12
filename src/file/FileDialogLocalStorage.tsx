@@ -20,7 +20,7 @@ import {
     makeStyles,
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useState } from 'react';
+import React, { KeyboardEvent, MouseEvent, useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { FileSource, useLoadScene, useScene, useSetSource } from '../SceneProvider';
@@ -63,85 +63,68 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
     const [counter, { inc: reloadFiles }] = useCounter();
     const files = useAsync(listLocalStorageFiles, [counter]);
 
-    const loadSceneFromStorage = useCallback(
-        async (event: MouseEvent<HTMLElement>, name: string) => {
-            if (isDirty && !(await confirmUnsavedChanges())) {
-                return;
-            }
+    const loadSceneFromStorage = async (event: MouseEvent<HTMLElement>, name: string) => {
+        if (isDirty && !(await confirmUnsavedChanges())) {
+            return;
+        }
 
-            const source: FileSource = { type: 'local', name };
-            const scene = await openFile(source);
+        const source: FileSource = { type: 'local', name };
+        const scene = await openFile(source);
 
-            loadScene(scene, source);
-            dismissDialog();
-        },
-        [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
-    );
+        loadScene(scene, source);
+        dismissDialog();
+    };
 
-    const openCallback = useCallback(
-        async (event: MouseEvent<HTMLElement>) => {
-            const [name] = selectedRows;
-            if (name) {
-                await loadSceneFromStorage(event, name as string);
-            }
-        },
-        [selectedRows, loadSceneFromStorage],
-    );
+    const openCallback = async (event: MouseEvent<HTMLElement>) => {
+        const [name] = selectedRows;
+        if (name) {
+            await loadSceneFromStorage(event, name as string);
+        }
+    };
 
-    const deleteFile = useCallback(
-        async (item: LocalStorageFileInfo) => {
-            if (await confirmDeleteFile(item.name)) {
-                await deleteFileLocalStorage(item.name);
-                reloadFiles();
-            }
-        },
-        [reloadFiles, confirmDeleteFile],
-    );
+    const deleteFile = async (item: LocalStorageFileInfo) => {
+        if (await confirmDeleteFile(item.name)) {
+            await deleteFileLocalStorage(item.name);
+            reloadFiles();
+        }
+    };
 
-    const columns = useMemo<TableColumnDefinition<LocalStorageFileInfo>[]>(
-        () => [
-            createTableColumn<LocalStorageFileInfo>({
-                columnId: 'name',
-                compare: (a, b) => a.name.localeCompare(b.name),
-                renderHeaderCell: () => 'Name',
-                renderCell: (item) => item.name,
-            }),
-            createTableColumn<LocalStorageFileInfo>({
-                columnId: 'lastUpdate',
-                compare: (a, b) => {
-                    const time1 = a.lastEdited?.getTime() ?? 0;
-                    const time2 = b.lastEdited?.getTime() ?? 0;
-                    return time1 - time2;
-                },
-                renderHeaderCell: () => 'Last updated',
-                renderCell: (item) => item.lastEdited?.toLocaleString(),
-            }),
-            createTableColumn<LocalStorageFileInfo>({
-                columnId: 'delete',
-                renderHeaderCell: () => 'Actions',
-                renderCell: (item) => {
-                    return (
-                        <>
-                            <Tooltip
-                                content={`Delete ${item.name}`}
-                                appearance="inverted"
-                                relationship="label"
-                                withArrow
-                            >
-                                <Button
-                                    appearance="subtle"
-                                    aria-label="Delete"
-                                    icon={<DeleteIcon />}
-                                    onClick={() => deleteFile(item)}
-                                />
-                            </Tooltip>
-                        </>
-                    );
-                },
-            }),
-        ],
-        [deleteFile],
-    );
+    const columns: TableColumnDefinition<LocalStorageFileInfo>[] = [
+        createTableColumn<LocalStorageFileInfo>({
+            columnId: 'name',
+            compare: (a, b) => a.name.localeCompare(b.name),
+            renderHeaderCell: () => 'Name',
+            renderCell: (item) => item.name,
+        }),
+        createTableColumn<LocalStorageFileInfo>({
+            columnId: 'lastUpdate',
+            compare: (a, b) => {
+                const time1 = a.lastEdited?.getTime() ?? 0;
+                const time2 = b.lastEdited?.getTime() ?? 0;
+                return time1 - time2;
+            },
+            renderHeaderCell: () => 'Last updated',
+            renderCell: (item) => item.lastEdited?.toLocaleString(),
+        }),
+        createTableColumn<LocalStorageFileInfo>({
+            columnId: 'delete',
+            renderHeaderCell: () => 'Actions',
+            renderCell: (item) => {
+                return (
+                    <>
+                        <Tooltip content={`Delete ${item.name}`} appearance="inverted" relationship="label" withArrow>
+                            <Button
+                                appearance="subtle"
+                                aria-label="Delete"
+                                icon={<DeleteIcon />}
+                                onClick={() => deleteFile(item)}
+                            />
+                        </Tooltip>
+                    </>
+                );
+            },
+        }),
+    ];
 
     // TODO: virtualize datagrid?
     // https://react.fluentui.dev/?path=/docs/components-datagrid--default#virtualization
@@ -214,7 +197,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
     const [name, setName] = useState(getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 
-    const alreadyExists = useMemo(() => files.value?.some((f) => f.name === name?.trim()), [files.value, name]);
+    const alreadyExists = files.value?.some((f) => f.name === name?.trim());
     const canSave = !!name?.trim() && !files.loading;
 
     const [, save] = useAsyncFn(async () => {
@@ -235,15 +218,12 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
         dismissDialog();
     }, [scene, name, canSave, alreadyExists, dismissDialog, setSavedState, setSource, confirmOverwriteFile]);
 
-    const onKeyUp = useCallback(
-        (event: KeyboardEvent<HTMLInputElement>) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                save();
-            }
-        },
-        [save],
-    );
+    const onKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            save();
+        }
+    };
 
     return (
         <>

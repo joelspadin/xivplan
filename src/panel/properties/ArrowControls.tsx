@@ -1,6 +1,6 @@
 import { Button, Field, makeStyles } from '@fluentui/react-components';
 import { ArrowLeftRegular, ArrowRightRegular, SubtractRegular } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { ArrowObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
@@ -10,18 +10,14 @@ export const ArrowPointersControl: React.FC<PropertiesControlProps<ArrowObject>>
     const classes = useStyles();
     const { dispatch } = useScene();
 
-    const arrowBegin = useMemo(() => commonValue(objects, (obj) => !!obj.arrowBegin), [objects]);
-    const arrowEnd = useMemo(() => commonValue(objects, (obj) => !!obj.arrowEnd), [objects]);
+    const arrowBegin = commonValue(objects, (obj) => !!obj.arrowBegin);
+    const arrowEnd = commonValue(objects, (obj) => !!obj.arrowEnd);
 
-    const onToggleArrowBegin = useCallback(
-        () => dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'arrowBegin', !arrowBegin)) }),
-        [dispatch, objects, arrowBegin],
-    );
+    const onToggleArrowBegin = () =>
+        dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'arrowBegin', !arrowBegin)) });
 
-    const onToggleArrowEnd = useCallback(
-        () => dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'arrowEnd', !arrowEnd)) }),
-        [dispatch, objects, arrowEnd],
-    );
+    const onToggleArrowEnd = () =>
+        dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'arrowEnd', !arrowEnd)) });
 
     const arrowBeginIcon = arrowBegin ? <ArrowLeftRegular /> : <SubtractRegular />;
     const arrowEndIcon = arrowEnd ? <ArrowRightRegular /> : <SubtractRegular />;

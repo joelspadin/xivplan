@@ -1,5 +1,5 @@
 import { ArcConfig } from 'konva/lib/shapes/Arc';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Arc, Circle, Group, Shape } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
@@ -78,57 +78,29 @@ interface OffsetArcProps extends ArcConfig {
 }
 
 const OffsetArc: React.FC<OffsetArcProps> = ({ innerRadius, outerRadius, angle, shapeOffset, ...props }) => {
-    const {
-        offsetInnerRadius,
-        offsetOuterRadius,
-        angleRad,
-        innerCornerX1,
-        innerCornerY1,
-        innerCornerX2,
-        innerCornerY2,
-        outerCornerX1,
-        outerCornerY1,
-        outerCornerX2,
-        outerCornerY2,
-    } = useMemo(() => {
-        const angleRad = degtorad(angle);
-        const offsetInnerRadius = innerRadius - shapeOffset;
-        const offsetOuterRadius = outerRadius + shapeOffset;
+    const angleRad = degtorad(angle);
+    const offsetInnerRadius = innerRadius - shapeOffset;
+    const offsetOuterRadius = outerRadius + shapeOffset;
 
-        const innerArcX1 = offsetInnerRadius;
-        const innerArcY1 = 0;
-        const innerArcX2 = offsetInnerRadius * Math.cos(angleRad);
-        const innerArcY2 = offsetInnerRadius * Math.sin(angleRad);
+    const innerArcX1 = offsetInnerRadius;
+    const innerArcY1 = 0;
+    const innerArcX2 = offsetInnerRadius * Math.cos(angleRad);
+    const innerArcY2 = offsetInnerRadius * Math.sin(angleRad);
 
-        const innerCornerX1 = innerArcX1;
-        const innerCornerY1 = innerArcY1 - shapeOffset;
-        const innerCornerX2 = innerArcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
-        const innerCornerY2 = innerArcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
+    const innerCornerX1 = innerArcX1;
+    const innerCornerY1 = innerArcY1 - shapeOffset;
+    const innerCornerX2 = innerArcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
+    const innerCornerY2 = innerArcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
 
-        const outerArcX1 = offsetOuterRadius;
-        const outerArcY1 = 0;
-        const outerArcX2 = offsetOuterRadius * Math.cos(angleRad);
-        const outerArcY2 = offsetOuterRadius * Math.sin(angleRad);
+    const outerArcX1 = offsetOuterRadius;
+    const outerArcY1 = 0;
+    const outerArcX2 = offsetOuterRadius * Math.cos(angleRad);
+    const outerArcY2 = offsetOuterRadius * Math.sin(angleRad);
 
-        const outerCornerX1 = outerArcX1;
-        const outerCornerY1 = outerArcY1 - shapeOffset;
-        const outerCornerX2 = outerArcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
-        const outerCornerY2 = outerArcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
-
-        return {
-            offsetInnerRadius,
-            offsetOuterRadius,
-            angleRad,
-            innerCornerX1,
-            innerCornerY1,
-            innerCornerX2,
-            innerCornerY2,
-            outerCornerX1,
-            outerCornerY1,
-            outerCornerX2,
-            outerCornerY2,
-        };
-    }, [innerRadius, outerRadius, angle, shapeOffset]);
+    const outerCornerX1 = outerArcX1;
+    const outerCornerY1 = outerArcY1 - shapeOffset;
+    const outerCornerX2 = outerArcX2 + shapeOffset * Math.cos(angleRad + Math.PI / 2);
+    const outerCornerY2 = outerArcY2 + shapeOffset * Math.sin(angleRad + Math.PI / 2);
 
     return (
         <Shape
@@ -167,10 +139,7 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
     isDragging,
 }) => {
     const isSelected = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow),
-        [object.color, object.opacity, outerRadius, object.hollow],
-    );
+    const style = getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow);
 
     const highlightInnerRadius = Math.min(outerRadius, innerRadius);
     const highlightOuterRadius = Math.max(outerRadius, innerRadius);
@@ -209,19 +178,16 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
-    const updateObject = useCallback(
-        (state: ArcState) => {
-            state.rotation = Math.round(state.rotation);
-            state.coneAngle = Math.round(state.coneAngle);
+    const updateObject = (state: ArcState) => {
+        state.rotation = Math.round(state.rotation);
+        state.coneAngle = Math.round(state.coneAngle);
 
-            if (!stateChanged(object, state)) {
-                return;
-            }
+        if (!stateChanged(object, state)) {
+            return;
+        }
 
-            dispatch({ type: 'update', value: { ...object, ...state } });
-        },
-        [dispatch, object],
-    );
+        dispatch({ type: 'update', value: { ...object, ...state } });
+    };
 
     return (
         <ActivePortal isActive={dragging || resizing}>

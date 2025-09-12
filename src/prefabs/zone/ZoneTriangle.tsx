@@ -1,5 +1,5 @@
 import { RectConfig } from 'konva/lib/shapes/Rect';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Group, Line } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/triangle.svg?react';
@@ -59,26 +59,21 @@ registerDropHandler<RectangleZone>(ObjectType.Triangle, (object, position) => {
 });
 
 const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
-    const points = useMemo(() => {
-        const w = width ?? 0;
-        const h = height ?? 0;
-        // prettier-ignore
-        return [
-            w / 2, 0,
-            0, h,
-            w, h
-        ];
-    }, [width, height]);
+    const w = width ?? 0;
+    const h = height ?? 0;
+    // prettier-ignore
+    const points = [
+        w / 2, 0,
+        0, h,
+        w, h
+    ];
 
     return <Line points={points} closed {...props} />;
 };
 
 const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow),
-        [object.color, object.opacity, object.width, object.height, object.hollow],
-    );
+    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
 
     const highlightOffset = style.strokeWidth;
     const highlightWidth = object.width + highlightOffset;

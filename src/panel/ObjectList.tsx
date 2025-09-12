@@ -17,7 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { SceneObject } from '../scene';
 import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
 import { reversed } from '../util';
@@ -39,7 +39,7 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
-    const reversedObjects = useMemo(() => [...reversed(objects)], [objects]);
+    const reversedObjects = [...reversed(objects)];
 
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -58,16 +58,13 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
         }),
     );
 
-    const handleDragEnd = useCallback(
-        (ev: DragEndEvent) => {
-            const { active, over } = ev;
+    const handleDragEnd = (ev: DragEndEvent) => {
+        const { active, over } = ev;
 
-            if (over && active.id !== over.id) {
-                onMove(getObjectIndex(objects, active.id as number), getObjectIndex(objects, over.id as number));
-            }
-        },
-        [objects, onMove],
-    );
+        if (over && active.id !== over.id) {
+            onMove(getObjectIndex(objects, active.id as number), getObjectIndex(objects, over.id as number));
+        }
+    };
 
     return (
         <div className={classes.list}>
@@ -96,18 +93,15 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [selection, setSelection] = useSelection();
     const isSelected = selection.has(object.id);
 
-    const onClick = useCallback(
-        (e: React.MouseEvent) => {
-            if (e.shiftKey) {
-                setSelection(addSelection(selection, object.id));
-            } else if (e.ctrlKey) {
-                setSelection(toggleSelection(selection, object.id));
-            } else {
-                setSelection(selectSingle(object.id));
-            }
-        },
-        [object.id, selection, setSelection],
-    );
+    const onClick = (e: React.MouseEvent) => {
+        if (e.shiftKey) {
+            setSelection(addSelection(selection, object.id));
+        } else if (e.ctrlKey) {
+            setSelection(toggleSelection(selection, object.id));
+        } else {
+            setSelection(selectSingle(object.id));
+        }
+    };
 
     const Component = getListComponent(object);
 

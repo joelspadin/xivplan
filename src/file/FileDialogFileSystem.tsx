@@ -1,5 +1,5 @@
 import { Button, DialogActions, DialogTrigger } from '@fluentui/react-components';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { ExternalLink } from '../ExternalLink';
 import { useLoadScene, useScene, useSetSource } from '../SceneProvider';
@@ -22,20 +22,17 @@ export const OpenFileSystem: React.FC<OpenFileSystemProps> = ({ actions }) => {
     const [confirmUnsavedChanges, renderModal] = useConfirmUnsavedChanges();
     const [selectedFile, setSelectedFile] = useState<FileSystemFileHandle>();
 
-    const loadSceneFromFile = useCallback(
-        async (handle: FileSystemFileHandle) => {
-            if (isDirty && !(await confirmUnsavedChanges())) {
-                return;
-            }
+    const loadSceneFromFile = async (handle: FileSystemFileHandle) => {
+        if (isDirty && !(await confirmUnsavedChanges())) {
+            return;
+        }
 
-            const source = getFileSource(handle);
-            const scene = await openFile(source);
+        const source = getFileSource(handle);
+        const scene = await openFile(source);
 
-            loadScene(scene, source);
-            dismissDialog();
-        },
-        [isDirty, loadScene, dismissDialog, confirmUnsavedChanges],
-    );
+        loadScene(scene, source);
+        dismissDialog();
+    };
 
     return (
         <>
@@ -71,7 +68,7 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
 
     const currentName = source?.name;
 
-    const save = useCallback(async () => {
+    const save = async () => {
         const handle = await showSavePlanPicker(currentName);
         if (!handle) {
             return;
@@ -84,7 +81,7 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
         setSource(source);
         setSavedState(scene);
         dismissDialog();
-    }, [scene, currentName, setSource, setSavedState, dismissDialog]);
+    };
 
     return (
         <>

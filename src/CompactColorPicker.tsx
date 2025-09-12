@@ -11,7 +11,7 @@ import {
     swatchCSSVars,
     tokens,
 } from '@fluentui/react-components';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
 import { ColorPicker } from './ColorPicker';
 import { DeferredInput } from './DeferredInput';
@@ -44,14 +44,11 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
     const resetStyles = useResetStyles();
     const [colorValid, setColorValid] = useState(true);
 
-    const notifyChanged = useCallback(
-        (newColor: string) => {
-            if (newColor !== color) {
-                onChange?.(newColor);
-            }
-        },
-        [color, onChange],
-    );
+    const notifyChanged = (newColor: string) => {
+        if (newColor !== color) {
+            onChange?.(newColor);
+        }
+    };
 
     const [pickerColor, setPickerColor] = useState(color);
     useDebounce(() => notifyChanged(pickerColor), debounceTime, [pickerColor]);
@@ -64,17 +61,14 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
         setColorValid(!color || isValidColor(color));
     }
 
-    const setColorText = useCallback(
-        (text: string) => {
-            const valid = isValidColor(text);
-            setColorValid(!text || valid);
+    const setColorText = (text: string) => {
+        const valid = isValidColor(text);
+        setColorValid(!text || valid);
 
-            if (valid) {
-                notifyChanged(text);
-            }
-        },
-        [notifyChanged, setColorValid],
-    );
+        if (valid) {
+            notifyChanged(text);
+        }
+    };
 
     return (
         <>

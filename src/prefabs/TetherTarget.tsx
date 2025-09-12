@@ -1,5 +1,5 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren, useCallback } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { CursorGroup } from '../CursorGroup';
 import { TetherConfig } from '../EditModeContext';
 import { useScene } from '../SceneProvider';
@@ -36,25 +36,22 @@ export const TetherTarget: React.FC<TetherTargetProps> = ({ object, children }) 
 
     const isSelectable = editMode === EditMode.Tether;
 
-    const onClick = useCallback(
-        (e: KonvaEventObject<MouseEvent>) => {
-            const targetIds = getSelectedObjects(step, selection)
-                .filter(isMoveable)
-                .map((x) => x.id);
+    const onClick = (e: KonvaEventObject<MouseEvent>) => {
+        const targetIds = getSelectedObjects(step, selection)
+            .filter(isMoveable)
+            .map((x) => x.id);
 
-            const tether = getTether([...targetIds, object.id], tetherConfig);
+        const tether = getTether([...targetIds, object.id], tetherConfig);
 
-            if (tether) {
-                dispatch({ type: 'add', object: tether });
-                setSelection(e.evt.ctrlKey ? selectSingle(object.id) : selectNone());
-            } else {
-                setSelection(selectSingle(object.id));
-            }
+        if (tether) {
+            dispatch({ type: 'add', object: tether });
+            setSelection(e.evt.ctrlKey ? selectSingle(object.id) : selectNone());
+        } else {
+            setSelection(selectSingle(object.id));
+        }
 
-            e.cancelBubble = true;
-        },
-        [object.id, selection, setSelection, step, dispatch, tetherConfig],
-    );
+        e.cancelBubble = true;
+    };
 
     return (
         <CursorGroup cursor={isSelectable ? 'cell' : undefined} onClick={isSelectable ? onClick : undefined}>

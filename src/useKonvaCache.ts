@@ -1,7 +1,7 @@
 /* eslint-disable react-compiler/react-compiler */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Node } from 'konva/lib/Node';
-import { DependencyList, useLayoutEffect, useMemo } from 'react';
+import { DependencyList, useLayoutEffect } from 'react';
 
 type CacheConfig = Exclude<Parameters<Node['cache']>[0], undefined>;
 
@@ -44,14 +44,15 @@ export function useKonvaCache(
     }, [enabled, config, ref.current, ...deps]);
 }
 
-function useOptions(optionsOrDeps: UseKonvaCacheOptions | DependencyList, deps?: DependencyList) {
-    return useMemo<[boolean, CacheConfig | undefined, DependencyList]>(() => {
-        if (typeof optionsOrDeps === 'object') {
-            const { enabled, ...config } = optionsOrDeps as UseKonvaCacheOptions;
+function useOptions(
+    optionsOrDeps: UseKonvaCacheOptions | DependencyList,
+    deps?: DependencyList,
+): [boolean, CacheConfig | undefined, DependencyList] {
+    if (typeof optionsOrDeps === 'object') {
+        const { enabled, ...config } = optionsOrDeps as UseKonvaCacheOptions;
 
-            return [enabled ?? true, config, deps ?? []];
-        }
+        return [enabled ?? true, config, deps ?? []];
+    }
 
-        return [true, undefined, optionsOrDeps];
-    }, [optionsOrDeps, deps]);
+    return [true, undefined, optionsOrDeps];
 }

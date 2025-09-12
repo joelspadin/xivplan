@@ -1,5 +1,5 @@
 import { makeStyles, Tab, TabList } from '@fluentui/react-components';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { EditMode } from '../editMode';
 import { useEditMode } from '../useEditMode';
 import { ArenaPanel } from './ArenaPanel';
@@ -20,17 +20,14 @@ export const MainPanel: React.FC = () => {
     const [tab, setTab] = useState(Tabs.Objects);
     const [, setEditMode] = useEditMode();
 
-    const handleTabChanged = useCallback(
-        (tab: Tabs) => {
-            setTab(tab);
+    const handleTabChanged = (tab: Tabs) => {
+        setTab(tab);
 
-            // Cancel any special edit mode when changing tabs.
-            // Draw tab should always default to draw mode.
-            const newMode = tab === Tabs.Draw ? EditMode.Draw : EditMode.Normal;
-            setEditMode(newMode);
-        },
-        [setEditMode],
-    );
+        // Cancel any special edit mode when changing tabs.
+        // Draw tab should always default to draw mode.
+        const newMode = tab === Tabs.Draw ? EditMode.Draw : EditMode.Normal;
+        setEditMode(newMode);
+    };
 
     return (
         <div className={classes.wrapper}>

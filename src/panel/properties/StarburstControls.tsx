@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../../prefabs/bounds';
@@ -16,7 +16,7 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const spokeWidth = useMemo(() => commonValue(objects, (obj) => obj.spokeWidth), [objects]);
+    const spokeWidth = commonValue(objects, (obj) => obj.spokeWidth);
 
     const onSpokeWidthChanged = useSpinChanged((spokeWidth: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokeWidth })) }),
@@ -33,7 +33,7 @@ export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<Starbur
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const spokes = useMemo(() => commonValue(objects, (obj) => obj.spokes), [objects]);
+    const spokes = commonValue(objects, (obj) => obj.spokes);
 
     const onSpokesChanged = useSpinChanged((spokes: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokes })) }),

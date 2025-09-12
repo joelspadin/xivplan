@@ -14,7 +14,7 @@ import {
     TextEffectsRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { DeferredTextarea } from '../../DeferredTextarea';
@@ -51,34 +51,25 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const stroke = useMemo(() => commonValue(objects, (obj) => obj.stroke), [objects]);
-    const style = useMemo(() => commonValue(objects, (obj) => obj.style), [objects]);
+    const stroke = commonValue(objects, (obj) => obj.stroke);
+    const style = commonValue(objects, (obj) => obj.style);
 
-    const handleStrokeChanged = useCallback(
-        (stroke: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, stroke })) }),
-        [dispatch, objects],
-    );
+    const handleStrokeChanged = (stroke: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, stroke })) });
 
-    const handleStyleChanged = useCallback(
-        (style: TextStyle) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, style })) });
-        },
-        [dispatch, objects],
-    );
+    const handleStyleChanged = (style: TextStyle) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, style })) });
 
-    const swatches = useMemo(
-        () => [
-            makeColorSwatch(COLOR_RED, 'red'),
-            makeColorSwatch(COLOR_YELLOW, 'yellow'),
-            makeColorSwatch(COLOR_GREEN, 'green'),
-            makeColorSwatch(COLOR_BLUE, 'blue'),
-            makeColorSwatch(COLOR_WHITE, 'white'),
-            makeColorSwatch(COLOR_BLACK, 'black'),
-            makeColorSwatch(theme.colorArena, 'arena'),
-            makeColorSwatch(theme.colorBackground, 'background'),
-        ],
-        [theme],
-    );
+    const swatches = [
+        makeColorSwatch(COLOR_RED, 'red'),
+        makeColorSwatch(COLOR_YELLOW, 'yellow'),
+        makeColorSwatch(COLOR_GREEN, 'green'),
+        makeColorSwatch(COLOR_BLUE, 'blue'),
+        makeColorSwatch(COLOR_WHITE, 'white'),
+        makeColorSwatch(COLOR_BLACK, 'black'),
+        makeColorSwatch(theme.colorArena, 'arena'),
+        makeColorSwatch(theme.colorBackground, 'background'),
+    ];
 
     const disabled = style === 'plain';
 
@@ -121,19 +112,15 @@ export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = (
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const fontSize = useMemo(() => commonValue(objects, (obj) => obj.fontSize), [objects]);
-    const align = useMemo(() => commonValue(objects, (obj) => obj.align), [objects]);
+    const fontSize = commonValue(objects, (obj) => obj.fontSize);
+    const align = commonValue(objects, (obj) => obj.align);
 
     const onFontSizeChanged = useSpinChanged((fontSize: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
     );
 
-    const onAlignChanged = useCallback(
-        (align: string) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, align })) });
-        },
-        [dispatch, objects],
-    );
+    const onAlignChanged = (align: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, align })) });
 
     return (
         <div className={classes.row}>
@@ -154,14 +141,9 @@ export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = (
 export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const text = useMemo(() => commonValue(objects, (obj) => obj.text), [objects]);
+    const text = commonValue(objects, (obj) => obj.text);
 
-    const setText = useCallback(
-        (text: string) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })) });
-        },
-        [dispatch, objects],
-    );
+    const setText = (text: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })) });
 
     // TODO: add autoAdjustHeight once implemented
     return (

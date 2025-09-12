@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { StackCountObject } from '../../scene';
@@ -13,14 +13,11 @@ export const StackCountControl: React.FC<PropertiesControlProps<StackCountObject
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const count = useMemo(() => commonValue(objects, (obj) => obj.count), [objects]);
+    const count = commonValue(objects, (obj) => obj.count);
 
-    const handleChanged = useCallback(
-        (count: number) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) });
-        },
-        [dispatch, objects],
-    );
+    const handleChanged = (count: number) => {
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, count })) });
+    };
 
     return (
         <Field label="Player count" className={classes.cell}>

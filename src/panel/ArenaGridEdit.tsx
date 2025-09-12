@@ -10,7 +10,7 @@ import {
     SquareRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { DeferredInput } from '../DeferredInput';
 import { InfoField } from '../InfoField';
 import { useScene } from '../SceneProvider';
@@ -83,12 +83,9 @@ export const ArenaGridEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const grid = scene.arena.grid;
 
-    const setGrid = useCallback(
-        (grid: Grid) => {
-            dispatch({ type: 'arenaGrid', value: grid });
-        },
-        [dispatch],
-    );
+    const setGrid = (grid: Grid) => {
+        dispatch({ type: 'arenaGrid', value: grid });
+    };
 
     // TODO: refactor custom grids into their own components
     const [customRows, setCustomRows] = useState(formatCustomGridRows(grid));
@@ -112,36 +109,33 @@ export const ArenaGridEdit: React.FC = () => {
             break;
     }
 
-    const onTypeChange = useCallback(
-        (option?: GridType) => {
-            switch (option) {
-                case GridType.None:
-                    setGrid(NO_GRID);
-                    break;
+    const onTypeChange = (option?: GridType) => {
+        switch (option) {
+            case GridType.None:
+                setGrid(NO_GRID);
+                break;
 
-                case GridType.Rectangular:
-                    setGrid(DEFAULT_RECT_GRID);
-                    break;
+            case GridType.Rectangular:
+                setGrid(DEFAULT_RECT_GRID);
+                break;
 
-                case GridType.Radial:
-                    setGrid(DEFAULT_RADIAL_GRID);
-                    break;
+            case GridType.Radial:
+                setGrid(DEFAULT_RADIAL_GRID);
+                break;
 
-                case GridType.CustomRectangular:
-                    setGrid(DEFAULT_CUSTOM_RECT_GRID);
-                    setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(' '));
-                    setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(' '));
-                    break;
+            case GridType.CustomRectangular:
+                setGrid(DEFAULT_CUSTOM_RECT_GRID);
+                setCustomRows(DEFAULT_CUSTOM_RECT_GRID.rows.join(' '));
+                setCustomCols(DEFAULT_CUSTOM_RECT_GRID.columns.join(' '));
+                break;
 
-                case GridType.CustomRadial:
-                    setGrid(DEFAULT_CUSTOM_RADIAL_GRID);
-                    setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(' '));
-                    setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(' '));
-                    break;
-            }
-        },
-        [setGrid, setCustomRows, setCustomCols, setCustomRings, setCustomSpokes],
-    );
+            case GridType.CustomRadial:
+                setGrid(DEFAULT_CUSTOM_RADIAL_GRID);
+                setCustomRings(DEFAULT_CUSTOM_RADIAL_GRID.rings.join(' '));
+                setCustomSpokes(DEFAULT_CUSTOM_RADIAL_GRID.spokes.join(' '));
+                break;
+        }
+    };
 
     return (
         <div className={classes.column}>

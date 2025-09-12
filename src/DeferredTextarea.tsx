@@ -1,5 +1,5 @@
 import { Textarea, TextareaProps } from '@fluentui/react-components';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 const DEFAULT_DEBOUNCE_TIME = 1000;
@@ -36,38 +36,29 @@ export const DeferredTextarea: React.FC<DeferredTextareaProps> = ({
         setLatestEvent(undefined);
     }
 
-    const notifyChanged = useCallback(() => {
+    const notifyChanged = () => {
         if (latestEvent) {
             onChange?.(...latestEvent);
             setLatestEvent(undefined);
         }
-    }, [latestEvent, setLatestEvent, onChange]);
+    };
 
-    const deferredOnChange = useCallback<ChangeHandler>(
-        (ev, data) => {
-            setCurrentValue(data.value);
-            setLatestEvent([ev, data]);
-        },
-        [setCurrentValue, setLatestEvent],
-    );
+    const deferredOnChange: ChangeHandler = (ev, data) => {
+        setCurrentValue(data.value);
+        setLatestEvent([ev, data]);
+    };
 
-    const deferredOnBlur = useCallback<BlurHandler>(
-        (ev) => {
+    const deferredOnBlur: BlurHandler = (ev) => {
+        notifyChanged();
+        onBlur?.(ev);
+    };
+
+    const deferredOnKeyUp: KeyUpHandler = (ev) => {
+        if (ev.key === 'Enter') {
             notifyChanged();
-            onBlur?.(ev);
-        },
-        [notifyChanged, onBlur],
-    );
-
-    const deferredOnKeyUp = useCallback<KeyUpHandler>(
-        (ev) => {
-            if (ev.key === 'Enter') {
-                notifyChanged();
-            }
-            onKeyUp?.(ev);
-        },
-        [notifyChanged, onKeyUp],
-    );
+        }
+        onKeyUp?.(ev);
+    };
 
     useDebounce(notifyChanged, debounceTime, [currentValue]);
 

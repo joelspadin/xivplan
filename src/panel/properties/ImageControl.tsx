@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { DeferredInput } from '../../DeferredInput';
 import { useScene } from '../../SceneProvider';
 import { ImageObject } from '../../scene';
@@ -9,12 +9,9 @@ import { PropertiesControlProps } from '../PropertiesControl';
 export const ImageControl: React.FC<PropertiesControlProps<ImageObject>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const image = useMemo(() => commonValue(objects, (obj) => obj.image), [objects]);
+    const image = commonValue(objects, (obj) => obj.image);
 
-    const setImage = useCallback(
-        (image: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, image })) }),
-        [dispatch, objects],
-    );
+    const setImage = (image: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, image })) });
 
     return (
         <Field label="Image URL">

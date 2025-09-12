@@ -1,5 +1,5 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_SIZE } from '../../prefabs/bounds';
@@ -13,8 +13,8 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const width = useMemo(() => commonValue(objects, (obj) => obj.width), [objects]);
-    const height = useMemo(() => commonValue(objects, (obj) => obj.height), [objects]);
+    const width = commonValue(objects, (obj) => obj.width);
+    const height = commonValue(objects, (obj) => obj.height);
 
     const onWidthChanged = useSpinChanged((width: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),

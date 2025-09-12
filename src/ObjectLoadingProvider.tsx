@@ -1,4 +1,4 @@
-import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
+import { PropsWithChildren, useRef, useState } from 'react';
 import { ObjectLoadingContext, ObjectLoadingState } from './ObjectLoadingContext';
 
 /**
@@ -8,34 +8,25 @@ export const ObjectLoadingProvider: React.FC<PropsWithChildren> = ({ children })
     const objects = useRef(new Set<string>());
     const [isLoading, setIsLoading] = useState(false);
 
-    const updateIsLoading = useCallback(() => {
+    const updateIsLoading = () => {
         setIsLoading(objects.current.size > 0);
-    }, [objects, setIsLoading]);
+    };
 
-    const setLoading = useCallback(
-        (id: string) => {
-            objects.current.add(id);
-            updateIsLoading();
-        },
-        [objects, updateIsLoading],
-    );
+    const setLoading = (id: string) => {
+        objects.current.add(id);
+        updateIsLoading();
+    };
 
-    const clearLoading = useCallback(
-        (id: string) => {
-            objects.current.delete(id);
-            updateIsLoading();
-        },
-        [objects, updateIsLoading],
-    );
+    const clearLoading = (id: string) => {
+        objects.current.delete(id);
+        updateIsLoading();
+    };
 
-    const state: ObjectLoadingState = useMemo(
-        () => ({
-            isLoading,
-            setLoading,
-            clearLoading,
-        }),
-        [isLoading, setLoading, clearLoading],
-    );
+    const state: ObjectLoadingState = {
+        isLoading,
+        setLoading,
+        clearLoading,
+    };
 
     return <ObjectLoadingContext value={state}>{children}</ObjectLoadingContext>;
 };

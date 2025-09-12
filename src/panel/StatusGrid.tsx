@@ -1,6 +1,6 @@
 import { VirtualizerScrollView } from '@fluentui-contrib/react-virtualizer';
 import { makeStyles, mergeClasses } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StatusIcon } from '../prefabs/StatusIcon';
 
 const ICON_SIZE = 32;
@@ -27,9 +27,7 @@ export interface StatusGridProps {
 export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, items }) => {
     const classes = useStyles();
 
-    const rows = useMemo(() => {
-        return chunked(items, columns);
-    }, [items, columns]);
+    const rows = chunked(items, columns);
 
     return (
         <VirtualizerScrollView

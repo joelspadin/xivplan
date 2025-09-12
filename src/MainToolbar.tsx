@@ -17,7 +17,7 @@ import {
     SaveEditRegular,
     SaveRegular,
 } from '@fluentui/react-icons';
-import React, { ReactElement, useCallback, useContext, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
@@ -116,23 +116,23 @@ const SaveButton: React.FC = () => {
 
     const { type, text, icon, disabled } = getSaveButtonState(source, isDirty);
 
-    const save = useCallback(async () => {
+    const save = async () => {
         if (!source) {
             setSaveAsOpen(true);
         } else if (isDirty) {
             await saveFile(scene, source);
             setSavedState(scene);
         }
-    }, [scene, source, isDirty, setSavedState, setSaveAsOpen]);
+    };
 
-    const download = useCallback(() => {
+    const download = () => {
         downloadScene(scene, source?.name);
         if (!source) {
             setSource(getBlobSource());
         }
-    }, [scene, source, setSource]);
+    };
 
-    const handleClick = useCallback(() => {
+    const handleClick = () => {
         switch (type) {
             case 'save':
                 save();
@@ -146,7 +146,7 @@ const SaveButton: React.FC = () => {
                 download();
                 break;
         }
-    }, [type, download, save, setSaveAsOpen]);
+    };
 
     useHotkeys(
         'ctrl+s',

@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knock_away.svg?react';
@@ -68,31 +68,26 @@ const ARROW_PAD = 0.08;
 const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height)),
-        [object.color, object.opacity, object.width, object.height],
-    );
+    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height));
     const { fill, ...stroke } = style;
 
     const patternWidth = object.width;
     const patternHeight = object.width / 2;
 
-    const arrow = useMemo(() => {
-        const width = patternWidth * ARROW_SIZE_FRAC;
-        const height = width * ARROW_HEIGHT_FRAC;
+    const width = patternWidth * ARROW_SIZE_FRAC;
+    const height = width * ARROW_HEIGHT_FRAC;
 
-        return {
-            ...getArrowStyle(object.color, object.opacity * 3),
-            width,
-            height,
-            y: patternHeight / 2,
-            chevronAngle: 40,
-            opacity: (object.opacity * 2) / 100,
-        } as ChevronConfig;
-    }, [object.color, object.opacity, patternWidth, patternHeight]);
+    const arrow: ChevronConfig = {
+        ...getArrowStyle(object.color, object.opacity * 3),
+        width,
+        height,
+        y: patternHeight / 2,
+        chevronAngle: 40,
+        opacity: (object.opacity * 2) / 100,
+    };
 
     const arrowRef = useRef<Konva.Group>(null);
-    useEffect(() => {
+    useLayoutEffect(() => {
         arrowRef.current?.toImage({
             // This seems like a hack. Is there a better way to draw offscreen?
             x: OFFSCREEN_X,

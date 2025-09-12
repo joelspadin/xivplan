@@ -22,16 +22,7 @@ import {
     useArrowNavigationGroup,
 } from '@fluentui/react-components';
 import { OptionsFilled } from '@fluentui/react-icons';
-import React, {
-    ButtonHTMLAttributes,
-    Dispatch,
-    MouseEventHandler,
-    SetStateAction,
-    useCallback,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { ButtonHTMLAttributes, Dispatch, MouseEventHandler, SetStateAction, useRef, useState } from 'react';
 import { useAsync, useCounter, useLocalStorage, useSessionStorage } from 'react-use';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
@@ -133,23 +124,18 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     );
     const [selectedPreset, setSelectedPreset] = useState<ArenaPreset>();
 
-    const applyPreset = useCallback(
-        (preset: ArenaPreset) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { name, ...arena } = preset;
-            dispatch({ type: 'arena', value: arena });
-            setOpen(false);
-        },
-        [dispatch, setOpen],
-    );
+    const applyPreset = (preset: ArenaPreset) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { name, ...arena } = preset;
+        dispatch({ type: 'arena', value: arena });
+        setOpen(false);
+    };
 
-    const revealPreset = useCallback(
-        async (key: string) => {
-            await revealArenaPreset(key);
-            reloadRevealedPresets();
-        },
-        [reloadRevealedPresets],
-    );
+    const revealPreset = async (key: string) => {
+        await revealArenaPreset(key);
+        reloadRevealedPresets();
+    };
+
     const presets = getPresetsForGroup(selectedGroup);
 
     const presetListArrowNav = useArrowNavigationGroup({ axis: 'grid-linear' });
@@ -260,31 +246,23 @@ const PresetItem: React.FC<PresetItemProps> = ({
 }) => {
     const classes = useStyles();
 
-    const isSpoiler = useMemo(() => {
-        return !(preset.isSpoilerFree || revealedPresets?.includes(presetKey));
-    }, [preset.isSpoilerFree, revealedPresets, presetKey]);
+    const isSpoiler = !(preset.isSpoilerFree || revealedPresets?.includes(presetKey));
 
-    const handleClick: MouseEventHandler<HTMLElement> = useCallback(
-        (ev) => {
-            if (isSpoiler) {
-                onReveal(ev);
-            }
+    const handleClick: MouseEventHandler<HTMLElement> = (ev) => {
+        if (isSpoiler) {
+            onReveal(ev);
+        }
 
-            onSelect(ev);
-        },
-        [isSpoiler, onReveal, onSelect],
-    );
+        onSelect(ev);
+    };
 
-    const handleDoubleClick: MouseEventHandler<HTMLElement> = useCallback(
-        (ev) => {
-            if (isSpoiler) {
-                onReveal(ev);
-            } else {
-                onConfirm(ev);
-            }
-        },
-        [isSpoiler, onReveal, onConfirm],
-    );
+    const handleDoubleClick: MouseEventHandler<HTMLElement> = (ev) => {
+        if (isSpoiler) {
+            onReveal(ev);
+        } else {
+            onConfirm(ev);
+        }
+    };
 
     const name = isSpoiler ? preset.spoilerFreeName ?? preset.name : preset.name;
 

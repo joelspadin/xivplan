@@ -9,7 +9,7 @@ import {
     DialogTrigger,
 } from '@fluentui/react-components';
 import { Action } from 'history';
-import React, { PropsWithChildren, useCallback, useId, useState } from 'react';
+import React, { PropsWithChildren, useId, useState } from 'react';
 import { Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
 import { DirtyContext, SavedStateContext } from './DirtyContext';
@@ -56,25 +56,22 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
     const [nextLocation, setNextLocation] = useState<NextLocation>();
 
     // TODO: https://github.com/remix-run/react-router/issues/8139
-    // const onPrompt = useCallback(
-    //     (location: Location, action: Action) => {
-    //         if (location.pathname === currentLocation.pathname) {
-    //             return true;
-    //         }
+    // const onPrompt = (location: Location, action: Action) => {
+    //     if (location.pathname === currentLocation.pathname) {
+    //         return true;
+    //     }
 
-    //         setNextLocation({ location, action });
-    //         setShowDialog(true);
-    //         return false;
-    //     },
-    //     [setNextLocation, showDialog],
-    // );
+    //     setNextLocation({ location, action });
+    //     setShowDialog(true);
+    //     return false;
+    // };
 
-    const onCancelNavigate = useCallback(() => {
+    const onCancelNavigate = () => {
         setNextLocation(undefined);
         setShowDialog(false);
-    }, [setNextLocation, setShowDialog]);
+    };
 
-    const onConfirmNavigate = useCallback(() => {
+    const onConfirmNavigate = () => {
         setShowDialog(false);
 
         if (!nextLocation) {
@@ -94,21 +91,18 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
                 navigate(nextLocation.location, { replace: true });
                 break;
         }
-    }, [nextLocation, setShowDialog, navigate]);
+    };
 
-    const onOpenChange = useCallback<OpenChangeEventHandler>(
-        (ev, data) => {
-            if (!data.open) {
-                const target = ev.target as HTMLElement;
-                if (target.id === confirmId) {
-                    onConfirmNavigate();
-                } else {
-                    onCancelNavigate();
-                }
+    const onOpenChange: OpenChangeEventHandler = (ev, data) => {
+        if (!data.open) {
+            const target = ev.target as HTMLElement;
+            if (target.id === confirmId) {
+                onConfirmNavigate();
+            } else {
+                onCancelNavigate();
             }
-        },
-        [confirmId, onConfirmNavigate, onCancelNavigate],
-    );
+        }
+    };
 
     return (
         <>

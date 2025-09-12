@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle, Group } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/knockback.svg?react';
@@ -60,20 +60,13 @@ interface KnockbackRendererProps extends RendererProps<CircleZone> {
 
 const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const ring = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2),
-        [object.color, object.opacity, radius],
-    );
-    const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
+    const ring = getZoneStyle(object.color, object.opacity, radius * 2);
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
 
-    const { cx, cw, ch, ca } = useMemo(() => {
-        return {
-            cx: radius,
-            cw: radius * 0.24,
-            ch: radius * 0.12,
-            ca: 40,
-        };
-    }, [radius]);
+    const cx = radius;
+    const cw = radius * 0.24;
+    const ch = radius * 0.12;
+    const ca = 40;
 
     return (
         <>

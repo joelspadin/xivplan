@@ -11,7 +11,7 @@ import {
     makeStyles,
     tokens,
 } from '@fluentui/react-components';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { OutPortal, createHtmlPortalNode } from 'react-reverse-portal';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { FileSystemNotSupportedMessage, OpenFileSystem, SaveFileSystem } from './FileDialogFileSystem';
@@ -31,7 +31,7 @@ export type OpenDialogProps = Omit<DialogProps, 'children'>;
 export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
     const classes = useStyles();
     const [tab, setTab] = useState<TabValue>(supportsFs ? Tabs.File : Tabs.LocalStorage);
-    const portalNode = useMemo(() => createHtmlPortalNode({ attributes: { class: classes.actionsPortal } }), [classes]);
+    const portalNode = createHtmlPortalNode({ attributes: { class: classes.actionsPortal } });
 
     return (
         <Dialog {...props}>
@@ -69,7 +69,7 @@ export type SaveAsDialogProps = Omit<DialogProps, 'children'>;
 export const SaveAsDialog: React.FC<SaveAsDialogProps> = (props) => {
     const classes = useStyles();
     const [tab, setTab] = useState<TabValue>(supportsFs ? 'file' : 'localStorage');
-    const portalNode = useMemo(() => createHtmlPortalNode(), []);
+    const portalNode = createHtmlPortalNode();
 
     return (
         <Dialog {...props}>

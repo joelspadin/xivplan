@@ -1,5 +1,5 @@
 import { Button, makeStyles, tokens } from '@fluentui/react-components';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFileLoader } from './useFileLoader';
 
@@ -17,9 +17,7 @@ export const FileOpenPage: React.FC = () => {
     const loadFile = useFileLoader();
     const [error, setError] = useState<ReactNode>();
 
-    const navigateToMainPage = useCallback(() => {
-        navigate('/', { replace: true });
-    }, [navigate]);
+    const navigateToMainPage = () => navigate('/', { replace: true });
 
     useEffect(() => {
         if (window.launchQueue) {

@@ -1,5 +1,5 @@
 import { makeStyles, Toaster, tokens } from '@fluentui/react-components';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { HotkeysProvider } from 'react-hotkeys-hook';
 import {
     createBrowserRouter,
@@ -44,17 +44,20 @@ const useStyles = makeStyles({
     },
 });
 
+function getSceneFromLink(hash: string, searchParams: URLSearchParams) {
+    try {
+        return parseSceneLink(hash, searchParams);
+    } catch (ex) {
+        console.error('Invalid plan data from URL', ex);
+        return undefined;
+    }
+}
+
 export const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const { hash } = useLocation();
 
-    const sceneFromLink = useMemo(() => {
-        try {
-            return parseSceneLink(hash, searchParams);
-        } catch (ex) {
-            console.error('Invalid plan data from URL', ex);
-        }
-    }, [hash, searchParams]);
+    const sceneFromLink = getSceneFromLink(hash, searchParams);
 
     return (
         <ThemeProvider>

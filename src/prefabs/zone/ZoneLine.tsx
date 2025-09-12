@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
 import { getPointerAngle, snapAngle } from '../../coord';
@@ -180,10 +180,7 @@ interface LineRendererProps extends RendererProps<LineZone> {
 
 const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rotation, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, Math.min(length, width), object.hollow),
-        [object.color, object.opacity, length, width, object.hollow],
-    );
+    const style = getZoneStyle(object.color, object.opacity, Math.min(length, width), object.hollow);
 
     const x = -width / 2;
     const y = -length;
@@ -223,19 +220,16 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
     const [resizing, setResizing] = useState(false);
     const [dragging, setDragging] = useState(false);
 
-    const updateObject = useCallback(
-        (state: LineState) => {
-            state.rotation = Math.round(state.rotation);
-            state.width = Math.round(state.width);
+    const updateObject = (state: LineState) => {
+        state.rotation = Math.round(state.rotation);
+        state.width = Math.round(state.width);
 
-            if (!stateChanged(object, state)) {
-                return;
-            }
+        if (!stateChanged(object, state)) {
+            return;
+        }
 
-            dispatch({ type: 'update', value: { ...object, ...state } });
-        },
-        [dispatch, object],
-    );
+        dispatch({ type: 'update', value: { ...object, ...state } });
+    };
 
     return (
         <ActivePortal isActive={dragging || resizing}>

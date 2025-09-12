@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Circle, Group } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/stack.svg?react';
@@ -70,20 +70,13 @@ interface StackRendererProps extends RendererProps<StackZone> {
 
 const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
     const showHighlight = useShowHighlight(object);
-    const ring = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2),
-        [object.color, object.opacity, radius],
-    );
-    const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 2), [object.color, object.opacity]);
+    const ring = getZoneStyle(object.color, object.opacity, radius * 2);
+    const arrow = getArrowStyle(object.color, object.opacity * 2);
 
-    const { cx, cw, ch, ca } = useMemo(() => {
-        return {
-            cx: radius * 0.6,
-            cw: radius * 0.5,
-            ch: radius * 0.325,
-            ca: 40,
-        };
-    }, [radius]);
+    const cx = radius * 0.6;
+    const cw = radius * 0.5;
+    const ch = radius * 0.325;
+    const ca = 40;
 
     return (
         <>
@@ -129,7 +122,7 @@ const StackOrbs: React.FC<StackOrbsProps> = ({ object, radius, ring }) => {
     const center = useDraggableCenter();
 
     const orbRadius = Math.min(radius * 0.25, 40);
-    const orbs = useMemo(() => getStackCircleProps(orbRadius, object.count), [orbRadius, object.count]);
+    const orbs = getStackCircleProps(orbRadius, object.count);
 
     const shapeRef = useRef<Konva.Group>(null);
 

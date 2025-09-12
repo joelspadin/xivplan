@@ -5,7 +5,6 @@ import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { LineConfig } from 'konva/lib/shapes/Line';
 import { Vector2d } from 'konva/lib/types';
 import * as React from 'react';
-import { useCallback, useMemo } from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
 import { getObjectById, useScene } from '../SceneProvider';
@@ -57,7 +56,7 @@ const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
 
     const checked = editMode === EditMode.Tether && tetherConfig.tether === tether;
 
-    const onClick = useCallback(() => {
+    const onClick = () => {
         if (checked) {
             setEditMode(EditMode.Normal);
         } else {
@@ -65,9 +64,9 @@ const TetherButton: React.FC<TetherButtonProps> = ({ tether }) => {
             setSelection(selectNone());
             setTetherConfig({ tether });
         }
-    }, [checked, tether, setEditMode, setSelection, setTetherConfig]);
+    };
 
-    const label = useMemo(() => getTetherName(tether), [tether]);
+    const label = getTetherName(tether);
 
     return (
         <PrefabToggle
@@ -401,20 +400,17 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
     const groupRef = React.useRef<Konva.Group>(null);
     const { scene } = useScene();
 
-    const fakeTetherObject = useMemo(() => {
-        return {
-            id: -1,
-            ...makeTether(-1, -1, tether),
-        };
-    }, [tether]);
+    const fakeTetherObject: Tether = {
+        id: -1,
+        ...makeTether(-1, -1, tether),
+    };
 
-    const fakeCursorObject = useMemo(() => {
-        return {
-            type: ObjectType.Cursor,
-            id: -1,
-            ...cursorPos,
-        } as FakeCursorObject;
-    }, [cursorPos]);
+    const fakeCursorObject: FakeCursorObject = {
+        type: ObjectType.Cursor,
+        id: -1,
+        opacity: 0,
+        ...cursorPos,
+    };
 
     const Renderer = getRenderer(tether);
 

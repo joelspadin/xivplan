@@ -14,7 +14,7 @@ import {
     useToastController,
 } from '@fluentui/react-components';
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import { CollapsableToolbarButton } from '../CollapsableToolbarButton';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
@@ -44,12 +44,12 @@ const ShareDialogBody: React.FC = () => {
     const classes = useStyles();
     const { scene } = useScene();
     const { dispatchToast } = useToastController();
-    const url = useMemo(() => getSceneUrl(scene), [scene]);
+    const url = getSceneUrl(scene);
 
-    const copyToClipboard = useCallback(async () => {
+    const copyToClipboard = async () => {
         await navigator.clipboard.writeText(url);
         dispatchToast(<CopySuccessToast />, { intent: 'success' });
-    }, [url, dispatchToast]);
+    };
 
     return (
         <HotkeyBlockingDialogBody>

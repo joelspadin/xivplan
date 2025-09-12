@@ -1,5 +1,5 @@
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Group, Line } from 'react-konva';
 import { degtorad } from '../../util';
 
@@ -8,21 +8,20 @@ export interface ChevronConfig extends ShapeConfig {
 }
 
 export const Chevron: React.FC<ChevronConfig> = ({ width, height, chevronAngle, ...props }) => {
-    const points = useMemo(() => {
-        const w = width ?? 0;
-        const h = height ?? 0;
-        const x = w / 2;
-        const y = Math.sin(degtorad(chevronAngle ?? 45)) * x;
-        // prettier-ignore
-        return [
-            0, 0,
-            x, y,
-            x, h,
-            0, h - y,
-            -x, h,
-            -x, y,
-        ];
-    }, [width, height, chevronAngle]);
+    const w = width ?? 0;
+    const h = height ?? 0;
+    const x = w / 2;
+    const y = Math.sin(degtorad(chevronAngle ?? 45)) * x;
+
+    // prettier-ignore
+    const points = [
+        0, 0,
+        x, y,
+        x, h,
+        0, h - y,
+        -x, h,
+        -x, y,
+    ];
 
     return <Line {...props} points={points} closed={true} />;
 };

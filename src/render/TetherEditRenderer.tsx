@@ -1,11 +1,11 @@
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getPointerPosition } from '../coord';
 import { useDefaultCursor } from '../cursor';
 import { EditMode } from '../editMode';
-import { TetherToCursor, TetherToCursorProps } from '../prefabs/Tethers';
+import { TetherToCursor } from '../prefabs/Tethers';
 import { isMoveable } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
@@ -25,7 +25,7 @@ const TetherEditLayer: React.FC = () => {
     const { scene, step } = useScene();
     const stage = useStage();
 
-    const onMouseMove = useCallback(() => setCursor(getPointerPosition(scene, stage)), [scene, stage, setCursor]);
+    const onMouseMove = () => setCursor(getPointerPosition(scene, stage));
 
     useLayoutEffect(() => {
         if (stage) {
@@ -43,25 +43,19 @@ const TetherEditLayer: React.FC = () => {
         }
     }, [stage, onMouseMove, setDefaultCursor]);
 
-    const tetherProps = useMemo<TetherToCursorProps | undefined>(() => {
-        if (selection.size > 1 || !cursor) {
-            return undefined;
-        }
-
-        const objects = getSelectedObjects(step, selection);
-        const [start] = objects;
-
-        if (!start || !isMoveable(start)) {
-            return undefined;
-        }
-
-        // TODO: end position should snap to object when cursor is over object.
-        return { startObject: start, cursorPos: cursor, tether: tetherConfig.tether };
-    }, [cursor, step, selection, tetherConfig.tether]);
-
-    if (!tetherProps) {
+    if (selection.size > 1 || !cursor) {
         return null;
     }
+
+    const objects = getSelectedObjects(step, selection);
+    const [start] = objects;
+
+    if (!start || !isMoveable(start)) {
+        return null;
+    }
+
+    // TODO: end position should snap to object when cursor is over object.
+    const tetherProps = { startObject: start, cursorPos: cursor, tether: tetherConfig.tether };
 
     return (
         <Group listening={false}>

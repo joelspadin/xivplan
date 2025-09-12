@@ -1,6 +1,6 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import React, { Dispatch, SetStateAction, useCallback, useContext, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
 import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
@@ -222,36 +222,33 @@ const SelectionActionHandler: React.FC = () => {
         [step, dispatch, selection],
     );
 
-    const tetherCallback = useCallback(
-        (type: TetherType) => (e: KeyboardEvent) => {
-            if (selection.size === 0) {
-                // When nothing selected, tether hotkeys should toggle tether tool.
-                if (editMode === EditMode.Tether && tetherConfig.tether === type) {
-                    setEditMode(EditMode.Normal);
-                } else {
-                    setEditMode(EditMode.Tether);
-                    setTetherConfig({ tether: type });
-                }
+    const tetherCallback = (type: TetherType) => (e: KeyboardEvent) => {
+        if (selection.size === 0) {
+            // When nothing selected, tether hotkeys should toggle tether tool.
+            if (editMode === EditMode.Tether && tetherConfig.tether === type) {
+                setEditMode(EditMode.Normal);
             } else {
-                // When objects are selected and in normal mode, tether hotkeys
-                // should directly create tethers.
-                if (editMode !== EditMode.Normal) {
-                    return;
-                }
-
-                const tethers = makeTethers(getSelectedObjects(step, selection), type);
-                if (tethers.length === 0) {
-                    return;
-                }
-
-                dispatch({ type: 'add', object: tethers });
-                setSelection(selectNewObjects(scene, tethers.length));
+                setEditMode(EditMode.Tether);
+                setTetherConfig({ tether: type });
+            }
+        } else {
+            // When objects are selected and in normal mode, tether hotkeys
+            // should directly create tethers.
+            if (editMode !== EditMode.Normal) {
+                return;
             }
 
-            e.preventDefault();
-        },
-        [scene, step, dispatch, selection, setSelection, editMode, setEditMode, tetherConfig, setTetherConfig],
-    );
+            const tethers = makeTethers(getSelectedObjects(step, selection), type);
+            if (tethers.length === 0) {
+                return;
+            }
+
+            dispatch({ type: 'add', object: tethers });
+            setSelection(selectNewObjects(scene, tethers.length));
+        }
+
+        e.preventDefault();
+    };
 
     useHotkeys('/', { category: CATEGORY_TETHER, help: 'Tether' }, tetherCallback(TetherType.Line), { useKey: true }, [
         tetherCallback,
@@ -319,29 +316,26 @@ const EditActionHandler: React.FC = () => {
     const { scene, step, dispatch } = useScene();
     const [editMode] = useEditMode();
 
-    const moveCallback = useCallback(
-        (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
-            if (editMode !== EditMode.Normal) {
-                return;
+    const moveCallback = (offset: Partial<Vector2d>) => (e: KeyboardEvent) => {
+        if (editMode !== EditMode.Normal) {
+            return;
+        }
+
+        const value: SceneObject[] = [];
+        selection.forEach((id) => {
+            const object = getObjectById(scene, id);
+            if (object && isMoveable(object)) {
+                value.push({
+                    ...object,
+                    x: object.x + (offset?.x ?? 0),
+                    y: object.y + (offset?.y ?? 0),
+                } as SceneObject & MoveableObject);
             }
+        });
 
-            const value: SceneObject[] = [];
-            selection.forEach((id) => {
-                const object = getObjectById(scene, id);
-                if (object && isMoveable(object)) {
-                    value.push({
-                        ...object,
-                        x: object.x + (offset?.x ?? 0),
-                        y: object.y + (offset?.y ?? 0),
-                    } as SceneObject & MoveableObject);
-                }
-            });
-
-            dispatch({ type: 'update', value });
-            e.preventDefault();
-        },
-        [scene, dispatch, selection, editMode],
-    );
+        dispatch({ type: 'update', value });
+        e.preventDefault();
+    };
 
     useHotkeys('up', {}, moveCallback({ y: DEFAULT_MOVE_OFFSET }), [moveCallback]);
     useHotkeys('down', {}, moveCallback({ y: -DEFAULT_MOVE_OFFSET }), [moveCallback]);
@@ -362,27 +356,24 @@ const EditActionHandler: React.FC = () => {
     useHotkeyHelp({ keys: 'ctrl+🡐🡑🡓🡒', category: CATEGORY_EDIT, help: 'Move object (coarse)' });
     useHotkeyHelp({ keys: 'shift+🡐🡑🡓🡒', category: CATEGORY_EDIT, help: 'Move object (fine)' });
 
-    const rotateCallback = useCallback(
-        (offset: number) => (e: KeyboardEvent) => {
-            if (editMode !== EditMode.Normal) {
-                return;
+    const rotateCallback = (offset: number) => (e: KeyboardEvent) => {
+        if (editMode !== EditMode.Normal) {
+            return;
+        }
+
+        const value: SceneObject[] = [];
+        const center = getGroupCenter(getSelectedObjects(step, selection).filter(isMoveable));
+
+        selection.forEach((id) => {
+            const object = getObjectById(scene, id);
+            if (object && isMoveable(object)) {
+                value.push(rotateObject(object, center, offset));
             }
+        });
 
-            const value: SceneObject[] = [];
-            const center = getGroupCenter(getSelectedObjects(step, selection).filter(isMoveable));
-
-            selection.forEach((id) => {
-                const object = getObjectById(scene, id);
-                if (object && isMoveable(object)) {
-                    value.push(rotateObject(object, center, offset));
-                }
-            });
-
-            dispatch({ type: 'update', value });
-            e.preventDefault();
-        },
-        [scene, step, dispatch, selection, editMode],
-    );
+        dispatch({ type: 'update', value });
+        e.preventDefault();
+    };
 
     useHotkeys('ctrl+g', { category: CATEGORY_EDIT, help: 'Rotate 90° counter-clockwise' }, rotateCallback(-90), [
         rotateCallback,
@@ -392,13 +383,10 @@ const EditActionHandler: React.FC = () => {
     ]);
     useHotkeys('ctrl+j', { category: CATEGORY_EDIT, help: 'Rotate 180°' }, rotateCallback(180), [rotateCallback]);
 
-    const orderCallback = useCallback(
-        (type: GroupMoveAction['type']) => (e: KeyboardEvent) => {
-            dispatch({ type, ids: [...selection] });
-            e.preventDefault();
-        },
-        [dispatch, selection],
-    );
+    const orderCallback = (type: GroupMoveAction['type']) => (e: KeyboardEvent) => {
+        dispatch({ type, ids: [...selection] });
+        e.preventDefault();
+    };
 
     useHotkeys('pageup', { category: CATEGORY_EDIT, help: 'Move layer up' }, orderCallback('moveUp'), [orderCallback]);
     useHotkeys('pagedown', { category: CATEGORY_EDIT, help: 'Move layer down' }, orderCallback('moveDown'), [

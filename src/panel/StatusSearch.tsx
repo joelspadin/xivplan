@@ -9,7 +9,7 @@ import {
     tokens,
     useToastController,
 } from '@fluentui/react-components';
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import { MessageToast } from '../MessageToast';
 import { PANEL_PADDING } from './PanelStyles';
@@ -62,15 +62,10 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
     const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
     const { dispatchToast } = useToastController();
 
-    const selectedLanguage = useMemo(() => [language as string], [language]);
-
-    const setFilter = useCallback(
-        (text?: string) => {
-            controller?.abort();
-            onFilterChanged(text ?? '');
-        },
-        [controller, onFilterChanged],
-    );
+    const setFilter = (text?: string) => {
+        controller?.abort();
+        onFilterChanged(text ?? '');
+    };
 
     useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
 
@@ -99,7 +94,7 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
                 <Dropdown
                     appearance="underline"
                     value={LANGUAGE_OPTIONS[language ?? 'en']}
-                    selectedOptions={selectedLanguage}
+                    selectedOptions={[language as string]}
                     onOptionSelect={(ev, data) => setLanguage(data.optionValue as Language)}
                 >
                     {Object.entries(LANGUAGE_OPTIONS).map(([lang, text]) => (

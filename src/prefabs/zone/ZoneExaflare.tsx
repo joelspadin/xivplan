@@ -1,5 +1,5 @@
 import { Vector2d } from 'konva/lib/types';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle, Group } from 'react-konva';
 import Icon from '../../assets/zone/exaflare.svg?react';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
@@ -82,15 +82,10 @@ interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
 
 const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2),
-        [object.color, object.opacity, radius],
-    );
-    const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
-    const trail = useMemo(
-        () => getTrailPositions(radius, object.length, object.spacing),
-        [radius, object.length, object.spacing],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2);
+
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
+    const trail = getTrailPositions(radius, object.length, object.spacing);
     const dashSize = getDashSize(radius);
 
     return (

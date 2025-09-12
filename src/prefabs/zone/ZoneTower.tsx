@@ -1,5 +1,5 @@
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/meteor_tower.svg?react';
@@ -76,12 +76,9 @@ interface TowerRendererProps extends RendererProps<TowerZone> {
 
 const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDragging }) => {
     const showHighlight = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2),
-        [object.color, object.opacity, radius],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
-    const towers = useMemo(() => getStackCircleProps(radius, object.count, STACK_CIRCLE_INSET), [radius, object.count]);
+    const towers = getStackCircleProps(radius, object.count, STACK_CIRCLE_INSET);
 
     return (
         <>

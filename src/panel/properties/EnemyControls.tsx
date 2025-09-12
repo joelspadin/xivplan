@@ -6,7 +6,7 @@ import {
     CircleRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../../icon/ThreeQuarterCircle';
@@ -28,14 +28,11 @@ export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = (
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const ring = useMemo(() => commonValue(objects, (obj) => obj.ring), [objects]);
+    const ring = commonValue(objects, (obj) => obj.ring);
 
-    const onDirectionalChanged = useCallback(
-        (ring: EnemyRingStyle) => {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, ring })) });
-        },
-        [dispatch, objects],
-    );
+    const onDirectionalChanged = (ring: EnemyRingStyle) => {
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, ring })) });
+    };
 
     return (
         <Field label="Ring style" className={classes.cell}>

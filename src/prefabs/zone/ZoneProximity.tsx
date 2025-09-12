@@ -1,6 +1,6 @@
 import Color from 'colorjs.io';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/falloff.svg?react';
@@ -83,7 +83,7 @@ function getArrowPoints() {
 
 const FlareArrow: React.FC<ShapeConfig> = ({ ...props }) => {
     const { offsetX, offsetY, rotation, shadowColor, ...arrowProps } = props;
-    const points = useMemo(() => getArrowPoints(), []);
+    const points = getArrowPoints();
 
     return (
         <Group offsetX={offsetX} offsetY={offsetY} rotation={rotation} listening={false}>
@@ -140,17 +140,13 @@ interface ProximityRendererProps extends RendererProps<CircleZone> {
 
 const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
     const showHighlight = useShowHighlight(object);
-    const gradient = useMemo(
-        () =>
-            ({
-                fillRadialGradientColorStops: getGradient(object.color, object.opacity),
-                fillRadialGradientStartRadius: 0,
-                fillRadialGradientEndRadius: radius,
-            } as ShapeConfig),
-        [object.color, object.opacity, radius],
-    );
-    const arrow = useMemo(() => getArrowStyle(object.color, object.opacity * 3), [object.color, object.opacity]);
-    const shadowColor = useMemo(() => getShadowColor(object.color), [object.color]);
+    const gradient: ShapeConfig = {
+        fillRadialGradientColorStops: getGradient(object.color, object.opacity),
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndRadius: radius,
+    };
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
+    const shadowColor = getShadowColor(object.color);
 
     const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
 

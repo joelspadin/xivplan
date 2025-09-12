@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Group, RegularPolygon } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import HexagonIcon from '../../assets/zone/hexagon.svg?react';
@@ -68,10 +68,7 @@ interface PolygonRendererProps extends RendererProps<PolygonZone> {
 
 const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotation }) => {
     const isSelected = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, radius * 2, object.hollow),
-        [object.color, object.opacity, radius, object.hollow],
-    );
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     const orientRotation = object.orient === 'side' ? 180 / object.sides : 0;
 

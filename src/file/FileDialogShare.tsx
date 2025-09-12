@@ -6,7 +6,7 @@ import {
     Textarea,
     TextareaOnChangeData,
 } from '@fluentui/react-components';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
@@ -29,7 +29,7 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
     const [data, setData] = useState<string | undefined>('');
     const [error, setError] = useState<string | undefined>('');
 
-    const importLink = useCallback(async () => {
+    const importLink = async () => {
         if (!data) {
             return;
         }
@@ -48,25 +48,19 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
 
         loadScene(scene);
         dismissDialog();
-    }, [data, isDirty, loadScene, dismissDialog, confirmUnsavedChanges]);
+    };
 
-    const onChange = useCallback(
-        (ev: ChangeEvent<HTMLTextAreaElement>, data: TextareaOnChangeData) => {
-            setData(data.value);
-            setError(undefined);
-        },
-        [setError, setData],
-    );
+    const onChange = (ev: ChangeEvent<HTMLTextAreaElement>, data: TextareaOnChangeData) => {
+        setData(data.value);
+        setError(undefined);
+    };
 
-    const onKeyUp = useCallback(
-        (ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
-            if (ev.key === 'Enter') {
-                ev.preventDefault();
-                importLink();
-            }
-        },
-        [importLink],
-    );
+    const onKeyUp = (ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            importLink();
+        }
+    };
 
     return (
         <>

@@ -1,5 +1,5 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { CursorGroup } from '../CursorGroup';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, getSceneCoord } from '../coord';
@@ -27,31 +27,25 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
 
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
 
-    const onDragStart = useCallback(
-        (e: KonvaEventObject<DragEvent>) => {
-            setDragging(true);
-            onActive?.(true);
-            setDragCenter(e.target.position());
+    const onDragStart = (e: KonvaEventObject<DragEvent>) => {
+        setDragging(true);
+        onActive?.(true);
+        setDragCenter(e.target.position());
 
-            // If we start dragging an object that isn't selected, it should
-            // become the new selection.
-            if (!selection.has(object.id)) {
-                setSelection(selectSingle(object.id));
-            }
-        },
-        [setDragging, onActive, setDragCenter, object.id, selection, setSelection],
-    );
+        // If we start dragging an object that isn't selected, it should
+        // become the new selection.
+        if (!selection.has(object.id)) {
+            setSelection(selectSingle(object.id));
+        }
+    };
 
-    const onDragEnd = useCallback(
-        (e: KonvaEventObject<DragEvent>) => {
-            setDragging(false);
-            onActive?.(false);
+    const onDragEnd = (e: KonvaEventObject<DragEvent>) => {
+        setDragging(false);
+        onActive?.(false);
 
-            const pos = getSceneCoord(scene, e.target.position());
-            dispatch({ type: 'update', value: { ...object, ...pos } });
-        },
-        [scene, setDragging, onActive, dispatch, object],
-    );
+        const pos = getSceneCoord(scene, e.target.position());
+        dispatch({ type: 'update', value: { ...object, ...pos } });
+    };
 
     return (
         <DraggableCenterContext value={dragging ? dragCenter : center}>

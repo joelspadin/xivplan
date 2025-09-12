@@ -1,5 +1,5 @@
 import { DrawImageRegular } from '@fluentui/react-icons';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Group, Line } from 'react-konva';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -18,7 +18,7 @@ function getLinePoints(object: DrawObject) {
 
 export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {
     const showHighlight = useShowHighlight(object);
-    const points = useMemo(() => getLinePoints(object), [object]);
+    const points = getLinePoints(object);
 
     return (
         <ResizeableObjectContainer

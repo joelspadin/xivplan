@@ -1,5 +1,5 @@
 import { CircleConfig } from 'konva/lib/shapes/Circle';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/starburst.svg?react';
@@ -71,7 +71,7 @@ function getOddRotations(spokes: number) {
 }
 
 const StarburstOdd: React.FC<StarburstConfig> = ({ rotation, radius, spokes, spokeWidth, showHighlight, ...props }) => {
-    const items = useMemo(() => getOddRotations(spokes), [spokes]);
+    const items = getOddRotations(spokes);
 
     const rect = {
         offsetX: spokeWidth / 2,
@@ -120,7 +120,7 @@ const StarburstEven: React.FC<StarburstConfig> = ({
     showHighlight,
     ...props
 }) => {
-    const items = useMemo(() => getEvenRotations(spokes), [spokes]);
+    const items = getEvenRotations(spokes);
 
     const rect = {
         offsetX: spokeWidth / 2,
@@ -167,10 +167,7 @@ interface StarburstRendererProps extends RendererProps<StarburstZone> {
 
 const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, rotation, spokeWidth, isDragging }) => {
     const showSelected = useShowHighlight(object);
-    const style = useMemo(
-        () => getZoneStyle(object.color, object.opacity, object.spokeWidth * 2),
-        [object.color, object.opacity, object.spokeWidth],
-    );
+    const style = getZoneStyle(object.color, object.opacity, object.spokeWidth * 2);
 
     const config: StarburstConfig = {
         ...style,

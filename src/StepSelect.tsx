@@ -30,7 +30,7 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { HTMLAttributes, RefAttributes, useCallback, useMemo, useState } from 'react';
+import React, { HTMLAttributes, RefAttributes, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
@@ -40,19 +40,14 @@ import { MIN_STAGE_WIDTH } from './theme';
 export const StepSelect: React.FC = () => {
     const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
-    const steps = useMemo(() => scene.steps.map((_, i) => i), [scene.steps]);
+    const steps = scene.steps.map((_, i) => i);
 
-    const handleTabSelect = useCallback(
-        (event: SelectTabEvent, data: SelectTabData) => {
-            const index = data.value as number;
-            dispatch({ type: 'setStep', index });
-        },
-        [dispatch],
-    );
+    const handleTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
+        const index = data.value as number;
+        dispatch({ type: 'setStep', index });
+    };
 
-    const maxWidth = useMemo(() => {
-        return scene.arena.width + scene.arena.padding * 2;
-    }, [scene]);
+    const maxWidth = scene.arena.width + scene.arena.padding * 2;
 
     return (
         <div className={classes.root} style={{ maxWidth }}>
@@ -155,9 +150,9 @@ const ReoderStepsDialogContent: React.FC = () => {
     const [sceneSnapshot] = useState<Scene>(scene);
     const [order, setOrder] = useState<StepOrderItem[]>(scene.steps.map((_, i) => getStepOrderItem(i)));
 
-    const applyOrder = useCallback(() => {
+    const applyOrder = () => {
         dispatch({ type: 'reoderSteps', order: order.map((x) => x.index) });
-    }, [order, dispatch]);
+    };
 
     return (
         <>
@@ -215,22 +210,19 @@ const ReorderStepsList: React.FC<ReorderStepsListProps> = ({ scene, order, onOrd
         }),
     );
 
-    const handleDragEnd = useCallback(
-        (event: DragEndEvent) => {
-            const { active, over } = event;
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
 
-            if (!over || active.id === over.id) {
-                return;
-            }
+        if (!over || active.id === over.id) {
+            return;
+        }
 
-            const oldIndex = order.findIndex((x) => x.id === active.id);
-            const newIndex = order.findIndex((x) => x.id === over.id);
-            const newOrder = arrayMove(order, oldIndex, newIndex);
+        const oldIndex = order.findIndex((x) => x.id === active.id);
+        const newIndex = order.findIndex((x) => x.id === over.id);
+        const newOrder = arrayMove(order, oldIndex, newIndex);
 
-            onOrderChange(newOrder);
-        },
-        [order, onOrderChange],
-    );
+        onOrderChange(newOrder);
+    };
 
     return (
         <div className={classes.dialogList}>

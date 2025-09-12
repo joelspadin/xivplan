@@ -1,5 +1,5 @@
 import { Field } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE } from '../../prefabs/bounds';
@@ -13,7 +13,7 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
     const classes = useControlStyles();
     const { dispatch } = useScene();
 
-    const coneAngle = useMemo(() => commonValue(objects, (obj) => obj.coneAngle), [objects]);
+    const coneAngle = commonValue(objects, (obj) => obj.coneAngle);
 
     const onAngleChanged = useSpinChanged((coneAngle: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, coneAngle })) }),

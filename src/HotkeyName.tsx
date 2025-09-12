@@ -1,5 +1,5 @@
 import { makeStyles, tokens, typographyStyles } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 export interface HotkeysProps {
     keys: string;
@@ -12,9 +12,7 @@ function formatKey(key: string) {
 
 export const HotkeyName: React.FC<HotkeysProps> = ({ keys, suffix }) => {
     const classes = useStyles();
-    const parts = useMemo(() => {
-        return keys === '+' ? ['+'] : keys.split('+');
-    }, [keys]);
+    const parts = keys === '+' ? ['+'] : keys.split('+');
 
     return (
         <span className={classes.root}>

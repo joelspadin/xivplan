@@ -18,7 +18,7 @@ import {
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
@@ -43,44 +43,38 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
         scale: [scale?.toString() ?? '1'],
     };
 
-    const handleCheckedValueChanged = useCallback(
-        (e: MenuCheckedValueChangeEvent, data: MenuCheckedValueChangeData) => {
-            if (data.name === 'scale') {
-                setScale(parseInt(data.checkedItems?.[0] ?? '1'));
-            }
-        },
-        [setScale],
-    );
+    const handleCheckedValueChanged = (e: MenuCheckedValueChangeEvent, data: MenuCheckedValueChangeData) => {
+        if (data.name === 'scale') {
+            setScale(parseInt(data.checkedItems?.[0] ?? '1'));
+        }
+    };
 
-    const handleScreenshotDone = useCallback(
-        (error?: unknown) => {
-            setTakingScreenshot(false);
+    const handleScreenshotDone = (error?: unknown) => {
+        setTakingScreenshot(false);
 
-            if (error) {
-                dispatchToast(<MessageToast title="Error" message={error} />, { intent: 'error' });
-            } else {
-                dispatchToast(<ScreenshotSuccessToast />, { intent: 'success', timeout: 2000 });
-            }
-        },
-        [dispatchToast, setTakingScreenshot],
-    );
+        if (error) {
+            dispatchToast(<MessageToast title="Error" message={error} />, { intent: 'error' });
+        } else {
+            dispatchToast(<ScreenshotSuccessToast />, { intent: 'success', timeout: 2000 });
+        }
+    };
 
     // Cancel the screenshot if it takes too long so it can't get stuck.
-    const handleTimeout = useCallback(() => {
+    const handleTimeout = () => {
         if (!takingScreenshot) {
             return;
         }
 
         setTakingScreenshot(false);
         dispatchToast(<MessageToast title="Error" message="Screenshot timed out" />, { intent: 'error' });
-    }, [takingScreenshot, dispatchToast, setTakingScreenshot]);
+    };
 
     const [, , startTimeout] = useTimeoutFn(handleTimeout, SCREENSHOT_TIMEOUT);
 
-    const startScreenshot = useCallback(() => {
+    const startScreenshot = () => {
         setTakingScreenshot(true);
         startTimeout();
-    }, [setTakingScreenshot, startTimeout]);
+    };
 
     useHotkeys(
         'ctrl+shift+c',
@@ -158,7 +152,7 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     const [frozenStepIndex] = useState(stepIndex);
     const ref = useRef<Konva.Stage>(null);
 
-    const takeScreenshot = useCallback(async () => {
+    const takeScreenshot = async () => {
         try {
             if (!ref.current) {
                 throw new Error('Stage missing');
@@ -169,7 +163,7 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
         } catch (ex) {
             onScreenshotDone(ex);
         }
-    }, [scale, onScreenshotDone]);
+    };
 
     // Delay screenshot by at least one render to make sure any objects that need
     // to load resources have reported that they are loading.

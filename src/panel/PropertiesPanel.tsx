@@ -1,5 +1,5 @@
 import { mergeClasses } from '@fluentui/react-components';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useCurrentStep } from '../SceneProvider';
 import {
     SceneObject,
@@ -83,11 +83,8 @@ interface ControlConditionProps {
 }
 
 const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, invert, control, className }) => {
-    const isValid = useMemo(() => {
-        const result = objects.every(test);
-
-        return invert ? !result : result;
-    }, [objects, test, invert]);
+    const result = objects.every(test);
+    const isValid = invert ? !result : result;
 
     const Control = control;
     return isValid ? <Control objects={objects} className={className} /> : null;

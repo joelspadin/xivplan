@@ -8,7 +8,7 @@ import {
     SquareHintRegular,
     SquareRegular,
 } from '@fluentui/react-icons';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { DEFAULT_RADIAL_TICKS, DEFAULT_RECT_TICKS, NO_TICKS, Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { Segment, SegmentedGroup } from '../Segmented';
@@ -25,31 +25,25 @@ export const ArenaTickEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const ticks = scene.arena.ticks;
 
-    const setTicks = useCallback(
-        (ticks: Ticks) => {
-            dispatch({ type: 'arenaTicks', value: ticks });
-        },
-        [dispatch],
-    );
+    const setTicks = (ticks: Ticks) => {
+        dispatch({ type: 'arenaTicks', value: ticks });
+    };
 
-    const onTypeChange = useCallback(
-        (option?: TickType) => {
-            switch (option) {
-                case TickType.None:
-                    setTicks(NO_TICKS);
-                    break;
+    const onTypeChange = (option?: TickType) => {
+        switch (option) {
+            case TickType.None:
+                setTicks(NO_TICKS);
+                break;
 
-                case TickType.Radial:
-                    setTicks(DEFAULT_RADIAL_TICKS);
-                    break;
+            case TickType.Radial:
+                setTicks(DEFAULT_RADIAL_TICKS);
+                break;
 
-                case TickType.Rectangular:
-                    setTicks(DEFAULT_RECT_TICKS);
-                    break;
-            }
-        },
-        [setTicks],
-    );
+            case TickType.Rectangular:
+                setTicks(DEFAULT_RECT_TICKS);
+                break;
+        }
+    };
 
     return (
         <div className={classes.column}>

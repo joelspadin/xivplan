@@ -1,6 +1,6 @@
 import { Field } from '@fluentui/react-components';
 import { CircleFilled, CircleRegular } from '@fluentui/react-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { HollowObject } from '../../scene';
@@ -15,16 +15,13 @@ enum Styles {
 export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ objects }) => {
     const { dispatch } = useScene();
 
-    const hollow = useMemo(() => commonValue(objects, (obj) => !!obj.hollow), [objects]);
+    const hollow = commonValue(objects, (obj) => !!obj.hollow);
     const style = hollow ? Styles.Hollow : Styles.Solid;
 
-    const onHollowChanged = useCallback(
-        (style: string) => {
-            const hollow = style === Styles.Hollow;
-            dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hollow', hollow)) });
-        },
-        [dispatch, objects],
-    );
+    const onHollowChanged = (style: string) => {
+        const hollow = style === Styles.Hollow;
+        dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hollow', hollow)) });
+    };
 
     return (
         <Field label="Style">

@@ -1,7 +1,7 @@
 import Color from 'colorjs.io';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useMemo, useRef } from 'react';
+import React, { RefObject, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/eye.svg?react';
@@ -128,23 +128,19 @@ interface EyeRendererProps extends RendererProps<EyeObject> {
 const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {
     const showHighlight = useShowHighlight(object);
     const scale = radius / 20;
-    const eyeStyle = useMemo(() => {
-        return {
-            fillRadialGradientColorStops: getEyeGradient(object.color, object.invert),
-            fillRadialGradientStartRadius: 0,
-            fillRadialGradientEndRadius: 15,
-        } as ShapeConfig;
-    }, [object.color, object.invert]);
-    const irisStyle = useMemo(() => {
-        return {
-            fillRadialGradientColorStops: getIrisGradient(object.color),
-            fillRadialGradientStartRadius: 0,
-            fillRadialGradientEndRadius: 15,
-        } as ShapeConfig;
-    }, [object.color]);
+    const eyeStyle: ShapeConfig = {
+        fillRadialGradientColorStops: getEyeGradient(object.color, object.invert),
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndRadius: 15,
+    };
+    const irisStyle: ShapeConfig = {
+        fillRadialGradientColorStops: getIrisGradient(object.color),
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndRadius: 15,
+    };
 
-    const strokeColor = useMemo(() => getStrokeColor(object.color), [object.color]);
-    const highlightColor = useMemo(() => getHighlightColor(object.color), [object.color]);
+    const strokeColor = getStrokeColor(object.color);
+    const highlightColor = getHighlightColor(object.color);
 
     // Cache so overlapping shapes with opacity appear as one object.
     useKonvaCache(groupRef, [object.color, object.opacity, radius, showHighlight]);

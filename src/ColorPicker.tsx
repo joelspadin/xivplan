@@ -2,7 +2,7 @@ import { Field, makeStyles, mergeClasses, tokens } from '@fluentui/react-compone
 import Hue from '@uiw/react-color-hue';
 import Saturation from '@uiw/react-color-saturation';
 import Color from 'colorjs.io';
-import React, { HTMLAttributes, useCallback, useMemo, useState } from 'react';
+import React, { HTMLAttributes, useState } from 'react';
 import { SpinButton } from './SpinButton';
 import { HsvaColor, RgbColor, colorToHsva, hsvToHex, hsvToRgb, rgbToHsva } from './color';
 
@@ -17,33 +17,24 @@ const BLACK: HsvaColor = { h: 0, s: 0, v: 0, a: 1 };
 export const ColorPicker: React.FC<ColorPickerProps> = ({ className, value, onChange }) => {
     const classes = useStyles();
     const [color, setColor] = useState<HsvaColor>(parseColorHsva(value) ?? BLACK);
-    const rgb = useMemo(() => hsvToRgb(color), [color]);
+    const rgb = hsvToRgb(color);
 
-    const onSaturationChange = useCallback(
-        (data: HsvaColor) => {
-            setColor(data);
-            onChange?.(hsvToHex(color));
-        },
-        [color, setColor, onChange],
-    );
+    const onSaturationChange = (data: HsvaColor) => {
+        setColor(data);
+        onChange?.(hsvToHex(color));
+    };
 
-    const onHueChange = useCallback(
-        (data: { h: number }) => {
-            const updated = { ...color, h: data.h };
-            setColor(updated);
-            onChange?.(hsvToHex(updated));
-        },
-        [color, setColor, onChange],
-    );
+    const onHueChange = (data: { h: number }) => {
+        const updated = { ...color, h: data.h };
+        setColor(updated);
+        onChange?.(hsvToHex(updated));
+    };
 
-    const onRgbChange = useCallback(
-        (data: Partial<RgbColor>) => {
-            const updated = rgbToHsva({ ...rgb, ...data });
-            setColor(updated);
-            onChange?.(hsvToHex(updated));
-        },
-        [rgb, setColor, onChange],
-    );
+    const onRgbChange = (data: Partial<RgbColor>) => {
+        const updated = rgbToHsva({ ...rgb, ...data });
+        setColor(updated);
+        onChange?.(hsvToHex(updated));
+    };
 
     return (
         <div className={mergeClasses(classes.root, className)}>

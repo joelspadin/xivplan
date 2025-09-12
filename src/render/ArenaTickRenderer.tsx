@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Rect } from 'react-konva';
 import { getCanvasArenaEllipse, getCanvasArenaRect } from '../coord';
 import { RadialTicks, RectangularTicks, Scene, Ticks, TickType } from '../scene';
@@ -35,14 +35,10 @@ interface TickRendererProps<T extends Ticks> {
 }
 
 const RectangularTickRenderer: React.FC<TickRendererProps<RectangularTicks>> = ({ scene, ticks }) => {
-    const { majorProps, minorProps } = useMemo(() => {
-        const rect = getCanvasArenaRect(scene);
+    const rect = getCanvasArenaRect(scene);
 
-        const minorProps = getRectangularTicks(ticks, rect, MINOR_TICK_SIZE);
-        const majorProps = getCornerTicks(rect, MINOR_TICK_SIZE);
-
-        return { majorProps, minorProps };
-    }, [scene, ticks]);
+    const minorProps = getRectangularTicks(ticks, rect, MINOR_TICK_SIZE);
+    const majorProps = getCornerTicks(rect, MINOR_TICK_SIZE);
 
     return (
         <>
@@ -57,19 +53,15 @@ const RectangularTickRenderer: React.FC<TickRendererProps<RectangularTicks>> = (
 };
 
 const RadialTickRenderer: React.FC<TickRendererProps<RadialTicks>> = ({ scene, ticks }) => {
-    const { majorProps, minorProps } = useMemo(() => {
-        const ellipse = getCanvasArenaEllipse(scene);
+    const ellipse = getCanvasArenaEllipse(scene);
 
-        const majorAngles = getRadialAngles(ticks.majorCount, ticks.majorStart);
-        const minorAngles = getRadialAngles(ticks.minorCount, ticks.minorStart).filter(
-            (a) => !includesAngle(majorAngles, a),
-        );
+    const majorAngles = getRadialAngles(ticks.majorCount, ticks.majorStart);
+    const minorAngles = getRadialAngles(ticks.minorCount, ticks.minorStart).filter(
+        (a) => !includesAngle(majorAngles, a),
+    );
 
-        const majorProps = anglesToTicks(majorAngles, ellipse, MAJOR_TICK_SIZE);
-        const minorProps = anglesToTicks(minorAngles, ellipse, MINOR_TICK_SIZE);
-
-        return { majorProps, minorProps };
-    }, [scene, ticks]);
+    const majorProps = anglesToTicks(majorAngles, ellipse, MAJOR_TICK_SIZE);
+    const minorProps = anglesToTicks(minorAngles, ellipse, MINOR_TICK_SIZE);
 
     return (
         <>

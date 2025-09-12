@@ -14,7 +14,7 @@ import {
     DrawImageRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
@@ -40,41 +40,32 @@ export const DrawPanel: React.FC = () => {
     const [editMode, setEditMode] = useEditMode();
     const [config, setConfig] = useDrawConfig();
 
-    const setColor = useCallback((color: string) => setConfig({ ...config, color }), [config, setConfig]);
+    const setColor = (color: string) => setConfig({ ...config, color });
 
-    const setOpacity = useCallback(
-        (opacity: number) => {
-            if (opacity !== config.opacity) {
-                setConfig({ ...config, opacity });
-            }
-        },
-        [config, setConfig],
-    );
+    const setOpacity = (opacity: number) => {
+        if (opacity !== config.opacity) {
+            setConfig({ ...config, opacity });
+        }
+    };
 
     const onSizeChanged = useSpinChanged((brushSize: number) => setConfig({ ...config, brushSize }));
 
-    const modeHotkey = useCallback(
-        (mode: EditMode) => (e: KeyboardEvent) => {
-            setEditMode(mode);
-            e.preventDefault();
-        },
-        [setEditMode],
-    );
+    const modeHotkey = (mode: EditMode) => (e: KeyboardEvent) => {
+        setEditMode(mode);
+        e.preventDefault();
+    };
 
     useHotkeys('e', {}, modeHotkey(EditMode.Normal), [editMode]);
     useHotkeys('d', {}, modeHotkey(EditMode.Draw), [editMode]);
 
-    const getToolButtonProps = useCallback<ToolButtonPropsGetter>(
-        (mode) => {
-            const checked = editMode === mode;
-            return {
-                checked,
-                className: mergeClasses(classes.button, checked && classes.checked),
-                onClick: () => setEditMode(mode),
-            };
-        },
-        [editMode, classes.button, classes.checked, setEditMode],
-    );
+    const getToolButtonProps: ToolButtonPropsGetter = (mode) => {
+        const checked = editMode === mode;
+        return {
+            checked,
+            className: mergeClasses(classes.button, checked && classes.checked),
+            onClick: () => setEditMode(mode),
+        };
+    };
 
     return (
         <div className={mergeClasses(controlClasses.panel, controlClasses.column)}>
