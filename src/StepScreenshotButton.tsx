@@ -27,6 +27,7 @@ import { ObjectLoadingContext } from './ObjectLoadingContext';
 import { ObjectLoadingProvider } from './ObjectLoadingProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { useScene } from './SceneProvider';
+import { ToastDismissButton } from './ToastDismissButton';
 import { useHotkeys } from './useHotkeys';
 
 const SCREENSHOT_TIMEOUT = 1000;
@@ -135,7 +136,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
 const ScreenshotSuccessToast = () => {
     return (
         <Toast>
-            <ToastTitle>Screenshot copied to clipboard</ToastTitle>
+            <ToastTitle action={<ToastDismissButton />}>Screenshot copied to clipboard</ToastTitle>
         </Toast>
     );
 };

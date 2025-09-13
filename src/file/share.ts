@@ -1,4 +1,6 @@
-import { sceneToText, textToScene } from '../file';
+import { use } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { jsonToScene, sceneToText, textToScene } from '../file';
 import { Scene } from '../scene';
 
 export function getShareLink(scene: Scene): string {
@@ -36,4 +38,61 @@ export function parseSceneLink(hash: string | URL, searchParams?: URLSearchParam
     }
 
     return undefined;
+}
+
+export async function fetchScene(url: string) {
+    const response = await fetch(url);
+    const data = await response.text();
+
+    return jsonToScene(data);
+}
+
+let urlCache = '';
+let scenePromise: Promise<Scene | undefined> | undefined;
+let sceneError: Error | string | unknown | undefined;
+
+function getFetchScenePromise(url: string): Promise<Scene | undefined> {
+    if (url === urlCache && scenePromise) {
+        return scenePromise;
+    }
+
+    urlCache = url;
+    scenePromise = fetchScene(url).catch((ex) => {
+        console.error(`Failed to read plan from "${url}"`, ex);
+        sceneError = ex;
+
+        return undefined;
+    });
+
+    return scenePromise;
+}
+
+/**
+ * Reads a plan's scene data from the URL. If this requires fetching data from an external site, it suspends until the
+ * data is fetched.
+ */
+export function useSceneFromUrl(): Scene | undefined {
+    const [searchParams] = useSearchParams();
+    const { hash } = useLocation();
+
+    try {
+        const scene = parseSceneLink(hash, searchParams);
+        if (scene) {
+            return scene;
+        }
+    } catch (ex) {
+        console.error('Invalid plan data from URL', ex);
+        sceneError = ex;
+    }
+
+    const url = searchParams.get('url');
+    if (url) {
+        return use(getFetchScenePromise(url));
+    }
+
+    return undefined;
+}
+
+export function useSceneLoadError(): Error | string | unknown | undefined {
+    return sceneError;
 }

@@ -2,6 +2,13 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## September 13, 2025
+
+- Migrated to React 19. Everything seems to be working, but please [let me know](https://github.com/joelspadin/xivplan/issues) if something is broken.
+- Added support for loading a plan via URL parameter.
+  - Navigate to `https://xivplan.netlify.app/?url=` followed by a URL to an .xivplan file. The server must serve the raw JSON file without wrapping it in an HTML page.
+- Added a dismiss button to all toast notifications.
+
 ## Jun 28, 2025
 
 - Added a control to change a "look away" marker into a "look towards" marker.

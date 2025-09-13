@@ -26,6 +26,8 @@ Using local storage means I don't have to pay for servers, and I can't mess up a
 
 If you are using a Chromium-based browser and you install the site as an app, then .xivplan files can also be opened directly in the app instead of using drag and drop.
 
+You can also self-host plans. XIVPlan can fetch an .xivplan file from any public URL if you navigate to `https://xivplan.netlify.app/?url=` followed by the link to the plan. Make sure that you are serving the raw JSON file or it will fail to load.
+
 ### Background Images
 
 When loading an SVG file as the arena background image, XIVPlan will inject the following CSS variables:

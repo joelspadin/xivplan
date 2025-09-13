@@ -1,5 +1,6 @@
 import { Text, Toast, ToastBody, ToastProps, ToastTitle } from '@fluentui/react-components';
 import React from 'react';
+import { ToastDismissButton } from './ToastDismissButton';
 
 export interface MessageToastProps extends ToastProps {
     title: string;
@@ -11,7 +12,7 @@ export const MessageToast: React.FC<MessageToastProps> = ({ title, message, ...p
 
     return (
         <Toast {...props}>
-            <ToastTitle>{title}</ToastTitle>
+            <ToastTitle action={<ToastDismissButton />}>{title}</ToastTitle>
             <ToastBody>
                 <Text>{messageStr}</Text>
             </ToastBody>

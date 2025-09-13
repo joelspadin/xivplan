@@ -4,6 +4,7 @@ import { EditModeProvider } from './EditModeProvider';
 import { RegularHotkeyHandler } from './HotkeyHandler';
 import { MainToolbar } from './MainToolbar';
 import { PanelDragProvider } from './PanelDragProvider';
+import { SceneLoadErrorNotifier } from './SceneLoadErrorNotifier';
 import { useScene } from './SceneProvider';
 import { SelectionProvider } from './SelectionProvider';
 import { StepSelect } from './StepSelect';
@@ -35,6 +36,8 @@ const MainPageContent: React.FC = () => {
             <title>{title}</title>
 
             <RegularHotkeyHandler />
+            <SceneLoadErrorNotifier />
+
             <MainToolbar />
 
             {/* TODO: make panel collapsable */}
