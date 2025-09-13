@@ -56,7 +56,7 @@ const ShareDialogBody: React.FC = () => {
             <DialogTitle>Share</DialogTitle>
             <DialogContent>
                 <Field label="Link to this plan">
-                    <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
+                    <Textarea value={url} contentEditable={false} appearance="filled-darker" rows={6} />
                 </Field>
                 <p>
                     If your browser won&apos;t open the link, paste the text into{' '}
