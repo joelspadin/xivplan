@@ -78,6 +78,8 @@ export type ArenaAction =
 export interface ObjectUpdateAction {
     type: 'update';
     value: SceneObject | readonly SceneObject[];
+    /* When true, skips appending to the state history, directly applying the update to the present state. */
+    skipHistoryUpdate?: boolean;
 }
 
 export interface ObjectAddAction {

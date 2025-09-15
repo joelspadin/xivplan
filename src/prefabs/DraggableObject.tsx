@@ -1,5 +1,5 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { CursorGroup } from '../CursorGroup';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, getSceneCoord } from '../coord';
@@ -19,8 +19,6 @@ export interface DraggableObjectProps {
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActive, children }) => {
     const [editMode] = useEditMode();
-    const [dragCenter, setDragCenter] = useState({ x: 0, y: 0 });
-    const [dragging, setDragging] = useState(false);
     const { scene, dispatch } = useScene();
     const [selection, setSelection] = useSelection();
     const center = getCanvasCoord(scene, object);
@@ -28,27 +26,33 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
 
     const onDragStart = (e: KonvaEventObject<DragEvent>) => {
-        setDragging(true);
         onActive?.(true);
-        setDragCenter(e.target.position());
 
         // If we start dragging an object that isn't selected, it should
         // become the new selection.
         if (!selection.has(object.id)) {
             setSelection(selectSingle(object.id));
         }
-    };
 
-    const onDragEnd = (e: KonvaEventObject<DragEvent>) => {
-        setDragging(false);
-        onActive?.(false);
-
+        // Ensure the start position is pushed onto the history stack, as further drag
+        // events will only update the present.
         const pos = getSceneCoord(scene, e.target.position());
         dispatch({ type: 'update', value: { ...object, ...pos } });
     };
 
+    const onDragMove = (e: KonvaEventObject<DragEvent>) => {
+        const pos = getSceneCoord(scene, e.target.position());
+        dispatch({ type: 'update', value: { ...object, ...pos }, skipHistoryUpdate: true });
+    };
+
+    const onDragEnd = (e: KonvaEventObject<DragEvent>) => {
+        onActive?.(false);
+
+        onDragMove(e);
+    };
+
     return (
-        <DraggableCenterContext value={dragging ? dragCenter : center}>
+        <DraggableCenterContext value={center}>
             <SelectableObject object={object}>
                 <TetherTarget object={object}>
                     <CursorGroup
@@ -56,7 +60,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
                         cursor={isDraggable ? 'move' : undefined}
                         draggable={isDraggable}
                         onDragStart={onDragStart}
-                        onDragMove={(e) => setDragCenter(e.target.position())}
+                        onDragMove={onDragMove}
                         onDragEnd={onDragEnd}
                     >
                         {children}

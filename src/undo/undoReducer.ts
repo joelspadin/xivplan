@@ -71,12 +71,19 @@ export function createUndoReducer<S, A extends object>(
                 };
             }
         }
-
-        return {
-            past: [state.present, ...state.past].slice(0, historyLimit),
-            present: reducer(state.present, action),
-            future: [],
-        };
+        if ('skipHistoryUpdate' in action && action.skipHistoryUpdate) {
+            return {
+                past: state.past,
+                present: reducer(state.present, action),
+                future: state.future,
+            };
+        } else {
+            return {
+                past: [state.present, ...state.past].slice(0, historyLimit),
+                present: reducer(state.present, action),
+                future: [],
+            };
+        }
     };
 }
 
