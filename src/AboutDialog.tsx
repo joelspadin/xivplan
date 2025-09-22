@@ -11,6 +11,7 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { ExternalLink } from './ExternalLink';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 
@@ -20,6 +21,7 @@ export interface AboutDialogProps {
 
 export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     return (
         <Dialog>
@@ -28,15 +30,30 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
             </DialogTrigger>
             <DialogSurface>
                 <HotkeyBlockingDialogBody>
-                    <DialogTitle>About</DialogTitle>
+                    <DialogTitle>{t('AboutDialog.DialogTitle')}</DialogTitle>
                     <DialogContent className={classes.content}>
                         <p>
-                            XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by{' '}
+                            {/* XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by{' '}
                             <ExternalLink href="https://raidplan.io">RaidPlan.io</ExternalLink> and{' '}
                             <ExternalLink href="https://ff14.toolboxgaming.space">
                                 FF14 Toolbox Gaming Space
                             </ExternalLink>
-                            .
+                            . */}
+                            <Trans
+                                i18nKey="AboutDialog.DialogContent.Description"
+                                components={{
+                                    raidplan: (
+                                        <ExternalLink href={t('AboutDialog.DialogContent.Links.raidplanUrl')}>
+                                            {t('AboutDialog.DialogContent.Links.raidplanText')}
+                                        </ExternalLink>
+                                    ),
+                                    ff14Toolbox: (
+                                        <ExternalLink href={t('AboutDialog.DialogContent.Links.ff14ToolboxUrl')}>
+                                            {t('AboutDialog.DialogContent.Links.ff14ToolboxText')}
+                                        </ExternalLink>
+                                    ),
+                                }}
+                            />
                         </p>
                         <p>
                             XIVPlan is open source on{' '}

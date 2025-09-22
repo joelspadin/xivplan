@@ -1,0 +1,19 @@
+{
+  "translation": {
+    "AboutDialog": {
+      "DialogTitle": "关于",
+      "DialogContent": {
+        "Description": "XIVPlan是一个用于快速绘制最终幻想XIV raid策略图的工具，灵感来自于{{raidplan}}和{{ff14Toolbox}}。",
+        "Links": {
+          "raidplanUrl": "https://raidplan.io",
+          "raidplanText": "RaidPlan.io",
+          "ff14ToolboxUrl": "https://ff14.toolboxgaming.space",
+          "ff14ToolboxText": "FF14工具箱"
+        }
+      }
+    }
+  },
+  "App": {
+    "DialogTitle": "XIVPlan"
+  }
+}
