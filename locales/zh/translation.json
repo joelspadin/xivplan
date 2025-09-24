@@ -1,19 +1,42 @@
 {
   "translation": {
     "AboutDialog": {
+      "DialogTrigger": "关于",
       "DialogTitle": "关于",
       "DialogContent": {
-        "Description": "XIVPlan是一个用于快速绘制最终幻想XIV raid策略图的工具，灵感来自于{{raidplan}}和{{ff14Toolbox}}。",
-        "Links": {
-          "raidplanUrl": "https://raidplan.io",
-          "raidplanText": "RaidPlan.io",
-          "ff14ToolboxUrl": "https://ff14.toolboxgaming.space",
-          "ff14ToolboxText": "FF14工具箱"
-        }
+        "Description": "XIVPlan是一个用于快速绘制最终幻想XIV raid策略图的工具，灵感来自于<0>RaidPlan.io</0>和<1>FF14工具箱</1>。",
+        "OpenSource": "XIVPlan是一个开源项目，托管在<0>GitHub</0>上。如果你发现了bug或者其他问题，请在Github上创建新的<1>issue</1>！",
+        "Credits": "鸣谢"
+      },
+      "DialogTrigger_close": "关闭"
+    },
+    "DirtyProvider": {
+      "NAV_LOCK_MESSAGE": "您有未保存的更改。如果您继续，所有未保存的更改将会丢失。",
+      "DialogTitle": "未保存的更改",
+      "DialogTrigger1": "离开页面",
+      "DialogTrigger2": "继续编辑"
+    },
+    "SiteHeader": {
+      "Help": "帮助",
+      "GitHub": "GitHub",
+      "darkMode": {
+        "DarkTheme": "深色主题",
+        "LightTheme": "浅色主题"
       }
+    },
+    "MainToolbar": {
+      "Open": "打开",
+      "Undo": "撤销",
+      "Redo": "重做",
+      "Share": "分享",
+      "Screenshot": "截图",
+      "SaveAs": "保存为",
+      "Download": "下载",
+      "Save": "保存"
+    },
+    "StepScreenshotButton": {
+      "MenuGroupHeader": "缩放比例",
+      "ToastTitle": "截图已复制到剪贴板"
     }
-  },
-  "App": {
-    "DialogTitle": "XIVPlan"
   }
 }

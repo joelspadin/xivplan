@@ -18,6 +18,7 @@ import {
     SaveRegular,
 } from '@fluentui/react-icons';
 import React, { ReactElement, useCallback, useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
@@ -44,6 +45,7 @@ export const MainToolbar: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
     const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const [openFileOpen, setOpenFileOpen] = useState(false);
+    const { t } = useTranslation();
 
     useHotkeys(
         'ctrl+o',
@@ -65,23 +67,23 @@ export const MainToolbar: React.FC = () => {
                 <Toolbar className={classes.toolbar}>
                     {/* <CollapsableToolbarButton icon={<NewRegular />}>New</CollapsableToolbarButton> */}
                     <CollapsableToolbarButton icon={<OpenRegular />} onClick={() => setOpenFileOpen(true)}>
-                        Open
+                        {t('MainToolbar.Open')}
                     </CollapsableToolbarButton>
 
                     <SaveButton />
 
                     <CollapsableToolbarButton icon={<ArrowUndoRegular />} onClick={undo} disabled={!undoPossible}>
-                        Undo
+                        {t('MainToolbar.Undo')}
                     </CollapsableToolbarButton>
                     <CollapsableToolbarButton icon={<ArrowRedoRegular />} onClick={redo} disabled={!redoPossible}>
-                        Redo
+                        {t('MainToolbar.Redo')}
                     </CollapsableToolbarButton>
 
                     <ToolbarDivider />
 
-                    <ShareDialogButton>Share</ShareDialogButton>
+                    <ShareDialogButton>{t('MainToolbar.Share')}</ShareDialogButton>
 
-                    <StepScreenshotButton>Screenshot</StepScreenshotButton>
+                    <StepScreenshotButton>{t('MainToolbar.Screenshot')}</StepScreenshotButton>
                 </Toolbar>
             </InPortal>
         </>
@@ -95,16 +97,20 @@ interface SaveButtonState {
     disabled?: boolean;
 }
 
-function getSaveButtonState(source: FileSource | undefined, isDirty: boolean): SaveButtonState {
+function getSaveButtonState(
+    source: FileSource | undefined,
+    isDirty: boolean,
+    t: (key: string) => string,
+): SaveButtonState {
     if (!source) {
-        return { type: 'saveas', text: 'Save as', icon: <SaveEditRegular /> };
+        return { type: 'saveas', text: t('MainToolbar.SaveAs'), icon: <SaveEditRegular /> };
     }
 
     if (source.type === 'blob') {
-        return { type: 'download', text: 'Download', icon: <ArrowDownloadRegular /> };
+        return { type: 'download', text: t('MainToolbar.Download'), icon: <ArrowDownloadRegular /> };
     }
 
-    return { type: 'save', text: 'Save', icon: <SaveRegular />, disabled: !isDirty };
+    return { type: 'save', text: t('MainToolbar.Save'), icon: <SaveRegular />, disabled: !isDirty };
 }
 
 const SaveButton: React.FC = () => {
@@ -113,8 +119,9 @@ const SaveButton: React.FC = () => {
     const [saveAsOpen, setSaveAsOpen] = useState(false);
     const { scene, source } = useScene();
     const setSource = useSetSource();
+    const { t } = useTranslation();
 
-    const { type, text, icon, disabled } = getSaveButtonState(source, isDirty);
+    const { type, text, icon, disabled } = getSaveButtonState(source, isDirty, t);
 
     const save = useCallback(async () => {
         if (!source) {

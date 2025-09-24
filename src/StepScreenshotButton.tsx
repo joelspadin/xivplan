@@ -19,6 +19,7 @@ import {
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
@@ -38,6 +39,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
     const [scale, setScale] = useLocalStorage('screenshotPixelRatio', 1);
     const [takingScreenshot, setTakingScreenshot] = useState(false);
     const { dispatchToast } = useToastController();
+    const { t } = useTranslation();
 
     const checkedValues: Record<string, string[]> = {
         scale: [scale?.toString() ?? '1'],
@@ -113,7 +115,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
                 <MenuPopover>
                     <MenuList>
                         <MenuGroup>
-                            <MenuGroupHeader>Screenshot scale</MenuGroupHeader>
+                            <MenuGroupHeader>{t('StepScreenshotButton.MenuGroupHeader')}</MenuGroupHeader>
                             <MenuItemRadio name="scale" value="1">
                                 1X
                             </MenuItemRadio>
@@ -139,9 +141,10 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
 };
 
 const ScreenshotSuccessToast = () => {
+    const { t } = useTranslation();
     return (
         <Toast>
-            <ToastTitle>Screenshot copied to clipboard</ToastTitle>
+            <ToastTitle>{t('StepScreenshotButton.ToastTitle')}</ToastTitle>
         </Toast>
     );
 };

@@ -26,45 +26,40 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
     return (
         <Dialog>
             <DialogTrigger>
-                <Link {...props}>About</Link>
+                <Link {...props}>{t('AboutDialog.DialogTrigger')}</Link>
             </DialogTrigger>
             <DialogSurface>
                 <HotkeyBlockingDialogBody>
                     <DialogTitle>{t('AboutDialog.DialogTitle')}</DialogTitle>
                     <DialogContent className={classes.content}>
                         <p>
-                            {/* XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by{' '}
-                            <ExternalLink href="https://raidplan.io">RaidPlan.io</ExternalLink> and{' '}
-                            <ExternalLink href="https://ff14.toolboxgaming.space">
-                                FF14 Toolbox Gaming Space
-                            </ExternalLink>
-                            . */}
                             <Trans
                                 i18nKey="AboutDialog.DialogContent.Description"
-                                components={{
-                                    raidplan: (
-                                        <ExternalLink href={t('AboutDialog.DialogContent.Links.raidplanUrl')}>
-                                            {t('AboutDialog.DialogContent.Links.raidplanText')}
-                                        </ExternalLink>
-                                    ),
-                                    ff14Toolbox: (
-                                        <ExternalLink href={t('AboutDialog.DialogContent.Links.ff14ToolboxUrl')}>
-                                            {t('AboutDialog.DialogContent.Links.ff14ToolboxText')}
-                                        </ExternalLink>
-                                    ),
-                                }}
+                                components={[
+                                    <ExternalLink key="raidplan" href="https://raidplan.io"></ExternalLink>,
+                                    <ExternalLink
+                                        key="ff14Toolbox"
+                                        href="https://ff14.toolboxgaming.space"
+                                    ></ExternalLink>,
+                                ]}
                             />
                         </p>
                         <p>
-                            XIVPlan is open source on{' '}
-                            <ExternalLink href="https://github.com/joelspadin/xivplan">GitHub</ExternalLink>. If you
-                            find a bug or have other feedback, please create a{' '}
-                            <ExternalLink href="https://github.com/joelspadin/xivplan/issues/new/choose">
-                                new issue
-                            </ExternalLink>{' '}
-                            on GitHub.
+                            <Trans
+                                i18nKey="AboutDialog.DialogContent.OpenSource"
+                                components={[
+                                    <ExternalLink
+                                        key="github"
+                                        href="https://github.com/joelspadin/xivplan"
+                                    ></ExternalLink>,
+                                    <ExternalLink
+                                        key="issue"
+                                        href="https://github.com/joelspadin/xivplan/issues/new/choose"
+                                    ></ExternalLink>,
+                                ]}
+                            />
                         </p>
-                        <h2>Credits</h2>
+                        <h2>{t('AboutDialog.DialogContent.Credits')}</h2>
                         <p>XIVPlan is © 2021 Joel Spadin and contributors.</p>
                         <p>Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.</p>
                         <p>
@@ -83,7 +78,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = (props) => {
                     </DialogContent>
                     <DialogActions>
                         <DialogTrigger disableButtonEnhancement>
-                            <Button appearance="secondary">Close</Button>
+                            <Button appearance="secondary">{t('AboutDialog.DialogTrigger_close')}</Button>
                         </DialogTrigger>
                     </DialogActions>
                 </HotkeyBlockingDialogBody>

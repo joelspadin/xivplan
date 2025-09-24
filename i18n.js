@@ -15,6 +15,7 @@ i18n.use(LanguageDetector)
     .init({
         resources,
         fallbackLng: 'en',
+        supportlangs: ['en', 'zh'],
         debug: true, // set to true for debugging
         interpolation: {
             escapeValue: false, // react already safes from xss

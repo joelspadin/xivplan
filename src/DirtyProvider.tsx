@@ -10,6 +10,7 @@ import {
 } from '@fluentui/react-components';
 import { Action } from 'history';
 import React, { PropsWithChildren, useCallback, useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
 import { DirtyContext, SavedStateContext } from './DirtyContext';
@@ -32,8 +33,6 @@ export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
     );
 };
 
-const NAV_LOCK_MESSAGE = 'Are you sure you want to leave? Your unsaved changes will be lost.';
-
 interface NavLockProps {
     locked: boolean;
 }
@@ -46,6 +45,8 @@ interface NextLocation {
 type OpenChangeEventHandler = Required<DialogProps>['onOpenChange'];
 
 const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
+    const { t } = useTranslation();
+    const NAV_LOCK_MESSAGE = t('translation.DirtyProvider.NAV_LOCK_MESSAGE');
     useBeforeUnload(locked, NAV_LOCK_MESSAGE);
 
     const confirmId = useId();
@@ -115,16 +116,16 @@ const NavLockPrompt: React.FC<NavLockProps> = ({ locked }) => {
             {/* <Prompt when={locked && !nextLocation} message={onPrompt} /> */}
             <Dialog open={showDialog} onOpenChange={onOpenChange}>
                 <DialogSurface>
-                    <DialogTitle>Unsaved changes</DialogTitle>
+                    <DialogTitle>{t('DirtyProvider.DialogTitle')}</DialogTitle>
                     <DialogContent>{NAV_LOCK_MESSAGE}</DialogContent>
                     <DialogActions>
                         <DialogTrigger>
                             <Button id={confirmId} appearance="primary">
-                                Leave page
+                                {t('DirtyProvider.DialogTrigger1')}
                             </Button>
                         </DialogTrigger>
                         <DialogTrigger>
-                            <Button>Stay on page</Button>
+                            <Button>{t('DirtyProvider.DialogTrigger2')}</Button>
                         </DialogTrigger>
                     </DialogActions>
                 </DialogSurface>

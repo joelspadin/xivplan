@@ -1,10 +1,52 @@
 {
   "translation": {
     "AboutDialog": {
-      "DialogTitle": "About"
+      "DialogTrigger": "About",
+      "DialogTitle": "About",
+      "DialogContent": {
+        "Description": "XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by<0>RaidPlan.io</0> and <1>FF14工具箱</1>。",
+        "OpenSource": "XIVPlan is open source on<0> GitHub </0>. If you find a bug or have other feedback, please create a<1>issue</1>!",
+        "Credits": "Credits"
+      },
+      "DialogTrigger_close": "Close"
     },
-    "App": {
-      "DialogTitle": "XIVPlan"
+    "DirtyProvider": {
+      "NAV_LOCK_MESSAGE": "Are you sure you want to leave? Your unsaved changes will be lost.",
+      "DialogTitle": "Unsaved changes",
+      "DialogTrigger1": "Leave page",
+      "DialogTrigger2": "Stay on page"
+    },
+    "SiteHeader": {
+      "Help": "Help",
+      "GitHub": "GitHub",
+      "darkMode": {
+        "DarkTheme": "Dark theme",
+        "LightTheme": "Light theme"
+      }
+    },
+    "MainToolbar": {
+      "Open": "Open",
+      "Undo": "Undo",
+      "Redo": "Redo",
+      "Share": "Share",
+      "Screenshot": "Screenshot",
+      "SaveAs": "Save as",
+      "Download": "Download",
+      "Save": "Save"
+    },
+    "StepScreenshotButton": {
+      "MenuGroupHeader": "Screenshot scale",
+      "ToastTitle": "Screenshot copied to clipboard"
+    },
+    "HelpDialog": {
+      "DialogTitle": "Help",
+      "DialogContent": {
+        "LeftPanel": "Left panel",
+        "Arena": "Arena",
+        "Arena_Description": "Edit the appearance of the arena here.",
+        "Objects": "Objects",
+        "Objects_Description": ">Drag objects onto the arena."
+      }
     }
   }
 }

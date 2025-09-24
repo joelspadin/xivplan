@@ -1,6 +1,7 @@
-import { Button, Link, Text, Tooltip, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
+import { Button, Link, makeStyles, mergeClasses, Text, tokens, Tooltip } from '@fluentui/react-components';
 import { WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
 import React, { HTMLAttributes, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { OutPortal } from 'react-reverse-portal';
 import { AboutDialog } from './AboutDialog';
 import { ExternalLink } from './ExternalLink';
@@ -68,6 +69,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
     const toolbarNode = useContext(ToolbarContext);
     const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
+    const { t } = useTranslation();
 
     const titleSize = source ? 400 : 500;
 
@@ -84,11 +86,11 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
             </div>
 
             <Link onClick={() => setHelpOpen(true)} className={classes.link}>
-                Help
+                {t('SiteHeader.Help')}
             </Link>
             <AboutDialog className={classes.link} />
             <ExternalLink className={classes.link} href="https://github.com/joelspadin/xivplan" noIcon>
-                GitHub
+                {t('SiteHeader.GitHub')}
             </ExternalLink>
             <div>
                 <Button
@@ -97,7 +99,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                     icon={darkMode ? <WeatherMoonFilled /> : <WeatherSunnyFilled />}
                     onClick={() => setDarkMode(!darkMode)}
                 >
-                    {darkMode ? 'Dark theme' : 'Light theme'}
+                    {darkMode ? t('SiteHeader.darkMode.DarkTheme') : t('SiteHeader.darkMode.LightTheme')}
                 </Button>
             </div>
         </header>
