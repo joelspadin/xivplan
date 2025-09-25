@@ -251,7 +251,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
             <Field
                 label={t('FileDialogLocalStorage.FileName')}
                 validationState={alreadyExists ? 'error' : 'none'}
-                validationMessage={alreadyExists ? 'A file with this name already exists' : undefined}
+                validationMessage={alreadyExists ? t('FileDialogLocalStorage.FileExists') : undefined}
             >
                 <Input
                     type="text"

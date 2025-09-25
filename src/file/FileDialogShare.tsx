@@ -7,6 +7,7 @@ import {
     TextareaOnChangeData,
 } from '@fluentui/react-components';
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
@@ -67,6 +68,7 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
         },
         [importLink],
     );
+    const { t } = useTranslation();
 
     return (
         <>
@@ -79,10 +81,10 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
             <InPortal node={actions}>
                 <DialogActions>
                     <Button appearance="primary" disabled={!data} onClick={importLink}>
-                        Import
+                        {t('FileDialogShare.Import')}
                     </Button>
                     <DialogTrigger>
-                        <Button>Cancel</Button>
+                        <Button>{t('FileDialogShare.Cancel')}</Button>
                     </DialogTrigger>
                 </DialogActions>
             </InPortal>

@@ -97,7 +97,48 @@
       "Open": "Open",
       "Cancel": "Cancel",
       "SaveAs": "Save as",
-      "FileName": "File name"
+      "FileName": "File name",
+      "FileExists": "A file with this name already exists"
+    },
+    "FileDialogShare": {
+      "Import": "Import",
+      "Cancel": "Cancel"
+    },
+    "HotkeyHandler": {
+      "Undo": "Undo",
+      "Redo": "Redo",
+      "ctrl+a_help": "Select all objects",
+      "escape_help": "Unselect all, cancel tool",
+      "delete_help": "Delete selected objects",
+      "ctrl+c_help": "Copy selected objects",
+      "ctrl+x_help": "Cut selected objects",
+      "ctrl+v_help": "Paste objects at mouse",
+      "ctrl+shift+v_help": "Paste objects at original location",
+      "ctrl+d_help": "Duplicate selected objects",
+      "h_help": "Show/hide selected objects",
+      "l_help": "Lock/unlock selected object positions",
+      "/_help": "Tether",
+      "-_help": "Tether -/-",
+      "=_help": "Tether +/-",
+      "shift+equal_help": "Tether +/+",
+      "<_help": "Tether (stay together)",
+      "shift+period_help": "Tether (stay apart)",
+      "🡐🡑🡓🡒_help": "Move object",
+      "ctrl+🡐🡑🡓🡒": "Move object (coarse)",
+      "shift+🡐🡑🡓🡒": "Move object (fine)",
+      "ctrl+g_help": "Rotate 90° counter-clockwise",
+      "ctrl+h_help": "Rotate 90° clockwise",
+      "ctrl+j_help": "Rotate 180°",
+      "pageup": "Move layer up",
+      "pagedown": "Move layer down",
+      "shift+pageup": "Move to top",
+      "shift+pagedown": "Move to bottom",
+      "f1_help": "Help",
+      "e_help": "(On draw tab) switch to edit mode",
+      "d_help": "(On draw tab) switch to draw mode",
+      "alt+left_help": "Previous step",
+      "alt+right": "Next step",
+      "ctrl+enter": "Add step"
     }
   }
 }
