@@ -1,12 +1,14 @@
 import { Button, ButtonProps, makeStyles } from '@fluentui/react-components';
 import { ArrowDownloadRegular } from '@fluentui/react-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAsyncFn } from 'react-use';
 import { downloadBlob } from './blob';
 import { exportLocalStorageFiles } from './localStorage';
 
 export const DownloadLocalStorageButton: React.FC<ButtonProps> = ({ ...props }) => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     const [state, download] = useAsyncFn(async () => {
         const blob = await exportLocalStorageFiles();
@@ -21,7 +23,7 @@ export const DownloadLocalStorageButton: React.FC<ButtonProps> = ({ ...props }) 
             disabled={state.loading}
             {...props}
         >
-            Download all
+            {t('DownloadLocalStorageButton.DownloadAll')}
         </Button>
     );
 };

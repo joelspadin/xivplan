@@ -1,5 +1,18 @@
-import { Button, Link, makeStyles, mergeClasses, Text, tokens, Tooltip } from '@fluentui/react-components';
-import { WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
+import {
+    Button,
+    Link,
+    makeStyles,
+    Menu,
+    MenuItem,
+    MenuList,
+    MenuPopover,
+    MenuTrigger,
+    mergeClasses,
+    Text,
+    tokens,
+    Tooltip,
+} from '@fluentui/react-components';
+import { GlobeRegular, WeatherMoonFilled, WeatherSunnyFilled } from '@fluentui/react-icons';
 import React, { HTMLAttributes, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { OutPortal } from 'react-reverse-portal';
@@ -61,6 +74,9 @@ const useStyles = makeStyles({
     themeButton: {
         minWidth: '130px',
     },
+    langButton: {
+        minWidth: '100px',
+    },
 });
 
 export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
@@ -69,9 +85,18 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
     const toolbarNode = useContext(ToolbarContext);
     const [, setHelpOpen] = useContext(HelpContext);
     const [darkMode, setDarkMode] = useContext(DarkModeContext);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const titleSize = source ? 400 : 500;
+
+    const languages = {
+        en: 'English',
+        zh: '中文',
+    };
+
+    const handleLanguageChange = (lang: string) => {
+        i18n.changeLanguage(lang);
+    };
 
     return (
         <header className={mergeClasses(classes.root, className)} {...props}>
@@ -92,6 +117,26 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
             <ExternalLink className={classes.link} href="https://github.com/joelspadin/xivplan" noIcon>
                 {t('SiteHeader.GitHub')}
             </ExternalLink>
+
+            <div>
+                <Menu>
+                    <MenuTrigger>
+                        <Button appearance="subtle" className={classes.langButton} icon={<GlobeRegular />}>
+                            {languages[i18n.language as keyof typeof languages] || languages.en}
+                        </Button>
+                    </MenuTrigger>
+                    <MenuPopover>
+                        <MenuList>
+                            {Object.entries(languages).map(([code, name]) => (
+                                <MenuItem key={code} onClick={() => handleLanguageChange(code)}>
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </MenuList>
+                    </MenuPopover>
+                </Menu>
+            </div>
+
             <div>
                 <Button
                     appearance="subtle"

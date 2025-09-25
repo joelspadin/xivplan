@@ -39,6 +39,7 @@ import {
     bundleIcon,
 } from '@fluentui/react-icons';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { getPlanFolder, showOpenPlanPicker, showPlanFolderPicker } from './filesystem';
 
@@ -183,13 +184,14 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
 
     // TODO: add keyboard navigation
 
+    const { t } = useTranslation();
     return (
         <div className={className}>
             <div className={classes.topBar}>
                 <Button appearance="primary" onClick={pickFile}>
-                    Open file
+                    {t('FileBrowser.OpenFile')}
                 </Button>
-                <Button onClick={pickFolder}>Browse folder</Button>
+                <Button onClick={pickFolder}>{t('FileBrowser.BrowseFolder')}</Button>
             </div>
             <ParentBreadcrumb parents={parents} navigateToParent={navigateToParent} />
 

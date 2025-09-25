@@ -193,12 +193,12 @@ const SaveButton: React.FC = () => {
                     <MenuList>
                         {type !== 'saveas' && (
                             <MenuItem icon={<SaveEditRegular />} onClick={() => setSaveAsOpen(true)}>
-                                Save as...
+                                {t('MainToolbar.SaveAs')}...
                             </MenuItem>
                         )}
                         {type !== 'download' && (
                             <MenuItem icon={<ArrowDownloadRegular />} onClick={download}>
-                                Download
+                                {t('MainToolbar.Download')}
                             </MenuItem>
                         )}
                     </MenuList>

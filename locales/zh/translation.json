@@ -27,7 +27,7 @@
     "MainToolbar": {
       "Open": "打开",
       "Undo": "撤销",
-      "Redo": "重做",
+      "Redo": "恢复",
       "Share": "分享",
       "Screenshot": "截图",
       "SaveAs": "保存为",
@@ -37,6 +37,67 @@
     "StepScreenshotButton": {
       "MenuGroupHeader": "缩放比例",
       "ToastTitle": "截图已复制到剪贴板"
+    },
+    "HelpDialog": {
+      "DialogTitle": "帮助",
+      "DialogContent": {
+        "LeftPanel": "左侧仪表盘",
+        "Arena": "场地",
+        "Arena_Description": "在这里编辑场地的外观。",
+        "Objects": "项目",
+        "Objects_Description": "拖拽项目到场地中。",
+        "Icons": "图标",
+        "Icons_Description": "将标记和状态效果图标拖拽到场地中。",
+        "Draw": "绘制",
+        "Draw_Description": "在画布上绘制自由形式的对象。",
+        "RightPanel": "右侧仪表盘",
+        "Properties": "属性",
+        "Properties_Description": "选择一个对象，然后在这里编辑它的属性。",
+        "Scene": "画布",
+        "Scene_Description": "显示画布中所有对象的列表。拖放以调整图层顺序。",
+        "KeyboardShortcuts": "键盘快捷键",
+        "MouseShortcuts": "鼠标快捷键",
+        "LeftClick": "左击",
+        "LeftClick_Description": "选择项目",
+        "ToggleSelection": "拖拽所选项",
+        "AddToSelection": "添加所选项",
+        "LeftClick&Drag": "左击 + 拖拽",
+        "LeftClick&Drag_Description": "移动/转换项目",
+        "ProportionalResize": "按比例调整大小"
+      }
+    },
+    "DownloadButton": {
+      "Download": "下载"
+    },
+    "DownloadLocalStorageButton": {
+      "DownloadAll": "下载全部"
+    },
+    "FileBrowser": {
+      "OpenFile": "打开文件",
+      "BrowseFolder": "浏览文件夹"
+    },
+    "FileDialog": {
+      "OpenDialog": {
+        "OpenFile": "打开文件",
+        "LocalFile": "本地文件",
+        "BrowserStorage": "浏览器存储",
+        "ImportPlanLink": "导入plan链接"
+      },
+      "SaveFile": "保存文件"
+    },
+    "FileDialogFileSystem": {
+      "Open": "打开",
+      "Cancel": "取消",
+      "SaveAs": "保存为",
+      "SaveFileSystem_description": "点击下方的“保存为”将plan保存到您的电脑上。",
+      "FileSystemNotSupportedMessage1": "您的浏览器不支持实验性的文件系统API。您可以将plan下载为<0>.xivplan</0>文件，然后拖拽到页面上重新打开它。",
+      "FileSystemNotSupportedMessage2": "To save files locally, use a Chromium-based browser such as <0>Edge</0> or <1>Chrome</1>."
+    },
+    "FileDialogLocalStorage": {
+      "Open": "打开",
+      "Cancel": "取消",
+      "SaveAs": "保存为",
+      "FileName": "文件名"
     }
   }
 }

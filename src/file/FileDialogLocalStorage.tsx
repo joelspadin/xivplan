@@ -20,6 +20,7 @@ import {
     makeStyles,
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
+import { t } from 'i18next';
 import React, { KeyboardEvent, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
@@ -185,10 +186,10 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
                 <DialogActions fluid className={classes.actions}>
                     <DownloadLocalStorageButton />
                     <Button appearance="primary" disabled={selectedRows.size === 0} onClick={openCallback}>
-                        Open
+                        {t('FileDialogLocalStorage.Open')}
                     </Button>
                     <DialogTrigger>
-                        <Button>Cancel</Button>
+                        <Button>{t('FileDialogLocalStorage.Cancel')}</Button>
                     </DialogTrigger>
                 </DialogActions>
             </InPortal>
@@ -248,7 +249,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
     return (
         <>
             <Field
-                label="File name"
+                label={t('FileDialogLocalStorage.FileName')}
                 validationState={alreadyExists ? 'error' : 'none'}
                 validationMessage={alreadyExists ? 'A file with this name already exists' : undefined}
             >
@@ -266,10 +267,10 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
             <InPortal node={actions}>
                 <DialogActions>
                     <Button appearance="primary" disabled={!canSave} onClick={save}>
-                        Save as
+                        {t('FileDialogLocalStorage.SaveAs')}
                     </Button>
                     <DialogTrigger>
-                        <Button>Cancel</Button>
+                        <Button>{t('FileDialogLocalStorage.Cancel')}</Button>
                     </DialogTrigger>
                 </DialogActions>
             </InPortal>

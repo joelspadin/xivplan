@@ -45,8 +45,59 @@
         "Arena": "Arena",
         "Arena_Description": "Edit the appearance of the arena here.",
         "Objects": "Objects",
-        "Objects_Description": ">Drag objects onto the arena."
+        "Objects_Description": "Drag objects onto the arena.",
+        "Icons": "Icons",
+        "Icons_Description": "Drag markers and status effect icons onto the arena.",
+        "Draw": "Draw",
+        "Draw_Description": "Draw freeform objects on the scene.",
+        "RightPanel": "Right panel",
+        "Properties": "Properties",
+        "Properties_Description": "Select an object, then edit its properties here.",
+        "Scene": "Scene",
+        "Scene_Description": "Displays a list of all objects in the scene. Drag and drop to adjust layering order.",
+        "KeyboardShortcuts": "Keyboard shortcuts",
+        "MouseShortcuts": "Mouse shortcuts",
+        "LeftClick": "Left click",
+        "LeftClick_Description": "Select object",
+        "ToggleSelection": "Toggle selection",
+        "AddToSelection": "Add to selection",
+        "LeftClick&Drag": "Left click + drag",
+        "LeftClick&Drag_Description": "Move/transform object",
+        "ProportionalResize": "Proportional resize"
       }
+    },
+    "DownloadButton": {
+      "Download": "Download"
+    },
+    "DownloadLocalStorageButton": {
+      "DownloadAll": "Download all"
+    },
+    "FileBrowser": {
+      "OpenFile": "Open file",
+      "BrowseFolder": "Browse folder"
+    },
+    "FileDialog": {
+      "OpenDialog": {
+        "OpenFile": "Open file",
+        "LocalFile": "Local file",
+        "BrowserStorage": "Browser storage",
+        "ImportPlanLink": "Import plan link"
+      },
+      "SaveFile": "Save file"
+    },
+    "FileDialogFileSystem": {
+      "Open": "Open",
+      "Cancel": "Cancel",
+      "SaveAs": "Save as",
+      "SaveFileSystem_description": "Click \"Save as\" below to save the plan to your computer.",
+      "FileSystemNotSupportedMessage1": "Your browser does not support the experimental File System API. You can download the plan as an <0>.xivplan</0> file, then drag and drop it onto the page to open it again.",
+      "FileSystemNotSupportedMessage2": "To save files locally, use a Chromium-based browser such as <0>Edge</0> or <1>Chrome</1>."
+    },
+    "FileDialogLocalStorage": {
+      "Open": "Open",
+      "Cancel": "Cancel",
+      "SaveAs": "Save as",
+      "FileName": "File name"
     }
   }
 }

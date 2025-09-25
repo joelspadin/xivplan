@@ -12,6 +12,7 @@ import {
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { HotkeyName } from './HotkeyName';
 import { useRegisteredHotkeys } from './useHotkeys';
@@ -20,7 +21,7 @@ export type HelpDialogProps = Omit<DialogProps, 'children'>;
 
 export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
     const classes = useStyles();
-
+    const { t } = useTranslation();
     return (
         <Dialog {...props}>
             <DialogSurface className={classes.surface}>
@@ -32,59 +33,59 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
                             </DialogTrigger>
                         }
                     >
-                        Help
+                        {t('HelpDialog.DialogTitle')}
                     </DialogTitle>
                     <DialogContent className={classes.content}>
                         <section className={classes.section}>
-                            <h2>Left panel</h2>
-                            <h3>Arena</h3>
-                            <p>Edit the appearance of the arena here.</p>
+                            <h2>{t('HelpDialog.DialogContent.LeftPanel')}</h2>
+                            <h3>{t('HelpDialog.DialogContent.Arena')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Arena_Description')}</p>
 
-                            <h3>Objects</h3>
-                            <p>Drag objects onto the arena.</p>
+                            <h3>{t('HelpDialog.DialogContent.Objects')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Objects_Description')}</p>
 
-                            <h3>Icons</h3>
-                            <p>Drag markers and status effect icons onto the arena.</p>
+                            <h3>{t('HelpDialog.DialogContent.Icons')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Icons_Description')}</p>
 
-                            <h3>Draw</h3>
-                            <p>Draw freeform objects on the scene.</p>
+                            <h3>{t('HelpDialog.DialogContent.Draw')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Draw_Description')}</p>
 
-                            <h2>Right panel</h2>
-                            <h3>Properties</h3>
-                            <p>Select an object, then edit its properties here.</p>
+                            <h2>{t('HelpDialog.DialogContent.RightPanel')}</h2>
+                            <h3>{t('HelpDialog.DialogContent.Properties')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Properties_Description')}</p>
 
-                            <h3>Scene</h3>
-                            <p>Displays a list of all objects in the scene. Drag and drop to adjust layering order.</p>
+                            <h3>{t('HelpDialog.DialogContent.Scene')}</h3>
+                            <p>{t('HelpDialog.DialogContent.Scene_Description')}</p>
                         </section>
 
                         <section className={classes.section}>
-                            <h2>Keyboard shortcuts</h2>
+                            <h2>{t('HelpDialog.DialogContent.KeyboardShortcuts')}</h2>
                             <HotkeyList />
                         </section>
 
                         <section className={classes.section}>
-                            <h2>Mouse shortcuts</h2>
+                            <h2>{t('HelpDialog.DialogContent.MouseShortcuts')}</h2>
                             <dl className={classes.hotkeys}>
-                                <dt>Left click</dt>
-                                <dd>Select object</dd>
+                                <dt>{t('HelpDialog.DialogContent.LeftClick')}</dt>
+                                <dd>{t('HelpDialog.DialogContent.LeftClick_Description')}</dd>
 
                                 <dt>
-                                    <HotkeyName keys="ctrl" suffix="left click" />
+                                    <HotkeyName keys="ctrl" suffix={t('HelpDialog.DialogContent.LeftClick')} />
                                 </dt>
-                                <dd>Toggle selection</dd>
+                                <dd>{t('HelpDialog.DialogContent.ToggleSelection')}</dd>
 
                                 <dt>
-                                    <HotkeyName keys="shift" suffix="left click" />
+                                    <HotkeyName keys="shift" suffix={t('HelpDialog.DialogContent.LeftClick')} />
                                 </dt>
-                                <dd>Add to selection</dd>
+                                <dd>{t('HelpDialog.DialogContent.AddToSelection')}</dd>
 
-                                <dt>Left click + drag</dt>
-                                <dd>Move/transform object</dd>
+                                <dt>{t('HelpDialog.DialogContent.LeftClick&Drag')}</dt>
+                                <dd>{t('HelpDialog.DialogContent.LeftClick&Drag_Description')}</dd>
 
                                 <dt>
-                                    <HotkeyName keys="shift" suffix="left click + drag" />
+                                    <HotkeyName keys="shift" suffix={t('HelpDialog.DialogContent.LeftClick&Drag')} />
                                 </dt>
-                                <dd>Proportional resize</dd>
+                                <dd>{t('HelpDialog.DialogContent.ProportionalResize')}</dd>
                             </dl>
                         </section>
                     </DialogContent>

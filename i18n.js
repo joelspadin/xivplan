@@ -20,10 +20,6 @@ i18n.use(LanguageDetector)
         interpolation: {
             escapeValue: false, // react already safes from xss
         },
-        detection: {
-            // 使用浏览器默认语言检测
-            order: ['navigator'],
-        },
     });
 
 export default i18n;
