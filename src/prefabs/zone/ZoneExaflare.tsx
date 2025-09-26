@@ -1,5 +1,6 @@
 import { Vector2d } from 'konva/lib/types';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Group } from 'react-konva';
 import Icon from '../../assets/zone/exaflare.svg?react';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
@@ -18,18 +19,17 @@ import { EXAFLARE_SPACING_DEFAULT } from './constants';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
-const NAME = 'Moving AOE';
-
 const DEFAULT_RADIUS = 50;
 const DEFAULT_LENGTH = 6;
 
 export const ZoneExaflare: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneExaflare.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -142,10 +142,11 @@ const ExaflareContainer: React.FC<RendererProps<ExaflareZone>> = ({ object }) =>
 registerRenderer<ExaflareZone>(ObjectType.Exaflare, LayerName.Ground, ExaflareContainer);
 
 const ExaflareDetails: React.FC<ListComponentProps<ExaflareZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneExaflare.Name')}
             object={object}
             {...props}
         />

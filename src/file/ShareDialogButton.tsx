@@ -15,6 +15,7 @@ import {
 } from '@fluentui/react-components';
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
 import React, { ReactNode, useCallback, useMemo } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { CollapsableToolbarButton } from '../CollapsableToolbarButton';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
@@ -50,29 +51,31 @@ const ShareDialogBody: React.FC = () => {
         await navigator.clipboard.writeText(url);
         dispatchToast(<CopySuccessToast />, { intent: 'success' });
     }, [url, dispatchToast]);
+    const { t } = useTranslation();
 
     return (
         <HotkeyBlockingDialogBody>
-            <DialogTitle>Share</DialogTitle>
+            <DialogTitle>{t('ShareDialogButton.Share')}</DialogTitle>
             <DialogContent>
-                <Field label="Link to this plan">
+                <Field label={t('ShareDialogButton.LinkPoPlan')}>
                     <Textarea value={url} contentEditable={false} appearance="filled-darker-shadow" rows={6} />
                 </Field>
                 <p>
-                    If your browser won&apos;t open the link, paste the text into{' '}
-                    <strong>Open &gt; Import Plan Link</strong> instead, or download the plan and drag and drop the file
-                    onto the page to open it.
+                    <Trans
+                        i18nKey="ShareDialogButton.ShareContent"
+                        components={[<strong key="Open > Import Plan Link"></strong>]}
+                    />
                 </p>
             </DialogContent>
             <DialogActions fluid className={classes.actions}>
                 <DownloadButton appearance="primary" className={classes.download} />
 
                 <Button appearance="primary" icon={<CopyRegular />} onClick={copyToClipboard}>
-                    Copy to clipboard
+                    {t('ShareDialogButton.CopyToClipboard')}
                 </Button>
 
                 <DialogTrigger disableButtonEnhancement>
-                    <Button>Close</Button>
+                    <Button>{t('ShareDialogButton.Close')}</Button>
                 </DialogTrigger>
             </DialogActions>
         </HotkeyBlockingDialogBody>
@@ -80,9 +83,10 @@ const ShareDialogBody: React.FC = () => {
 };
 
 const CopySuccessToast = () => {
+    const { t } = useTranslation();
     return (
         <Toast>
-            <ToastTitle>Link copied</ToastTitle>
+            <ToastTitle>{t('ShareDialogButton.LinkCopied')}</ToastTitle>
         </Toast>
     );
 };

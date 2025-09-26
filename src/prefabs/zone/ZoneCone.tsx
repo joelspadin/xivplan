@@ -1,5 +1,6 @@
 import { WedgeConfig } from 'konva/lib/shapes/Wedge';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Shape, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
@@ -24,8 +25,6 @@ import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
-const NAME = 'Cone';
-
 const DEFAULT_RADIUS = 150;
 const DEFAULT_ANGLE = 90;
 
@@ -33,11 +32,12 @@ const ICON_SIZE = 32;
 
 export const ZoneCone: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneCone.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
@@ -193,10 +193,11 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 registerRenderer<ConeZone>(ObjectType.Cone, LayerName.Ground, ConeContainer);
 
 const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneCone.Name')}
             object={object}
             {...props}
         />

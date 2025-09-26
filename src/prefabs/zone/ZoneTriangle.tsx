@@ -1,5 +1,6 @@
 import { RectConfig } from 'konva/lib/shapes/Rect';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Line } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/triangle.svg?react';
@@ -16,17 +17,16 @@ import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
 import { useShowHighlight } from '../highlight';
 import { getZoneStyle } from './style';
 
-const NAME = 'Triangle';
-
 const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
 export const ZoneTriangle: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneTriangle.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -111,10 +111,11 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =>
 registerRenderer<RectangleZone>(ObjectType.Triangle, LayerName.Ground, TriangleRenderer);
 
 const TriangleDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneTriangle.Name')}
             object={object}
             {...props}
         />

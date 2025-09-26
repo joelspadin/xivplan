@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Ring } from 'react-konva';
 import Icon from '../../assets/zone/donut.svg?react';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
@@ -15,18 +16,17 @@ import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
 
-const NAME = 'Donut';
-
 const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
 
 export const ZoneDonut: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneDonut.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -100,10 +100,11 @@ const DonutContainer: React.FC<RendererProps<DonutZone>> = ({ object }) => {
 registerRenderer<DonutZone>(ObjectType.Donut, LayerName.Ground, DonutContainer);
 
 const DonutDetails: React.FC<ListComponentProps<DonutZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneDonut.Name')}
             object={object}
             {...props}
         />

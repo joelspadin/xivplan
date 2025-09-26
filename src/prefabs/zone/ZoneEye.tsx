@@ -2,6 +2,7 @@ import Color from 'colorjs.io';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Group, Line, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/eye.svg?react';
@@ -24,10 +25,11 @@ const DEFAULT_COLOR = '#ff0000';
 
 export const ZoneEye: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name="Look away"
+            name={t('ZoneEye.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -219,10 +221,11 @@ const EyeContainer: React.FC<RendererProps<EyeObject>> = ({ object }) => {
 registerRenderer<EyeObject>(ObjectType.Eye, LayerName.Ground, EyeContainer);
 
 const EyeDetails: React.FC<ListComponentProps<EyeObject>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneEye]: object.color }} />}
-            name={object.invert ? 'Look towards' : 'Look away'}
+            name={object.invert ? t('ZoneEye.InvertName') : t('ZoneEye.Name')}
             object={object}
             {...props}
         />

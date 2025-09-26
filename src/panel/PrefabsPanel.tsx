@@ -1,5 +1,6 @@
 import { Text } from '@fluentui/react-components';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
@@ -71,10 +72,11 @@ import { ObjectGroup, Section } from './Section';
 
 export const PrefabsPanel: React.FC = () => {
     const controlClasses = useControlStyles();
+    const { t } = useTranslation();
 
     return (
         <div className={controlClasses.panel}>
-            <Section title="Zones">
+            <Section title={t('PrefabsPanel.Zones')}>
                 <ObjectGroup>
                     <ZoneRightTriangle />
                     <ZoneTriangle />
@@ -103,7 +105,7 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
             </Section>
 
-            <Section title="Waymarks">
+            <Section title={t('PrefabsPanel.Waymarks')}>
                 <ObjectGroup>
                     <TextLabel />
                     <MarkerArrow />
@@ -119,7 +121,7 @@ export const PrefabsPanel: React.FC = () => {
                     <Waymark4 />
                 </ObjectGroup>
             </Section>
-            <Section title="Party">
+            <Section title={t('PrefabsPanel.Party')}>
                 <ObjectGroup>
                     <PartySupport />
                     <PartyTank />
@@ -173,7 +175,7 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
             </Section>
 
-            <Section title="Enemies">
+            <Section title={t('PrefabsPanel.Enemies')}>
                 <ObjectGroup>
                     <EnemyCircle />
                     <EnemySmall />
@@ -182,7 +184,7 @@ export const PrefabsPanel: React.FC = () => {
                     <EnemyHuge />
                 </ObjectGroup>
             </Section>
-            <Section title="Tethers">
+            <Section title={t('PrefabsPanel.Tethers')}>
                 <ObjectGroup>
                     <TetherLine />
                     <TetherClose />
@@ -192,9 +194,12 @@ export const PrefabsPanel: React.FC = () => {
                     <TetherPlusPlus />
                     <TetherMinusMinus />
                 </ObjectGroup>
+
                 <Text block size={200} data-nosnippet>
-                    Select a tether type, then click two objects to add a tether. Press <HotkeyName keys="esc" /> or
-                    unselect the tether button to cancel. Use <HotkeyName keys="ctrl" /> + click to create chains.
+                    <Trans
+                        i18nKey="PrefabsPanel.text"
+                        components={[<HotkeyName key="esc" keys="esc" />, <HotkeyName key="ctrl" keys="ctrl" />]}
+                    />
                 </Text>
             </Section>
         </div>

@@ -86,7 +86,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
 
     useHotkeys(
         'ctrl+shift+c',
-        { category: '7.Steps', help: 'Screenshot current step' },
+        { category: '7.Steps', help: t('StepScreenshotButton.ctrl+shift+c_help') },
         (ev) => {
             setTakingScreenshot(true);
             ev.preventDefault();

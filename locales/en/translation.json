@@ -1,70 +1,23 @@
 {
   "translation": {
     "AboutDialog": {
-      "DialogTrigger": "About",
-      "DialogTitle": "About",
       "DialogContent": {
+        "Credits": "Credits",
         "Description": "XIVPlan is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by<0>RaidPlan.io</0> and <1>FF14工具箱</1>。",
-        "OpenSource": "XIVPlan is open source on<0> GitHub </0>. If you find a bug or have other feedback, please create a<1>issue</1>!",
-        "Credits": "Credits"
+        "OpenSource": "XIVPlan is open source on<0> GitHub </0>. If you find a bug or have other feedback, please create a<1>issue</1>!"
       },
+      "DialogTitle": "About",
+      "DialogTrigger": "About",
       "DialogTrigger_close": "Close"
     },
+    "Arrow": {
+      "Name": "Arrow"
+    },
     "DirtyProvider": {
-      "NAV_LOCK_MESSAGE": "Are you sure you want to leave? Your unsaved changes will be lost.",
       "DialogTitle": "Unsaved changes",
       "DialogTrigger1": "Leave page",
-      "DialogTrigger2": "Stay on page"
-    },
-    "SiteHeader": {
-      "Help": "Help",
-      "GitHub": "GitHub",
-      "darkMode": {
-        "DarkTheme": "Dark theme",
-        "LightTheme": "Light theme"
-      }
-    },
-    "MainToolbar": {
-      "Open": "Open",
-      "Undo": "Undo",
-      "Redo": "Redo",
-      "Share": "Share",
-      "Screenshot": "Screenshot",
-      "SaveAs": "Save as",
-      "Download": "Download",
-      "Save": "Save"
-    },
-    "StepScreenshotButton": {
-      "MenuGroupHeader": "Screenshot scale",
-      "ToastTitle": "Screenshot copied to clipboard"
-    },
-    "HelpDialog": {
-      "DialogTitle": "Help",
-      "DialogContent": {
-        "LeftPanel": "Left panel",
-        "Arena": "Arena",
-        "Arena_Description": "Edit the appearance of the arena here.",
-        "Objects": "Objects",
-        "Objects_Description": "Drag objects onto the arena.",
-        "Icons": "Icons",
-        "Icons_Description": "Drag markers and status effect icons onto the arena.",
-        "Draw": "Draw",
-        "Draw_Description": "Draw freeform objects on the scene.",
-        "RightPanel": "Right panel",
-        "Properties": "Properties",
-        "Properties_Description": "Select an object, then edit its properties here.",
-        "Scene": "Scene",
-        "Scene_Description": "Displays a list of all objects in the scene. Drag and drop to adjust layering order.",
-        "KeyboardShortcuts": "Keyboard shortcuts",
-        "MouseShortcuts": "Mouse shortcuts",
-        "LeftClick": "Left click",
-        "LeftClick_Description": "Select object",
-        "ToggleSelection": "Toggle selection",
-        "AddToSelection": "Add to selection",
-        "LeftClick&Drag": "Left click + drag",
-        "LeftClick&Drag_Description": "Move/transform object",
-        "ProportionalResize": "Proportional resize"
-      }
+      "DialogTrigger2": "Stay on page",
+      "NAV_LOCK_MESSAGE": "Are you sure you want to leave? Your unsaved changes will be lost."
     },
     "DownloadButton": {
       "Download": "Download"
@@ -73,72 +26,223 @@
       "DownloadAll": "Download all"
     },
     "FileBrowser": {
-      "OpenFile": "Open file",
-      "BrowseFolder": "Browse folder"
+      "BrowseFolder": "Browse folder",
+      "OpenFile": "Open file"
     },
     "FileDialog": {
       "OpenDialog": {
-        "OpenFile": "Open file",
-        "LocalFile": "Local file",
         "BrowserStorage": "Browser storage",
-        "ImportPlanLink": "Import plan link"
+        "ImportPlanLink": "Import plan link",
+        "LocalFile": "Local file",
+        "OpenFile": "Open file"
       },
       "SaveFile": "Save file"
     },
     "FileDialogFileSystem": {
-      "Open": "Open",
       "Cancel": "Cancel",
-      "SaveAs": "Save as",
-      "SaveFileSystem_description": "Click \"Save as\" below to save the plan to your computer.",
       "FileSystemNotSupportedMessage1": "Your browser does not support the experimental File System API. You can download the plan as an <0>.xivplan</0> file, then drag and drop it onto the page to open it again.",
-      "FileSystemNotSupportedMessage2": "To save files locally, use a Chromium-based browser such as <0>Edge</0> or <1>Chrome</1>."
+      "FileSystemNotSupportedMessage2": "To save files locally, use a Chromium-based browser such as <0>Edge</0> or <1>Chrome</1>.",
+      "Open": "Open",
+      "SaveAs": "Save as",
+      "SaveFileSystem_description": "Click \"Save as\" below to save the plan to your computer."
     },
     "FileDialogLocalStorage": {
-      "Open": "Open",
       "Cancel": "Cancel",
-      "SaveAs": "Save as",
+      "FileExists": "A file with this name already exists",
       "FileName": "File name",
-      "FileExists": "A file with this name already exists"
+      "Open": "Open",
+      "SaveAs": "Save as"
     },
     "FileDialogShare": {
-      "Import": "Import",
-      "Cancel": "Cancel"
+      "Cancel": "Cancel",
+      "Import": "Import"
+    },
+    "FilePrompts": {
+      "Cancel": "Cancel",
+      "Delete": "Delete",
+      "Delete_Description": "Are you sure you want to delete this file? ",
+      "Overwrite": "Overwrite",
+      "Overwrite_Description": "A file with this name already exists. Overwrite it?"
+    },
+    "HelpDialog": {
+      "DialogContent": {
+        "AddToSelection": "Add to selection",
+        "Arena": "Arena",
+        "Arena_Description": "Edit the appearance of the arena here.",
+        "Draw": "Draw",
+        "Draw_Description": "Draw freeform objects on the scene.",
+        "Icons": "Icons",
+        "Icons_Description": "Drag markers and status effect icons onto the arena.",
+        "KeyboardShortcuts": "Keyboard shortcuts",
+        "LeftClick": "Left click",
+        "LeftClick_Description": "Select object",
+        "LeftClick&Drag": "Left click + drag",
+        "LeftClick&Drag_Description": "Move/transform object",
+        "LeftPanel": "Left panel",
+        "MouseShortcuts": "Mouse shortcuts",
+        "Objects": "Objects",
+        "Objects_Description": "Drag objects onto the arena.",
+        "Properties": "Properties",
+        "Properties_Description": "Select an object, then edit its properties here.",
+        "ProportionalResize": "Proportional resize",
+        "RightPanel": "Right panel",
+        "Scene": "Scene",
+        "Scene_Description": "Displays a list of all objects in the scene. Drag and drop to adjust layering order.",
+        "ToggleSelection": "Toggle selection"
+      },
+      "DialogTitle": "Help"
     },
     "HotkeyHandler": {
-      "Undo": "Undo",
-      "Redo": "Redo",
-      "ctrl+a_help": "Select all objects",
-      "escape_help": "Unselect all, cancel tool",
-      "delete_help": "Delete selected objects",
-      "ctrl+c_help": "Copy selected objects",
-      "ctrl+x_help": "Cut selected objects",
-      "ctrl+v_help": "Paste objects at mouse",
-      "ctrl+shift+v_help": "Paste objects at original location",
-      "ctrl+d_help": "Duplicate selected objects",
-      "h_help": "Show/hide selected objects",
-      "l_help": "Lock/unlock selected object positions",
-      "/_help": "Tether",
       "-_help": "Tether -/-",
-      "=_help": "Tether +/-",
-      "shift+equal_help": "Tether +/+",
+      "/_help": "Tether",
       "<_help": "Tether (stay together)",
-      "shift+period_help": "Tether (stay apart)",
+      "=_help": "Tether +/-",
       "🡐🡑🡓🡒_help": "Move object",
-      "ctrl+🡐🡑🡓🡒": "Move object (coarse)",
-      "shift+🡐🡑🡓🡒": "Move object (fine)",
+      "alt+left_help": "Previous step",
+      "alt+right_help": "Next step",
+      "ctrl+🡐🡑🡓🡒_help": "Move object (coarse)",
+      "ctrl+a_help": "Select all objects",
+      "ctrl+c_help": "Copy selected objects",
+      "ctrl+d_help": "Duplicate selected objects",
+      "ctrl+enter_help": "Add step",
       "ctrl+g_help": "Rotate 90° counter-clockwise",
       "ctrl+h_help": "Rotate 90° clockwise",
       "ctrl+j_help": "Rotate 180°",
-      "pageup": "Move layer up",
-      "pagedown": "Move layer down",
-      "shift+pageup": "Move to top",
-      "shift+pagedown": "Move to bottom",
-      "f1_help": "Help",
-      "e_help": "(On draw tab) switch to edit mode",
+      "ctrl+shift+v_help": "Paste objects at original location",
+      "ctrl+v_help": "Paste objects at mouse",
+      "ctrl+x_help": "Cut selected objects",
       "d_help": "(On draw tab) switch to draw mode",
-      "alt+left_help": "Previous step",
-      "alt+right": "Next step",
-      "ctrl+enter": "Add step"
+      "delete_help": "Delete selected objects",
+      "e_help": "(On draw tab) switch to edit mode",
+      "escape_help": "Unselect all, cancel tool",
+      "f1_help": "Help",
+      "h_help": "Show/hide selected objects",
+      "l_help": "Lock/unlock selected object positions",
+      "pagedown_help": "Move layer down",
+      "pageup_help": "Move layer up",
+      "Redo": "Redo",
+      "shift+🡐🡑🡓🡒_help": "Move object (fine)",
+      "shift+equal_help": "Tether +/+",
+      "shift+pagedown_help": "Move to bottom",
+      "shift+pageup_help": "Move to top",
+      "shift+period_help": "Tether (stay apart)",
+      "Undo": "Undo"
+    },
+    "MainPanel": {
+      "Arena": "Arena",
+      "Draw": "Draw",
+      "Icons": "Icons",
+      "Objects": "Objects"
+    },
+    "MainToolbar": {
+      "Download": "Download",
+      "Open": "Open",
+      "Redo": "Redo",
+      "Save": "Save",
+      "SaveAs": "Save as",
+      "Screenshot": "Screenshot",
+      "Share": "Share",
+      "Undo": "Undo"
+    },
+    "PrefabsPanel": {
+      "Enemies": "Enemies",
+      "Party": "Party",
+      "Tethers": "Tethers",
+      "text": "Select a tether type, then click two objects to add a tether. Press <0/> or unselect the tether button to cancel. Use <1/> + click to create chains.",
+      "Waymarks": "Waymarks",
+      "Zones": "Zones"
+    },
+    "ShareDialogButton": {
+      "Close": "Close",
+      "CopyToClipboard": "Copy to clipboard",
+      "LinkCopied": "Link copied",
+      "LinkPoPlan": "Link to this plan",
+      "Share": "Share",
+      "ShareContent": "If your browser won't open the link, paste the text into <0>Open > Import Plan Link</0> instead, or download the plan and drag and drop the file onto the page to open it."
+    },
+    "SiteHeader": {
+      "darkMode": {
+        "DarkTheme": "Dark theme",
+        "LightTheme": "Light theme"
+      },
+      "GitHub": "GitHub",
+      "Help": "Help"
+    },
+    "StepScreenshotButton": {
+      "ctrl+shift+c_help": "Screenshot current step",
+      "MenuGroupHeader": "Screenshot scale",
+      "ToastTitle": "Screenshot copied to clipboard"
+    },
+    "TextLabel": {
+      "Name": "Text"
+    },
+    "UnsavedChangesPrompt": {
+      "Cancel": "Cancel",
+      "OpenAnyways": "Open anyways",
+      "UnsavedChanges": "Unsaved changes",
+      "UnsavedChangesContent": "Are you sure you want to open a file? Your unsaved changes will be lost."
+    },
+    "ZoneArc": {
+      "Name": "Arc"
+    },
+    "ZoneCircle": {
+      "Name": "Circle"
+    },
+    "ZoneCone": {
+      "Name": "Cone"
+    },
+    "ZoneDonut": {
+      "Name": "Donut"
+    },
+    "ZoneExaflare": {
+      "Name": "Moving AOE"
+    },
+    "ZoneEye": {
+      "Name": "Look away",
+      "InvertName": "Look towards"
+    },
+    "ZoneKnockback": {
+      "Name": "Circular knockback"
+    },
+    "ZoneLine": {
+      "Name": "Line"
+    },
+    "ZoneLineKnockAway": {
+      "Name": "Line knock away"
+    },
+    "ZoneLineKnockback": {
+      "Name": "Line knockback"
+    },
+    "ZoneLineStack": {
+      "Name": "Line stack"
+    },
+    "ZonePolygon": {
+      "Name": "Regular Polygon"
+    },
+    "ZoneProximity": {
+      "Name": "Proximity AOE"
+    },
+    "ZoneRectangle": {
+      "Name": "Rectangle"
+    },
+    "ZoneRightTriangle": {
+      "Name": "Right triangle"
+    },
+    "ZoneRotate": {
+      "CounterName": "Rotating counter-clockwise",
+      "Name": "Rotating clockwise"
+    },
+    "ZoneStack": {
+      "Name": "Stack"
+    },
+    "ZoneStarburst": {
+      "Name": "Starburst"
+    },
+    "ZoneTower": {
+      "Name": "Meteor/tower"
+    },
+    "ZoneTriangle": {
+      "Name": "Triangle"
     }
   }
 }

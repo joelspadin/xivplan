@@ -1,6 +1,7 @@
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { CSSProperties, RefObject, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Path } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import CounterClockwiseIcon from '../../assets/zone/rotate_ccw.svg?react';
@@ -26,10 +27,11 @@ const COUNTER_CLOCKWISE_COLOR = '#0066ff';
 
 export const ZoneRotateClockwise: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name="Rotating clockwise"
+            name={t('ZoneRotate.Name')}
             icon={<ClockwiseIcon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -46,10 +48,11 @@ export const ZoneRotateClockwise: React.FC = () => {
 
 export const ZoneRotateCounterClockwise: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name="Rotating counter-clockwise"
+            name={t('ZoneRotate.CounterName')}
             icon={<CounterClockwiseIcon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -146,7 +149,8 @@ const RotateContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], LayerName.Ground, RotateContainer);
 
 const RotateDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
-    const name = object.type === ObjectType.RotateCW ? 'Clockwise' : 'Counter-clockwise';
+    const { t } = useTranslation();
+    const name = object.type === ObjectType.RotateCW ? t('ZoneRotate.Name') : t('ZoneRotate.CounterName');
     const Icon = object.type === ObjectType.RotateCW ? ClockwiseIcon : CounterClockwiseIcon;
 
     const style: CSSProperties = {

@@ -2,6 +2,7 @@ import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
 import React, { RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
@@ -33,11 +34,12 @@ const Icon = DrawTextRegular;
 export const TextLabel: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
     const theme = useSceneTheme();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name="Text"
+            name={t('TextLabel.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({

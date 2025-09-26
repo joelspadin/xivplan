@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knockback.svg?react';
@@ -21,11 +22,12 @@ const DEFAULT_SIZE = 150;
 
 export const ZoneLineKnockback: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name="Line knockback"
+            name={t('ZoneLineKnockback.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -142,10 +144,11 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
 registerRenderer<RectangleZone>(ObjectType.LineKnockback, LayerName.Ground, LineKnockbackRenderer);
 
 const LineKnockbackDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name="Line knockback"
+            name={t('ZoneLineKnockback.Name')}
             object={object}
             {...props}
         />

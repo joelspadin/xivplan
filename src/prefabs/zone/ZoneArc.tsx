@@ -1,5 +1,6 @@
 import { ArcConfig } from 'konva/lib/shapes/Arc';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Arc, Circle, Group, Shape } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
@@ -24,8 +25,6 @@ import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
 import { useShowHighlight, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
-const NAME = 'Arc';
-
 const DEFAULT_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 75;
 const DEFAULT_ANGLE = 90;
@@ -34,11 +33,12 @@ const ICON_SIZE = 32;
 
 export const ZoneArc: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneArc.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
@@ -253,10 +253,11 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
 registerRenderer<ArcZone>(ObjectType.Arc, LayerName.Ground, ArcContainer);
 
 const ArcDetails: React.FC<ListComponentProps<ArcZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneArc.Name')}
             object={object}
             {...props}
         />

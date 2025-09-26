@@ -293,7 +293,7 @@ const SelectionActionHandler: React.FC = () => {
     );
     useHotkeys(
         'shift+period',
-        { category: CATEGORY_TETHER, help: t('HotkeyHandler.>_help'), keys: '>' },
+        { category: CATEGORY_TETHER, help: t('HotkeyHandler.shift+period_help'), keys: '>' },
         tetherCallback(TetherType.Far),
         { useKey: true },
         [tetherCallback],
@@ -392,13 +392,15 @@ const EditActionHandler: React.FC = () => {
         [scene, step, dispatch, selection, editMode],
     );
 
-    useHotkeys('ctrl+g', { category: CATEGORY_EDIT, help: 'Rotate 90° counter-clockwise' }, rotateCallback(-90), [
+    useHotkeys('ctrl+g', { category: CATEGORY_EDIT, help: t('HotkeyHandler.ctrl+g_help') }, rotateCallback(-90), [
         rotateCallback,
     ]);
-    useHotkeys('ctrl+h', { category: CATEGORY_EDIT, help: 'Rotate 90° clockwise' }, rotateCallback(90), [
+    useHotkeys('ctrl+h', { category: CATEGORY_EDIT, help: t('HotkeyHandler.ctrl+h_help') }, rotateCallback(90), [
         rotateCallback,
     ]);
-    useHotkeys('ctrl+j', { category: CATEGORY_EDIT, help: 'Rotate 180°' }, rotateCallback(180), [rotateCallback]);
+    useHotkeys('ctrl+j', { category: CATEGORY_EDIT, help: t('HotkeyHandler.ctrl+j_help') }, rotateCallback(180), [
+        rotateCallback,
+    ]);
 
     const orderCallback = useCallback(
         (type: GroupMoveAction['type']) => (e: KeyboardEvent) => {
@@ -408,26 +410,38 @@ const EditActionHandler: React.FC = () => {
         [dispatch, selection],
     );
 
-    useHotkeys('pageup', { category: CATEGORY_EDIT, help: 'Move layer up' }, orderCallback('moveUp'), [orderCallback]);
-    useHotkeys('pagedown', { category: CATEGORY_EDIT, help: 'Move layer down' }, orderCallback('moveDown'), [
+    useHotkeys('pageup', { category: CATEGORY_EDIT, help: t('HotkeyHandler.pageup_help') }, orderCallback('moveUp'), [
         orderCallback,
     ]);
-    useHotkeys('shift+pageup', { category: CATEGORY_EDIT, help: 'Move to top' }, orderCallback('moveToTop'), [
-        orderCallback,
-    ]);
-    useHotkeys('shift+pagedown', { category: CATEGORY_EDIT, help: 'Move to bottom' }, orderCallback('moveToBottom'), [
-        orderCallback,
-    ]);
+    useHotkeys(
+        'pagedown',
+        { category: CATEGORY_EDIT, help: t('HotkeyHandler.pagedown_help') },
+        orderCallback('moveDown'),
+        [orderCallback],
+    );
+    useHotkeys(
+        'shift+pageup',
+        { category: CATEGORY_EDIT, help: t('HotkeyHandler.shift+pageup_help') },
+        orderCallback('moveToTop'),
+        [orderCallback],
+    );
+    useHotkeys(
+        'shift+pagedown',
+        { category: CATEGORY_EDIT, help: t('HotkeyHandler.shift+pagedown_help') },
+        orderCallback('moveToBottom'),
+        [orderCallback],
+    );
 
     return null;
 };
 
 const HelpHandler: React.FC = () => {
+    const { t } = useTranslation();
     const [open, setOpen] = useContext(HelpContext);
 
     useHotkeys(
         'f1',
-        { category: CATEGORY_GENERAL, help: 'Help' },
+        { category: CATEGORY_GENERAL, help: t('HotkeyHandler.f1_help') },
         (e) => {
             setOpen(true);
             e.preventDefault();
@@ -439,18 +453,20 @@ const HelpHandler: React.FC = () => {
 };
 
 const DrawModeHandler: React.FC = () => {
-    useHotkeyHelp({ keys: 'e', category: CATEGORY_DRAW, help: '(On draw tab) switch to edit mode' });
-    useHotkeyHelp({ keys: 'd', category: CATEGORY_DRAW, help: '(On draw tab) switch to draw mode' });
+    const { t } = useTranslation();
+    useHotkeyHelp({ keys: 'e', category: CATEGORY_DRAW, help: t('HotkeyHandler.e_help') });
+    useHotkeyHelp({ keys: 'd', category: CATEGORY_DRAW, help: t('HotkeyHandler.d_help') });
 
     return null;
 };
 
 const StepHandler: React.FC = () => {
+    const { t } = useTranslation();
     const { dispatch } = useScene();
 
     useHotkeys(
         'alt+left',
-        { category: CATEGORY_STEPS, help: 'Previous step' },
+        { category: CATEGORY_STEPS, help: t('HotkeyHandler.alt+left_help') },
         (e) => {
             dispatch({ type: 'previousStep' });
             e.preventDefault();
@@ -460,7 +476,7 @@ const StepHandler: React.FC = () => {
 
     useHotkeys(
         'alt+right',
-        { category: CATEGORY_STEPS, help: 'Next step' },
+        { category: CATEGORY_STEPS, help: t('HotkeyHandler.alt+right_help') },
         (e) => {
             dispatch({ type: 'nextStep' });
             e.preventDefault();
@@ -470,7 +486,7 @@ const StepHandler: React.FC = () => {
 
     useHotkeys(
         'ctrl+enter',
-        { category: CATEGORY_STEPS, help: 'Add step' },
+        { category: CATEGORY_STEPS, help: t('HotkeyHandler.ctrl+enter_help') },
         (e) => {
             dispatch({ type: 'addStep' });
             e.preventDefault();

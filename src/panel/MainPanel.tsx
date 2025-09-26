@@ -1,5 +1,6 @@
 import { makeStyles, Tab, TabList } from '@fluentui/react-components';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EditMode } from '../editMode';
 import { useEditMode } from '../useEditMode';
 import { ArenaPanel } from './ArenaPanel';
@@ -31,14 +32,15 @@ export const MainPanel: React.FC = () => {
         },
         [setEditMode],
     );
+    const { t } = useTranslation();
 
     return (
         <div className={classes.wrapper}>
             <TabList selectedValue={tab} onTabSelect={(ev, data) => handleTabChanged(data.value as Tabs)}>
-                <Tab value={Tabs.Arena}>Arena</Tab>
-                <Tab value={Tabs.Objects}>Objects</Tab>
-                <Tab value={Tabs.Status}>Icons</Tab>
-                <Tab value={Tabs.Draw}>Draw</Tab>
+                <Tab value={Tabs.Arena}>{t('MainPanel.Arena')}</Tab>
+                <Tab value={Tabs.Objects}>{t('MainPanel.Objects')}</Tab>
+                <Tab value={Tabs.Status}>{t('MainPanel.Icons')}</Tab>
+                <Tab value={Tabs.Draw}>{t('MainPanel.Draw')}</Tab>
             </TabList>
             <div className={classes.container}>
                 {tab === Tabs.Arena && <ArenaPanel />}

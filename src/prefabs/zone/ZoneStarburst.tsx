@@ -1,5 +1,6 @@
 import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/starburst.svg?react';
@@ -17,18 +18,17 @@ import { useShowHighlight } from '../highlight';
 import { StarburstControlContainer } from './StarburstContainer';
 import { getZoneStyle } from './style';
 
-const NAME = 'Starburst';
-
 const DEFAULT_RADIUS = 250;
 const DEFAULT_SPOKE_WIDTH = 40;
 const DEFAULT_SPOKE_COUNT = 8;
 
 export const ZoneStarburst: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneStarburst.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -201,10 +201,11 @@ const StarburstContainer: React.FC<RendererProps<StarburstZone>> = ({ object }) 
 registerRenderer<StarburstZone>(ObjectType.Starburst, LayerName.Ground, StarburstContainer);
 
 const StarburstDetails: React.FC<ListComponentProps<StarburstZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneStarburst.Name')}
             object={object}
             {...props}
         />

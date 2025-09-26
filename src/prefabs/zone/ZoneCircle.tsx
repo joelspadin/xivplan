@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/circle.svg?react';
@@ -15,17 +16,16 @@ import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
 import { getZoneStyle } from './style';
 
-const NAME = 'Circle';
-
 const DEFAULT_RADIUS = 50;
 
 export const ZoneCircle: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
 
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneCircle.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -89,10 +89,11 @@ const CircleContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
 registerRenderer<CircleZone>(ObjectType.Circle, LayerName.Ground, CircleContainer);
 
 const CircleDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneCircle.Name')}
             object={object}
             {...props}
         />

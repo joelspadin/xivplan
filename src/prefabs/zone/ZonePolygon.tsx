@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, RegularPolygon } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import HexagonIcon from '../../assets/zone/hexagon.svg?react';
@@ -20,17 +21,16 @@ import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useShowHighlight } from '../highlight';
 import { getZoneStyle } from './style';
 
-const NAME = 'Regular Polygon';
-
 const DEFAULT_RADIUS = 50;
 const DEFAULT_SIDES = 6;
 
 export const ZonePolygon: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZonePolygon.Name')}
             icon={<HexagonIcon />}
             onDragStart={(e) => {
                 setDragObject({
@@ -122,11 +122,12 @@ function getIconAndName(sides: number): [typeof TriangleIcon, string] {
 }
 
 const PolygonDetails: React.FC<ListComponentProps<PolygonZone>> = ({ object, ...props }) => {
-    const [Icon, name] = getIconAndName(object.sides);
+    const [Icon] = getIconAndName(object.sides);
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={name}
+            name={t('ZonePolygon.Name')}
             object={object}
             {...props}
         />

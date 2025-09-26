@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
 import { getPointerAngle, snapAngle } from '../../coord';
@@ -22,8 +23,6 @@ import { useShowHighlight, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
-const NAME = 'Line';
-
 const DEFAULT_WIDTH = 100;
 const DEFAULT_LENGTH = 250;
 
@@ -31,10 +30,11 @@ const ICON_SIZE = 32;
 
 export const ZoneLine: React.FC = () => {
     const [, setDragObject] = usePanelDrag();
+    const { t } = useTranslation();
     return (
         <PrefabIcon
             draggable
-            name={NAME}
+            name={t('ZoneLine.Name')}
             icon={<Icon />}
             onDragStart={(e) => {
                 const offset = getDragOffset(e);
@@ -69,10 +69,11 @@ registerDropHandler<LineZone>(ObjectType.Line, (object, position) => {
 });
 
 const LineDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {
+    const { t } = useTranslation();
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name={NAME}
+            name={t('ZoneLine.Name')}
             object={object}
             {...props}
         />

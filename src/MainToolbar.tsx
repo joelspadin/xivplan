@@ -49,7 +49,7 @@ export const MainToolbar: React.FC = () => {
 
     useHotkeys(
         'ctrl+o',
-        { category: '2.File', help: 'Open' },
+        { category: '2.File', help: t('MainToolbar.Open') },
         (e) => {
             setOpenFileOpen(true);
             e.preventDefault();
@@ -157,7 +157,7 @@ const SaveButton: React.FC = () => {
 
     useHotkeys(
         'ctrl+s',
-        { category: '2.File', help: 'Save' },
+        { category: '2.File', help: t('MainToolbar.Save') },
         (e) => {
             save();
             e.preventDefault();
@@ -166,7 +166,7 @@ const SaveButton: React.FC = () => {
     );
     useHotkeys(
         'ctrl+shift+s',
-        { category: '2.File', help: 'Save as' },
+        { category: '2.File', help: t('MainToolbar.SaveAs') },
         (e) => {
             setSaveAsOpen(true);
             e.preventDefault();

@@ -36,7 +36,8 @@
     },
     "StepScreenshotButton": {
       "MenuGroupHeader": "缩放比例",
-      "ToastTitle": "截图已复制到剪贴板"
+      "ToastTitle": "截图已复制到剪贴板",
+      "ctrl+shift+c_help": "截图当前步骤"
     },
     "HelpDialog": {
       "DialogTitle": "帮助",
@@ -81,7 +82,7 @@
         "OpenFile": "打开文件",
         "LocalFile": "本地文件",
         "BrowserStorage": "浏览器存储",
-        "ImportPlanLink": "导入plan链接"
+        "ImportPlanLink": "导入计划链接"
       },
       "SaveFile": "保存文件"
     },
@@ -89,8 +90,8 @@
       "Open": "打开",
       "Cancel": "取消",
       "SaveAs": "保存为",
-      "SaveFileSystem_description": "点击下方的“保存为”将plan保存到您的电脑上。",
-      "FileSystemNotSupportedMessage1": "您的浏览器不支持实验性的文件系统API。您可以将plan下载为<0>.xivplan</0>文件，然后拖拽到页面上重新打开它。",
+      "SaveFileSystem_description": "点击下方的“保存为”将计划保存到您的电脑上。",
+      "FileSystemNotSupportedMessage1": "您的浏览器不支持实验性的文件系统API。您可以将计划下载为<0>.xivplan</0>文件，然后拖拽到页面上重新打开它。",
       "FileSystemNotSupportedMessage2": "To save files locally, use a Chromium-based browser such as <0>Edge</0> or <1>Chrome</1>."
     },
     "FileDialogLocalStorage": {
@@ -115,30 +116,134 @@
       "ctrl+v_help": "在鼠标处粘贴对象",
       "ctrl+shift+v_help": "在原始位置粘贴对象",
       "ctrl+d_help": "复制所选对象",
-      "h_help": "Show/hide selected objects",
-      "l_help": "Lock/unlock selected object positions",
-      "/_help": "Tether",
-      "-_help": "Tether -/-",
-      "=_help": "Tether +/-",
-      "shift+equal_help": "Tether +/+",
-      "<_help": "Tether (stay together)",
-      "shift+period_help": "Tether (stay apart)",
-      "🡐🡑🡓🡒_help": "Move object",
-      "ctrl+🡐🡑🡓🡒": "Move object (coarse)",
-      "shift+🡐🡑🡓🡒": "Move object (fine)",
-      "ctrl+g_help": "Rotate 90° counter-clockwise",
-      "ctrl+h_help": "Rotate 90° clockwise",
-      "ctrl+j_help": "Rotate 180°",
-      "pageup": "Move layer up",
-      "pagedown": "Move layer down",
-      "shift+pageup": "Move to top",
-      "shift+pagedown": "Move to bottom",
-      "f1_help": "Help",
-      "e_help": "(On draw tab) switch to edit mode",
-      "d_help": "(On draw tab) switch to draw mode",
-      "alt+left_help": "Previous step",
-      "alt+right": "Next step",
-      "ctrl+enter": "Add step"
+      "h_help": "显示/隐藏所选对象",
+      "l_help": "锁定/解锁所选对象位置",
+      "/_help": "连线",
+      "-_help": "连线 -/-",
+      "=_help": "连线 +/-",
+      "shift+equal_help": "连线 +/+",
+      "<_help": "连线 (靠近)",
+      "shift+period_help": "连线 (远离)",
+      "🡐🡑🡓🡒_help": "移动对象",
+      "ctrl+🡐🡑🡓🡒_help": "移动对象(粗精度)",
+      "shift+🡐🡑🡓🡒_help": "移动对象(细精度)",
+      "ctrl+g_help": "逆时针旋转90°",
+      "ctrl+h_help": "顺时针旋转90°",
+      "ctrl+j_help": "旋转180°",
+      "pageup_help": "上移图层",
+      "pagedown_help": "下移图层",
+      "shift+pageup_help": "移动至顶层",
+      "shift+pagedown_help": "移动至底层",
+      "f1_help": "帮助",
+      "e_help": "(在绘图选项卡上) 切换到编辑模式",
+      "d_help": "(在绘图选项卡上) 切换到绘图模式",
+      "alt+left_help": "上一步",
+      "alt+right_help": "下一步",
+      "ctrl+enter_help": "添加步骤"
+    },
+    "FilePrompts": {
+      "Overwrite": "覆盖",
+      "Overwrite_Description": "具有此名称的文件已存在。是否覆盖？",
+      "Cancel": "取消",
+      "Delete": "删除",
+      "Delete_Description": "您确定要删除这个文件吗？"
+    },
+
+    "ShareDialogButton": {
+      "Share": "分享",
+      "ShareContent": "如果您的浏览器无法打开该链接，请将文本粘贴到<0>打开 > 导入计划链接</0>中，或者下载计划并将文件拖拽到页面上打开。",
+      "CopyToClipboard": "复制到剪贴板",
+      "Close": "关闭",
+      "LinkPoPlan": "链接至计划",
+      "LinkCopied": "链接已复制"
+    },
+    "UnsavedChangesPrompt": {
+      "UnsavedChanges": "未保存的更改",
+      "UnsavedChangesContent": "您确定要打开一个文件吗？您的未保存更改将会丢失。",
+      "OpenAnyways": "仍然打开",
+      "Cancel": "取消"
+    },
+    "MainPanel": {
+      "Arena": "场地",
+      "Objects": "对象",
+      "Icons": "图标",
+      "Draw": "绘制"
+    },
+    "PrefabsPanel": {
+      "Zones": "区域",
+      "Waymarks": "标记",
+      "Party": "队伍",
+      "Enemies": "敌人",
+      "Tethers": "连线",
+      "text": "选择一个连线类型，然后点击两个对象来添加连线。按<0/>或取消选择连线按钮来取消。使用<1/> + 点击来创建链条。"
+    },
+    "ZoneRightTriangle": {
+      "Name": "直角三角形"
+    },
+    "ZoneTriangle": {
+      "Name": "三角形"
+    },
+    "ZoneRectangle": {
+      "Name": "矩形"
+    },
+    "ZoneLine": {
+      "Name": "直线"
+    },
+    "ZoneDonut": {
+      "Name": "月环"
+    },
+    "ZoneCircle": {
+      "Name": "钢铁"
+    },
+    "ZoneKnockback": {
+      "Name": "环形击退"
+    },
+    "ZoneProximity": {
+      "Name": "核爆"
+    },
+    "ZoneLineStack": {
+      "Name": "线性分摊"
+    },
+    "ZoneStack": {
+      "Name": "分摊"
+    },
+    "ZoneArc": {
+      "Name": "弓形"
+    },
+    "ZoneCone": {
+      "Name": "扇形"
+    },
+    "ZoneLineKnockback": {
+      "Name": "单边击退"
+    },
+    "ZoneLineKnockAway": {
+      "Name": "两侧击退"
+    },
+    "ZoneExaflare": {
+      "Name": "步进式AOE"
+    },
+    "ZoneStarburst": {
+      "Name": "八方"
+    },
+    "ZoneRotate": {
+      "Name": "顺时针旋转",
+      "CounterName": "逆时针旋转"
+    },
+    "ZonePolygon": {
+      "Name": "六角形"
+    },
+    "ZoneTower": {
+      "Name": "踩塔"
+    },
+    "ZoneEye": {
+      "Name": "背对",
+      "InvertName": "面向"
+    },
+    "TextLabel": {
+      "Name": "文本"
+    },
+    "Arrow": {
+      "Name": "箭头"
     }
   }
 }
