@@ -1,14 +1,16 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeferredInput } from '../DeferredInput';
 import { OpacitySlider } from '../OpacitySlider';
 import { useScene } from '../SceneProvider';
 
 export const ArenaBackgroundEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
+    const { t } = useTranslation();
     return (
         <>
-            <Field label="Background image URL">
+            <Field label={t('ArenaBackgroundEdit.BackgroundImageURL')}>
                 <DeferredInput
                     value={scene.arena.backgroundImage}
                     onChange={(ev, data) => {
@@ -18,7 +20,7 @@ export const ArenaBackgroundEdit: React.FC = () => {
             </Field>
             {scene.arena.backgroundImage && (
                 <OpacitySlider
-                    label="Background image opacity"
+                    label={t('ArenaBackgroundEdit.BackgroundImageOpacity')}
                     value={scene.arena.backgroundOpacity ?? 100}
                     onChange={(ev, data) => {
                         dispatch({ type: 'arenaBackgroundOpacity', value: data.value });

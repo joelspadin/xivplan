@@ -3,6 +3,7 @@ import { ShapeConfig } from 'konva/lib/Shape';
 import { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
 import { RefObject, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Arc, Circle, Path, Text } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -47,11 +48,19 @@ function makeIcon(name: string, icon: string, radius: number, hasDirection = tru
     const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = `/actor/${icon}`;
-
+        const { t } = useTranslation();
+        const enemyMap: Record<string, string> = {
+            'Enemy circle': 'Enemies.EnemyCircle',
+            'Small enemy': 'Enemies.SmallEnemy',
+            'Medium enemy': 'Enemies.MediumEnemy',
+            'Large enemy': 'Enemies.LargeEnemy',
+            'Huge enemy': 'Enemies.HugeEnemy',
+        };
+        const Tname = t(enemyMap[name] || name);
         return (
             <PrefabIcon
                 draggable
-                name={name}
+                name={Tname}
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({

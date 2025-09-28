@@ -171,7 +171,7 @@
     },
     "PrefabsPanel": {
       "Zones": "区域",
-      "Waymarks": "标记",
+      "Waymarks": "场景标记",
       "Party": "队伍",
       "Enemies": "敌人",
       "Tethers": "连线",
@@ -244,6 +244,91 @@
     },
     "Arrow": {
       "Name": "箭头"
+    },
+    "Markers": {
+      "WaymarkA": "标点A",
+      "WaymarkB": "标点B",
+      "WaymarkC": "标点C",
+      "WaymarkD": "标点D",
+      "Waymark1": "标点1",
+      "Waymark2": "标点2",
+      "Waymark3": "标点3",
+      "Waymark4": "标点4"
+    },
+    "jobs": {
+      "AnyPlayer": "任意玩家",
+      "Tank": "坦克",
+      "Healer": "奶妈",
+      "Support": "辅助",
+      "DPS": "输出",
+      "MeleeDPS": "近战输出",
+      "RangedDPS": "远程输出",
+      "MagicRangedDPS": "魔法远程输出",
+      "PhysicalRangedDPS": "物理远程输出",
+      "Paladin": "骑士",
+      "Warrior": "战士",
+      "DarkKnight": "暗黑骑士",
+      "Gunbreaker": "绝枪战士",
+      "WhiteMage": "白魔法师",
+      "Scholar": "学者",
+      "Astrologian": "占星术士",
+      "Sage": "贤者",
+      "Monk": "武僧",
+      "Dragoon": "龙骑士",
+      "Ninja": "忍者",
+      "Viper": "蝰蛇剑士",
+      "Reaper": "钐镰客",
+      "Samurai": "武士",
+      "Bard": "诗人",
+      "Machinist": "机工士",
+      "Dancer": "舞者",
+      "BlackMage": "黑魔法师",
+      "Summoner": "召唤师",
+      "RedMage": "赤魔法师",
+      "Pictomancer": "绘灵法师",
+      "BlueMage": "青魔法师",
+      "UnknownJob": "未知职业"
+    },
+    "Enemies": {
+      "EnemyCircle": "敌人范围",
+      "SmallEnemy": "小型敌人",
+      "MediumEnemy": "中型敌人",
+      "LargeEnemy": "大型敌人",
+      "HugeEnemy": "巨型敌人"
+    },
+    "PropertiesPanel": {
+      "NoObjectsSelected": "没有对象被选择。"
+    },
+    "ArenaBackgroundEdit": {
+      "BackgroundImageURL": "背景图URL",
+      "BackgroundImageOpacity": "背景图透明度"
+    },
+    "ArenaGridEdit": {
+      "GridType": "网格形状",
+      "None": "无",
+      "Radial": " 放射型",
+      "CustomRadial": "自定义放射型",
+      "Rectangular": "矩形",
+      "CustomRectangular": "自定义矩形",
+      "Columns": "列",
+      "Rows": "行",
+      "Spokes": "辐条",
+      "Rings": "环",
+      "Rotation": "旋转角",
+      "RowStops": "行间隔",
+      "RowStops_info": "输入以空格分隔的网格线Y坐标列表。",
+      "ColumnStops": "列间隔",
+      "ColumnStops_info": "输入以空格分隔的网格线X坐标列表",
+      "RingStops": "环间隔",
+      "RingStops_info": "输入以空格分隔的网格环半径列表。",
+      "SpokeAngles": "辐条角",
+      "SpokeAngles_info": "输入以空格分隔的网格辐条角度列表。"
+    },
+    "ArenaPanel": {
+      "ArenaPresets": "场地预设",
+      "SelectPreset": "选择预设",
+      "Cancel": "取消",
+      "ClickToShow": "点击显示"
     }
   }
 }

@@ -243,6 +243,91 @@
     },
     "ZoneTriangle": {
       "Name": "Triangle"
+    },
+    "Markers": {
+      "WaymarkA": "Waymark A",
+      "WaymarkB": "Waymark B",
+      "WaymarkC": "Waymark C",
+      "WaymarkD": "Waymark D",
+      "Waymark1": "Waymark 1",
+      "Waymark2": "Waymark 2",
+      "Waymark3": "Waymark 3",
+      "Waymark4": "Waymark 4"
+    },
+    "jobs": {
+      "AnyPlayer": "Any player",
+      "Tank": "Tank",
+      "Healer": "Healer",
+      "Support": "Support",
+      "DPS": "DPS",
+      "MeleeDPS": "Melee DPS",
+      "RangedDPS": "Ranged DPS",
+      "MagicRangedDPS": "Magic Ranged DPS",
+      "PhysicalRangedDPS": "Physical Ranged DPS",
+      "Paladin": "Paladin",
+      "Warrior": "Warrior",
+      "DarkKnight": "Dark Knight",
+      "Gunbreaker": "Gunbreaker",
+      "WhiteMage": "White Mage",
+      "Scholar": "Scholar",
+      "Astrologian": "Astrologian",
+      "Sage": "Sage",
+      "Monk": "Monk",
+      "Dragoon": "Dragoon",
+      "Ninja": "Ninja",
+      "Viper": "Viper",
+      "Reaper": "Reaper",
+      "Samurai": "Samurai",
+      "Bard": "Bard",
+      "Machinist": "Machinist",
+      "Dancer": "Dancer",
+      "BlackMage": "Black Mage",
+      "Summoner": "Summoner",
+      "RedMage": "Red Mage",
+      "Pictomancer": "Pictomancer",
+      "BlueMage": "Blue Mage",
+      "UnknownJob": "Unknown job"
+    },
+    "Enemies": {
+      "EnemyCircle": "Enemy circle",
+      "SmallEnemy": "Small enemy",
+      "MediumEnemy": "Medium enemy",
+      "LargeEnemy": "Large enemy",
+      "HugeEnemy": "Huge enemy"
+    },
+    "PropertiesPanel": {
+      "NoObjectsSelected": "No objects selected."
+    },
+    "ArenaBackgroundEdit": {
+      "BackgroundImageURL": "Background image URL",
+      "BackgroundImageOpacity": "Background image opacity"
+    },
+    "ArenaGridEdit": {
+      "GridType": "Grid type",
+      "None": "None",
+      "Radial": " Radial",
+      "CustomRadial": "Custom radial",
+      "Rectangular": "Rectangular",
+      "CustomRectangular": "Custom rectangular",
+      "Columns": "Columns",
+      "Rows": "Rows",
+      "Spokes": "Spokes",
+      "Rings": "Rings",
+      "Rotation": "Rotation",
+      "RowStops": "Row stops",
+      "RowStops_info": "Enter a space-separated list of Y coordinates for grid lines.",
+      "ColumnStops": "Column stops",
+      "ColumnStops_info": "Enter a space-separated list of X coordinates for grid lines.",
+      "RingStops": "Ring stops",
+      "RingStops_info": "Enter a space-separated list of radii for grid rings.",
+      "SpokeAngles": "Spoke angles",
+      "SpokeAngles_info": "Enter a space-separated list of angles in degrees for grid spokes."
+    },
+    "ArenaPanel": {
+      "ArenaPresets": "Arena presets",
+      "SelectPreset": "Select preset",
+      "Cancel": "Cancel",
+      "ClickToShow": "Click to show"
     }
   }
 }

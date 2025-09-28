@@ -1,4 +1,6 @@
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group, Image, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { getJob, getJobIconUrl, Job } from '../jobs';
@@ -24,11 +26,13 @@ function makeIcon(job: Job) {
     const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = getJobIconUrl(icon);
+        const { t } = useTranslation();
+        const Tname = SwitchName(name, t);
 
         return (
             <PrefabIcon
                 draggable
-                name={name}
+                name={Tname}
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
@@ -98,7 +102,9 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
 registerRenderer<PartyObject>(ObjectType.Party, LayerName.Default, PartyRenderer);
 
 const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, ...props }) => {
-    return <DetailsItem icon={object.image} name={object.name} object={object} {...props} />;
+    const { t } = useTranslation();
+    const Tname = SwitchName(object.name, t);
+    return <DetailsItem icon={object.image} name={Tname} object={object} {...props} />;
 };
 
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
@@ -140,3 +146,41 @@ export const PartyRedMage = makeIcon(Job.RedMage);
 export const PartyPictomancer = makeIcon(Job.Pictomancer);
 
 export const PartyBlueMage = makeIcon(Job.BlueMage);
+function SwitchName(name: string, t: TFunction<'translation', undefined>) {
+    const jobMap: Record<string, string> = {
+        'Any player': 'jobs.AnyPlayer',
+        Tank: 'jobs.Tank',
+        Healer: 'jobs.Healer',
+        Support: 'jobs.Support',
+        DPS: 'jobs.DPS',
+        'Melee DPS': 'jobs.MeleeDPS',
+        'Ranged DPS': 'jobs.RangedDPS',
+        'Magic Ranged DPS': 'jobs.MagicRangedDPS',
+        'Physical Ranged DPS': 'jobs.PhysicalRangedDPS',
+        Paladin: 'jobs.Paladin',
+        Warrior: 'jobs.Warrior',
+        'Dark Knight': 'jobs.DarkKnight',
+        Gunbreaker: 'jobs.Gunbreaker',
+        'White Mage': 'jobs.WhiteMage',
+        Scholar: 'jobs.Scholar',
+        Astrologian: 'jobs.Astrologian',
+        Sage: 'jobs.Sage',
+        Monk: 'jobs.Monk',
+        Dragoon: 'jobs.Dragoon',
+        Ninja: 'jobs.Ninja',
+        Viper: 'jobs.Viper',
+        Reaper: 'jobs.Reaper',
+        Samurai: 'jobs.Samurai',
+        Bard: 'jobs.Bard',
+        Machinist: 'jobs.Machinist',
+        Dancer: 'jobs.Dancer',
+        'Black Mage': 'jobs.BlackMage',
+        Summoner: 'jobs.Summoner',
+        'Red Mage': 'jobs.RedMage',
+        Pictomancer: 'jobs.Pictomancer',
+        'Blue Mage': 'jobs.BlueMage',
+        'Unknown job': 'jobs.UnknownJob',
+    };
+    const jobKey = jobMap[name];
+    return jobKey ? t(jobKey) : '';
+}

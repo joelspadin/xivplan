@@ -1,6 +1,7 @@
 import { ShapeConfig } from 'konva/lib/Shape';
 import { EllipseConfig } from 'konva/lib/shapes/Ellipse';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
@@ -32,11 +33,57 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
     const Component: React.FC = () => {
         const [, setDragObject] = usePanelDrag();
         const iconUrl = `/marker/${icon}`;
+        const { t } = useTranslation();
+        let Tname = '';
+        switch (name) {
+            case 'Waymark A':
+                {
+                    Tname = t('Markers.WaymarkA');
+                }
+                break;
+            case 'Waymark B':
+                {
+                    Tname = t('Markers.WaymarkB');
+                }
+                break;
+            case 'Waymark C':
+                {
+                    Tname = t('Markers.WaymarkC');
+                }
+                break;
+            case 'Waymark D':
+                {
+                    Tname = t('Markers.WaymarkD');
+                }
+                break;
+            case 'Waymark 1':
+                {
+                    Tname = t('Markers.Waymark1');
+                }
+                break;
+            case 'Waymark 2':
+                {
+                    Tname = t('Markers.Waymark2');
+                }
+                break;
+            case 'Waymark 3':
+                {
+                    Tname = t('Markers.Waymark3');
+                }
+                break;
+            case 'Waymark 4':
+                {
+                    Tname = t('Markers.Waymark4');
+                }
+                break;
 
+            default:
+                break;
+        }
         return (
             <PrefabIcon
                 draggable
-                name={name}
+                name={Tname}
                 icon={iconUrl}
                 onDragStart={(e) => {
                     setDragObject({
@@ -250,7 +297,19 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
 registerRenderer<MarkerObject>(ObjectType.Marker, LayerName.Ground, MarkerRenderer);
 
 const MarkerDetails: React.FC<ListComponentProps<MarkerObject>> = ({ object, ...props }) => {
-    return <DetailsItem icon={object.image} name={object.name} object={object} {...props} />;
+    const { t } = useTranslation();
+    const Tname: Record<string, string> = {
+        'Waymark A': t('Markers.WaymarkA'),
+        'Waymark B': t('Markers.WaymarkB'),
+        'Waymark C': t('Markers.WaymarkC'),
+        'Waymark D': t('Markers.WaymarkD'),
+        'Waymark 1': t('Markers.Waymark1'),
+        'Waymark 2': t('Markers.Waymark2'),
+        'Waymark 3': t('Markers.Waymark3'),
+        'Waymark 4': t('Markers.Waymark4'),
+    };
+    const Oname = Tname[object.name] || object.name;
+    return <DetailsItem icon={object.image} name={Oname} object={object} {...props} />;
 };
 
 registerListComponent<MarkerObject>(ObjectType.Marker, MarkerDetails);

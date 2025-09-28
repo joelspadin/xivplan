@@ -21,6 +21,7 @@ import {
 import { OptionsFilled } from '@fluentui/react-icons';
 import React, { Dispatch, MouseEventHandler, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useTranslation } from 'react-i18next';
 import { useAsync, useCounter, useLocalStorage, useSessionStorage } from 'react-use';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
@@ -95,11 +96,12 @@ function getPresetKey(group: string | undefined, name: string) {
 const SelectPresetButton: React.FC = () => {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
+    const { t } = useTranslation();
 
     return (
         <Dialog open={open} onOpenChange={(ev, data) => setOpen(data.open)}>
             <DialogTrigger>
-                <Button icon={<OptionsFilled />}>Arena presets</Button>
+                <Button icon={<OptionsFilled />}>{t('ArenaPanel.ArenaPresets')}</Button>
             </DialogTrigger>
             <DialogSurface className={classes.dialogSurface}>
                 <PresetsDialogBody setOpen={setOpen} />
@@ -189,12 +191,13 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     );
 
     const presets = getPresetsForGroup(selectedGroup);
+    const { t } = useTranslation();
 
     // TODO: make keyboard list keyboard-navigable
 
     return (
         <HotkeyBlockingDialogBody>
-            <DialogTitle>Arena presets</DialogTitle>
+            <DialogTitle>{t('ArenaPanel.ArenaPresets')}</DialogTitle>
             <DialogContent className={classes.dialogContent}>
                 <Tree
                     aria-label="arena presets"
@@ -248,10 +251,10 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
                     disabled={!selectedPreset}
                     onClick={() => selectedPreset && applyPreset(selectedPreset)}
                 >
-                    Select preset
+                    {t('ArenaPanel.SelectPreset')}
                 </Button>
                 <DialogTrigger>
-                    <Button>Cancel</Button>
+                    <Button>{t('ArenaPanel.Cancel')}</Button>
                 </DialogTrigger>
             </DialogActions>
         </HotkeyBlockingDialogBody>
@@ -312,6 +315,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
         arena: preset,
         steps: [{ objects: [] }],
     };
+    const { t } = useTranslation();
 
     return (
         <li
@@ -332,7 +336,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
                 </div>
                 {isSpoiler && (
                     <div className={classes.spoilerNotice}>
-                        <p>Click to show</p>
+                        <p>{t('ArenaPanel.ClickToShow')}</p>
                     </div>
                 )}
             </div>
