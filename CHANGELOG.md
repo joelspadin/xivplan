@@ -2,6 +2,10 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## September 29, 2025
+
+- Dragging an object now updates the positions of tethers attached to it.
+
 ## September 13, 2025
 
 - Migrated to React 19. Everything seems to be working, but please [let me know](https://github.com/joelspadin/xivplan/issues) if something is broken.
