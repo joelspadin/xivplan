@@ -264,7 +264,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
         }
     };
 
-    const name = isSpoiler ? preset.spoilerFreeName ?? preset.name : preset.name;
+    const name = isSpoiler ? (preset.spoilerFreeName ?? preset.name) : preset.name;
 
     const scene: Scene = {
         nextId: 0,

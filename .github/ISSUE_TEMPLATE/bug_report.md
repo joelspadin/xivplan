@@ -4,7 +4,6 @@ about: Report an issue with the app
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **Describe the bug**
@@ -14,6 +13,7 @@ If applicable, add screenshots to help explain your problem.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -23,6 +23,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Please complete the following information:**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+
+- OS: [e.g. iOS]
+- Browser [e.g. chrome, safari]
+- Version [e.g. 22]

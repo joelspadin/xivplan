@@ -48,8 +48,6 @@ const useStyles = makeStyles({
     },
 });
 
-
-
 const BaseProviders: React.FC<PropsWithChildren> = ({ children }) => {
     const sceneFromUrl = useSceneFromUrl();
 
