@@ -9,6 +9,7 @@ import {
     SquareRegular,
 } from '@fluentui/react-icons';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DEFAULT_RADIAL_TICKS, DEFAULT_RECT_TICKS, NO_TICKS, Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { Segment, SegmentedGroup } from '../Segmented';
@@ -50,24 +51,25 @@ export const ArenaTickEdit: React.FC = () => {
         },
         [setTicks],
     );
+    const { t } = useTranslation();
 
     return (
         <div className={classes.column}>
-            <Field label="Border ticks">
+            <Field label={t('ArenaTickEdit.BorderTicks')}>
                 <SegmentedGroup
                     name="arena-ticks"
                     value={ticks?.type ?? TickType.None}
                     onChange={(ev, data) => onTypeChange(data.value as TickType)}
                 >
-                    <Segment value={TickType.None} icon={<SquareHintIcon />} title="None" />
-                    <Segment value={TickType.Radial} icon={<CircleIcon />} title="Circle" />
-                    <Segment value={TickType.Rectangular} icon={<SquareIcon />} title="Rectangle" />
+                    <Segment value={TickType.None} icon={<SquareHintIcon />} title={t('ArenaTickEdit.None')} />
+                    <Segment value={TickType.Radial} icon={<CircleIcon />} title={t('ArenaTickEdit.Circle')} />
+                    <Segment value={TickType.Rectangular} icon={<SquareIcon />} title={t('ArenaTickEdit.Rectangle')} />
                 </SegmentedGroup>
             </Field>
             {ticks?.type === TickType.Radial && (
                 <>
                     <div className={classes.row}>
-                        <Field label="Major ticks">
+                        <Field label={t('ArenaTickEdit.MajorTicks')}>
                             <SpinButton
                                 min={0}
                                 max={90}
@@ -80,7 +82,7 @@ export const ArenaTickEdit: React.FC = () => {
                                 }}
                             />
                         </Field>
-                        <Field label="Major rotation">
+                        <Field label={t('ArenaTickEdit.MajorRotation')}>
                             <SpinButtonUnits
                                 min={-180}
                                 max={180}
@@ -97,7 +99,7 @@ export const ArenaTickEdit: React.FC = () => {
                         </Field>
                     </div>
                     <div className={classes.row}>
-                        <Field label="Minor ticks">
+                        <Field label={t('ArenaTickEdit.MinorTicks')}>
                             <SpinButton
                                 min={0}
                                 max={180}
@@ -110,7 +112,7 @@ export const ArenaTickEdit: React.FC = () => {
                                 }}
                             />
                         </Field>
-                        <Field label="Minor rotation">
+                        <Field label={t('ArenaTickEdit.MinorRotation')}>
                             <SpinButtonUnits
                                 min={-180}
                                 max={180}
@@ -131,7 +133,7 @@ export const ArenaTickEdit: React.FC = () => {
             {ticks?.type === TickType.Rectangular && (
                 <>
                     <div className={classes.row}>
-                        <Field label="Columns">
+                        <Field label={t('ArenaTickEdit.Columns')}>
                             <SpinButton
                                 min={1}
                                 max={100}
@@ -144,7 +146,7 @@ export const ArenaTickEdit: React.FC = () => {
                                 }}
                             />
                         </Field>
-                        <Field label="Rows">
+                        <Field label={t('ArenaTickEdit.Rows')}>
                             <SpinButton
                                 min={1}
                                 max={100}

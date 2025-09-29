@@ -329,6 +329,27 @@
       "SelectPreset": "选择预设",
       "Cancel": "取消",
       "ClickToShow": "点击显示"
+    },
+    "ArenaShapeEdit": {
+      "ArenaShape": "场地形状",
+      "None": "无",
+      "Circle": "环形",
+      "Rectangle": "矩形",
+      "Padding": "边缘填充",
+      "Width": "宽",
+      "Height": "高"
+    },
+    "ArenaTickEdit": {
+      "BorderTicks": "边框刻度",
+      "None": "无",
+      "Circle": "环形",
+      "Rectangle": "矩形",
+      "MajorTicks": "主刻度",
+      "MajorRotation": "主刻度旋转角",
+      "MinorTicks": "次刻度",
+      "MinorRotation": "次刻度旋转角",
+      "Columns": "列",
+      "Rows": "行"
     }
   }
 }

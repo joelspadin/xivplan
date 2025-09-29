@@ -328,6 +328,27 @@
       "SelectPreset": "Select preset",
       "Cancel": "Cancel",
       "ClickToShow": "Click to show"
+    },
+    "ArenaShapeEdit": {
+      "ArenaShape": "Arena shape",
+      "None": "None",
+      "Circle": "Circle",
+      "Rectangle": "Rectangle",
+      "Padding": "Padding",
+      "Width": "Width",
+      "Height": "Height"
+    },
+    "ArenaTickEdit": {
+      "BorderTicks": "Border ticks",
+      "None": "None",
+      "Circle": "Circle",
+      "Rectangle": "Rectangle",
+      "MajorTicks": "Major ticks",
+      "MajorRotation": "Major rotation",
+      "MinorTicks": "Minor ticks",
+      "MinorRotation": "Minor rotation",
+      "Columns": "Columns",
+      "Rows": "Rows"
     }
   }
 }
