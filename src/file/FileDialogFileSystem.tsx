@@ -64,7 +64,7 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
     const setSavedState = useSetSavedState();
     const dismissDialog = useCloseDialog();
     const setSource = useSetSource();
-    const { scene, source } = useScene();
+    const { canonicalScene, source } = useScene();
 
     const currentName = source?.name;
 
@@ -75,11 +75,11 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
         }
 
         const source = getFileSource(handle);
-        await saveFile(scene, source);
+        await saveFile(canonicalScene, source);
         await addRecentFile(handle);
 
         setSource(source);
-        setSavedState(scene);
+        setSavedState(canonicalScene);
         dismissDialog();
     };
 

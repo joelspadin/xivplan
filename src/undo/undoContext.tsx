@@ -1,29 +1,43 @@
-import React, { ComponentType, createContext, Dispatch, PropsWithChildren, useContext, useReducer } from 'react';
-import { createUndoReducer, redoAction, resetAction, undoAction, UndoRedoAction, UndoRedoState } from './undoReducer';
+import React, { ComponentType, createContext, Dispatch, PropsWithChildren, use, useReducer } from 'react';
+import {
+    commitAction,
+    createUndoReducer,
+    redoAction,
+    resetAction,
+    rollbackAction,
+    StateActionBase,
+    undoAction,
+    UndoRedoAction,
+    UndoRedoState,
+} from './undoReducer';
 
 export interface UndoProviderProps<S> extends PropsWithChildren {
     initialState: S;
 }
 
-export type UndoRedoFunc = () => void;
+export type StateActionFunc = () => void;
 
 export type UndoContext<S, A> = [state: UndoRedoState<S>, dispatch: Dispatch<A | UndoRedoAction<S>>];
 
-export function createUndoContext<S, A extends object>(
+export function createUndoContext<S, A extends StateActionBase>(
     reducer: React.Reducer<S, A>,
     historyLimit = Infinity,
 ): {
     UndoProvider: ComponentType<UndoProviderProps<S>>;
     Context: React.Context<UndoContext<S, A>>;
     usePresent: () => [state: S, dispatch: Dispatch<A>];
-    useUndoRedo: () => [undo: UndoRedoFunc, redo: UndoRedoFunc];
+    useCanonicalPresent: () => S;
+    useUndoRedo: () => [undo: StateActionFunc, redo: StateActionFunc];
     useUndoRedoPossible: () => [undoPossible: boolean, redoPossible: boolean];
     useReset: () => Dispatch<S>;
+    useCommit: () => StateActionFunc;
+    useRollback: () => StateActionFunc;
 } {
     const Context = createContext<UndoContext<S, A>>([
         {
             past: [],
             present: undefined as unknown as S,
+            transientPresent: undefined as unknown as S,
             future: [],
         },
         () => {
@@ -37,6 +51,7 @@ export function createUndoContext<S, A extends object>(
         const value = useReducer(undoReducer, {
             past: [],
             present: initialState,
+            transientPresent: initialState,
             future: [],
         });
 
@@ -44,26 +59,32 @@ export function createUndoContext<S, A extends object>(
     };
 
     function usePresent(): [state: S, dispatch: Dispatch<A>] {
-        const [state, dispatch] = useContext(Context);
+        const [state, dispatch] = use(Context);
 
         if (state.present === undefined) {
             throw new Error('usePresent() called outside of UndoProvider');
         }
 
-        return [state.present, dispatch];
+        return [state.transientPresent, dispatch];
     }
 
-    function useUndoRedo(): [undo: UndoRedoFunc, redo: UndoRedoFunc] {
-        const [, dispatch] = useContext(Context);
+    function useCanonicalPresent(): S {
+        const [state] = use(Context);
 
-        const undo = () => dispatch(undoAction());
-        const redo = () => dispatch(redoAction());
+        return state.present;
+    }
+
+    function useUndoRedo(): [undo: StateActionFunc, redo: StateActionFunc] {
+        const [, dispatch] = use(Context);
+
+        const undo = () => dispatch(undoAction);
+        const redo = () => dispatch(redoAction);
 
         return [undo, redo];
     }
 
     function useUndoRedoPossible(): [undoPossible: boolean, redoPossible: boolean] {
-        const [state] = useContext(Context);
+        const [state] = use(Context);
         const undoPossible = state.past.length > 0;
         const redoPossible = state.future.length > 0;
 
@@ -71,10 +92,30 @@ export function createUndoContext<S, A extends object>(
     }
 
     function useReset(): Dispatch<S> {
-        const [, dispatch] = useContext(Context);
+        const [, dispatch] = use(Context);
 
         return (state: S) => dispatch(resetAction(state));
     }
 
-    return { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset };
+    function useCommit(): StateActionFunc {
+        const [, dispatch] = use(Context);
+        return () => dispatch(commitAction);
+    }
+
+    function useRollback(): StateActionFunc {
+        const [, dispatch] = use(Context);
+        return () => dispatch(rollbackAction);
+    }
+
+    return {
+        UndoProvider,
+        Context,
+        usePresent,
+        useCanonicalPresent,
+        useUndoRedo,
+        useUndoRedoPossible,
+        useReset,
+        useCommit,
+        useRollback,
+    };
 }

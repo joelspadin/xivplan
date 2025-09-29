@@ -1,10 +1,10 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { ReactNode, useState } from 'react';
+import React, { Dispatch, ReactNode } from 'react';
 import { CursorGroup } from '../CursorGroup';
-import { useScene } from '../SceneProvider';
+import { SceneAction, useScene, useSceneCommit } from '../SceneProvider';
 import { getCanvasCoord, getSceneCoord } from '../coord';
 import { EditMode } from '../editMode';
-import { MoveableObject, UnknownObject } from '../scene';
+import { MoveableObject, Scene, UnknownObject } from '../scene';
 import { selectSingle, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
 import { DraggableCenterContext } from './DraggableCenterContext';
@@ -19,45 +19,47 @@ export interface DraggableObjectProps {
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActive, children }) => {
     const [editMode] = useEditMode();
-    const [dragCenter, setDragCenter] = useState({ x: 0, y: 0 });
-    const [dragging, setDragging] = useState(false);
     const { scene, dispatch } = useScene();
+    const commit = useSceneCommit();
     const [selection, setSelection] = useSelection();
     const center = getCanvasCoord(scene, object);
 
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
 
-    const onDragStart = (e: KonvaEventObject<DragEvent>) => {
-        setDragging(true);
+    const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
         onActive?.(true);
-        setDragCenter(e.target.position());
 
         // If we start dragging an object that isn't selected, it should
         // become the new selection.
         if (!selection.has(object.id)) {
             setSelection(selectSingle(object.id));
         }
+
+        updatePosition(scene, object, e, dispatch);
     };
 
-    const onDragEnd = (e: KonvaEventObject<DragEvent>) => {
-        setDragging(false);
+    const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+        updatePosition(scene, object, e, dispatch);
+    };
+
+    const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
         onActive?.(false);
 
-        const pos = getSceneCoord(scene, e.target.position());
-        dispatch({ type: 'update', value: { ...object, ...pos } });
+        updatePosition(scene, object, e, dispatch);
+        commit();
     };
 
     return (
-        <DraggableCenterContext value={dragging ? dragCenter : center}>
+        <DraggableCenterContext value={center}>
             <SelectableObject object={object}>
                 <TetherTarget object={object}>
                     <CursorGroup
                         {...center}
                         cursor={isDraggable ? 'move' : undefined}
                         draggable={isDraggable}
-                        onDragStart={onDragStart}
-                        onDragMove={(e) => setDragCenter(e.target.position())}
-                        onDragEnd={onDragEnd}
+                        onDragStart={handleDragStart}
+                        onDragMove={handleDragMove}
+                        onDragEnd={handleDragEnd}
                     >
                         {children}
                     </CursorGroup>
@@ -66,3 +68,13 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
         </DraggableCenterContext>
     );
 };
+
+function updatePosition(
+    scene: Scene,
+    object: MoveableObject & UnknownObject,
+    e: KonvaEventObject<DragEvent>,
+    dispatch: Dispatch<SceneAction>,
+) {
+    const pos = getSceneCoord(scene, e.target.position());
+    dispatch({ type: 'update', value: { ...object, ...pos }, transient: true });
+}

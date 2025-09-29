@@ -5,10 +5,10 @@ import { useScene } from '../SceneProvider';
 import { downloadScene } from './blob';
 
 export const DownloadButton: React.FC<ButtonProps> = ({ ...props }) => {
-    const { scene, source } = useScene();
+    const { canonicalScene, source } = useScene();
 
     return (
-        <Button icon={<ArrowDownloadRegular />} onClick={() => downloadScene(scene, source?.name)} {...props}>
+        <Button icon={<ArrowDownloadRegular />} onClick={() => downloadScene(canonicalScene, source?.name)} {...props}>
             Download
         </Button>
     );

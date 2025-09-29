@@ -17,9 +17,9 @@ import { useScene } from './SceneProvider';
 import { Scene } from './scene';
 
 export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const { scene } = useScene();
-    const [savedState, setSavedState] = useState<Scene>(scene);
-    const isDirty = scene !== savedState;
+    const { canonicalScene } = useScene();
+    const [savedState, setSavedState] = useState<Scene>(canonicalScene);
+    const isDirty = canonicalScene !== savedState;
 
     return (
         <SavedStateContext value={setSavedState}>

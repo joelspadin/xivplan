@@ -16,6 +16,7 @@ import {
     Ticks,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
+import { StateActionBase } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
 import { asArray, clamp } from './util';
 
@@ -140,7 +141,7 @@ export interface SetSourceAction {
     source: FileSource | undefined;
 }
 
-export type SceneAction = ArenaAction | ObjectAction | StepAction | SetSourceAction;
+export type SceneAction = (ArenaAction | ObjectAction | StepAction | SetSourceAction) & StateActionBase;
 
 export interface LocalStorageFileSource {
     type: 'local';
@@ -181,10 +182,17 @@ const SourceContext = createContext<[FileSource | undefined, Dispatch<SetStateAc
     () => {},
 ]);
 
-const { UndoProvider, Context, usePresent, useUndoRedo, useUndoRedoPossible, useReset } = createUndoContext(
-    sceneReducer,
-    HISTORY_SIZE,
-);
+const {
+    UndoProvider,
+    Context,
+    usePresent,
+    useCanonicalPresent,
+    useUndoRedo,
+    useUndoRedoPossible,
+    useReset,
+    useCommit,
+    useRollback,
+} = createUndoContext(sceneReducer, HISTORY_SIZE);
 
 export interface SceneProviderProps extends PropsWithChildren {
     initialScene?: Scene;
@@ -213,14 +221,19 @@ export interface SceneContext {
     stepIndex: number;
     source?: FileSource;
     dispatch: React.Dispatch<SceneAction>;
+
+    /** The latest scene prior to any transient updates. */
+    canonicalScene: Scene;
 }
 
 export function useScene(): SceneContext {
     const [present, dispatch] = usePresent();
+    const canonicalScene = useCanonicalPresent();
     const [source] = useContext(SourceContext);
 
     return {
         scene: present.scene,
+        canonicalScene: canonicalScene.scene,
         step: getCurrentStep(present),
         stepIndex: present.currentStep,
         source: source,
@@ -235,6 +248,9 @@ export function useCurrentStep(): SceneStep {
 
 export const useSceneUndoRedo = useUndoRedo;
 export const useSceneUndoRedoPossible = useUndoRedoPossible;
+
+export const useSceneCommit = useCommit;
+export const useSceneRollback = useRollback;
 
 export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
     const reset = useReset();

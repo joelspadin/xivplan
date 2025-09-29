@@ -42,9 +42,9 @@ export const ShareDialogButton: React.FC<ShareDialogButtonProps> = ({ children }
 
 const ShareDialogBody: React.FC = () => {
     const classes = useStyles();
-    const { scene } = useScene();
+    const { canonicalScene } = useScene();
     const { dispatchToast } = useToastController();
-    const url = getSceneUrl(scene);
+    const url = getSceneUrl(canonicalScene);
 
     const copyToClipboard = async () => {
         await navigator.clipboard.writeText(url);

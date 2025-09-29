@@ -111,7 +111,7 @@ const SaveButton: React.FC = () => {
     const isDirty = useIsDirty();
     const setSavedState = useSetSavedState();
     const [saveAsOpen, setSaveAsOpen] = useState(false);
-    const { scene, source } = useScene();
+    const { canonicalScene, source } = useScene();
     const setSource = useSetSource();
 
     const { type, text, icon, disabled } = getSaveButtonState(source, isDirty);
@@ -120,13 +120,13 @@ const SaveButton: React.FC = () => {
         if (!source) {
             setSaveAsOpen(true);
         } else if (isDirty) {
-            await saveFile(scene, source);
-            setSavedState(scene);
+            await saveFile(canonicalScene, source);
+            setSavedState(canonicalScene);
         }
     };
 
     const download = () => {
-        downloadScene(scene, source?.name);
+        downloadScene(canonicalScene, source?.name);
         if (!source) {
             setSource(getBlobSource());
         }

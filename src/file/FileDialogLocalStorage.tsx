@@ -193,7 +193,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
     const files = useAsync(listLocalStorageFiles);
 
     const setSource = useSetSource();
-    const { scene, source } = useScene();
+    const { canonicalScene, source } = useScene();
     const [name, setName] = useState(getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 
@@ -211,12 +211,12 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
             return;
         }
 
-        await saveFile(scene, source);
+        await saveFile(canonicalScene, source);
 
         setSource(source);
-        setSavedState(scene);
+        setSavedState(canonicalScene);
         dismissDialog();
-    }, [scene, name, canSave, alreadyExists, dismissDialog, setSavedState, setSource, confirmOverwriteFile]);
+    }, [canonicalScene, name, canSave, alreadyExists, dismissDialog, setSavedState, setSource, confirmOverwriteFile]);
 
     const onKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
