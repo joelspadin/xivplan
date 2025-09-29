@@ -1,5 +1,3 @@
-/* eslint-disable react-compiler/react-compiler */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Node } from 'konva/lib/Node';
 import { DependencyList, useLayoutEffect } from 'react';
 
@@ -41,7 +39,7 @@ export function useKonvaCache(
         } else {
             ref.current?.clearCache();
         }
-    }, [enabled, config, ref.current, ...deps]);
+    }, [enabled, config, ref, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 function useOptions(

@@ -1,4 +1,4 @@
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { jsonToScene, sceneToText, textToScene } from '../file';
 import { Scene } from '../scene';
@@ -75,14 +75,22 @@ export function useSceneFromUrl(): Scene | undefined {
     const [searchParams] = useSearchParams();
     const { hash } = useLocation();
 
+    let scene: Scene | undefined;
+    let error: unknown | undefined;
+
     try {
-        const scene = parseSceneLink(hash, searchParams);
-        if (scene) {
-            return scene;
-        }
+        scene = parseSceneLink(hash, searchParams);
     } catch (ex) {
         console.error('Invalid plan data from URL', ex);
-        sceneError = ex;
+        error = ex;
+    }
+
+    useEffect(() => {
+        sceneError = error;
+    }, [error]);
+
+    if (scene) {
+        return scene;
     }
 
     const url = searchParams.get('url');

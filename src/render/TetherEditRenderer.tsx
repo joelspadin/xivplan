@@ -25,6 +25,8 @@ const TetherEditLayer: React.FC = () => {
     const { scene, step } = useScene();
     const stage = useStage();
 
+    // https://github.com/reactwg/react-compiler/discussions/18
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const onMouseMove = () => setCursor(getPointerPosition(scene, stage));
 
     useLayoutEffect(() => {

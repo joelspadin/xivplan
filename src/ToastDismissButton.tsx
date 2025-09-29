@@ -14,7 +14,7 @@ export const ToastDismissButton: React.FC = () => {
     );
 };
 
-export const useDismissButtonStyles = makeResetStyles({
+const useDismissButtonStyles = makeResetStyles({
     ...createFocusOutlineStyle(),
     color: tokens.colorNeutralForeground1,
     overflow: 'visible',

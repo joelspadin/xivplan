@@ -14,7 +14,7 @@ export const SceneLoadErrorNotifier: React.FC = () => {
                 timeout: -1,
             });
         }
-    }, [sceneLoadError]);
+    }, [sceneLoadError, dispatchToast]);
 
     return null;
 };

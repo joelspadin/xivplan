@@ -106,6 +106,8 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
         const state = config.stateFunc(object, handleProps, props);
         const rotation = config.getRotation?.(object, handleProps, props) ?? 0;
 
+        // https://github.com/reactwg/react-compiler/discussions/18
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         const getPointerPos = () => {
             if (!groupRef.current) {
                 return { x: 0, y: 0 };

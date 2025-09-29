@@ -51,7 +51,7 @@ export const Resizer: React.FC<ResizerProps> = ({
         }
     }, [object, showResizer, nodeRef, trRef]);
 
-    const onTransformEnd = () => {
+    const handleTransformEnd = () => {
         const node = nodeRef.current;
         if (!node) {
             return;
@@ -83,7 +83,8 @@ export const Resizer: React.FC<ResizerProps> = ({
 
     return (
         <>
-            {children(onTransformEnd)}
+            {/* eslint-disable-next-line react-hooks/refs -- child component calls this only from events */}
+            {children(handleTransformEnd)}
             {showResizer && (
                 <ControlsPortal>
                     <Transformer
