@@ -88,12 +88,15 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
         y = (height - size.height) / 2;
     }
 
+    const present: EditorState = {
+        scene,
+        currentStep: stepIndex ?? 0,
+    };
+
     const sceneContext: UndoContext<EditorState, SceneAction> = [
         {
-            present: {
-                scene,
-                currentStep: stepIndex ?? 0,
-            },
+            present,
+            transientPresent: present,
             past: [],
             future: [],
         },
