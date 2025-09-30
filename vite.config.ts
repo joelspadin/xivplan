@@ -1,23 +1,39 @@
 import react from '@vitejs/plugin-react';
-import { UserConfig, defineConfig } from 'vite';
+import { UserConfig, defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 
-const productionOptions: UserConfig = {};
+function getModeOptions(mode: string): UserConfig {
+    if (mode === 'production') {
+        return {};
+    }
 
-const developmentOptions: UserConfig = {
-    esbuild: {
-        minifyIdentifiers: false,
-    },
-    resolve: {
-        alias: {
-            'react-dom$': 'react-dom/profiling',
+    return {
+        esbuild: {
+            minifyIdentifiers: false,
         },
-    },
-};
+    };
+}
+
+function getEnvOptions(mode: string): UserConfig {
+    const env = loadEnv(mode, process.cwd());
+
+    if (env.VITE_PROFILE !== '0') {
+        return {
+            resolve: {
+                alias: {
+                    'react-dom$': 'react-dom/profiling',
+                },
+            },
+        };
+    }
+
+    return {};
+}
 
 export default defineConfig(({ mode }) => ({
-    ...(mode === 'production' ? productionOptions : developmentOptions),
+    ...getModeOptions(mode),
+    ...getEnvOptions(mode),
     plugins: [
         react({
             babel: {
