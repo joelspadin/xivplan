@@ -1,13 +1,19 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
+import { getRelativeAttachmentPoint } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
     ArenaShape,
     DEFAULT_SCENE,
+    DefaultAttachPosition,
+    getDefaultAttachmentPreference,
     Grid,
+    isMoveable,
+    isNamed,
     isTether,
+    MoveableObject,
     Scene,
     SceneObject,
     SceneObjectWithoutId,
@@ -15,6 +21,7 @@ import {
     Tether,
     Ticks,
 } from './scene';
+import { getObjectAt } from './selection';
 import { createUndoContext } from './undo/undoContext';
 import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
@@ -265,6 +272,14 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return undefined;
 }
 
+export function getObjectNameById(scene: Scene, id?: number): string | undefined {
+    if (id === undefined) {
+        return undefined;
+    }
+    const obj = getObjectById(scene, id);
+    return isNamed(obj) ? obj.name : undefined;
+}
+
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
     // Tethers should be created below their targets.
     let startIdx = objects.findIndex((x) => x.id === tether.startId);
@@ -391,9 +406,26 @@ function addObjects(
 ): EditorState {
     const currentStep = getCurrentStep(state);
 
-    const { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
+    let { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
 
     const newObjects = [...currentStep.objects];
+
+    if (addedObjects.length == 1 && isMoveable(addedObjects[0])) {
+        const attachPosition = getDefaultAttachmentPreference(addedObjects[0]);
+        if (attachPosition != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
+            const potentialParent = getObjectAt(state.scene, currentStep, addedObjects[0]);
+            if (isMoveable(potentialParent)) {
+                addedObjects = [
+                    {
+                        ...addedObjects[0],
+                        ...getRelativeAttachmentPoint(state.scene, potentialParent, addedObjects[0], attachPosition),
+                        ...{ parentId: potentialParent.id },
+                        pinned: true,
+                    } as SceneObject & MoveableObject,
+                ];
+            }
+        }
+    }
 
     for (const object of addedObjects) {
         if (isTether(object)) {
@@ -415,18 +447,27 @@ function addObjects(
 function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
     const currentStep = getCurrentStep(state);
 
-    const objects = currentStep.objects.filter((object) => {
-        if (ids.includes(object.id)) {
-            return false;
-        }
+    // Also delete any object with the to-be-deleted objects as parent
+    let idsToDelete = ids.slice();
+    let idsAdded = idsToDelete.length;
+    while (idsAdded > 0) {
+        idsAdded = 0;
+        currentStep.objects.forEach((obj) => {
+            if (idsToDelete.includes(obj.id)) {
+                return;
+            }
+            if (isMoveable(obj) && obj.parentId !== undefined && idsToDelete.includes(obj.parentId)) {
+                idsToDelete.push(obj.id);
+                idsAdded++;
+            }
+            if (isTether(obj) && (idsToDelete.includes(obj.startId) || idsToDelete.includes(obj.endId))) {
+                idsToDelete.push(obj.id);
+                idsAdded++;
+            }
+        });
+    }
 
-        if (isTether(object)) {
-            // Delete any tether that is tethered to a deleted object.
-            return !ids.includes(object.startId) && !ids.includes(object.endId);
-        }
-
-        return true;
-    });
+    const objects = currentStep.objects.filter((object) => !idsToDelete.includes(object.id));
 
     return updateCurrentStep(state, { objects });
 }

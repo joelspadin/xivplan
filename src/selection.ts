@@ -1,3 +1,4 @@
+import { Vector2d } from 'konva/lib/types';
 import { use } from 'react';
 import {
     DragSelectionContext,
@@ -6,7 +7,8 @@ import {
     SelectionState,
     SpotlightContext,
 } from './SelectionContext';
-import { isMoveable, Scene, SceneObject, SceneStep } from './scene';
+import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
+import { isMoveable, isRadiusObject, isResizable, Scene, SceneObject, SceneStep } from './scene';
 
 /**
  * State for selected objects.
@@ -112,4 +114,12 @@ export function toggleSelection(selection: SceneSelection, id: number): SceneSel
     } else {
         return addSelection(selection, id);
     }
+}
+
+export function getObjectAt(s: Scene, step: SceneStep, p: Vector2d): SceneObject | undefined {
+    return step.objects.findLast(
+        (o) =>
+            (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
+            (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p)),
+    );
 }

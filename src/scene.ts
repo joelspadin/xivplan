@@ -1,3 +1,5 @@
+import { Position } from './coord';
+
 export enum ArenaShape {
     None = 'none',
     Rectangle = 'rectangle',
@@ -148,10 +150,20 @@ export interface HollowObject {
     readonly hollow?: boolean;
 }
 
-export interface MoveableObject {
-    readonly x: number;
-    readonly y: number;
+export interface MoveableObject extends Position {
     readonly pinned?: boolean;
+}
+
+export enum DefaultAttachPosition {
+    DONT_ATTACH_BY_DEFAULT = 'dont_attach_my_default',
+    ANYWHERE = 'attach_anywhere',
+    CENTER = 'attach_centered',
+    TOP = 'attach_at_top',
+    BOTTOM_RIGHT = 'atach_at_bottom_right',
+}
+
+export interface ObjectWithAttachmentPreference {
+    readonly defaultAttachPosition?: DefaultAttachPosition;
 }
 
 export interface RotateableObject {
@@ -213,7 +225,7 @@ export const isText = makeObjectTest<TextObject>(ObjectType.Text);
 
 export type Marker = MarkerObject | ArrowObject | TextObject;
 
-export interface IconObject extends ImageObject, NamedObject, BaseObject {
+export interface IconObject extends ImageObject, NamedObject, BaseObject, ObjectWithAttachmentPreference {
     readonly type: ObjectType.Icon;
     readonly iconId?: number;
     readonly maxStacks?: number;
@@ -408,6 +420,14 @@ export function isColored<T>(object: T): object is ColoredObject & T {
 export function isMoveable<T>(object: T): object is MoveableObject & T {
     const obj = object as MoveableObject & T;
     return obj && typeof obj.x === 'number' && typeof obj.y === 'number';
+}
+
+export function getDefaultAttachmentPreference<T>(object: T): DefaultAttachPosition {
+    const obj = object as ObjectWithAttachmentPreference & T;
+    if (obj === undefined || obj.defaultAttachPosition === undefined) {
+        return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
+    }
+    return obj.defaultAttachPosition;
 }
 
 export function isRotateable<T>(object: T): object is RotateableObject & T {

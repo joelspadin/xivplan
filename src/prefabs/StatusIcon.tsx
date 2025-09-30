@@ -7,7 +7,7 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { IconObject, ObjectType } from '../scene';
+import { DefaultAttachPosition, IconObject, ObjectType, ObjectWithAttachmentPreference } from '../scene';
 import { DEFAULT_IMAGE_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
@@ -28,9 +28,10 @@ registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
             height: DEFAULT_SIZE,
             rotation: 0,
             opacity: DEFAULT_IMAGE_OPACITY,
+            defaultAttachPosition: DefaultAttachPosition.BOTTOM_RIGHT,
             ...object,
             ...position,
-        } as IconObject,
+        } as IconObject & ObjectWithAttachmentPreference,
     };
 });
 
@@ -127,9 +128,17 @@ export interface StatusIconProps {
     iconId?: number;
     maxStacks?: number;
     scale?: number;
+    defaultAttachPosition?: DefaultAttachPosition;
 }
 
-export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxStacks, scale }) => {
+export const StatusIcon: React.FC<StatusIconProps> = ({
+    name,
+    icon,
+    iconId,
+    maxStacks,
+    scale,
+    defaultAttachPosition,
+}) => {
     const [, setDragObject] = usePanelDrag();
     const [image] = useImage(icon);
 
@@ -161,6 +170,7 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxS
                         height,
                         iconId,
                         maxStacks,
+                        defaultAttachPosition,
                     },
                     offset: getDragOffset(e),
                 });
