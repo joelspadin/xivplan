@@ -349,6 +349,69 @@
       "MinorRotation": "Minor rotation",
       "Columns": "Columns",
       "Rows": "Rows"
+    },
+    "HideControl": {
+      "Hide": "Hide",
+      "Show": "Show"
+    },
+    "OpacitySlider": {
+      "Opacity": "Opacity"
+    },
+    "DetailsPanel": {
+      "PROPERTIES_TITLE": "Properties",
+      "OBJECTS_TITLE": "Scene"
+    },
+    "NameControl": {
+      "Name": "Name"
+    },
+    "ImageControl": {
+      "ImageURL": "Image URL"
+    },
+    "TetherControls": {
+      "TetherType": "Tether type",
+      "Width": "Width"
+    },
+    "ColorControl": {
+      "Color": "Color"
+    },
+    "HollowControl": {
+      "Style": "Style",
+      "Hollow": "Hollow",
+      "Solid": "Solid"
+    },
+    "MarkerControls": {
+      "Shape": "Shape",
+      "Circle": "Circle",
+      "Square": "Square"
+    },
+    "TextControls": {
+      "Outline": "Outline",
+      "Style": "Style",
+      "Shadow": "Shadow",
+      "NoOutline": "No outline",
+      "FontSize": "Font size",
+      "Align": "Align",
+      "AlignLeft": "Align left",
+      "AlignCenter": "Align center",
+      "AlignRight": "Align right",
+      "Text": "Text"
+    },
+    "PositionControl": {
+      "UnlockPosition": "Unlock position",
+      "LockPosition": "Lock position"
+    },
+    "SizeControl": {
+      "Width": "Width",
+      "Height": "Height"
+    },
+    "LineControls": {
+      "Width": "Width",
+      "Length": "Length"
+    },
+    "RadiusControl": {
+      "Radius": "Radius",
+      "Radius1": "Radius 1",
+      "Radius2": "Radius 2"
     }
   }
 }

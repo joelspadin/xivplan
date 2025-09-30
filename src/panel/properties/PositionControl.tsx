@@ -1,6 +1,7 @@
 import { Field, ToggleButton, Tooltip } from '@fluentui/react-components';
 import { LockClosedRegular, LockMultipleRegular, LockOpenRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -28,9 +29,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const onYChanged = useSpinChanged((y: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
+    const { t } = useTranslation();
 
     const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
-    const tooltip = pinned ? 'Unlock position' : 'Lock position';
+    const tooltip = pinned ? t('PositionControl.UnlockPosition') : t('PositionControl.LockPosition');
 
     return (
         <>

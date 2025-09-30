@@ -15,6 +15,7 @@ import {
     bundleIcon,
 } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { DeferredTextarea } from '../../DeferredTextarea';
@@ -81,26 +82,27 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
     );
 
     const disabled = style === 'plain';
+    const { t } = useTranslation();
 
     return (
         <>
             <div className={classes.row}>
                 <CompactColorPicker
-                    label="Outline"
+                    label={t('TextControls.Outline')}
                     color={stroke ?? ''}
                     onChange={handleStrokeChanged}
                     className={classes.grow}
                     disabled={disabled}
                 />
-                <Field label="Style">
+                <Field label={t('TextControls.Style')}>
                     <SegmentedGroup
                         name="text-style"
                         value={style}
                         onChange={(ev, data) => handleStyleChanged(data.value as TextStyle)}
                     >
-                        <Segment value="outline" icon={<TextEffects />} title="Outline" />
-                        <Segment value="shadow" icon={<SquareShadow />} title="Shadow" />
-                        <Segment value="plain" icon={<SquareHint />} title="No outline" />
+                        <Segment value="outline" icon={<TextEffects />} title={t('TextControls.Outline')} />
+                        <Segment value="shadow" icon={<SquareShadow />} title={t('TextControls.Shadow')} />
+                        <Segment value="plain" icon={<SquareHint />} title={t('TextControls.NoOutline')} />
                     </SegmentedGroup>
                 </Field>
             </div>
@@ -134,17 +136,18 @@ export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = (
         },
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
     return (
         <div className={classes.row}>
-            <Field label="Font size">
+            <Field label={t('TextControls.FontSize')}>
                 <SpinButton value={fontSize} onChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
             </Field>
             <Field label="Align">
                 <SegmentedGroup name="text-align" value={align} onChange={(ev, data) => onAlignChanged(data.value)}>
-                    <Segment value="left" icon={<AlignLeft />} title="Align left" />
-                    <Segment value="center" icon={<AlignCenter />} title="Align center" />
-                    <Segment value="right" icon={<AlignRight />} title="Align right" />
+                    <Segment value="left" icon={<AlignLeft />} title={t('TextControls.AlignLeft')} />
+                    <Segment value="center" icon={<AlignCenter />} title={t('TextControls.AlignCenter')} />
+                    <Segment value="right" icon={<AlignRight />} title={t('TextControls.AlignRight')} />
                 </SegmentedGroup>
             </Field>
         </div>
@@ -162,10 +165,11 @@ export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({
         },
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
     // TODO: add autoAdjustHeight once implemented
     return (
-        <Field label="Text">
+        <Field label={t('TextControls.Text')}>
             <DeferredTextarea
                 resize="vertical"
                 rows={3}

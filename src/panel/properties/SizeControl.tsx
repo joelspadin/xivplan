@@ -1,5 +1,6 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_SIZE } from '../../prefabs/bounds';
@@ -22,13 +23,14 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     const onHeightChanged = useSpinChanged((height: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, height })) }),
     );
+    const { t } = useTranslation();
 
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>
-            <Field label="Width">
+            <Field label={t('SizeControl.Width')}>
                 <SpinButton value={width} onChange={onWidthChanged} min={MIN_SIZE} step={5} />
             </Field>
-            <Field label="Height">
+            <Field label={t('SizeControl.Height')}>
                 <SpinButton value={height} onChange={onHeightChanged} min={MIN_SIZE} step={5} />
             </Field>
         </div>

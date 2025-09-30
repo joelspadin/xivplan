@@ -1,5 +1,6 @@
 import { Field } from '@fluentui/react-components';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -18,8 +19,8 @@ export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ 
     const onRadiusChanged = useSpinChanged((radius: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, radius })) }),
     );
-
-    const label = hasInnerRadius ? 'Radius 1' : 'Radius';
+    const { t } = useTranslation();
+    const label = hasInnerRadius ? t('RadiusControl.Radius1') : t('RadiusControl.Radius');
 
     return (
         <Field label={label} className={classes.cell}>
@@ -37,9 +38,10 @@ export const InnerRadiusControl: React.FC<PropertiesControlProps<InnerRadiusObje
     const onInnerRadiusChanged = useSpinChanged((innerRadius: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, innerRadius })) }),
     );
+    const { t } = useTranslation();
 
     return (
-        <Field label="Radius 2" className={classes.cell}>
+        <Field label={t('RadiusControl.Radius2')} className={classes.cell}>
             <SpinButton value={innerRadius} onChange={onInnerRadiusChanged} min={10} step={5} />
         </Field>
     );

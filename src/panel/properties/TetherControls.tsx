@@ -1,5 +1,6 @@
 import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
@@ -30,9 +31,10 @@ export const TetherTypeControl: React.FC<PropertiesControlProps<Tether>> = ({ ob
         (tether: TetherType) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, tether })) }),
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
     return (
-        <Field label="Tether type">
+        <Field label={t('TetherControls.TetherType')}>
             <SegmentedGroup
                 name="tether-type"
                 value={tether}
@@ -61,9 +63,10 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
     const onWidthChanged = useSpinChanged((width: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) }),
     );
+    const { t } = useTranslation();
 
     return (
-        <Field label="Width" className={classes.cell}>
+        <Field label={t('TetherControls.Width')} className={classes.cell}>
             <SpinButton value={width} onChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
         </Field>
     );

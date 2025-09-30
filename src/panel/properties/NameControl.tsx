@@ -1,5 +1,6 @@
 import { Field } from '@fluentui/react-components';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeferredInput } from '../../DeferredInput';
 import { useScene } from '../../SceneProvider';
 import { NamedObject } from '../../scene';
@@ -15,9 +16,10 @@ export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ obj
         (name: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name })) }),
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
     return (
-        <Field label="Name" className={className}>
+        <Field label={t('NameControl.Name')} className={className}>
             <DeferredInput value={name ?? ''} onChange={(ev, data) => setName(data.value)} />
         </Field>
     );

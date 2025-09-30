@@ -1,5 +1,6 @@
 import { Field, Label, Slider, SliderProps, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface OpacitySliderProps extends SliderProps {
     label?: string;
@@ -10,9 +11,10 @@ export const OpacitySlider: React.FC<OpacitySliderProps> = ({ label, disabled, c
 
     const valueText = value === undefined ? '' : `${value}%`;
     const ariaValueText = value === undefined ? '' : `${value} percent`;
+    const { t } = useTranslation();
 
     return (
-        <Field label={label ?? 'Opacity'} className={className}>
+        <Field label={label ?? t('OpacitySlider.Opacity')} className={className}>
             <div className={classes.wrapper}>
                 <Slider
                     value={value ?? 0}

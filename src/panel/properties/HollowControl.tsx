@@ -1,6 +1,7 @@
 import { Field } from '@fluentui/react-components';
 import { CircleFilled, CircleRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { HollowObject } from '../../scene';
@@ -25,12 +26,13 @@ export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ 
         },
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
     return (
-        <Field label="Style">
+        <Field label={t('HollowControl.Style')}>
             <SegmentedGroup name="shape-style" value={style} onChange={(ev, data) => onHollowChanged(data.value)}>
-                <Segment value={Styles.Solid} icon={<CircleFilled />} title="Solid" />
-                <Segment value={Styles.Hollow} icon={<CircleRegular />} title="Hollow" />
+                <Segment value={Styles.Solid} icon={<CircleFilled />} title={t('HollowControl.Solid')} />
+                <Segment value={Styles.Hollow} icon={<CircleRegular />} title={t('HollowControl.Hollow')} />
             </SegmentedGroup>
         </Field>
     );

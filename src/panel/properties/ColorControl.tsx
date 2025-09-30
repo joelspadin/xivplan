@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
 import { ColoredObject, isMarker } from '../../scene';
@@ -23,8 +24,9 @@ export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ 
         (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) }),
         [dispatch, objects],
     );
+    const { t } = useTranslation();
 
-    return <CompactColorPicker label="Color" color={color ?? ''} onChange={onColorChanged} />;
+    return <CompactColorPicker label={t('ColorControl.Color')} color={color ?? ''} onChange={onColorChanged} />;
 };
 
 const MARKER_SWATCHES = [

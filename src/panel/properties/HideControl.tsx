@@ -1,6 +1,7 @@
 import { ToggleButton, Tooltip } from '@fluentui/react-components';
 import { EyeLinesRegular, EyeOffRegular, EyeRegular } from '@fluentui/react-icons';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BaseObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { commonValue, setOrOmit } from '../../util';
@@ -15,9 +16,10 @@ export const HideControl: React.FC<PropertiesControlProps<BaseObject>> = ({ obje
         () => dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', !!show)) }),
         [dispatch, objects, show],
     );
+    const { t } = useTranslation();
 
     const icon = show === undefined ? <EyeLinesRegular /> : show ? <EyeRegular /> : <EyeOffRegular />;
-    const tooltip = show ? 'Hide' : 'Show';
+    const tooltip = show ? t('HideControl.Hide') : t('HideControl.Show');
 
     return (
         <>

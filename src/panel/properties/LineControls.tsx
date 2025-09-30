@@ -1,5 +1,6 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { LineZone } from '../../scene';
@@ -22,13 +23,14 @@ export const LineSizeControl: React.FC<PropertiesControlProps<LineZone>> = ({ ob
     const onLengthChanged = useSpinChanged((length: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
     );
+    const { t } = useTranslation();
 
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>
-            <Field label="Width">
+            <Field label={t('LineControls.Width')}>
                 <SpinButton value={width} onChange={onWidthChanged} min={MIN_LINE_WIDTH} step={5} />
             </Field>
-            <Field label="Length">
+            <Field label={t('LineControls.Length')}>
                 <SpinButton value={length} onChange={onLengthChanged} min={MIN_LINE_LENGTH} step={5} />
             </Field>
         </div>

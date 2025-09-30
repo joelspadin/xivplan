@@ -350,6 +350,69 @@
       "MinorRotation": "次刻度旋转角",
       "Columns": "列",
       "Rows": "行"
+    },
+    "HideControl": {
+      "Hide": "隐藏",
+      "Show": "显示"
+    },
+    "OpacitySlider": {
+      "Opacity": "透明度"
+    },
+    "DetailsPanel": {
+      "PROPERTIES_TITLE": "属性",
+      "OBJECTS_TITLE": "画布"
+    },
+    "NameControl": {
+      "Name": "名称"
+    },
+    "ImageControl": {
+      "ImageURL": "图片URL"
+    },
+    "TetherControls": {
+      "TetherType": "箭头类型",
+      "Width": "宽度"
+    },
+    "ColorControl": {
+      "Color": "颜色"
+    },
+    "HollowControl": {
+      "Style": "样式",
+      "Hollow": "空心",
+      "Solid": "实心"
+    },
+    "MarkerControls": {
+      "Shape": "形状",
+      "Circle": "圆形",
+      "Square": "方形"
+    },
+    "TextControls": {
+      "Outline": "轮廓",
+      "Style": "样式",
+      "Shadow": "阴影",
+      "NoOutline": "无轮廓",
+      "FontSize": "字体大小",
+      "Align": "对齐",
+      "AlignLeft": "左对齐",
+      "AlignCenter": "居中对齐",
+      "AlignRight": "右对齐",
+      "Text": "文本"
+    },
+    "PositionControl": {
+      "UnlockPosition": "解锁位置",
+      "LockPosition": "锁定位置"
+    },
+    "SizeControl": {
+      "Width": "宽度",
+      "Height": "高度"
+    },
+    "LineControls": {
+      "Width": "宽度",
+      "Length": "长度"
+    },
+    "RadiusControl": {
+      "Radius": "半径",
+      "Radius1": "半径1",
+      "Radius2": "半径2"
     }
   }
 }
