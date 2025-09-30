@@ -2,6 +2,7 @@ import { VirtualizerScrollView } from '@fluentui-contrib/react-virtualizer';
 import { makeStyles, mergeClasses } from '@fluentui/react-components';
 import React from 'react';
 import { StatusIcon } from '../prefabs/StatusIcon';
+import { DefaultAttachPosition } from '../scene';
 
 const ICON_SIZE = 32;
 const ICON_MARGIN = 8;
@@ -60,6 +61,7 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
                                         iconId={item.icon.id}
                                         maxStacks={item.maxStacks}
                                         scale={2}
+                                        defaultAttachPosition={DefaultAttachPosition.BOTTOM_RIGHT}
                                     />
                                 </div>
                             );

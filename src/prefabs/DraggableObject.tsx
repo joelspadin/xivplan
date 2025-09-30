@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
-import { getCanvasCoord, getSceneCoord } from '../coord';
+import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
 import { moveObjectsBy } from '../groupOperations';
@@ -95,7 +95,7 @@ function updatePosition(
     // Konva automatically moves the object to e.target.position() in canvas
     // coordinates. Subtracting the object's original position gives the offset
     // that needs to be applied to all objects being dragged.
-    const pos = getSceneCoord(scene, e.target.position());
+    const pos = makeRelative(scene, getSceneCoord(scene, e.target.position()), targetObject.parentId);
     const offset = vecSub(pos, targetObject);
 
     if (offset.x === 0 && offset.y === 0) {
