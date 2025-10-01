@@ -13,11 +13,11 @@ I do almost all content in this game without guides. You will probably see new r
 You may discuss the following content:
 
 - ✅ All content from Endwalker and earlier
-- ✅ All ultimates (if I do these, I don't do them blind)
+- ✅ All ultimates (if I do these, I usually don't do them blind)
 - ✅ Dawntrail extreme trials 1-4
 - ✅ Arcadion: Light-heavyweight Division normal and savage
-- ✅ Arcadion: Cruiserweight Division normal
-- ✅ Arcadion: Cruiserweight Division savage matches 1-3
+- ✅ Arcadion: Cruiserweight Division normal and savage
+- ✅ Forked Tower
 
 Please do not discuss the following content:
 
@@ -35,4 +35,4 @@ If you'd like a new object type, please consider:
 1. Is this a commonly reused mechanic?
 2. Is there no way to approximate it using the already supported objects?
 
-If you answered "yes" to both questions, it sounds like something I should add. If not, you can still ask, but I may not add it to keep XIVPlan simple.
+If you answered "yes" to both questions, it sounds like something I should add. If not, you can still ask, but I may choose not to add it to keep XIVPlan simple.
