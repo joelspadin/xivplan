@@ -10,13 +10,13 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ForegroundPortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
 import { ObjectType, StackZone } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { useDraggableCenter } from '../useDraggableCenter';
 import { Orb } from './Orb';
 import { ChevronTail } from './shapes';
@@ -69,7 +69,7 @@ interface StackRendererProps extends RendererProps<StackZone> {
 }
 
 const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 2);
 
@@ -80,7 +80,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
 
     return (
         <>
-            {showHighlight && <Circle radius={radius + ring.strokeWidth} {...SELECTED_PROPS} opacity={0.35} />}
+            {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} opacity={0.35} />}
 
             <HideGroup>
                 <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />

@@ -6,7 +6,7 @@ import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
 import { EditorState, SceneAction, SceneContext, useCurrentStep, useScene } from '../SceneProvider';
-import { SelectionContext, SelectionState } from '../SelectionContext';
+import { SelectionContext, SelectionState, SpotlightContext } from '../SelectionContext';
 import { getCanvasSize, getSceneCoord } from '../coord';
 import { Scene } from '../scene';
 import { selectNewObjects, selectNone, useSelection } from '../selection';
@@ -104,13 +104,16 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
     ];
 
     const selectionContext: SelectionState = [new Set<number>(), () => {}];
+    const spotlightContext: SelectionState = [new Set<number>(), () => {}];
 
     return (
         <Stage ref={ref} x={x} y={y} width={width} height={height} scaleX={scale} scaleY={scale}>
             <DefaultCursorProvider>
                 <SceneContext value={sceneContext}>
                     <SelectionContext value={selectionContext}>
-                        <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
+                        <SpotlightContext value={spotlightContext}>
+                            <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
+                        </SpotlightContext>
                     </SelectionContext>
                 </SceneContext>
             </DefaultCursorProvider>

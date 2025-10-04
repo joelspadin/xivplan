@@ -1,6 +1,7 @@
 import { makeStyles } from '@fluentui/react-components';
 import Konva from 'konva';
 import { NodeConfig } from 'konva/lib/Node';
+import { ShapeConfig } from 'konva/lib/Shape';
 import { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { LineConfig } from 'konva/lib/shapes/Line';
 import { Vector2d } from 'konva/lib/types';
@@ -30,8 +31,8 @@ import {
     isResizable,
     isZone,
 } from '../scene';
-import { selectNone, useIsSelected, useSelection } from '../selection';
-import { SELECTED_PROPS, panelVars } from '../theme';
+import { selectNone, useSelection } from '../selection';
+import { panelVars } from '../theme';
 import { useEditMode } from '../useEditMode';
 import { UseKonvaCacheOptions, useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
@@ -43,6 +44,7 @@ import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
 import { getTetherName, makeTether } from './TetherConfig';
 import { TetherIcon } from './TetherIcon';
+import { useHighlightProps } from './highlight';
 
 interface TetherButtonProps {
     tether: TetherType;
@@ -137,22 +139,22 @@ function getTetherPoints(
     return [vecAdd(start, vecMult(unit, startOffset)), vecSub(end, vecMult(unit, endOffset))];
 }
 
-function getSelectedProps(object: Tether): NodeConfig {
+function getHighlightProps(object: Tether, baseHighlightProps: ShapeConfig): NodeConfig {
     return {
-        ...SELECTED_PROPS,
-        strokeWidth: object.width + 2 * (SELECTED_PROPS.strokeWidth ?? 0),
+        ...baseHighlightProps,
+        strokeWidth: object.width + 2 * (baseHighlightProps.strokeWidth ?? 0),
         opacity: 1,
     };
 }
 
 interface TetherProps extends RendererProps<Tether> {
     scene: Scene;
-    showHighlight?: boolean;
+    highlightProps?: ShapeConfig;
     startObject: SceneObject | undefined;
     endObject: SceneObject | undefined;
 }
 
-const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
+const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
     const [start, end] = getTetherPoints(scene, startObject, endObject);
     const lineProps: LineConfig = {
         points: [start.x, start.y, end.x, end.y],
@@ -164,7 +166,7 @@ const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighligh
 
     return (
         <>
-            {showHighlight && <Line {...lineProps} {...getSelectedProps(object)} />}
+            {highlightProps && <Line {...lineProps} {...getHighlightProps(object, highlightProps)} />}
 
             <HideCutoutGroup>
                 <Line {...lineProps} />
@@ -176,7 +178,7 @@ const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighligh
 const POINTER_LENGTH = 10;
 const POINTER_WIDTH = 10;
 
-const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
+const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
     const [start, end] = getTetherPoints(scene, startObject, endObject);
     const center = vecMult(vecAdd(start, end), 0.5);
     const offset = vecMult(vecUnit(vecSub(end, start)), object.width * 1.25);
@@ -205,10 +207,10 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
 
     return (
         <>
-            {showHighlight && (
+            {highlightProps && (
                 <>
-                    <Arrow {...arrowProps1} {...getSelectedProps(object)} />
-                    <Arrow {...arrowProps2} {...getSelectedProps(object)} />
+                    <Arrow {...arrowProps1} {...getHighlightProps(object, highlightProps)} />
+                    <Arrow {...arrowProps2} {...getHighlightProps(object, highlightProps)} />
                 </>
             )}
             <HideCutoutGroup>
@@ -219,7 +221,7 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlig
     );
 };
 
-const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight, startObject, endObject }) => {
+const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
     // Shrink the tether by the amount that the stroke extends past the tips of the arrows.
     const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
 
@@ -239,7 +241,7 @@ const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, showHighlight
 
     return (
         <>
-            {showHighlight && <Arrow {...arrowProps} {...getSelectedProps(object)} />}
+            {highlightProps && <Arrow {...arrowProps} {...getHighlightProps(object, highlightProps)} />}
             <HideCutoutGroup>
                 <Arrow {...arrowProps} />
             </HideCutoutGroup>
@@ -261,7 +263,7 @@ interface MagnetTetherProps extends TetherProps {
 const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
     object,
     scene,
-    showHighlight,
+    highlightProps,
     startObject,
     endObject,
     startType,
@@ -283,12 +285,12 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
 
     return (
         <>
-            {showHighlight && (
+            {highlightProps && (
                 <>
-                    <Line {...lineProps} {...getSelectedProps(object)} />
+                    <Line {...lineProps} {...getHighlightProps(object, highlightProps)} />
                     <HideGroup>
-                        <Circle x={start.x} y={start.y} radius={magnetRadius} {...SELECTED_PROPS} />
-                        <Circle x={end.x} y={end.y} radius={magnetRadius} {...SELECTED_PROPS} />
+                        <Circle x={start.x} y={start.y} radius={magnetRadius} {...highlightProps} />
+                        <Circle x={end.x} y={end.y} radius={magnetRadius} {...highlightProps} />
                     </HideGroup>
                 </>
             )}
@@ -355,7 +357,7 @@ function getCacheConfig(object: Tether): UseKonvaCacheOptions {
 }
 
 const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
-    const showHighlight = useIsSelected(object);
+    const highlightProps = useHighlightProps(object);
     const groupRef = React.useRef<Konva.Group>(null);
     const [editMode] = useEditMode();
     const { scene } = useScene();
@@ -369,7 +371,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const isSelectable = editMode === EditMode.Normal;
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useKonvaCache(groupRef, cacheConfig, [object, startObject, endObject, showHighlight]);
+    useKonvaCache(groupRef, cacheConfig, [object, startObject, endObject, highlightProps]);
 
     return (
         <SelectableObject object={object}>
@@ -378,7 +380,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
                     <Renderer
                         object={object}
                         scene={scene}
-                        showHighlight={showHighlight}
+                        highlightProps={highlightProps}
                         startObject={startObject}
                         endObject={endObject}
                     />

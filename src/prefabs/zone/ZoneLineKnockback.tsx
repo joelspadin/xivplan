@@ -8,12 +8,12 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -66,7 +66,7 @@ const ARROW_W = 25;
 const ARROW_H = 15;
 
 const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height));
 
@@ -94,13 +94,13 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
             <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
-                        {showHighlight && (
+                        {highlightProps && (
                             <Rect
                                 offsetX={highlightOffset / 2}
                                 offsetY={highlightOffset / 2}
                                 width={highlightWidth}
                                 height={highlightHeight}
-                                {...SELECTED_PROPS}
+                                {...highlightProps}
                             />
                         )}
                         <HideGroup>

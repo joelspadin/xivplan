@@ -12,7 +12,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
 import { ArcZone, ObjectType } from '../../scene';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS, panelVars } from '../../theme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
@@ -21,7 +21,7 @@ import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
-import { useShowHighlight, useShowResizer } from '../highlight';
+import { useHighlightProps, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Arc';
@@ -138,7 +138,7 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
     coneAngle,
     isDragging,
 }) => {
-    const isSelected = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow);
 
     const highlightInnerRadius = Math.min(outerRadius, innerRadius);
@@ -146,13 +146,13 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
 
     return (
         <Group rotation={rotation - 90 - coneAngle / 2}>
-            {isSelected && (
+            {highlightProps && (
                 <OffsetArc
                     outerRadius={highlightOuterRadius}
                     innerRadius={highlightInnerRadius}
                     angle={coneAngle}
                     shapeOffset={style.strokeWidth / 2}
-                    {...SELECTED_PROPS}
+                    {...highlightProps}
                 />
             )}
             <HideGroup>

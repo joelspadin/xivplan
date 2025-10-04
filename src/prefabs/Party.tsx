@@ -7,12 +7,12 @@ import { ListComponentProps, registerListComponent } from '../panel/ListComponen
 import { LayerName } from '../render/layers';
 import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
 import { ObjectType, PartyObject } from '../scene';
-import { DEFAULT_PARTY_OPACITY, SELECTED_PROPS } from '../theme';
+import { DEFAULT_PARTY_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
-import { useShowHighlight } from './highlight';
+import { useHighlightProps } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
@@ -66,19 +66,19 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
 });
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const [image] = useImageTracked(object.image);
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps}>
-                    {showHighlight && (
+                    {highlightProps && (
                         <Rect
                             width={object.width}
                             height={object.height}
                             cornerRadius={(object.width + object.height) / 2 / 5}
-                            {...SELECTED_PROPS}
+                            {...highlightProps}
                         />
                     )}
                     <HideGroup>
