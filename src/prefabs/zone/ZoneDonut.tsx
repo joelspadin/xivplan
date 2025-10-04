@@ -7,10 +7,10 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { DonutZone, ObjectType } from '../../scene';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
@@ -62,7 +62,7 @@ interface DonutRendererProps extends RendererProps<DonutZone> {
 }
 
 const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const highlightInnerRadius = Math.min(radius, innerRadius);
@@ -70,11 +70,11 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
 
     return (
         <>
-            {showHighlight && (
+            {highlightProps && (
                 <Ring
                     innerRadius={highlightInnerRadius - style.strokeWidth / 2}
                     outerRadius={highlightOuterRadius + style.strokeWidth / 2}
-                    {...SELECTED_PROPS}
+                    {...highlightProps}
                 />
             )}
             <HideGroup>

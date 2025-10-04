@@ -15,7 +15,6 @@ import {
     DEFAULT_ENEMY_COLOR,
     DEFAULT_ENEMY_OPACITY,
     getEnemyTextConfig,
-    SELECTED_PROPS,
     useSceneTheme,
 } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
@@ -24,7 +23,7 @@ import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
-import { useShowHighlight } from './highlight';
+import { useHighlightProps } from './highlight';
 
 const DEFAULT_SIZE = 32;
 
@@ -93,7 +92,7 @@ interface RingProps extends ShapeConfig {
     name?: string;
     radius: number;
     color: string;
-    isSelected?: boolean;
+    highlightProps?: ShapeConfig;
 }
 
 interface EnemyLabelProps extends TextConfig {
@@ -147,7 +146,7 @@ function getShapeProps(color: string, radius: number, strokeRatio: number, minSt
     };
 }
 
-const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, ...props }) => {
+const CircleRing: React.FC<RingProps> = ({ radius, color, highlightProps, opacity, ...props }) => {
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const innerRadius = getInnerRadius(radius);
@@ -155,7 +154,7 @@ const CircleRing: React.FC<RingProps> = ({ radius, color, isSelected, opacity, .
 
     return (
         <>
-            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} />}
 
             <HideGroup opacity={opacity} {...props}>
                 <Circle {...outerProps} radius={outerRadius} />
@@ -175,7 +174,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
     color,
     opacity,
     rotation,
-    isSelected,
+    highlightProps,
     groupRef,
     ...props
 }) => {
@@ -190,7 +189,7 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
 
     return (
         <>
-            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} />}
 
             <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
@@ -225,7 +224,7 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
     color,
     opacity,
     rotation,
-    isSelected,
+    highlightProps,
     groupRef,
     ...props
 }) => {
@@ -240,7 +239,7 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
 
     return (
         <>
-            {isSelected && <Circle radius={radius} {...SELECTED_PROPS} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} />}
 
             <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
                 <Circle radius={radius} fill="transparent" />
@@ -272,7 +271,7 @@ function renderRing(
     radius: number,
     rotation: number,
     groupRef: RefObject<Konva.Group | null>,
-    showHighlight: boolean,
+    highlightProps?: ShapeConfig,
 ) {
     switch (object.ring) {
         case EnemyRingStyle.NoDirection:
@@ -281,7 +280,7 @@ function renderRing(
                     radius={radius}
                     color={object.color}
                     opacity={object.opacity / 100}
-                    isSelected={showHighlight}
+                    highlightProps={highlightProps}
                 />
             );
 
@@ -292,7 +291,7 @@ function renderRing(
                     rotation={rotation}
                     color={object.color}
                     opacity={object.opacity / 100}
-                    isSelected={showHighlight}
+                    highlightProps={highlightProps}
                     groupRef={groupRef}
                 />
             );
@@ -304,7 +303,7 @@ function renderRing(
                     rotation={rotation}
                     color={object.color}
                     opacity={object.opacity / 100}
-                    isSelected={showHighlight}
+                    highlightProps={highlightProps}
                     groupRef={groupRef}
                 />
             );
@@ -312,7 +311,7 @@ function renderRing(
 }
 
 const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const theme = useSceneTheme();
     const textConfig = getEnemyTextConfig(theme);
 
@@ -324,7 +323,7 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
                 <EnemyLabel name={object.name} radius={radius} color={object.color} {...textConfig} />
             </HideGroup>
 
-            {renderRing(object, radius, rotation, groupRef, showHighlight)}
+            {renderRing(object, radius, rotation, groupRef, highlightProps)}
         </>
     );
 };

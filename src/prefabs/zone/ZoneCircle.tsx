@@ -7,12 +7,12 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Circle';
@@ -59,12 +59,12 @@ interface CircleRendererProps extends RendererProps<CircleZone> {
 }
 
 const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
         <>
-            {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+            {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
 
             <HideGroup>
                 <Circle radius={radius} {...style} />

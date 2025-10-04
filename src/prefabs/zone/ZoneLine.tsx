@@ -11,14 +11,14 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LineZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vector';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
-import { useShowHighlight, useShowResizer } from '../highlight';
+import { useHighlightProps, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -179,7 +179,7 @@ interface LineRendererProps extends RendererProps<LineZone> {
 }
 
 const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rotation, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, Math.min(length, width), object.hollow);
 
     const x = -width / 2;
@@ -190,7 +190,7 @@ const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rota
 
     return (
         <Group rotation={rotation}>
-            {showHighlight && (
+            {highlightProps && (
                 <Rect
                     x={x}
                     y={y}
@@ -198,7 +198,7 @@ const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rota
                     height={highlightLength}
                     offsetX={highlightOffset / 2}
                     offsetY={highlightOffset / 2}
-                    {...SELECTED_PROPS}
+                    {...highlightProps}
                 />
             )}
             <HideGroup>

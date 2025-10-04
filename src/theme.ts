@@ -42,6 +42,7 @@ export const DEFAULT_ENEMY_COLOR = COLOR_RED;
 export const DEFAULT_ENEMY_OPACITY = 65;
 
 export const HIGHLIGHT_COLOR = '#fff';
+export const SPOTLIGHT_COLOR = '#f00';
 export const HIGHLIGHT_WIDTH = 1.5;
 
 export const SELECTED_PROPS: ShapeConfig = {
@@ -50,6 +51,16 @@ export const SELECTED_PROPS: ShapeConfig = {
     stroke: HIGHLIGHT_COLOR,
     strokeWidth: HIGHLIGHT_WIDTH,
     shadowColor: '#06f',
+    shadowBlur: 4,
+    opacity: 0.75,
+};
+
+export const SPOTLIGHT_PROPS: ShapeConfig = {
+    fillEnabled: false,
+    listening: false,
+    stroke: SPOTLIGHT_COLOR,
+    strokeWidth: HIGHLIGHT_WIDTH,
+    shadowColor: '#ff0',
     shadowBlur: 4,
     opacity: 0.75,
 };

@@ -9,13 +9,13 @@ import { ListComponentProps, registerListComponent } from '../panel/ListComponen
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import { ArrowObject, ObjectType } from '../scene';
-import { COLOR_RED, SELECTED_PROPS } from '../theme';
+import { COLOR_RED } from '../theme';
 import { usePanelDrag } from '../usePanelDrag';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useShowHighlight } from './highlight';
+import { useHighlightProps } from './highlight';
 
 // TODO: This would be a lot nicer if you could just click on start position
 // and drag to end position instead of having a set initial size/rotation.
@@ -71,10 +71,8 @@ registerDropHandler<ArrowObject>(ObjectType.Arrow, (object, position) => {
 const STROKE_WIDTH = DEFAULT_ARROW_WIDTH / 5;
 const POINTS = [DEFAULT_ARROW_WIDTH / 2, DEFAULT_ARROW_HEIGHT, DEFAULT_ARROW_WIDTH / 2, 0];
 
-const HIGHLIGHT_STROKE_WIDTH = STROKE_WIDTH + (SELECTED_PROPS.strokeWidth ?? 0);
-
 const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
 
     const pointerLength = DEFAULT_ARROW_HEIGHT * 0.15;
 
@@ -99,12 +97,16 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps} listening={!object.hide}>
-                    {showHighlight && (
-                        <Arrow {...arrowProps} {...SELECTED_PROPS} strokeWidth={HIGHLIGHT_STROKE_WIDTH} />
+                    {highlightProps && (
+                        <Arrow
+                            {...arrowProps}
+                            {...highlightProps}
+                            strokeWidth={STROKE_WIDTH + (highlightProps.strokeWidth ?? 0)}
+                        />
                     )}
                     <Rect width={object.width} height={object.height} fill="transparent" />
                     <HideCutoutGroup>
-                        <CompositeReplaceGroup enabled={showHighlight} opacity={object.opacity / 100}>
+                        <CompositeReplaceGroup enabled={!!highlightProps} opacity={object.opacity / 100}>
                             <Arrow {...arrowProps} fill={object.color} stroke={object.color} />
                         </CompositeReplaceGroup>
                     </HideCutoutGroup>
