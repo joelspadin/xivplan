@@ -39,7 +39,7 @@ export function useKonvaCache(
         } else {
             ref.current?.clearCache();
         }
-    }, [enabled, config, ref, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [enabled, config, ref, ...deps]);
 }
 
 function useOptions(

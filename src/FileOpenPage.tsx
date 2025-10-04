@@ -17,8 +17,6 @@ export const FileOpenPage: React.FC = () => {
     const loadFile = useFileLoader();
     const [error, setError] = useState<ReactNode>();
 
-    // https://github.com/reactwg/react-compiler/discussions/18
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const navigateToMainPage = () => navigate('/', { replace: true });
 
     useEffect(() => {

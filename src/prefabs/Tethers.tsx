@@ -297,9 +297,7 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
             </HideCutoutGroup>
             <ForegroundPortal>
                 <HideGroup>
-                    {/* eslint-disable-next-line react-hooks/static-components */}
                     <StartRenderer x={start.x} y={start.y} radius={magnetRadius} listening={false} />
-                    {/* eslint-disable-next-line react-hooks/static-components */}
                     <EndRenderer x={end.x} y={end.y} radius={magnetRadius} listening={false} />
                 </HideGroup>
             </ForegroundPortal>
@@ -377,7 +375,6 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
         <SelectableObject object={object}>
             <CursorGroup cursor={isSelectable ? 'pointer' : undefined}>
                 <Group ref={groupRef} opacity={object.opacity / 100}>
-                    {/* eslint-disable-next-line react-hooks/static-components */}
                     <Renderer
                         object={object}
                         scene={scene}
@@ -422,7 +419,6 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
 
     return (
         <Group ref={groupRef} opacity={0.5}>
-            {/* eslint-disable-next-line react-hooks/static-components */}
             <Renderer object={fakeTetherObject} scene={scene} startObject={startObject} endObject={fakeCursorObject} />
         </Group>
     );

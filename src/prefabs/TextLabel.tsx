@@ -122,7 +122,6 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
 
     return (
         <>
-            {/* eslint-disable-next-line react-hooks/refs -- child component calls this only from events */}
             {children(handleTransformEnd)}
             {showResizer && (
                 <ActivePortal isActive>
@@ -183,8 +182,6 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const textRef = useRef<Konva.Text>(null);
     useLayoutEffect(() => {
         if (textRef.current) {
-            // Needs to be in an effect so it can measure after the text node is updated.
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSize(measureText(textRef.current, object.text, object.fontSize, LINE_HEIGHT));
             setMeasuredFontSize(object.fontSize);
         }

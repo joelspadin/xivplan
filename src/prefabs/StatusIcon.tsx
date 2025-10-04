@@ -60,8 +60,6 @@ const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
     const [textNode, setTextNode] = useState<Konva.Text | null>(null);
     const [textWidth, setTextWidth] = useState(width);
     useLayoutEffect(() => {
-        // Needs to be in an effect so it can measure after the text node is updated.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTextWidth(textNode?.measureSize(text).width ?? width);
     }, [textNode, text, fontSize, width, setTextWidth]);
 

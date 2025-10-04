@@ -83,7 +83,6 @@ export const Resizer: React.FC<ResizerProps> = ({
 
     return (
         <>
-            {/* eslint-disable-next-line react-hooks/refs -- child component calls this only from events */}
             {children(handleTransformEnd)}
             {showResizer && (
                 <ControlsPortal>

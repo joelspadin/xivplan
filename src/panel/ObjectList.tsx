@@ -129,7 +129,6 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                     isDragging && isSelected && classes.draggingSelected,
                 )}
             >
-                {/* eslint-disable-next-line react-hooks/static-components -- Comes from stable registry */}
                 <Component object={object} isDragging={isDragging} isSelected={isSelected} />
             </div>
         </div>
