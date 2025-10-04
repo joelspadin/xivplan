@@ -1,30 +1,17 @@
 import { useContext } from 'react';
-import { useCurrentStep } from './SceneProvider';
-import { SceneSelection, SelectionContext, SelectionState } from './SelectionContext';
+import { SceneSelection, SelectionContext, SelectionState, SpotlightContext } from './SelectionContext';
 import { Scene, SceneObject, SceneStep } from './scene';
 
 export function useSelection(): SelectionState {
     return useContext(SelectionContext);
 }
 
-export interface SelectedObjects {
-    objects: readonly SceneObject[];
+export function useSpotlight(): SelectionState {
+    return useContext(SpotlightContext);
 }
 
 export function getSelectedObjects(step: SceneStep, selection: SceneSelection): readonly SceneObject[] {
     return step.objects.filter((object) => selection.has(object.id));
-}
-
-export function useSelectedObjects(): readonly SceneObject[] {
-    const step = useCurrentStep();
-    const [selection] = useSelection();
-
-    return getSelectedObjects(step, selection);
-}
-
-export function useIsSelected(object: SceneObject): boolean {
-    const [selection] = useSelection();
-    return selection.has(object.id);
 }
 
 export function selectSingle(id: number): SceneSelection {

@@ -12,7 +12,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
 import { ConeZone, ObjectType } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, SELECTED_PROPS, panelVars } from '../../theme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
@@ -21,7 +21,7 @@ import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
-import { useShowHighlight, useShowResizer } from '../highlight';
+import { useHighlightProps, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Cone';
@@ -123,17 +123,17 @@ interface ConeRendererProps extends RendererProps<ConeZone> {
 }
 
 const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, coneAngle }) => {
-    const isSelected = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
         <Group rotation={rotation - 90 - coneAngle / 2}>
-            {isSelected && (
+            {highlightProps && (
                 <OffsetWedge
                     radius={radius}
                     angle={coneAngle}
                     shapeOffset={style.strokeWidth / 2}
-                    {...SELECTED_PROPS}
+                    {...highlightProps}
                 />
             )}
             <HideGroup>

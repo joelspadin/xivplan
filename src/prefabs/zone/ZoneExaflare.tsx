@@ -8,10 +8,10 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ExaflareZone, ObjectType } from '../../scene';
-import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { EXAFLARE_SPACING_DEFAULT } from './constants';
@@ -81,7 +81,7 @@ interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
 }
 
 const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const arrow = getArrowStyle(object.color, object.opacity * 3);
@@ -107,7 +107,7 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
                     ))}
                 </HideGroup>
 
-                {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+                {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
 
                 <HideGroup>
                     <Circle radius={radius} {...style} />

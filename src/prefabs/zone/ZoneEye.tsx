@@ -10,13 +10,13 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { EyeObject, ObjectType } from '../../scene';
-import { panelVars, SELECTED_PROPS } from '../../theme';
+import { panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
@@ -126,7 +126,7 @@ interface EyeRendererProps extends RendererProps<EyeObject> {
 }
 
 const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const scale = radius / 20;
     const eyeStyle: ShapeConfig = {
         fillRadialGradientColorStops: getEyeGradient(object.color, object.invert),
@@ -143,14 +143,14 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
     const highlightColor = getHighlightColor(object.color);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useKonvaCache(groupRef, [object.color, object.opacity, radius, showHighlight]);
+    useKonvaCache(groupRef, [object.color, object.opacity, radius, highlightProps]);
 
     return (
         <>
             <Group opacity={object.opacity / 100} ref={groupRef}>
                 <Group scaleX={scale} scaleY={scale}>
-                    {showHighlight && (
-                        <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...SELECTED_PROPS} />
+                    {highlightProps && (
+                        <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...highlightProps} />
                     )}
 
                     <HideGroup>

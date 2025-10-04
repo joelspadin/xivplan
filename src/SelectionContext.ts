@@ -8,3 +8,5 @@ export type SceneSelection = ReadonlySet<number>;
 export type SelectionState = [SceneSelection, Dispatch<SetStateAction<SceneSelection>>];
 
 export const SelectionContext = createContext<SelectionState>([new Set(), () => undefined]);
+
+export const SpotlightContext = createContext<SelectionState>([new Set(), () => undefined]);

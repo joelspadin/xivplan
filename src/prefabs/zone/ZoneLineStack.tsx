@@ -8,12 +8,12 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { ObjectType, RectangleZone } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle } from './style';
 
@@ -70,7 +70,7 @@ const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.3;
 
 const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
     const patternWidth = object.width;
@@ -104,8 +104,8 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
             <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true, keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
-                        {showHighlight && (
-                            <Rect width={object.width} height={object.height} {...SELECTED_PROPS} opacity={0.25} />
+                        {highlightProps && (
+                            <Rect width={object.width} height={object.height} {...highlightProps} opacity={0.25} />
                         )}
                         <HideGroup>
                             <Rect

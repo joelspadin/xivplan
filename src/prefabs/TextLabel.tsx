@@ -11,7 +11,7 @@ import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
 import { ObjectType, TextObject } from '../scene';
-import { SELECTED_PROPS, useSceneTheme } from '../theme';
+import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
 import { clamp } from '../util';
@@ -20,7 +20,7 @@ import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
-import { useShowHighlight, useShowResizer } from './highlight';
+import { useHighlightProps, useShowResizer } from './highlight';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
@@ -176,7 +176,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
 };
 
 const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -191,15 +191,15 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     }, [textRef, object.text, object.fontSize]);
 
     const [prevSize, setPrevSize] = useState(size);
-    const [prevShowHighlight, setPrevShowHighlight] = useState(showHighlight);
+    const [prevShowHighlight, setPrevShowHighlight] = useState(!!highlightProps);
     const [prevMeasuredFontSize, setPrevMeasuredFontSize] = useState(measuredFontSize);
 
     if (size !== prevSize) {
         setPrevSize(size);
         setCacheKey(cacheKey + 1);
     }
-    if (showHighlight !== prevShowHighlight) {
-        setPrevShowHighlight(showHighlight);
+    if (!!highlightProps !== prevShowHighlight) {
+        setPrevShowHighlight(!!highlightProps);
         setCacheKey(cacheKey + 1);
     }
     if (measuredFontSize !== prevMeasuredFontSize) {
@@ -208,7 +208,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     }
 
     const strokeWidth = object.style === 'outline' ? Math.ceil(clamp(measuredFontSize / 15, 2, 8)) : 0;
-    const highlightStrokeWidth = (SELECTED_PROPS.strokeWidth ?? 0) + strokeWidth;
+    const highlightStrokeWidth = (highlightProps?.strokeWidth ?? 0) + strokeWidth;
 
     const shadow: ShapeConfig =
         object.style === 'shadow'
@@ -225,7 +225,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
             <TextContainer object={object} cacheKey={cacheKey}>
                 {(groupProps) => (
                     <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2}>
-                        {showHighlight && (
+                        {highlightProps && (
                             <Text
                                 text={object.text}
                                 width={size.width}
@@ -234,13 +234,13 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                                 verticalAlign="middle"
                                 fontSize={measuredFontSize}
                                 lineHeight={LINE_HEIGHT}
-                                {...SELECTED_PROPS}
+                                {...highlightProps}
                                 strokeWidth={highlightStrokeWidth}
                             />
                         )}
 
                         <HideCutoutGroup>
-                            <CompositeReplaceGroup enabled={showHighlight} opacity={object.opacity / 100}>
+                            <CompositeReplaceGroup enabled={!!highlightProps} opacity={object.opacity / 100}>
                                 <Text
                                     text={object.text}
                                     width={size.width}
