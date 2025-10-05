@@ -6,7 +6,7 @@ import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
+import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import { MarkerObject, ObjectType } from '../scene';
 import {
