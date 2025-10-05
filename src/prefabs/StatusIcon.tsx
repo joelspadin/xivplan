@@ -8,13 +8,13 @@ import { ListComponentProps, registerListComponent } from '../panel/ListComponen
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import { IconObject, ObjectType } from '../scene';
-import { DEFAULT_IMAGE_OPACITY, SELECTED_PROPS } from '../theme';
+import { DEFAULT_IMAGE_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { usePanelDrag } from '../usePanelDrag';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useShowHighlight } from './highlight';
+import { useHighlightProps } from './highlight';
 
 const DEFAULT_SIZE = 32;
 
@@ -86,19 +86,19 @@ const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
 };
 
 const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const [image] = useImageTracked(object.image);
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
                 <Group {...groupProps}>
-                    {showHighlight && (
+                    {highlightProps && (
                         <Rect
                             width={object.width}
                             height={object.height}
                             cornerRadius={(object.width + object.height) / 2 / 5}
-                            {...SELECTED_PROPS}
+                            {...highlightProps}
                         />
                     )}
                     <HideGroup>

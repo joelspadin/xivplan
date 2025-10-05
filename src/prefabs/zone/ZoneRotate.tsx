@@ -10,13 +10,13 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { CENTER_DOT_RADIUS, panelVars, SELECTED_PROPS } from '../../theme';
+import { CENTER_DOT_RADIUS, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 25;
@@ -92,7 +92,7 @@ interface RotateRendererProps extends RendererProps<CircleZone> {
 }
 
 const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef, isDragging }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
     const style = getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow);
@@ -113,7 +113,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
 
     return (
         <>
-            {showHighlight && <Circle radius={radius + style.strokeWidth / 2} {...SELECTED_PROPS} />}
+            {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
 
             <HideGroup opacity={(object.opacity * 2) / 100} ref={groupRef}>
                 <Circle radius={radius} {...style} />

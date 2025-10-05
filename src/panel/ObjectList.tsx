@@ -19,7 +19,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { SceneObject } from '../scene';
-import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
+import { addSelection, selectNone, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
 import { reversed } from '../util';
 import { getListComponent } from './ListComponentRegistry';
 
@@ -91,6 +91,7 @@ interface SortableItemProps {
 const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
+    const [, setSpotlight] = useSpotlight();
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
@@ -101,6 +102,15 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
         } else {
             setSelection(selectSingle(object.id));
         }
+    };
+
+    // onMouseLeave events may be skipped sometimes if the mouse is moving fast enough into another
+    // SortableItem, but there will always be a terminal onMouseLeave when exiting the list.
+    const onMouseEnter = () => {
+        setSpotlight(selectSingle(object.id));
+    };
+    const onMouseLeave = () => {
+        setSpotlight(selectNone());
     };
 
     const Component = getListComponent(object);
@@ -118,6 +128,8 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
             style={style}
             className={mergeClasses(isDragging && classes.draggingWrapper)}
             onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
             {...attributes}
             {...listeners}
         >

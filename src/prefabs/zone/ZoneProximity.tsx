@@ -9,13 +9,13 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { CircleZone, ObjectType } from '../../scene';
-import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { getArrowStyle, getShadowColor } from './style';
 
 const DEFAULT_RADIUS = 200;
@@ -139,7 +139,7 @@ interface ProximityRendererProps extends RendererProps<CircleZone> {
 }
 
 const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
-    const showHighlight = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const gradient: ShapeConfig = {
         fillRadialGradientColorStops: getGradient(object.color, object.opacity),
         fillRadialGradientStartRadius: 0,
@@ -152,7 +152,7 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
 
     return (
         <>
-            {showHighlight && <Circle radius={radius} {...SELECTED_PROPS} opacity={0.25} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} opacity={0.25} />}
 
             <HideGroup>
                 <Circle radius={radius} {...gradient} />

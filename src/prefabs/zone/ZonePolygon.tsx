@@ -12,12 +12,12 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { ObjectType, PolygonZone } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars, SELECTED_PROPS } from '../../theme';
+import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useShowHighlight } from '../highlight';
+import { useHighlightProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Regular Polygon';
@@ -67,19 +67,19 @@ interface PolygonRendererProps extends RendererProps<PolygonZone> {
 }
 
 const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotation }) => {
-    const isSelected = useShowHighlight(object);
+    const highlightProps = useHighlightProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     const orientRotation = object.orient === 'side' ? 180 / object.sides : 0;
 
     return (
         <Group rotation={rotation + orientRotation}>
-            {isSelected && (
+            {highlightProps && (
                 <RegularPolygon
                     radius={radius + style.strokeWidth / 2}
                     sides={object.sides}
                     {...style}
-                    {...SELECTED_PROPS}
+                    {...highlightProps}
                 />
             )}
             <HideGroup>
