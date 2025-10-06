@@ -50,21 +50,18 @@ const LANGUAGE_OPTIONS: Record<Language, string> = {
     de: 'Deutch',
 };
 
-export interface StatusSearchProps {
-    filter: string;
-    onFilterChanged: React.Dispatch<string>;
-}
-
-export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChanged }) => {
+export const StatusSearch: React.FC = () => {
     const classes = useStyles();
     const [controller, setController] = useState<AbortController>();
     const [debouncedFilter, setDebouncedFilter] = useState('');
     const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
     const { dispatchToast } = useToastController();
 
-    const setFilter = (text?: string) => {
+    const [filter, setFilter] = useState('');
+
+    const handleFilterChanged = (text?: string) => {
         controller?.abort();
-        onFilterChanged(text ?? '');
+        setFilter(text ?? '');
     };
 
     useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
@@ -110,7 +107,7 @@ export const StatusSearch: React.FC<StatusSearchProps> = ({ filter, onFilterChan
                 type="text"
                 placeholder="Status name"
                 value={filter}
-                onChange={(ev, data) => setFilter(data.value)}
+                onChange={(ev, data) => handleFilterChanged(data.value)}
             />
 
             {items.loading && <Spinner />}

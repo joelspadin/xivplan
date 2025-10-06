@@ -1,26 +1,27 @@
-import { Tab, TabList, TabValue, makeStyles } from '@fluentui/react-components';
+import { Tab, TabList, makeStyles } from '@fluentui/react-components';
 import React, { useState } from 'react';
+import { TabActivity } from '../TabActivity';
 import { StatusMarkers } from './StatusMarkers';
 import { StatusSearch } from './StatusSearch';
 
-enum Tabs {
-    Markers = 'marker',
-    Status = 'status',
-}
+type Tabs = 'marker' | 'status';
 
 export const StatusPanel: React.FC = () => {
     const classes = useStyles();
-    const [tab, setTab] = useState<TabValue>(Tabs.Markers);
-    const [filter, setFilter] = useState('');
+    const [tab, setTab] = useState<Tabs>('marker');
 
     return (
         <div className={classes.panel}>
-            <TabList size="small" selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value)}>
-                <Tab value={Tabs.Markers}>Markers</Tab>
-                <Tab value={Tabs.Status}>Status effects</Tab>
+            <TabList size="small" selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as Tabs)}>
+                <Tab value="marker">Markers</Tab>
+                <Tab value="status">Status effects</Tab>
             </TabList>
-            {tab === Tabs.Markers && <StatusMarkers />}
-            {tab === Tabs.Status && <StatusSearch filter={filter} onFilterChanged={setFilter} />}
+            <TabActivity value="marker" activeTab={tab}>
+                <StatusMarkers />
+            </TabActivity>
+            <TabActivity value="status" activeTab={tab}>
+                <StatusSearch />
+            </TabActivity>
         </div>
     );
 };

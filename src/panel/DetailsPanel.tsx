@@ -1,14 +1,7 @@
-import {
-    Divider,
-    makeStyles,
-    mergeClasses,
-    Tab,
-    TabList,
-    TabValue,
-    typographyStyles,
-} from '@fluentui/react-components';
+import { Divider, makeStyles, mergeClasses, Tab, TabList, typographyStyles } from '@fluentui/react-components';
 import React, { useState } from 'react';
 import { useMedia } from 'react-use';
+import { TabActivity } from '../TabActivity';
 import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING, PANEL_WIDTH, WIDE_PANEL_WIDTH } from './PanelStyles';
 import { PropertiesPanel } from './PropertiesPanel';
@@ -52,23 +45,24 @@ const WideDetailsPanel: React.FC = () => {
     );
 };
 
-enum Tabs {
-    Properties = 'properties',
-    Objects = 'objects',
-}
+type Tabs = 'properties' | 'objects';
 
 const ShortDetailsPanel: React.FC = () => {
     const classes = useStyles();
-    const [tab, setTab] = useState<TabValue>(Tabs.Properties);
+    const [tab, setTab] = useState<Tabs>('properties');
 
     return (
         <div className={classes.wrapper}>
-            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value)}>
-                <Tab value={Tabs.Properties}>{PROPERTIES_TITLE}</Tab>
-                <Tab value={Tabs.Objects}>{OBJECTS_TITLE}</Tab>
+            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as Tabs)}>
+                <Tab value="properties">{PROPERTIES_TITLE}</Tab>
+                <Tab value="objects">{OBJECTS_TITLE}</Tab>
             </TabList>
-            {tab === Tabs.Properties && <PropertiesPanel className={classes.shortPanelContent} />}
-            {tab === Tabs.Objects && <SceneObjectsPanel className={classes.shortPanelContent} />}
+            <TabActivity value="properties" activeTab={tab}>
+                <PropertiesPanel className={classes.shortPanelContent} />
+            </TabActivity>
+            <TabActivity value="objects" activeTab={tab}>
+                <SceneObjectsPanel className={classes.shortPanelContent} />
+            </TabActivity>
         </div>
     );
 };
