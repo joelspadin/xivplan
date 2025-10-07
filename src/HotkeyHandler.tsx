@@ -1,6 +1,7 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
 import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
@@ -28,14 +29,18 @@ const CATEGORY_STEPS = '7.Steps';
 const UndoRedoHandler: React.FC = () => {
     const [undo, redo] = useSceneUndoRedo();
 
-    useHotkeys('ctrl+z', { category: CATEGORY_HISTORY, help: 'Undo' }, (e) => {
+    const undoCallback: HotkeyCallback = (e) => {
         undo();
         e.preventDefault();
-    });
-    useHotkeys('ctrl+y', { category: CATEGORY_HISTORY, help: 'Redo' }, (e) => {
+    };
+    const redoCallback: HotkeyCallback = (e) => {
         redo();
         e.preventDefault();
-    });
+    };
+
+    useHotkeys('ctrl+z', { category: CATEGORY_HISTORY, help: 'Undo' }, undoCallback);
+    useHotkeys('ctrl+y', { category: CATEGORY_HISTORY, help: 'Redo' }, redoCallback);
+    useHotkeys('ctrl+shift+z', { category: CATEGORY_HISTORY, help: 'Redo' }, redoCallback);
 
     return null;
 };
