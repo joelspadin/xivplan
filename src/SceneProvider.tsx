@@ -16,7 +16,7 @@ import {
     Ticks,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
-import { StateActionBase } from './undo/undoReducer';
+import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
 import { asArray, clamp } from './util';
 
@@ -182,17 +182,7 @@ const SourceContext = createContext<[FileSource | undefined, Dispatch<SetStateAc
     () => {},
 ]);
 
-const {
-    UndoProvider,
-    Context,
-    usePresent,
-    useCanonicalPresent,
-    useUndoRedo,
-    useUndoRedoPossible,
-    useReset,
-    useCommit,
-    useRollback,
-} = createUndoContext(sceneReducer, HISTORY_SIZE);
+const { UndoProvider, Context, usePresent, useUndoRedoPossible } = createUndoContext(sceneReducer, HISTORY_SIZE);
 
 export interface SceneProviderProps extends PropsWithChildren {
     initialScene?: Scene;
@@ -220,22 +210,21 @@ export interface SceneContext {
     step: SceneStep;
     stepIndex: number;
     source?: FileSource;
-    dispatch: React.Dispatch<SceneAction>;
+    dispatch: React.Dispatch<SceneAction | UndoRedoAction<EditorState>>;
 
     /** The latest scene prior to any transient updates. */
     canonicalScene: Scene;
 }
 
 export function useScene(): SceneContext {
-    const [present, dispatch] = usePresent();
-    const canonicalScene = useCanonicalPresent();
+    const [transientPresent, present, dispatch] = usePresent();
     const [source] = useContext(SourceContext);
 
     return {
-        scene: present.scene,
-        canonicalScene: canonicalScene.scene,
-        step: getCurrentStep(present),
-        stepIndex: present.currentStep,
+        scene: transientPresent.scene,
+        canonicalScene: present.scene,
+        step: getCurrentStep(transientPresent),
+        stepIndex: transientPresent.currentStep,
         source: source,
         dispatch,
     };
@@ -246,19 +235,15 @@ export function useCurrentStep(): SceneStep {
     return getCurrentStep(present);
 }
 
-export const useSceneUndoRedo = useUndoRedo;
 export const useSceneUndoRedoPossible = useUndoRedoPossible;
 
-export const useSceneCommit = useCommit;
-export const useSceneRollback = useRollback;
-
 export function useLoadScene(): (scene: Scene, source?: FileSource) => void {
-    const reset = useReset();
+    const { dispatch } = useScene();
     const setSavedState = useSetSavedState();
     const [, setSource] = useContext(SourceContext);
 
     return (scene: Scene, source?: FileSource) => {
-        reset({ scene, currentStep: 0 });
+        dispatch({ type: 'reset', state: { scene, currentStep: 0 } });
         setSavedState(scene);
         setSource(source);
     };

@@ -1,7 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
 import { CursorGroup } from '../CursorGroup';
-import { SceneAction, useScene, useSceneCommit } from '../SceneProvider';
+import { SceneAction, useScene } from '../SceneProvider';
 import { getCanvasCoord, getSceneCoord } from '../coord';
 import { EditMode } from '../editMode';
 import { MoveableObject, Scene, UnknownObject } from '../scene';
@@ -20,7 +20,6 @@ export interface DraggableObjectProps {
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActive, children }) => {
     const [editMode] = useEditMode();
     const { scene, dispatch } = useScene();
-    const commit = useSceneCommit();
     const [selection, setSelection] = useSelection();
     const center = getCanvasCoord(scene, object);
 
@@ -46,7 +45,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
         onActive?.(false);
 
         updatePosition(scene, object, e, dispatch);
-        commit();
+        dispatch({ type: 'commit' });
     };
 
     return (

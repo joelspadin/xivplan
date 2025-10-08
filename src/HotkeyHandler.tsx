@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { GroupMoveAction, SceneAction, getObjectById, useScene, useSceneUndoRedo } from './SceneProvider';
+import { GroupMoveAction, SceneAction, getObjectById, useScene } from './SceneProvider';
 import { SceneSelection } from './SelectionContext';
 import { getSceneCoord, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
@@ -27,14 +27,14 @@ const CATEGORY_DRAW = '6.Draw';
 const CATEGORY_STEPS = '7.Steps';
 
 const UndoRedoHandler: React.FC = () => {
-    const [undo, redo] = useSceneUndoRedo();
+    const { dispatch } = useScene();
 
     const undoCallback: HotkeyCallback = (e) => {
-        undo();
+        dispatch({ type: 'undo' });
         e.preventDefault();
     };
     const redoCallback: HotkeyCallback = (e) => {
-        redo();
+        dispatch({ type: 'redo' });
         e.preventDefault();
     };
 

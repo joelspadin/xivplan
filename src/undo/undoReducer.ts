@@ -11,47 +11,57 @@ export interface UndoRedoState<S> {
     future: S[];
 }
 
-enum ActionTypes {
-    Undo = 'undo',
-    Redo = 'redo',
-    Reset = 'reset',
-
-    Commit = 'commit',
-    Rollback = 'rollback',
-}
-
-export type UndoAction = {
-    type: ActionTypes.Undo;
-};
-
-export type RedoAction = {
-    type: ActionTypes.Redo;
-};
-
-export type ResetAction<S> = {
-    type: ActionTypes.Reset;
-    state: S;
-};
-
-export type CommitAction = {
-    type: ActionTypes.Commit;
-};
-
-export type RollbackAction = {
-    type: ActionTypes.Rollback;
-};
-
-export type StateActionBase = {
+/**
+ * All actions which modify the state and are not specific to undo/redo logic
+ * should extend this type.
+ */
+export interface StateActionBase {
     /**
      * When true, this the updated state is not inserted into the undo stack.
      * This allows operations such as dragging an object to repeatedly update
      * the state but only add a single item to the undo stack when finished.
      *
-     * Apply a `commitAction` to commit the latest transient state to the undo
-     * stack, or apply a `rollbackAction` to reset it to the previous state
-     * before any transient updates.
+     * Apply a `type: 'commit'` action to commit the latest transient state to
+     * the undo stack, or apply a `type: 'rollback'` action to reset it to the
+     * previous state before any transient updates.
      */
     transient?: boolean;
+}
+
+/**
+ * Action which undoes the last state change.
+ */
+export interface UndoAction {
+    type: 'undo';
+}
+
+/**
+ * Action which undoes an undo.
+ */
+export interface RedoAction {
+    type: 'redo';
+}
+
+/**
+ * Action which resets the state to the given object and clears all undo/redo history
+ */
+export interface ResetAction<S> {
+    type: 'reset';
+    state: S;
+}
+
+/**
+ * Action which commits the latest transient state to the undo history.
+ */
+export type CommitAction = {
+    type: 'commit';
+};
+
+/**
+ * Action which resets the transient state to the last non-transient state.
+ */
+export type RollbackAction = {
+    type: 'rollback';
 };
 
 export type UndoRedoAction<S> = UndoAction | RedoAction | ResetAction<S> | CommitAction | RollbackAction;
@@ -60,11 +70,11 @@ export type UndoRedoReducer<S, A extends StateActionBase> = React.Reducer<UndoRe
 
 export function createUndoReducer<S, A extends StateActionBase>(
     reducer: React.Reducer<S, A>,
-    historyLimit = Infinity,
+    historyLimit: number,
 ): UndoRedoReducer<S, A> {
     return (state, action) => {
         if ('type' in action) {
-            if (action.type === ActionTypes.Undo) {
+            if (action.type === 'undo') {
                 const [present, ...past] = state.past;
 
                 if (present === undefined) {
@@ -79,7 +89,7 @@ export function createUndoReducer<S, A extends StateActionBase>(
                 };
             }
 
-            if (action.type === ActionTypes.Redo) {
+            if (action.type === 'redo') {
                 const [present, ...future] = state.future;
 
                 if (present === undefined) {
@@ -94,7 +104,7 @@ export function createUndoReducer<S, A extends StateActionBase>(
                 };
             }
 
-            if (action.type === ActionTypes.Reset) {
+            if (action.type === 'reset') {
                 return {
                     past: [],
                     present: action.state,
@@ -103,7 +113,7 @@ export function createUndoReducer<S, A extends StateActionBase>(
                 };
             }
 
-            if (action.type === ActionTypes.Commit) {
+            if (action.type === 'commit') {
                 return {
                     past: getNewPast(state, historyLimit),
                     present: state.transientPresent,
@@ -112,7 +122,7 @@ export function createUndoReducer<S, A extends StateActionBase>(
                 };
             }
 
-            if (action.type === ActionTypes.Rollback) {
+            if (action.type === 'rollback') {
                 return {
                     ...state,
                     transientPresent: state.present,
@@ -139,14 +149,11 @@ export function createUndoReducer<S, A extends StateActionBase>(
 }
 
 function getNewPast<S>(state: UndoRedoState<S>, historyLimit: number) {
-    return [state.present, ...state.past].slice(0, historyLimit);
-}
+    const result = [state.present, ...state.past];
 
-export const undoAction: Readonly<UndoAction> = { type: ActionTypes.Undo };
-export const redoAction: Readonly<RedoAction> = { type: ActionTypes.Redo };
-export const commitAction: Readonly<CommitAction> = { type: ActionTypes.Commit };
-export const rollbackAction: Readonly<RollbackAction> = { type: ActionTypes.Rollback };
+    if (result.length > historyLimit) {
+        return result.slice(0, historyLimit);
+    }
 
-export function resetAction<S>(state: S): ResetAction<S> {
-    return { type: ActionTypes.Reset, state };
+    return result;
 }

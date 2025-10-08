@@ -20,7 +20,7 @@ import {
 import React, { ReactElement, useContext, useState } from 'react';
 import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
-import { FileSource, useScene, useSceneUndoRedo, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
+import { FileSource, useScene, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
 import { StepScreenshotButton } from './StepScreenshotButton';
 import { ToolbarContext } from './ToolbarContext';
 import { saveFile } from './file';
@@ -41,9 +41,16 @@ const useStyles = makeStyles({
 export const MainToolbar: React.FC = () => {
     const classes = useStyles();
     const toolbarNode = useContext(ToolbarContext);
-    const [undo, redo] = useSceneUndoRedo();
+    const { dispatch } = useScene();
     const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const [openFileOpen, setOpenFileOpen] = useState(false);
+
+    const undo = () => {
+        dispatch({ type: 'undo' });
+    };
+    const redo = () => {
+        dispatch({ type: 'redo' });
+    };
 
     useHotkeys(
         'ctrl+o',
