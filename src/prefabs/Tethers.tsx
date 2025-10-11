@@ -297,8 +297,16 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
             </HideCutoutGroup>
             <ForegroundPortal>
                 <HideGroup>
-                    <StartRenderer x={start.x} y={start.y} radius={magnetRadius} listening={false} />
-                    <EndRenderer x={end.x} y={end.y} radius={magnetRadius} listening={false} />
+                    {
+                        // https://github.com/facebook/react/issues/34794
+                        // eslint-disable-next-line react-hooks/static-components
+                        <StartRenderer x={start.x} y={start.y} radius={magnetRadius} listening={false} />
+                    }
+                    {
+                        // https://github.com/facebook/react/issues/34794
+                        // eslint-disable-next-line react-hooks/static-components
+                        <EndRenderer x={end.x} y={end.y} radius={magnetRadius} listening={false} />
+                    }
                 </HideGroup>
             </ForegroundPortal>
         </>
@@ -375,13 +383,17 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
         <SelectableObject object={object}>
             <CursorGroup cursor={isSelectable ? 'pointer' : undefined}>
                 <Group ref={groupRef} opacity={object.opacity / 100}>
-                    <Renderer
-                        object={object}
-                        scene={scene}
-                        showHighlight={showHighlight}
-                        startObject={startObject}
-                        endObject={endObject}
-                    />
+                    {
+                        // // https://github.com/facebook/react/issues/34794
+                        // eslint-disable-next-line react-hooks/static-components
+                        <Renderer
+                            object={object}
+                            scene={scene}
+                            showHighlight={showHighlight}
+                            startObject={startObject}
+                            endObject={endObject}
+                        />
+                    }
                 </Group>
             </CursorGroup>
         </SelectableObject>
@@ -419,7 +431,16 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
 
     return (
         <Group ref={groupRef} opacity={0.5}>
-            <Renderer object={fakeTetherObject} scene={scene} startObject={startObject} endObject={fakeCursorObject} />
+            {
+                // https://github.com/facebook/react/issues/34794
+                // eslint-disable-next-line react-hooks/static-components
+                <Renderer
+                    object={fakeTetherObject}
+                    scene={scene}
+                    startObject={startObject}
+                    endObject={fakeCursorObject}
+                />
+            }
         </Group>
     );
 };

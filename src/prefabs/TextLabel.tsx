@@ -122,7 +122,10 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
 
     return (
         <>
-            {children(handleTransformEnd)}
+            {
+                // eslint-disable-next-line react-hooks/refs -- callback is only used in event handler
+                children(handleTransformEnd)
+            }
             {showResizer && (
                 <ActivePortal isActive>
                     <Transformer

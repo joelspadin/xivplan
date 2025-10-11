@@ -153,6 +153,7 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     const [frozenStepIndex] = useState(stepIndex);
     const ref = useRef<Konva.Stage>(null);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
     const takeScreenshot = async () => {
         try {
             if (!ref.current) {
