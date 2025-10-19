@@ -177,6 +177,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
 
 const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const showHighlight = !!highlightProps;
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
     const [size, setSize] = useState({ width: 0, height: 0 });
@@ -191,15 +192,15 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     }, [textRef, object.text, object.fontSize]);
 
     const [prevSize, setPrevSize] = useState(size);
-    const [prevShowHighlight, setPrevShowHighlight] = useState(!!highlightProps);
+    const [prevShowHighlight, setPrevShowHighlight] = useState(showHighlight);
     const [prevMeasuredFontSize, setPrevMeasuredFontSize] = useState(measuredFontSize);
 
     if (size !== prevSize) {
         setPrevSize(size);
         setCacheKey(cacheKey + 1);
     }
-    if (!!highlightProps !== prevShowHighlight) {
-        setPrevShowHighlight(!!highlightProps);
+    if (showHighlight !== prevShowHighlight) {
+        setPrevShowHighlight(showHighlight);
         setCacheKey(cacheKey + 1);
     }
     if (measuredFontSize !== prevMeasuredFontSize) {
@@ -240,7 +241,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
                         )}
 
                         <HideCutoutGroup>
-                            <CompositeReplaceGroup enabled={!!highlightProps} opacity={object.opacity / 100}>
+                            <CompositeReplaceGroup enabled={showHighlight} opacity={object.opacity / 100}>
                                 <Text
                                     text={object.text}
                                     width={size.width}
