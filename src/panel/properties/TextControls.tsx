@@ -144,7 +144,8 @@ export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({
 
     const text = commonValue(objects, (obj) => obj.text);
 
-    const setText = (text: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })) });
+    const setText = (text: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })), transient: true });
 
     // TODO: add autoAdjustHeight once implemented
     return (
@@ -154,6 +155,7 @@ export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({
                 rows={3}
                 value={text ?? ''}
                 onChange={(ev, data) => setText(data.value)}
+                onCommit={() => dispatch({ type: 'commit' })}
             />
         </Field>
     );

@@ -12,8 +12,9 @@ export const ArenaBackgroundEdit: React.FC = () => {
                 <DeferredInput
                     value={scene.arena.backgroundImage}
                     onChange={(ev, data) => {
-                        dispatch({ type: 'arenaBackground', value: data.value });
+                        dispatch({ type: 'arenaBackground', value: data.value, transient: true });
                     }}
+                    onCommit={() => dispatch({ type: 'commit' })}
                 />
             </Field>
             {scene.arena.backgroundImage && (

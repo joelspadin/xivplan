@@ -83,9 +83,11 @@ export const ArenaGridEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const grid = scene.arena.grid;
 
-    const setGrid = (grid: Grid) => {
-        dispatch({ type: 'arenaGrid', value: grid });
+    const setGrid = (grid: Grid, transient = false) => {
+        dispatch({ type: 'arenaGrid', value: grid, transient });
     };
+
+    const commit = () => dispatch({ type: 'commit' });
 
     // TODO: refactor custom grids into their own components
     const [customRows, setCustomRows] = useState(formatCustomGridRows(grid));
@@ -237,8 +239,9 @@ export const ArenaGridEdit: React.FC = () => {
                             value={customRows}
                             onChange={(ev, data) => {
                                 setCustomRows(data.value);
-                                setGrid({ ...grid, rows: parseCustomGrid(data.value) });
+                                setGrid({ ...grid, rows: parseCustomGrid(data.value) }, true);
                             }}
+                            onCommit={commit}
                         />
                     </InfoField>
                     <InfoField
@@ -249,8 +252,9 @@ export const ArenaGridEdit: React.FC = () => {
                             value={customCols}
                             onChange={(ev, data) => {
                                 setCustomCols(data.value);
-                                setGrid({ ...grid, columns: parseCustomGrid(data.value) });
+                                setGrid({ ...grid, columns: parseCustomGrid(data.value) }, true);
                             }}
+                            onCommit={commit}
                         />
                     </InfoField>
                 </>
@@ -262,8 +266,9 @@ export const ArenaGridEdit: React.FC = () => {
                             value={customRings}
                             onChange={(ev, data) => {
                                 setCustomRings(data.value);
-                                setGrid({ ...grid, rings: parseCustomGrid(data.value) });
+                                setGrid({ ...grid, rings: parseCustomGrid(data.value) }, true);
                             }}
+                            onCommit={commit}
                         />
                     </InfoField>
                     <InfoField
@@ -274,8 +279,9 @@ export const ArenaGridEdit: React.FC = () => {
                             value={customSpokes}
                             onChange={(ev, data) => {
                                 setCustomSpokes(data.value);
-                                setGrid({ ...grid, spokes: parseCustomGrid(data.value) });
+                                setGrid({ ...grid, spokes: parseCustomGrid(data.value) }, true);
                             }}
+                            onCommit={commit}
                         />
                     </InfoField>
                 </>

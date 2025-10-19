@@ -43,7 +43,16 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
 }) => {
     const classes = useStyles();
     const resetStyles = useResetStyles();
+
     const [colorValid, setColorValid] = useState(true);
+    const [prevText, setPrevText] = useState(color);
+    const [currentText, setCurrentText] = useState(color);
+
+    // If the external text is changed, update the text box to match.
+    if (color !== prevText) {
+        setPrevText(color);
+        setCurrentText(color);
+    }
 
     const notifyChanged = (data: CompactColorPickerOnChangeData) => {
         if (data.value !== color) {
@@ -58,10 +67,12 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
         }
     };
 
-    const setColorText = (text: string) => {
+    const setColorText = (text: string, transient: boolean) => {
+        setCurrentText(text);
+
         if (isValidColor(text)) {
             setColorValid(true);
-            notifyChanged({ value: text, transient: false });
+            notifyChanged({ value: text, transient });
         } else {
             setColorValid(!text);
         }
@@ -98,8 +109,9 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
                         ),
                     }}
                     className={classes.input}
-                    value={color}
-                    onChange={(ev, data) => setColorText(data.value)}
+                    value={currentText}
+                    onChange={(ev, data) => setColorText(data.value, true)}
+                    onCommit={onCommit}
                     placeholder={placeholder ?? '#000000'}
                     disabled={disabled}
                 />

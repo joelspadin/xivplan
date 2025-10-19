@@ -11,11 +11,16 @@ export const ImageControl: React.FC<PropertiesControlProps<ImageObject>> = ({ ob
 
     const image = commonValue(objects, (obj) => obj.image);
 
-    const setImage = (image: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, image })) });
+    const setImage = (image: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, image })), transient: true });
 
     return (
         <Field label="Image URL">
-            <DeferredInput value={image ?? ''} onChange={(dev, data) => setImage(data.value)} />
+            <DeferredInput
+                value={image}
+                onChange={(dev, data) => setImage(data.value)}
+                onCommit={() => dispatch({ type: 'commit' })}
+            />
         </Field>
     );
 };

@@ -1,74 +1,30 @@
 import { Input, InputProps } from '@fluentui/react-components';
-import React, { useState } from 'react';
-import { useDebounce } from 'react-use';
-
-const DEFAULT_DEBOUNCE_TIME = 1000;
-
-type BlurHandler = Required<InputProps>['onBlur'];
-type ChangeHandler = Required<InputProps>['onChange'];
-type ChangeHandlerParameters = Parameters<ChangeHandler>;
-type KeyUpHandler = Required<InputProps>['onKeyUp'];
+import React from 'react';
 
 export interface DeferredInputProps extends InputProps {
-    debounceTime?: number;
+    onCommit?: () => void;
 }
 
+type BlurHandler = Required<DeferredInputProps>['onBlur'];
+type KeyUpHandler = Required<DeferredInputProps>['onKeyUp'];
+
 /**
- * Wrapper for Input that defers the onChange event until the text stops changing.
+ * Wrapper for Input that fires an onCommit event when the user presses enter or
+ * the input loses focus.
  */
-export const DeferredInput: React.FC<DeferredInputProps> = ({
-    debounceTime,
-    value,
-    onBlur,
-    onChange,
-    onKeyUp,
-    ...props
-}) => {
-    debounceTime = debounceTime ?? DEFAULT_DEBOUNCE_TIME;
-
-    const [prevValue, setPrevValue] = useState(value);
-    const [currentValue, setCurrentValue] = useState(value);
-    const [latestEvent, setLatestEvent] = useState<ChangeHandlerParameters>();
-
-    if (value !== prevValue) {
-        setPrevValue(value);
-        setCurrentValue(value);
-        setLatestEvent(undefined);
-    }
-
-    const notifyChanged = () => {
-        if (latestEvent) {
-            onChange?.(...latestEvent);
-            setLatestEvent(undefined);
-        }
-    };
-
-    const deferredOnChange: ChangeHandler = (ev, data) => {
-        setCurrentValue(data.value);
-        setLatestEvent([ev, data]);
-    };
-
-    const deferredOnBlur: BlurHandler = (ev) => {
-        notifyChanged();
+export const DeferredInput: React.FC<DeferredInputProps> = ({ value, onBlur, onKeyUp, onCommit, ...props }) => {
+    const handleBlur: BlurHandler = (ev) => {
         onBlur?.(ev);
+        onCommit?.();
     };
 
-    const deferredOnKeyUp: KeyUpHandler = (ev) => {
-        if (ev.key === 'Enter') {
-            notifyChanged();
-        }
+    const handleKeyUp: KeyUpHandler = (ev) => {
         onKeyUp?.(ev);
+
+        if (ev.key === 'Enter') {
+            onCommit?.();
+        }
     };
 
-    useDebounce(notifyChanged, debounceTime, [currentValue]);
-
-    return (
-        <Input
-            value={currentValue ?? ''}
-            onChange={deferredOnChange}
-            onBlur={deferredOnBlur}
-            onKeyUp={deferredOnKeyUp}
-            {...props}
-        />
-    );
+    return <Input value={value ?? ''} onBlur={handleBlur} onKeyUp={handleKeyUp} {...props} />;
 };

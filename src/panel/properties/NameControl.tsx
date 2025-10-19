@@ -11,11 +11,16 @@ export const NameControl: React.FC<PropertiesControlProps<NamedObject>> = ({ obj
 
     const name = commonValue(objects, (obj) => obj.name);
 
-    const setName = (name: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name })) });
+    const setName = (name: string) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name })), transient: true });
 
     return (
         <Field label="Name" className={className}>
-            <DeferredInput value={name ?? ''} onChange={(ev, data) => setName(data.value)} />
+            <DeferredInput
+                value={name}
+                onChange={(ev, data) => setName(data.value)}
+                onCommit={() => dispatch({ type: 'commit' })}
+            />
         </Field>
     );
 };
