@@ -152,7 +152,7 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
 
     return (
         <>
-            {highlightProps && <Circle radius={radius} {...highlightProps} opacity={0.25} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} />}
 
             <HideGroup>
                 <Circle radius={radius} {...gradient} />

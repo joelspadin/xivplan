@@ -104,9 +104,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
             <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true, keepRatio: false }}>
                 {(groupProps) => (
                     <Group {...groupProps}>
-                        {highlightProps && (
-                            <Rect width={object.width} height={object.height} {...highlightProps} opacity={0.25} />
-                        )}
+                        {highlightProps && <Rect width={object.width} height={object.height} {...highlightProps} />}
                         <HideGroup>
                             <Rect
                                 width={object.width}

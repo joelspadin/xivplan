@@ -147,13 +147,13 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
 
     return (
         <>
-            <Group opacity={object.opacity / 100} ref={groupRef}>
+            <Group ref={groupRef}>
                 <Group scaleX={scale} scaleY={scale}>
                     {highlightProps && (
                         <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...highlightProps} />
                     )}
 
-                    <HideGroup>
+                    <HideGroup opacity={object.opacity / 100}>
                         <Path
                             data={OUTER_EYE_PATH}
                             fill={highlightColor}
