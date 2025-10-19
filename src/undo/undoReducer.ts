@@ -114,6 +114,10 @@ export function createUndoReducer<S, A extends StateActionBase>(
             }
 
             if (action.type === 'commit') {
+                if (state.transientPresent === state.present) {
+                    return state;
+                }
+
                 return {
                     past: getNewPast(state, historyLimit),
                     present: state.transientPresent,
@@ -123,6 +127,10 @@ export function createUndoReducer<S, A extends StateActionBase>(
             }
 
             if (action.type === 'rollback') {
+                if (state.transientPresent === state.present) {
+                    return state;
+                }
+
                 return {
                     ...state,
                     transientPresent: state.present,
