@@ -2,6 +2,16 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## October 19, 2025
+
+- Hovering the mouse over an object in the scene list now highlights that object in the scene.
+- Opacity sliders now update the undo history only once per adjustment with mouse input.
+- Text controls now reflect updates in the scene immediately but only update the undo history when they lose focus.
+
+## October 7, 2025
+
+- Added `Ctrl+Shift+Z` as an alternative redo shortcut.
+
 ## September 29, 2025
 
 - Dragging an object now updates the positions of tethers attached to it.
