@@ -21,8 +21,9 @@ export const ArenaBackgroundEdit: React.FC = () => {
                     label="Background image opacity"
                     value={scene.arena.backgroundOpacity ?? 100}
                     onChange={(ev, data) => {
-                        dispatch({ type: 'arenaBackgroundOpacity', value: data.value });
+                        dispatch({ type: 'arenaBackgroundOpacity', value: data.value, transient: data.transient });
                     }}
+                    onCommit={() => dispatch({ type: 'commit' })}
                 />
             )}
         </>

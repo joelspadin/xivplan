@@ -54,8 +54,8 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
     const stroke = commonValue(objects, (obj) => obj.stroke);
     const style = commonValue(objects, (obj) => obj.style);
 
-    const handleStrokeChanged = (stroke: string) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, stroke })) });
+    const handleStrokeChanged = (stroke: string, transient: boolean) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, stroke })), transient });
 
     const handleStyleChanged = (style: TextStyle) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, style })) });
@@ -79,9 +79,10 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
                 <CompactColorPicker
                     label="Outline"
                     color={stroke ?? ''}
-                    onChange={handleStrokeChanged}
                     className={classes.grow}
                     disabled={disabled}
+                    onChange={(data) => handleStrokeChanged(data.value, data.transient)}
+                    onCommit={() => dispatch({ type: 'commit' })}
                 />
                 <Field label="Style">
                     <SegmentedGroup
@@ -100,7 +101,7 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
                     <CompactSwatchColorPicker
                         swatches={swatches}
                         selectedValue={stroke ?? ''}
-                        onSelectionChange={(ev, data) => handleStrokeChanged(data.selectedSwatch)}
+                        onSelectionChange={(ev, data) => handleStrokeChanged(data.selectedSwatch, false)}
                     />
                 </div>
             )}

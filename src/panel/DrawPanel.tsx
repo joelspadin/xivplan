@@ -16,7 +16,7 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
-import { CompactColorPicker } from '../CompactColorPicker';
+import { CompactColorPicker, CompactColorPickerProps } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
@@ -40,7 +40,7 @@ export const DrawPanel: React.FC = () => {
     const [editMode, setEditMode] = useEditMode();
     const [config, setConfig] = useDrawConfig();
 
-    const setColor = (color: string) => setConfig({ ...config, color });
+    const setColor: CompactColorPickerProps['onChange'] = (data) => setConfig({ ...config, color: data.value });
 
     const setOpacity = (opacity: number) => {
         if (opacity !== config.opacity) {
@@ -79,17 +79,11 @@ export const DrawPanel: React.FC = () => {
                     </ToggleButton>
                 </div>
             </Field>
-            <CompactColorPicker
-                label="Color"
-                placeholder="Brush color"
-                color={config.color}
-                onChange={setColor}
-                debounceTime={0}
-            />
+            <CompactColorPicker label="Color" placeholder="Brush color" color={config.color} onChange={setColor} />
             <CompactSwatchColorPicker
                 swatches={colorSwatches}
                 selectedValue={config.color}
-                onSelectionChange={(ev, data) => setColor(data.selectedSwatch)}
+                onSelectionChange={(ev, data) => setColor({ value: data.selectedSwatch, transient: false })}
             />
             <OpacitySlider value={config.opacity} onChange={(ev, data) => setOpacity(data.value)} />
             <BrushSizeControl

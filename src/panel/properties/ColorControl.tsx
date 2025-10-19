@@ -19,10 +19,17 @@ export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ 
 
     const color = commonValue(objects, (obj) => obj.color);
 
-    const onColorChanged = (color: string) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) });
+    const onColorChanged = (color: string, transient: boolean) =>
+        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })), transient });
 
-    return <CompactColorPicker label="Color" color={color ?? ''} onChange={onColorChanged} />;
+    return (
+        <CompactColorPicker
+            label="Color"
+            color={color ?? ''}
+            onChange={(data) => onColorChanged(data.value, data.transient)}
+            onCommit={() => dispatch({ type: 'commit' })}
+        />
+    );
 };
 
 const MARKER_SWATCHES = [

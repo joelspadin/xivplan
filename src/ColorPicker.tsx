@@ -9,7 +9,7 @@ import { HsvaColor, RgbColor, colorToHsva, hsvToHex, hsvToRgb, rgbToHsva } from 
 export interface ColorPickerProps {
     className?: string;
     value?: string;
-    onChange?: (value: string) => void;
+    onChange?: (color: string) => void;
 }
 
 const BLACK: HsvaColor = { h: 0, s: 0, v: 0, a: 1 };

@@ -1,6 +1,7 @@
 import {
     Field,
     Popover,
+    PopoverProps,
     PopoverSurface,
     PopoverTrigger,
     createCustomFocusIndicatorStyle,
@@ -12,61 +13,57 @@ import {
     tokens,
 } from '@fluentui/react-components';
 import React, { useState } from 'react';
-import { useDebounce } from 'react-use';
 import { ColorPicker } from './ColorPicker';
 import { DeferredInput } from './DeferredInput';
 import { isValidColor } from './color';
 
-const DEFAULT_DEBOUNCE_TIME = 500;
+export interface CompactColorPickerOnChangeData {
+    value: string;
+    transient: boolean;
+}
 
 export interface CompactColorPickerProps {
     className?: string;
     label?: string;
     placeholder?: string;
-    debounceTime?: number;
     disabled?: boolean;
     color: string;
-    onChange?: (color: string) => void;
+    onChange?: (data: CompactColorPickerOnChangeData) => void;
+    onCommit?: () => void;
 }
 
 export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
     className,
     color,
-    debounceTime,
     disabled,
     label,
-    onChange,
     placeholder,
+    onChange,
+    onCommit,
 }) => {
-    debounceTime = debounceTime ?? DEFAULT_DEBOUNCE_TIME;
-
     const classes = useStyles();
     const resetStyles = useResetStyles();
     const [colorValid, setColorValid] = useState(true);
 
-    const notifyChanged = (newColor: string) => {
-        if (newColor !== color) {
-            onChange?.(newColor);
+    const notifyChanged = (data: CompactColorPickerOnChangeData) => {
+        if (data.value !== color) {
+            setColorValid(true);
+            onChange?.(data);
         }
     };
 
-    const [pickerColor, setPickerColor] = useState(color);
-    useDebounce(() => notifyChanged(pickerColor), debounceTime, [pickerColor]);
-
-    // If the controlled color value changes, reset the internal state to match
-    const [prevColor, setPrevColor] = useState(color);
-    if (color !== prevColor) {
-        setPrevColor(color);
-        setPickerColor(color);
-        setColorValid(!color || isValidColor(color));
-    }
+    const handlePopoverOpenChanged: PopoverProps['onOpenChange'] = (ev, data) => {
+        if (!data.open) {
+            onCommit?.();
+        }
+    };
 
     const setColorText = (text: string) => {
-        const valid = isValidColor(text);
-        setColorValid(!text || valid);
-
-        if (valid) {
-            notifyChanged(text);
+        if (isValidColor(text)) {
+            setColorValid(true);
+            notifyChanged({ value: text, transient: false });
+        } else {
+            setColorValid(!text);
         }
     };
 
@@ -82,7 +79,7 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
                     contentBefore={{
                         children: (
                             <div className={classes.buttonWrapper}>
-                                <Popover size="small" withArrow>
+                                <Popover size="small" withArrow onOpenChange={handlePopoverOpenChanged}>
                                     <PopoverTrigger>
                                         <button
                                             className={mergeClasses(resetStyles, classes.button)}
@@ -91,7 +88,10 @@ export const CompactColorPicker: React.FC<CompactColorPickerProps> = ({
                                         />
                                     </PopoverTrigger>
                                     <PopoverSurface tabIndex={-1}>
-                                        <ColorPicker value={pickerColor} onChange={setPickerColor} />
+                                        <ColorPicker
+                                            value={color}
+                                            onChange={(value) => notifyChanged({ value, transient: true })}
+                                        />
                                     </PopoverSurface>
                                 </Popover>
                             </div>

@@ -11,9 +11,9 @@ export const OpacityControl: React.FC<PropertiesControlProps<SceneObject>> = ({ 
     const opacity = commonValue(objects, (obj) => obj.opacity);
     const hide = commonValue(objects, (obj) => !!obj.hide);
 
-    const setOpacity = (newOpacity: number) => {
+    const setOpacity = (newOpacity: number, transient: boolean) => {
         if (newOpacity !== opacity) {
-            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, opacity: newOpacity })) });
+            dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, opacity: newOpacity })), transient });
         }
     };
 
@@ -22,7 +22,8 @@ export const OpacityControl: React.FC<PropertiesControlProps<SceneObject>> = ({ 
             className={className}
             value={opacity}
             disabled={hide}
-            onChange={(ev, data) => setOpacity(data.value)}
+            onChange={(ev, data) => setOpacity(data.value, data.transient)}
+            onCommit={() => dispatch({ type: 'commit' })}
         />
     );
 };
