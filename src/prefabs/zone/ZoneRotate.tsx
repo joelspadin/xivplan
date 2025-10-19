@@ -113,7 +113,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
+            {highlightProps && <Circle radius={radius + style.strokeWidth * 0.75} {...highlightProps} />}
 
             <HideGroup opacity={(object.opacity * 2) / 100} ref={groupRef}>
                 <Circle radius={radius} {...style} />

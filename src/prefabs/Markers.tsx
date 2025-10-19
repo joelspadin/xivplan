@@ -119,7 +119,6 @@ const EllipseOutline: React.FC<OutlineProps> = ({
                     radiusX={highlightWidth / 2}
                     radiusY={highlightHeight / 2}
                     {...highlightProps}
-                    opacity={0.25}
                 />
             )}
 
@@ -158,7 +157,6 @@ const RectangleOutline: React.FC<OutlineProps> = ({
                     height={highlightHeight}
                     {...highlightProps}
                     {...ALIGN_TO_PIXEL}
-                    opacity={0.25}
                 />
             )}
 

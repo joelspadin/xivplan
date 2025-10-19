@@ -80,7 +80,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} opacity={0.35} />}
+            {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} />}
 
             <HideGroup>
                 <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
