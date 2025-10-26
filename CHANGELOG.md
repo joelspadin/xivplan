@@ -2,6 +2,12 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## October 26, 2025
+
+- Dragging an object will now move all selected objects with it.
+- Fixed an issue where the counter orbs in a stack marker were not hidden when the object was hidden.
+- Fixed an issue where the hitbox for selecting an enemy object was a square instead of a circle.
+
 ## October 19, 2025
 
 - Hovering the mouse over an object in the scene list now highlights that object in the scene.
