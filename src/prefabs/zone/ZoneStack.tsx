@@ -3,7 +3,9 @@ import { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useRef } from 'react';
 import { Circle, Group } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/stack.svg?react';
+import { getCanvasCoord } from '../../coord';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
@@ -17,7 +19,6 @@ import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useHighlightProps } from '../highlight';
-import { useDraggableCenter } from '../useDraggableCenter';
 import { Orb } from './Orb';
 import { ChevronTail } from './shapes';
 import { getStackCircleProps } from './stackUtil';
@@ -78,6 +79,8 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
     const ch = radius * 0.325;
     const ca = 40;
 
+    const showOrbs = !object.hide && object.count > 1;
+
     return (
         <>
             {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} />}
@@ -95,7 +98,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                         listening={false}
                     />
                 )}
-                {object.count > 1 && <StackOrbs object={object} radius={radius} ring={ring} orb={arrow} />}
+                {showOrbs && <StackOrbs object={object} radius={radius} ring={ring} orb={arrow} />}
 
                 {CHEVRON_ANGLES.map((r, i) => (
                     <ChevronTail
@@ -119,7 +122,8 @@ interface StackOrbsProps extends StackRendererProps {
 }
 
 const StackOrbs: React.FC<StackOrbsProps> = ({ object, radius, ring }) => {
-    const center = useDraggableCenter();
+    const { scene } = useScene();
+    const center = getCanvasCoord(scene, object);
 
     const orbRadius = Math.min(radius * 0.25, 40);
     const orbs = getStackCircleProps(orbRadius, object.count);
@@ -128,6 +132,8 @@ const StackOrbs: React.FC<StackOrbsProps> = ({ object, radius, ring }) => {
 
     useKonvaCache(shapeRef, [object, radius]);
 
+    // TODO: putting this in a portal causes it to lag behind the position of
+    // the marker when dragging by one render for some reason.
     return (
         <ForegroundPortal>
             <Group ref={shapeRef} {...center} opacity={object.opacity / 40} listening={false}>

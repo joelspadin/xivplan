@@ -7,7 +7,6 @@ import { EditMode } from '../editMode';
 import { MoveableObject, Scene, UnknownObject } from '../scene';
 import { selectSingle, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
-import { DraggableCenterContext } from './DraggableCenterContext';
 import { SelectableObject } from './SelectableObject';
 import { TetherTarget } from './TetherTarget';
 
@@ -49,22 +48,20 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, onActi
     };
 
     return (
-        <DraggableCenterContext value={center}>
-            <SelectableObject object={object}>
-                <TetherTarget object={object}>
-                    <CursorGroup
-                        {...center}
-                        cursor={isDraggable ? 'move' : undefined}
-                        draggable={isDraggable}
-                        onDragStart={handleDragStart}
-                        onDragMove={handleDragMove}
-                        onDragEnd={handleDragEnd}
-                    >
-                        {children}
-                    </CursorGroup>
-                </TetherTarget>
-            </SelectableObject>
-        </DraggableCenterContext>
+        <SelectableObject object={object}>
+            <TetherTarget object={object}>
+                <CursorGroup
+                    {...center}
+                    cursor={isDraggable ? 'move' : undefined}
+                    draggable={isDraggable}
+                    onDragStart={handleDragStart}
+                    onDragMove={handleDragMove}
+                    onDragEnd={handleDragEnd}
+                >
+                    {children}
+                </CursorGroup>
+            </TetherTarget>
+        </SelectableObject>
     );
 };
 
