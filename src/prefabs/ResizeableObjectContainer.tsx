@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { KonvaNodeEvents } from 'react-konva';
 import { ActivePortal } from '../render/Portals';
 import { ResizeableObject, UnknownObject } from '../scene';
+import { useIsDragging } from '../selection';
 import { useKonvaCache } from '../useKonvaCache';
 import { DraggableObject } from './DraggableObject';
 import { Resizer, ResizerProps } from './Resizer';
@@ -27,14 +28,14 @@ export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps>
     children,
 }) => {
     const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const dragging = useIsDragging(object);
     const shapeRef = useRef<Konva.Group>(null);
 
     useKonvaCache(shapeRef, { enabled: !!cache }, [cacheKey, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <Resizer
                     object={object}
                     nodeRef={shapeRef}

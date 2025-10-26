@@ -11,6 +11,7 @@ import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LineZone, ObjectType } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vector';
@@ -218,7 +219,7 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const dragging = useIsDragging(object);
 
     const updateObject = (state: LineState) => {
         state.rotation = Math.round(state.rotation);
@@ -233,7 +234,7 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <LineControlPoints
                     object={object}
                     onActive={setResizing}

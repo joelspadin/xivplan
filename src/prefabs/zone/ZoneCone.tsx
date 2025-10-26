@@ -12,6 +12,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
 import { ConeZone, ObjectType } from '../../scene';
+import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
@@ -151,7 +152,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const dragging = useIsDragging(object);
 
     const updateObject = (state: ConeState) => {
         state.rotation = Math.round(state.rotation);
@@ -166,7 +167,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <ConeControlPoints
                     object={object}
                     onActive={setResizing}

@@ -12,6 +12,7 @@ import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
 import { ArcZone, ObjectType } from '../../scene';
+import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { clamp, degtorad, mod360 } from '../../util';
@@ -176,7 +177,7 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const dragging = useIsDragging(object);
 
     const updateObject = (state: ArcState) => {
         state.rotation = Math.round(state.rotation);
@@ -191,7 +192,7 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <ArcControlPoints
                     object={object}
                     onActive={setResizing}

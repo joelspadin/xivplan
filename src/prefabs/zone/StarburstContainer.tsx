@@ -5,6 +5,7 @@ import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { StarburstZone, UnknownObject } from '../../scene';
+import { useIsDragging } from '../../selection';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -41,7 +42,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
-    const [isDragging, setDragging] = useState(false);
+    const isDragging = useIsDragging(object);
 
     const updateObject = (state: StarburstObjectState) => {
         state.rotation = Math.round(state.rotation);
@@ -57,7 +58,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
 
     return (
         <ActivePortal isActive={isDragging || isResizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <StarburstControlPoints
                     object={object}
                     onActive={setResizing}

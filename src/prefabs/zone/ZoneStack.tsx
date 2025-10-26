@@ -132,8 +132,6 @@ const StackOrbs: React.FC<StackOrbsProps> = ({ object, radius, ring }) => {
 
     useKonvaCache(shapeRef, [object, radius]);
 
-    // TODO: putting this in a portal causes it to lag behind the position of
-    // the marker when dragging by one render for some reason.
     return (
         <ForegroundPortal>
             <Group ref={shapeRef} {...center} opacity={object.opacity / 40} listening={false}>

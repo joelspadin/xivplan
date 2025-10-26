@@ -9,6 +9,7 @@ import { SceneSelection } from './SelectionContext';
 import { getSceneCoord, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
 import { EditMode } from './editMode';
+import { moveObjectsBy } from './groupOperations';
 import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
@@ -326,17 +327,8 @@ const EditActionHandler: React.FC = () => {
             return;
         }
 
-        const value: SceneObject[] = [];
-        selection.forEach((id) => {
-            const object = getObjectById(scene, id);
-            if (object && isMoveable(object)) {
-                value.push({
-                    ...object,
-                    x: object.x + (offset?.x ?? 0),
-                    y: object.y + (offset?.y ?? 0),
-                } as SceneObject & MoveableObject);
-            }
-        });
+        const selectedObjects = getSelectedObjects(step, selection);
+        const value = moveObjectsBy(selectedObjects, offset);
 
         dispatch({ type: 'update', value });
         e.preventDefault();

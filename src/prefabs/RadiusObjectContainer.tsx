@@ -5,6 +5,7 @@ import { getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, RadiusObject, SceneObject, UnknownObject, isRotateable } from '../scene';
+import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
 import { distance } from '../vector';
 import {
@@ -50,7 +51,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     const { dispatch } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
-    const [isDragging, setDragging] = useState(false);
+    const isDragging = useIsDragging(object);
 
     const updateObject = (state: RadiusObjectState) => {
         state.rotation = Math.round(state.rotation);
@@ -74,7 +75,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
 
     return (
         <ActivePortal isActive={isDragging || isResizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <RadiusControlPoints
                     object={object}
                     onActive={setResizing}

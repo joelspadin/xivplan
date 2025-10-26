@@ -11,6 +11,7 @@ import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
 import { ObjectType, TextObject } from '../scene';
+import { useIsDragging } from '../selection';
 import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
@@ -149,14 +150,14 @@ interface TextContainerProps {
 
 const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, children }) => {
     const [resizing, setResizing] = useState(false);
-    const [dragging, setDragging] = useState(false);
+    const dragging = useIsDragging(object);
     const shapeRef = useRef<Konva.Group>(null);
 
     useKonvaCache(shapeRef, [cacheKey, object]);
 
     return (
         <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object} onActive={setDragging}>
+            <DraggableObject object={object}>
                 <TextResizer object={object} nodeRef={shapeRef} dragging={dragging}>
                     {(onTransformEnd) => {
                         return children({
