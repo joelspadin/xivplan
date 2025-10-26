@@ -120,6 +120,7 @@ const EnemyLabel: React.FC<EnemyLabelProps> = ({ name, radius, ...props }) => {
             align="center"
             verticalAlign="middle"
             fillAfterStrokeEnabled
+            listening={false}
             {...props}
         />
     );
