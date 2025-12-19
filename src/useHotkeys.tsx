@@ -1,4 +1,4 @@
-import { RefObject, useContext, useEffect, useId } from 'react';
+import { RefObject, useContext, useEffect } from 'react';
 import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
 
@@ -48,18 +48,17 @@ export function useHotkeys<T extends HTMLElement>(
 
 export function useHotkeyHelp(info: HotkeyInfo): void {
     const map = useContext(HotkeyHelpContext);
-    const id = useId();
     useEffect(() => {
-        if (!info.category || !info.help) {
+        if (!info.keys || !info.category || !info.help) {
             return;
         }
 
-        map.set(id, info);
+        map.set(info.keys, info);
 
         return () => {
-            map.delete(id);
+            map.delete(info.keys);
         };
-    }, [map, id, info]);
+    }, [map, info]);
 }
 
 export function useRegisteredHotkeys(): HotkeyInfo[] {
