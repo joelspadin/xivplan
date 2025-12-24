@@ -10,16 +10,22 @@ import {
 import React from 'react';
 import { getObjectById, getObjectNameById, useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
-import { getAbsolutePosition, getRelativeAttachmentPoint } from '../../coord';
+import { getAllowedParentIds, updateParentIdsAction } from '../../connections';
+import { getAbsolutePosition } from '../../coord';
+import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { getDefaultAttachmentPreference, isMoveable, MoveableObject, SceneObject } from '../../scene';
+import { isMoveable, MoveableObject } from '../../scene';
+import { useConnectionSelection } from '../../useConnectionSelection';
 import { useControlStyles } from '../../useControlStyles';
+import { useEditMode } from '../../useEditMode';
 import { commonValue, omit, setOrOmit } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> = ({ objects }) => {
     const classes = useControlStyles();
     const { scene, step, dispatch } = useScene();
+    const [, setEditMode] = useEditMode();
+    const [, setConnectionSelection] = useConnectionSelection();
 
     const x = commonValue(objects, (obj) => obj.x);
     const y = commonValue(objects, (obj) => obj.y);
@@ -36,47 +42,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
 
-    const selectedAndChildren = new Set<number>(objects.map((obj) => obj.id));
-    let addedObjects = objects.length;
-    while (addedObjects > 0) {
-        addedObjects = 0;
-        step.objects.forEach((obj) => {
-            if (selectedAndChildren.has(obj.id)) {
-                return;
-            }
-            if (isMoveable(obj) && obj.parentId !== undefined && selectedAndChildren.has(obj.parentId)) {
-                selectedAndChildren.add(obj.id);
-                addedObjects++;
-            }
-        });
-    }
-
-    const allowedParentIds = step.objects
-        .filter(isMoveable)
-        .map((obj) => obj.id)
-        .filter((id) => !selectedAndChildren.has(id));
-
-    const dispatchNewParentId = (newParentId: number) => {
-        dispatch({
-            type: 'update',
-            value: objects.map((obj) => {
-                const absolutePos = getAbsolutePosition(scene, obj);
-                // Markers and status effects go to the new default position. Anything else just stays where it is.
-                const attachmentPreference = getDefaultAttachmentPreference(obj);
-                const newRelativePos = getRelativeAttachmentPoint(
-                    scene,
-                    { ...obj, ...absolutePos },
-                    getObjectById(scene, newParentId) as SceneObject & MoveableObject,
-                    attachmentPreference,
-                );
-                return {
-                    ...obj,
-                    parentId: newParentId,
-                    ...newRelativePos,
-                };
-            }),
-        });
-    };
+    const allowedParentIds = getAllowedParentIds(step, objects);
 
     const onToggleLinked = () => {
         const currentlyLinked = parentId !== undefined;
@@ -95,8 +61,8 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
             if (allowedParentIds.length == 0) {
                 return;
             }
-            // Pick the first allowed parent by default.
-            dispatchNewParentId(allowedParentIds[0]!);
+            setEditMode(EditMode.SelectConnection);
+            setConnectionSelection({ objectIdsToConnect: objects.map((obj) => obj.id) });
         }
     };
 
@@ -105,7 +71,12 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
             // shouldn't happen since unselecting an item is not allowed.
             return;
         }
-        dispatchNewParentId(parseInt(newValue));
+        const newParentObject = getObjectById(scene, parseInt(newValue));
+        if (!newParentObject || !isMoveable(newParentObject)) {
+            // Shouldn't happen given the possible values in the dropdown
+            return;
+        }
+        dispatch(updateParentIdsAction(scene, objects, newParentObject));
     };
 
     const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
