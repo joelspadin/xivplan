@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
-import { getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -216,7 +216,7 @@ function stateChanged(object: LineZone, state: LineState) {
 }
 
 const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
@@ -241,7 +241,14 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
                     visible={showResizer && !dragging}
                     onTransformEnd={updateObject}
                 >
-                    {(props) => <LineRenderer object={object} isDragging={dragging || resizing} {...props} />}
+                    {(props) => (
+                        <LineRenderer
+                            object={object}
+                            isDragging={dragging || resizing}
+                            {...props}
+                            rotation={getAbsoluteRotation(scene, object)}
+                        />
+                    )}
                 </LineControlPoints>
             </DraggableObject>
         </ActivePortal>

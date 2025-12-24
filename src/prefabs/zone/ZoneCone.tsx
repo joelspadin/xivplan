@@ -4,7 +4,7 @@ import { Group, Shape, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/cone.svg?react';
-import { getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -149,7 +149,7 @@ function stateChanged(object: ConeZone, state: ConeState) {
 }
 
 const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
@@ -174,7 +174,9 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
                     visible={showResizer && !dragging}
                     onTransformEnd={updateObject}
                 >
-                    {(props) => <ConeRenderer object={object} {...props} />}
+                    {(props) => (
+                        <ConeRenderer object={object} {...props} rotation={getAbsoluteRotation(scene, object)} />
+                    )}
                 </ConeControlPoints>
             </DraggableObject>
         </ActivePortal>

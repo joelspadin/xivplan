@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
-import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { StarburstZone, UnknownObject } from '../../scene';
@@ -39,7 +39,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     children,
     minSpokeWidth,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const isDragging = useIsDragging(object);
@@ -66,7 +66,9 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
                     onTransformEnd={updateObject}
                     minSpokeWidth={minSpokeWidth}
                 >
-                    {(props) => children({ ...props, isDragging, isResizing })}
+                    {(props) =>
+                        children({ ...props, isDragging, isResizing, rotation: getAbsoluteRotation(scene, object) })
+                    }
                 </StarburstControlPoints>
             </DraggableObject>
         </ActivePortal>

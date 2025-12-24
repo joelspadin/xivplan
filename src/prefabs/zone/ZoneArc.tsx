@@ -4,7 +4,7 @@ import { Arc, Circle, Group, Shape } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/arc.svg?react';
-import { getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -174,7 +174,7 @@ function stateChanged(object: ArcZone, state: ArcState) {
 }
 
 const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
@@ -205,7 +205,7 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
                                 object={object}
                                 outerRadius={radius}
                                 innerRadius={innerRadius}
-                                rotation={rotation}
+                                rotation={rotation + getAbsoluteRotation(scene, object) - object.rotation}
                                 coneAngle={coneAngle}
                                 isDragging={dragging}
                             />

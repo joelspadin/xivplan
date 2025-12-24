@@ -422,6 +422,7 @@ function addObjects(
                     ...addedObjects[0],
                     ...getRelativeAttachmentPoint(state.scene, addedObjects[0], potentialParent, attachPosition),
                     ...{ parentId: potentialParent.id },
+                    // TODO: only pin the position, not the rotation, and make line/cone/etc attach to the center by default.
                     pinned: true,
                 } as SceneObject & MoveableObject;
             }

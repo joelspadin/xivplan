@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../SceneProvider';
-import { getPointerAngle, snapAngle } from '../coord';
+import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, RadiusObject, SceneObject, UnknownObject, isRotateable } from '../scene';
@@ -48,7 +48,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     allowRotate,
     allowInnerRadius,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const isDragging = useIsDragging(object);
@@ -84,7 +84,14 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
                     allowRotate={allowRotate}
                     allowInnerRadius={allowInnerRadius}
                 >
-                    {(props) => children({ ...props, isDragging, isResizing })}
+                    {(props) =>
+                        children({
+                            ...props,
+                            isDragging,
+                            isResizing,
+                            rotation: isRotateable(object) ? getAbsoluteRotation(scene, object) : 0,
+                        })
+                    }
                 </RadiusControlPoints>
             </DraggableObject>
         </ActivePortal>
