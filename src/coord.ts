@@ -8,6 +8,7 @@ import {
     isRadiusObject,
     isResizable,
     MoveableObject,
+    RotateableObject,
     Scene,
     SceneObject,
 } from './scene';
@@ -115,6 +116,23 @@ export function getSceneCoord(scene: Scene, p: Position): Vector2d {
 export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vector2d {
     const parent = getParentPosition(scene, { x: 0, y: 0, parentId });
     return { x: p.x - parent.x, y: p.y - parent.y };
+}
+
+/** Calculates the rotation of the object while taking into account the object it may be configured to be facing. */
+export function getAbsoluteRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
+    let rotation = object.rotation;
+    if (object.facingId) {
+        const facingObject = getObjectById(scene, object.facingId);
+        if (facingObject && isMoveable(facingObject)) {
+            rotation += getFacingAngle(getAbsolutePosition(scene, object), getAbsolutePosition(scene, facingObject));
+        }
+    }
+    return rotation;
+}
+
+/** @returns the angle to rotate an up-facing object at the given origin to make it face toards the target (in degrees) */
+function getFacingAngle(origin: Vector2d, target: Vector2d): number {
+    return getPointerAngle({ x: target.x - origin.x, y: target.y - origin.y });
 }
 
 export function rotateCoord(p: Vector2d, angle: number, center: Vector2d = { x: 0, y: 0 }): Vector2d {
