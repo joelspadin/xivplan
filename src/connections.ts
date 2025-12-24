@@ -1,9 +1,12 @@
 import { getAbsolutePosition, getRelativeAttachmentPoint } from './coord';
+import { ConnectionType } from './EditModeContext';
 import {
     DefaultAttachPosition,
     getDefaultAttachmentPreference,
     isMoveable,
+    isRotateable,
     MoveableObject,
+    RotateableObject,
     Scene,
     SceneObject,
     SceneStep,
@@ -11,18 +14,25 @@ import {
 import { getObjectById, SceneAction, useScene } from './SceneProvider';
 import { useConnectionSelection } from './useConnectionSelection';
 
-export function useAllowedParentIds(): number[] {
+export function useAllowedConnectionIds(): number[] {
     const { step } = useScene();
     const [connectionSelection] = useConnectionSelection();
     const objectIdsToConnect = new Set(connectionSelection.objectIdsToConnect);
 
-    return getAllowedParentIds(
-        step,
-        step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
-    );
+    switch (connectionSelection.connectionType) {
+        case ConnectionType.POSITION:
+            return getAllowedPositionParentIds(
+                step,
+                step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
+            );
+        case ConnectionType.ROTATION: {
+            // All but the selection itself, including child objects
+            return step.objects.filter((obj) => !objectIdsToConnect.has(obj.id)).map((obj) => obj.id);
+        }
+    }
 }
 
-export function getAllowedParentIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
+export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
     const selectedAndChildren = new Set<number>(objectsToConnect.map((obj) => obj.id));
     let addedObjects = objectsToConnect.length;
     while (addedObjects > 0) {
@@ -44,20 +54,57 @@ export function getAllowedParentIds(step: SceneStep, objectsToConnect: readonly 
         .filter((id) => !selectedAndChildren.has(id));
 }
 
-export function useUpdateParentIdsAction(): (newParent: SceneObject & MoveableObject) => SceneAction {
+/**
+ * Returns a function that yields a SceneAction to update the given object as the chosen connected ID,
+ * determined by the values in the ConnectionSelectionContext
+ */
+export function useUpdateConnectedIdsAction(): (newParent: SceneObject & MoveableObject) => SceneAction {
     const { scene } = useScene();
-    const [connectionSelection] = useConnectionSelection();
-    const objectsToConnect: (SceneObject & MoveableObject)[] = [];
-    connectionSelection.objectIdsToConnect.forEach((id) => {
-        const object = getObjectById(scene, id);
-        if (isMoveable(object)) {
-            objectsToConnect.push(object);
+    const [{ objectIdsToConnect, connectionType }] = useConnectionSelection();
+
+    switch (connectionType) {
+        case ConnectionType.POSITION: {
+            const objectsToConnect: (SceneObject & MoveableObject)[] = [];
+            objectIdsToConnect.forEach((id) => {
+                const object = getObjectById(scene, id);
+                if (isMoveable(object)) {
+                    objectsToConnect.push(object);
+                }
+            });
+
+            return (newParent: SceneObject & MoveableObject) =>
+                createUpdatePositionParentIdsAction(scene, objectsToConnect, newParent);
         }
-    });
-    return (newParent: SceneObject & MoveableObject) => createUpdateParentIdsAction(scene, objectsToConnect, newParent);
+        case ConnectionType.ROTATION: {
+            const objectsToConnect: (SceneObject & RotateableObject)[] = [];
+            objectIdsToConnect.forEach((id) => {
+                const object = getObjectById(scene, id);
+                if (isRotateable(object)) {
+                    objectsToConnect.push(object);
+                }
+            });
+            return (newParent: SceneObject & MoveableObject) =>
+                createUpdateRotationParentIdsAction(scene, objectsToConnect, newParent);
+        }
+    }
 }
 
-function createUpdateParentIdsAction(
+function createUpdateRotationParentIdsAction(
+    scene: Scene,
+    objectsToConnect: readonly (SceneObject & RotateableObject)[],
+    newParent: SceneObject & MoveableObject,
+): SceneAction {
+    return {
+        type: 'update',
+        value: objectsToConnect.map((obj) => {
+            // always face the newly-linked target object by default.
+            // (the rendering logic will ensure '0' is facing newParent)
+            return { ...obj, facingId: newParent.id, rotation: 0 };
+        }),
+    };
+}
+
+function createUpdatePositionParentIdsAction(
     scene: Scene,
     objectsToConnect: readonly (SceneObject & MoveableObject)[],
     newParent: SceneObject & MoveableObject,

@@ -35,18 +35,27 @@ export type TetherConfigState = [TetherConfig, Dispatch<SetStateAction<TetherCon
 
 export const TetherConfigContext = createContext<TetherConfigState>([DEFAULT_TETHER_CONFIG, () => undefined]);
 
-export interface ConnectionSelectionConfig {
-    objectIdsToConnect: number[];
+export enum ConnectionType {
+    POSITION = 'position',
+    ROTATION = 'rotation',
 }
 
-export const DEFAULT_CONNECTION_SELECTION_CONFIG: ConnectionSelectionConfig = { objectIdsToConnect: [] };
+export interface ConnectionSelectionConfig {
+    objectIdsToConnect: number[];
+    connectionType: ConnectionType;
+}
+
+export const DEFAULT_CONNECTION_SELECTION_CONFIG: ConnectionSelectionConfig = {
+    objectIdsToConnect: [],
+    connectionType: ConnectionType.POSITION,
+};
 
 export type ConnectionSelectionConfigState = [
     ConnectionSelectionConfig,
     Dispatch<SetStateAction<ConnectionSelectionConfig>>,
 ];
 
-export const ConnectionSelectionConfigContext = createContext<ConnectionSelectionConfigState>([
+export const ConnectionSelectionContext = createContext<ConnectionSelectionConfigState>([
     DEFAULT_CONNECTION_SELECTION_CONFIG,
     () => undefined,
 ]);
