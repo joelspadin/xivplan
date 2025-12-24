@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { useAllowedParentIds, useUpdateParentIdsAction } from '../connections';
+import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -41,7 +41,7 @@ function getObjectIndex(objects: readonly SceneObject[], id: number) {
 export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     const classes = useStyles();
     const [editMode] = useEditMode();
-    const allowedParentIds = new Set(useAllowedParentIds());
+    const allowedParentIds = new Set(useAllowedConnectionIds());
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
@@ -106,7 +106,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
-    const getUpdateParentIdsAction = useUpdateParentIdsAction();
+    const getUpdateParentIdsAction = useUpdateConnectedIdsAction();
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {

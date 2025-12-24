@@ -1,5 +1,6 @@
 import { mergeClasses } from '@fluentui/react-components';
 import React from 'react';
+import { ConnectionType } from '../EditModeContext';
 import { useCurrentStep } from '../SceneProvider';
 import { EditMode } from '../editMode';
 import {
@@ -32,6 +33,7 @@ import {
     supportsStackCount,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
+import { useConnectionSelection } from '../useConnectionSelection';
 import { useControlStyles } from '../useControlStyles';
 import { useEditMode } from '../useEditMode';
 import { PropertiesControlProps } from './PropertiesControl';
@@ -100,14 +102,25 @@ const Controls: React.FC = () => {
     const [selection] = useSelection();
     const step = useCurrentStep();
     const [editMode] = useEditMode();
+    const [{ connectionType }] = useConnectionSelection();
 
     if (editMode == EditMode.SelectConnection) {
-        return (
-            <p>
-                Select an object to attach the selection to. The selection or their attachments are not eligible
-                targets. (Esc to cancel)
-            </p>
-        );
+        switch (connectionType) {
+            case ConnectionType.POSITION:
+                return (
+                    <p>
+                        Select an object to attach the selection to. The selection or their attachments are not eligible
+                        targets. (Esc to cancel)
+                    </p>
+                );
+            case ConnectionType.ROTATION:
+                return (
+                    <p>
+                        Select an object to make the selection face towards. Objects in the selection are not eligible
+                        targets. (Esc to cancel)
+                    </p>
+                );
+        }
     }
 
     if (selection.size === 0) {
@@ -155,8 +168,8 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
             </div>
 
+            <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
-                <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareSpacingControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />

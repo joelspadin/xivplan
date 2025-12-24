@@ -8,9 +8,10 @@ import {
     LockOpenRegular,
 } from '@fluentui/react-icons';
 import React from 'react';
+import { ConnectionType } from '../../EditModeContext';
 import { getObjectById, useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
-import { getAllowedParentIds } from '../../connections';
+import { getAllowedPositionParentIds } from '../../connections';
 import { getAbsolutePosition } from '../../coord';
 import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -46,7 +47,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, y })) }),
     );
 
-    const allowedParentIds = getAllowedParentIds(step, objects);
+    const allowedParentIds = getAllowedPositionParentIds(step, objects);
 
     const onToggleLinked = () => {
         const currentlyLinked = parentId !== undefined;
@@ -66,7 +67,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
                 return;
             }
             setEditMode(EditMode.SelectConnection);
-            setConnectionSelection({ objectIdsToConnect: objects.map((obj) => obj.id) });
+            setConnectionSelection({
+                objectIdsToConnect: objects.map((obj) => obj.id),
+                connectionType: ConnectionType.POSITION,
+            });
         }
     };
 

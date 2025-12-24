@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { ConnectionSelectionConfigContext } from './EditModeContext';
+import { ConnectionSelectionContext } from './EditModeContext';
 
 export function useConnectionSelection() {
-    return useContext(ConnectionSelectionConfigContext);
+    return useContext(ConnectionSelectionContext);
 }

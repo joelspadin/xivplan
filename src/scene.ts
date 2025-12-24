@@ -169,6 +169,7 @@ export interface ObjectWithAttachmentPreference {
 
 export interface RotateableObject {
     readonly rotation: number;
+    readonly facingId?: number;
 }
 
 export interface ResizeableObject extends MoveableObject, RotateableObject {
