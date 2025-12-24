@@ -406,7 +406,7 @@ function addObjects(
 ): EditorState {
     const currentStep = getCurrentStep(state);
 
-    let { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
+    const { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
 
     const newObjects = [...currentStep.objects];
 
@@ -415,14 +415,12 @@ function addObjects(
         if (attachPosition != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
             const potentialParent = getObjectAt(state.scene, currentStep, addedObjects[0]);
             if (isMoveable(potentialParent)) {
-                addedObjects = [
-                    {
-                        ...addedObjects[0],
-                        ...getRelativeAttachmentPoint(state.scene, potentialParent, addedObjects[0], attachPosition),
-                        ...{ parentId: potentialParent.id },
-                        pinned: true,
-                    } as SceneObject & MoveableObject,
-                ];
+                addedObjects[0] = {
+                    ...addedObjects[0],
+                    ...getRelativeAttachmentPoint(state.scene, potentialParent, addedObjects[0], attachPosition),
+                    ...{ parentId: potentialParent.id },
+                    pinned: true,
+                } as SceneObject & MoveableObject;
             }
         }
     }
@@ -448,7 +446,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
     const currentStep = getCurrentStep(state);
 
     // Also delete any object with the to-be-deleted objects as parent
-    let idsToDelete = ids.slice();
+    const idsToDelete = ids.slice();
     let idsAdded = idsToDelete.length;
     while (idsAdded > 0) {
         idsAdded = 0;

@@ -112,7 +112,7 @@ export function getSceneCoord(scene: Scene, p: Position): Vector2d {
  * @returns the given [p], as a position relative to the object with the Given [parentId] id
  */
 export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vector2d {
-    let parent = getParentPosition(scene, { x: 0, y: 0, parentId });
+    const parent = getParentPosition(scene, { x: 0, y: 0, parentId });
     return { x: p.x - parent.x, y: p.y - parent.y };
 }
 
@@ -160,7 +160,7 @@ export interface Circle {
  * @returns whether point [p] is within (or on the edge of) circle [c]
  */
 export function isWithinRadius(c: Circle, p: Vector2d): boolean {
-    let distanceSq = (c.x - p.x) ** 2 + (c.y - p.y) ** 2;
+    const distanceSq = (c.x - p.x) ** 2 + (c.y - p.y) ** 2;
     return distanceSq <= c.radius ** 2;
 }
 
@@ -205,7 +205,7 @@ export function getRelativeAttachmentPoint(
                 attachmentAttachmentPoint = { x: 0, y: -attachment.radius };
             }
             break;
-        case DefaultAttachPosition.BOTTOM_RIGHT:
+        case DefaultAttachPosition.BOTTOM_RIGHT: {
             if (isResizable(object)) {
                 objectAttatchmentPoint = { x: object.width / 2, y: -object.height / 2 };
             } else if (isRadiusObject(object)) {
@@ -223,6 +223,7 @@ export function getRelativeAttachmentPoint(
                 attachmentAttachmentPoint = { x: -offset, y: offset };
             }
             break;
+        }
     }
     return {
         x: objectAttatchmentPoint.x - attachmentAttachmentPoint.x,
