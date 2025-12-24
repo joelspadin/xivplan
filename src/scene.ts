@@ -156,7 +156,7 @@ export interface MoveableObject extends Position {
 }
 
 export enum DefaultAttachPosition {
-    DONT_ATTACH_BY_DEFAULT = 'dont_attach_my_default',
+    DONT_ATTACH_BY_DEFAULT = 'dont_attach_by_default',
     ANYWHERE = 'attach_anywhere',
     CENTER = 'attach_centered',
     TOP = 'attach_at_top',

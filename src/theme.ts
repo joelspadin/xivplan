@@ -47,7 +47,7 @@ export const HIGHLIGHT_WIDTH = 1.5;
 
 const CONNECTION_HIGHLIGHT_PROPS: ShapeConfig = {
     dashEnabled: true,
-    dash: [10, 10],
+    dash: [8, 15],
 };
 
 export const SELECTED_PROPS: ShapeConfig = {

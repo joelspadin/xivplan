@@ -18,8 +18,12 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { SceneObject } from '../scene';
+import { useAllowedParentIds, useUpdateParentIdsActionSupplier } from '../connections';
+import { EditMode } from '../editMode';
+import { isMoveable, SceneObject } from '../scene';
+import { useScene } from '../SceneProvider';
 import { addSelection, selectNone, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
+import { useEditMode } from '../useEditMode';
 import { reversed } from '../util';
 import { getListComponent } from './ListComponentRegistry';
 
@@ -36,10 +40,18 @@ function getObjectIndex(objects: readonly SceneObject[], id: number) {
 
 export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     const classes = useStyles();
+    const [editMode] = useEditMode();
+    const allowedParentIds = new Set(useAllowedParentIds());
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
-    const reversedObjects = [...reversed(objects)];
+    let objectsToDisplay = [...reversed(objects)];
+
+    // It's simpler to just remove objects that are not allowed to be selected than
+    // to disable them in this list.
+    if (editMode == EditMode.SelectConnection) {
+        objectsToDisplay = objectsToDisplay.filter((obj) => allowedParentIds.has(obj.id));
+    }
 
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -74,8 +86,8 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext items={reversedObjects} strategy={verticalListSortingStrategy}>
-                    {reversedObjects.map((object) => (
+                <SortableContext items={objectsToDisplay} strategy={verticalListSortingStrategy}>
+                    {objectsToDisplay.map((object) => (
                         <SortableItem key={object.id} object={object} />
                     ))}
                 </SortableContext>
@@ -92,10 +104,21 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
     const [, setSpotlight] = useSpotlight();
+    const [editMode, setEditMode] = useEditMode();
+    const { dispatch } = useScene();
+    const updateParentIdsActionSupplier = useUpdateParentIdsActionSupplier();
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
-        if (e.shiftKey) {
+        if (editMode == EditMode.SelectConnection) {
+            if (!isMoveable(object)) {
+                // Such objects should already have been removed from the list. Ignore
+                // any stray events.
+                return;
+            }
+            dispatch(updateParentIdsActionSupplier(object));
+            setEditMode(EditMode.Normal);
+        } else if (e.shiftKey) {
             setSelection(addSelection(selection, object.id));
         } else if (e.ctrlKey) {
             setSelection(toggleSelection(selection, object.id));

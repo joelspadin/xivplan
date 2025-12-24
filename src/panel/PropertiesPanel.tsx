@@ -1,6 +1,7 @@
 import { mergeClasses } from '@fluentui/react-components';
 import React from 'react';
 import { useCurrentStep } from '../SceneProvider';
+import { EditMode } from '../editMode';
 import {
     SceneObject,
     UnknownObject,
@@ -32,6 +33,7 @@ import {
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
 import { useControlStyles } from '../useControlStyles';
+import { useEditMode } from '../useEditMode';
 import { PropertiesControlProps } from './PropertiesControl';
 import { ArrowPointersControl } from './properties/ArrowControls';
 import { DrawObjectBrushControl } from './properties/BrushControl';
@@ -97,6 +99,16 @@ const Controls: React.FC = () => {
     const classes = useControlStyles();
     const [selection] = useSelection();
     const step = useCurrentStep();
+    const [editMode] = useEditMode();
+
+    if (editMode == EditMode.SelectConnection) {
+        return (
+            <p>
+                Select an object to attach the selection to. The selection or their attachments are not eligible
+                targets. (Esc to cancel)
+            </p>
+        );
+    }
 
     if (selection.size === 0) {
         return <NoObjectsMessage />;

@@ -106,7 +106,9 @@ const SelectionActionHandler: React.FC = () => {
         'escape',
         { category: CATEGORY_SELECTION, help: 'Unselect all, cancel tool' },
         (e) => {
-            if (selection.size) {
+            if (editMode == EditMode.SelectConnection) {
+                setEditMode(EditMode.Normal);
+            } else if (selection.size) {
                 setSelection(selectNone());
             } else if (editMode !== EditMode.Normal) {
                 setEditMode(EditMode.Normal);

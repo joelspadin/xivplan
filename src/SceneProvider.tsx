@@ -277,7 +277,7 @@ export function getObjectNameById(scene: Scene, id?: number): string | undefined
         return undefined;
     }
     const obj = getObjectById(scene, id);
-    return isNamed(obj) ? obj.name : undefined;
+    return isNamed(obj) ? obj.name : '';
 }
 
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {

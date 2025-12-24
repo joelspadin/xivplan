@@ -1,10 +1,11 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
+import { useAllowedParentIds, useUpdateParentIdsActionSupplier } from '../connections';
 import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
 import { moveObjectsBy } from '../groupOperations';
-import { MoveableObject, Scene, SceneStep, UnknownObject } from '../scene';
+import { isMoveable, MoveableObject, Scene, SceneStep, UnknownObject } from '../scene';
 import { SceneAction, useScene } from '../SceneProvider';
 import {
     getNewDragSelection,
@@ -26,16 +27,26 @@ export interface DraggableObjectProps {
 }
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, children }) => {
-    const [editMode] = useEditMode();
+    const [editMode, setEditMode] = useEditMode();
     const { scene, step, dispatch } = useScene();
     const [selection, setSelection] = useSelection();
     const [dragSelection, setDragSelection] = useDragSelection();
+    const allowedParentIds = new Set(useAllowedParentIds());
+    const updateParentIdsActionSupplier = useUpdateParentIdsActionSupplier();
     const center = getCanvasCoord(scene, object);
 
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
 
     const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
         let newSelection: SceneSelection;
+        if (editMode == EditMode.SelectConnection) {
+            if (isMoveable(object) && allowedParentIds.has(object.id)) {
+                dispatch(updateParentIdsActionSupplier(object));
+                setEditMode(EditMode.Normal);
+            }
+            // If an object is clicked that is not a valid parent while in this mode, do nothing.
+            return;
+        }
 
         // If we start dragging an object that isn't selected, it should
         // become the new selection.
@@ -71,7 +82,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
             <TetherTarget object={object}>
                 <CursorGroup
                     {...center}
-                    cursor={isDraggable ? 'move' : undefined}
+                    cursor={editMode === EditMode.SelectConnection ? 'pointer' : isDraggable ? 'move' : undefined}
                     draggable={isDraggable}
                     onDragStart={handleDragStart}
                     onDragMove={handleDragMove}
