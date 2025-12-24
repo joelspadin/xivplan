@@ -15,7 +15,7 @@ import { getAbsolutePosition } from '../../coord';
 import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { MoveableObject } from '../../scene';
-import { selectNone, selectSingle, useSpotlight } from '../../selection';
+import { selectNone, selectSingle, useSelection, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useControlStyles } from '../../useControlStyles';
 import { useEditMode } from '../../useEditMode';
@@ -29,6 +29,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
     const [, setSpotlight] = useSpotlight();
+    const [, setSelection] = useSelection();
 
     const x = commonValue(objects, (obj) => obj.x);
     const y = commonValue(objects, (obj) => obj.y);
@@ -69,13 +70,6 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         }
     };
 
-    const onMouseEnterParent = () => {
-        setSpotlight(parentId === undefined ? selectNone() : selectSingle(parentId));
-    };
-    const onMouseLeaveParent = () => {
-        setSpotlight(selectNone());
-    };
-
     const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
     const tooltip = pinned ? 'Unlock position' : 'Lock position';
     const linkedTooltip =
@@ -98,6 +92,21 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
 
     const parentObject = parentId && getObjectById(scene, parentId);
     const ParentDisplayComponent = parentObject && getListComponent(parentObject);
+
+    const onMouseEnterParent = () => {
+        setSpotlight(parentId === undefined ? selectNone() : selectSingle(parentId));
+    };
+    const onMouseLeaveParent = () => {
+        setSpotlight(selectNone());
+    };
+    function onClickParent(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void {
+        // Don't trigger the selection if modifiers are held
+        if (parentId !== undefined && !event.ctrlKey && !event.shiftKey) {
+            setSelection(selectSingle(parentId));
+            // The element disappearing will not trigger an onMouseLeave
+            setSpotlight(selectNone());
+        }
+    }
 
     return (
         <>
@@ -122,7 +131,12 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
             </div>
             <div className={classes.row}>
                 {ParentDisplayComponent && (
-                    <Field label="Relative to:" onMouseEnter={onMouseEnterParent} onMouseLeave={onMouseLeaveParent}>
+                    <Field
+                        label="Relative to:"
+                        onMouseEnter={onMouseEnterParent}
+                        onMouseLeave={onMouseLeaveParent}
+                        onClick={onClickParent}
+                    >
                         {
                             // (not really nested, but it removes the visiblity toggle and deletion button, and a smaller size is OK)
                             // https://github.com/facebook/react/issues/34794
