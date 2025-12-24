@@ -1,4 +1,4 @@
-import { Dropdown, Field, Option, ToggleButton, Tooltip } from '@fluentui/react-components';
+import { Field, ToggleButton, Tooltip } from '@fluentui/react-components';
 import {
     LinkAddRegular,
     LinkDismissRegular,
@@ -8,17 +8,19 @@ import {
     LockOpenRegular,
 } from '@fluentui/react-icons';
 import React from 'react';
-import { getObjectById, getObjectNameById, useScene } from '../../SceneProvider';
+import { getObjectById, useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
-import { getAllowedParentIds, updateParentIdsAction } from '../../connections';
+import { getAllowedParentIds } from '../../connections';
 import { getAbsolutePosition } from '../../coord';
 import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { isMoveable, MoveableObject } from '../../scene';
+import { MoveableObject } from '../../scene';
+import { selectNone, selectSingle, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useControlStyles } from '../../useControlStyles';
 import { useEditMode } from '../../useEditMode';
 import { commonValue, omit, setOrOmit } from '../../util';
+import { getListComponent } from '../ListComponentRegistry';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> = ({ objects }) => {
@@ -26,6 +28,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const { scene, step, dispatch } = useScene();
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
+    const [, setSpotlight] = useSpotlight();
 
     const x = commonValue(objects, (obj) => obj.x);
     const y = commonValue(objects, (obj) => obj.y);
@@ -66,17 +69,11 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         }
     };
 
-    const onParentChanged = (newValue?: string) => {
-        if (!newValue) {
-            // shouldn't happen since unselecting an item is not allowed.
-            return;
-        }
-        const newParentObject = getObjectById(scene, parseInt(newValue));
-        if (!newParentObject || !isMoveable(newParentObject)) {
-            // Shouldn't happen given the possible values in the dropdown
-            return;
-        }
-        dispatch(updateParentIdsAction(scene, objects, newParentObject));
+    const onMouseEnterParent = () => {
+        setSpotlight(parentId === undefined ? selectNone() : selectSingle(parentId));
+    };
+    const onMouseLeaveParent = () => {
+        setSpotlight(selectNone());
     };
 
     const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
@@ -99,25 +96,11 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
             <LinkDismissRegular />
         );
 
+    const parentObject = parentId && getObjectById(scene, parentId);
+    const ParentDisplayComponent = parentObject && getListComponent(parentObject);
+
     return (
         <>
-            <div className={classes.row}>
-                {parentId !== undefined && (
-                    <Field label="Position linked to:">
-                        <Dropdown
-                            onOptionSelect={(_, data) => onParentChanged(data.optionValue)}
-                            value={getObjectNameById(scene, parentId)}
-                            selectedOptions={parentId === undefined ? [] : [parentId.toString()]}
-                        >
-                            {allowedParentIds.map((id) => (
-                                <Option key={id.toString()} value={id.toString()}>
-                                    {getObjectNameById(scene, id)!}
-                                </Option>
-                            ))}
-                        </Dropdown>
-                    </Field>
-                )}
-            </div>
             <div className={classes.row}>
                 <Field label="X">
                     <SpinButton value={x} onChange={onXChanged} step={1} />
@@ -136,6 +119,18 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
                         disabled={allowedParentIds.length == 0}
                     />
                 </Tooltip>
+            </div>
+            <div className={classes.row}>
+                {ParentDisplayComponent && (
+                    <Field label="Relative to:" onMouseEnter={onMouseEnterParent} onMouseLeave={onMouseLeaveParent}>
+                        {
+                            // (not really nested, but it removes the visiblity toggle and deletion button, and a smaller size is OK)
+                            // https://github.com/facebook/react/issues/34794
+                            // eslint-disable-next-line react-hooks/static-components
+                            <ParentDisplayComponent isNested={true} object={parentObject} />
+                        }
+                    </Field>
+                )}
             </div>
         </>
     );

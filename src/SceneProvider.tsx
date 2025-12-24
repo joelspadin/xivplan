@@ -11,7 +11,6 @@ import {
     getDefaultAttachmentPreference,
     Grid,
     isMoveable,
-    isNamed,
     isTether,
     MoveableObject,
     Scene,
@@ -270,14 +269,6 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     }
 
     return undefined;
-}
-
-export function getObjectNameById(scene: Scene, id?: number): string | undefined {
-    if (id === undefined) {
-        return undefined;
-    }
-    const obj = getObjectById(scene, id);
-    return isNamed(obj) ? obj.name : '';
 }
 
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
