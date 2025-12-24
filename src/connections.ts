@@ -44,8 +44,8 @@ export function getAllowedParentIds(step: SceneStep, objectsToConnect: readonly 
         .filter((id) => !selectedAndChildren.has(id));
 }
 
-export function useUpdateParentIdsActionSupplier(): (newParent: SceneObject & MoveableObject) => SceneAction {
-    const scene = useScene().scene;
+export function useUpdateParentIdsAction(): (newParent: SceneObject & MoveableObject) => SceneAction {
+    const { scene } = useScene();
     const [connectionSelection] = useConnectionSelection();
     const objectsToConnect: (SceneObject & MoveableObject)[] = [];
     connectionSelection.objectIdsToConnect.forEach((id) => {
@@ -54,10 +54,10 @@ export function useUpdateParentIdsActionSupplier(): (newParent: SceneObject & Mo
             objectsToConnect.push(object);
         }
     });
-    return (newParent: SceneObject & MoveableObject) => updateParentIdsAction(scene, objectsToConnect, newParent);
+    return (newParent: SceneObject & MoveableObject) => createUpdateParentIdsAction(scene, objectsToConnect, newParent);
 }
 
-export function updateParentIdsAction(
+function createUpdateParentIdsAction(
     scene: Scene,
     objectsToConnect: readonly (SceneObject & MoveableObject)[],
     newParent: SceneObject & MoveableObject,
@@ -92,6 +92,12 @@ export function updateParentIdsAction(
                 ...obj,
                 parentId: newParent.id,
                 ...newRelativePos,
+                // Pin objects that got moved to a default position
+                pinned:
+                    attachmentPreference == DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT ||
+                    attachmentPreference == DefaultAttachPosition.ANYWHERE
+                        ? obj.pinned
+                        : true,
             };
         }),
     };

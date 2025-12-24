@@ -1,8 +1,9 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
-import { getObjectById, useScene } from './SceneProvider';
+import { getAttachedObjects, getObjectById, useScene } from './SceneProvider';
 import {
     DefaultAttachPosition,
+    getDefaultAttachmentPreference,
     isMoveable,
     isRadiusObject,
     isResizable,
@@ -180,53 +181,87 @@ export function isWithinBox(b: Box, p: Vector2d): boolean {
 
 export function getRelativeAttachmentPoint(
     scene: Scene,
-    object: SceneObject & MoveableObject,
-    attachment: SceneObject & MoveableObject,
+    objectToAttach: SceneObject & MoveableObject,
+    parent: SceneObject & MoveableObject,
     positionPreference: DefaultAttachPosition,
 ): Vector2d {
+    // points relative to each object's origin where the attachment should happen.
     let objectAttatchmentPoint = { x: 0, y: 0 };
-    let attachmentAttachmentPoint = { x: 0, y: 0 };
+    let parentAttachmentPoint = { x: 0, y: 0 };
     switch (positionPreference) {
         case DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT:
         case DefaultAttachPosition.ANYWHERE:
             // For objects without a preference, keep them where they are.
-            return makeRelative(scene, object, attachment.id);
+            return makeRelative(scene, objectToAttach, parent.id);
         case DefaultAttachPosition.CENTER:
             return { x: 0, y: 0 };
-        case DefaultAttachPosition.TOP:
-            if (isResizable(object)) {
-                objectAttatchmentPoint = { x: 0, y: object.height / 2 };
-            } else if (isRadiusObject(object)) {
-                objectAttatchmentPoint = { x: 0, y: object.radius };
+        case DefaultAttachPosition.TOP: {
+            if (isResizable(objectToAttach)) {
+                objectAttatchmentPoint = { x: 0, y: -objectToAttach.height / 2 };
+            } else if (isRadiusObject(objectToAttach)) {
+                objectAttatchmentPoint = { x: 0, y: -objectToAttach.radius };
             }
-            if (isResizable(attachment)) {
-                attachmentAttachmentPoint = { x: 0, y: -attachment.height / 2 };
-            } else if (isRadiusObject(attachment)) {
-                attachmentAttachmentPoint = { x: 0, y: -attachment.radius };
+
+            // If there are already-attached and still-pinned TOP objects, assume they're all
+            // in their default position and add this new one above them.
+            let addedHeight = 0;
+            for (const attachment of getAttachedObjects(scene, parent)) {
+                if (!attachment.pinned) {
+                    continue;
+                }
+                if (getDefaultAttachmentPreference(attachment) == DefaultAttachPosition.TOP) {
+                    if (isResizable(attachment)) {
+                        addedHeight += attachment.height;
+                    } else if (isRadiusObject(attachment)) {
+                        addedHeight += attachment.radius * 2;
+                    }
+                }
+            }
+            if (isResizable(parent)) {
+                parentAttachmentPoint = { x: 0, y: parent.height / 2 + addedHeight };
+            } else if (isRadiusObject(parent)) {
+                parentAttachmentPoint = { x: 0, y: parent.radius + addedHeight };
             }
             break;
+        }
         case DefaultAttachPosition.BOTTOM_RIGHT: {
-            if (isResizable(object)) {
-                objectAttatchmentPoint = { x: object.width / 2, y: -object.height / 2 };
-            } else if (isRadiusObject(object)) {
-                const offset = Math.sqrt(object.radius ** 2 / 2);
-                objectAttatchmentPoint = { x: offset, y: -offset };
+            if (isResizable(objectToAttach)) {
+                objectAttatchmentPoint = { x: -objectToAttach.width / 2, y: objectToAttach.height / 2 };
+            } else if (isRadiusObject(objectToAttach)) {
+                const offset = Math.sqrt(objectToAttach.radius ** 2 / 2);
+                objectAttatchmentPoint = { x: -offset, y: offset };
             }
+            // If there are already-attached and still-pinned BOTTOM_RIGHT objects, assume
+            // they're all in their default position and add this new one to the right of them.
+            let addedOffset = 0;
+            for (const attachment of getAttachedObjects(scene, parent)) {
+                if (!attachment.pinned) {
+                    continue;
+                }
+                if (getDefaultAttachmentPreference(attachment) == DefaultAttachPosition.BOTTOM_RIGHT) {
+                    if (isResizable(attachment)) {
+                        addedOffset += attachment.width;
+                    } else if (isRadiusObject(attachment)) {
+                        addedOffset += attachment.radius * 2;
+                    }
+                }
+            }
+
             const overlap = 0.9;
-            if (isResizable(attachment)) {
-                attachmentAttachmentPoint = {
-                    x: (-attachment.width / 2) * (1 - overlap),
-                    y: (attachment.height / 2) * (1 - overlap),
+            if (isResizable(parent)) {
+                parentAttachmentPoint = {
+                    x: (parent.width / 2) * (1 - overlap) + addedOffset,
+                    y: -(parent.height / 2) * (1 - overlap),
                 };
-            } else if (isRadiusObject(attachment)) {
-                const offset = Math.sqrt(attachment.radius ** 2 / 2) * (1 - overlap);
-                attachmentAttachmentPoint = { x: -offset, y: offset };
+            } else if (isRadiusObject(parent)) {
+                const offset = Math.sqrt(parent.radius ** 2 / 2) * (1 - overlap);
+                parentAttachmentPoint = { x: offset + addedOffset, y: -offset };
             }
             break;
         }
     }
     return {
-        x: objectAttatchmentPoint.x - attachmentAttachmentPoint.x,
-        y: objectAttatchmentPoint.y - attachmentAttachmentPoint.y,
+        x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
+        y: parentAttachmentPoint.y - objectAttatchmentPoint.y,
     };
 }

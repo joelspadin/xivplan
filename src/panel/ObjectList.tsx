@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { useAllowedParentIds, useUpdateParentIdsActionSupplier } from '../connections';
+import { useAllowedParentIds, useUpdateParentIdsAction } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -106,7 +106,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
-    const updateParentIdsActionSupplier = useUpdateParentIdsActionSupplier();
+    const getUpdateParentIdsAction = useUpdateParentIdsAction();
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
@@ -116,7 +116,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                 // any stray events.
                 return;
             }
-            dispatch(updateParentIdsActionSupplier(object));
+            dispatch(getUpdateParentIdsAction(object));
             setEditMode(EditMode.Normal);
         } else if (e.shiftKey) {
             setSelection(addSelection(selection, object.id));

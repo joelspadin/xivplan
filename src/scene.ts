@@ -160,7 +160,7 @@ export enum DefaultAttachPosition {
     ANYWHERE = 'attach_anywhere',
     CENTER = 'attach_centered',
     TOP = 'attach_at_top',
-    BOTTOM_RIGHT = 'atach_at_bottom_right',
+    BOTTOM_RIGHT = 'attach_at_bottom_right',
 }
 
 export interface ObjectWithAttachmentPreference {

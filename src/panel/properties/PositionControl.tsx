@@ -132,7 +132,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
             <div className={classes.row}>
                 {ParentDisplayComponent && (
                     <Field
-                        label="Relative to:"
+                        label="Position is relative to:"
                         onMouseEnter={onMouseEnterParent}
                         onMouseLeave={onMouseLeaveParent}
                         onClick={onClickParent}
