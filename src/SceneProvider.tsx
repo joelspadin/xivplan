@@ -271,6 +271,18 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return undefined;
 }
 
+export function getAttachedObjects(scene: Scene, object: SceneObject): (SceneObject & MoveableObject)[] {
+    const children: (SceneObject & MoveableObject)[] = [];
+    for (const step of scene.steps) {
+        step.objects.forEach((obj) => {
+            if (isMoveable(obj) && obj.parentId === object.id) {
+                children.push(obj);
+            }
+        });
+    }
+    return children;
+}
+
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
     // Tethers should be created below their targets.
     let startIdx = objects.findIndex((x) => x.id === tether.startId);
@@ -408,7 +420,7 @@ function addObjects(
             if (isMoveable(potentialParent)) {
                 addedObjects[0] = {
                     ...addedObjects[0],
-                    ...getRelativeAttachmentPoint(state.scene, potentialParent, addedObjects[0], attachPosition),
+                    ...getRelativeAttachmentPoint(state.scene, addedObjects[0], potentialParent, attachPosition),
                     ...{ parentId: potentialParent.id },
                     pinned: true,
                 } as SceneObject & MoveableObject;
