@@ -7,6 +7,7 @@ import {
     isMoveable,
     isRadiusObject,
     isResizable,
+    isRotateable,
     MoveableObject,
     RotateableObject,
     Scene,
@@ -124,15 +125,27 @@ export function getAbsoluteRotation(scene: Scene, object: RotateableObject & Mov
     if (object.facingId) {
         const facingObject = getObjectById(scene, object.facingId);
         if (facingObject && isMoveable(facingObject)) {
-            rotation += getFacingAngle(getAbsolutePosition(scene, object), getAbsolutePosition(scene, facingObject));
+            rotation += getFacingAngle(scene, object, facingObject);
         }
     }
     return rotation;
 }
 
 /** @returns the angle to rotate an up-facing object at the given origin to make it face toards the target (in degrees) */
-function getFacingAngle(origin: Vector2d, target: Vector2d): number {
-    return getPointerAngle({ x: target.x - origin.x, y: target.y - origin.y });
+function getFacingAngle(
+    scene: Scene,
+    origin: MoveableObject & RotateableObject,
+    target: SceneObject & MoveableObject,
+): number {
+    // If the origin is _also_ attached to the target positionally and _also_ on exactly the same location, face the same
+    // direction as the target instead of whatever arbitrary direction the (0,0) vector yields.
+    if (origin.parentId === target.id && origin.x == 0 && origin.y == 0 && isRotateable(target)) {
+        return getAbsoluteRotation(scene, target);
+    }
+    const originPosition = getAbsolutePosition(scene, origin);
+    const targetPosition = getAbsolutePosition(scene, target);
+
+    return getPointerAngle({ x: targetPosition.x - originPosition.x, y: targetPosition.y - originPosition.y });
 }
 
 export function rotateCoord(p: Vector2d, angle: number, center: Vector2d = { x: 0, y: 0 }): Vector2d {
