@@ -5,9 +5,10 @@ import { ConnectionType } from '../../EditModeContext';
 import { getObjectById, useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { getAllowedRotationParentIds } from '../../connections';
+import { getAbsoluteRotation } from '../../coord';
 import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { EnemyObject, EnemyRingStyle, isEnemy, RotateableObject } from '../../scene';
+import { EnemyObject, EnemyRingStyle, isEnemy, isMoveable, RotateableObject } from '../../scene';
 import { selectNone, selectSingle, useSelection, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useControlStyles } from '../../useControlStyles';
@@ -39,10 +40,9 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
             dispatch({
                 type: 'update',
                 value: objects.map((obj) => {
-                    const absoluteRot = 0; // TODO
                     return {
                         ...omit(obj, 'facingId'),
-                        rotation: absoluteRot,
+                        rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0,
                     };
                 }),
             });

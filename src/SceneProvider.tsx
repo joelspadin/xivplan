@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
-import { getRelativeAttachmentPoint } from './coord';
+import { getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -11,6 +11,7 @@ import {
     getDefaultAttachmentPreference,
     Grid,
     isMoveable,
+    isRotateable,
     isTether,
     MoveableObject,
     Scene,
@@ -24,7 +25,7 @@ import { getObjectAt } from './selection';
 import { createUndoContext } from './undo/undoContext';
 import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
-import { asArray, clamp } from './util';
+import { asArray, clamp, omit } from './util';
 
 export interface SetArenaAction {
     type: 'arena';
@@ -465,26 +466,36 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
     const currentStep = getCurrentStep(state);
 
     // Also delete any object with the to-be-deleted objects as parent
-    const idsToDelete = ids.slice();
-    let idsAdded = idsToDelete.length;
+    const idsToDelete = new Set(ids);
+    let idsAdded = idsToDelete.size;
     while (idsAdded > 0) {
         idsAdded = 0;
         currentStep.objects.forEach((obj) => {
-            if (idsToDelete.includes(obj.id)) {
+            if (idsToDelete.has(obj.id)) {
                 return;
             }
-            if (isMoveable(obj) && obj.parentId !== undefined && idsToDelete.includes(obj.parentId)) {
-                idsToDelete.push(obj.id);
+            if (isMoveable(obj) && obj.parentId !== undefined && idsToDelete.has(obj.parentId)) {
+                idsToDelete.add(obj.id);
                 idsAdded++;
             }
-            if (isTether(obj) && (idsToDelete.includes(obj.startId) || idsToDelete.includes(obj.endId))) {
-                idsToDelete.push(obj.id);
+            if (isTether(obj) && (idsToDelete.has(obj.startId) || idsToDelete.has(obj.endId))) {
+                idsToDelete.add(obj.id);
                 idsAdded++;
             }
         });
     }
 
-    const objects = currentStep.objects.filter((object) => !idsToDelete.includes(object.id));
+    const objects = currentStep.objects
+        .filter((object) => !idsToDelete.has(object.id))
+        .map((obj) =>
+            // Reset the rotation of any object that was facing a to-be-deleted object
+            isRotateable(obj) && obj.facingId && idsToDelete.has(obj.facingId)
+                ? {
+                      ...omit(obj, 'facingId'),
+                      rotation: isMoveable(obj) ? getAbsoluteRotation(state.scene, obj) : 0,
+                  }
+                : obj,
+        );
 
     return updateCurrentStep(state, { objects });
 }
