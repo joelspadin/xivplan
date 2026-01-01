@@ -6,6 +6,7 @@ import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
 import { GroupMoveAction, SceneAction, getObjectById, useScene } from './SceneProvider';
 import { SceneSelection } from './SelectionContext';
+import { omitInterconnectedObjects } from './connections';
 import { getSceneCoord, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
 import { EditMode } from './editMode';
@@ -56,7 +57,7 @@ function pasteObjects(
 ): void {
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
     const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
-    const newObjects = copyObjects(scene, objects, newCenter);
+    const { objects: newObjects } = copyObjects(scene, objects, newCenter);
 
     if (newObjects.length) {
         dispatch({ type: 'add', object: newObjects });
@@ -329,7 +330,10 @@ const EditActionHandler: React.FC = () => {
             return;
         }
 
-        const selectedObjects = getSelectedObjects(step, selection);
+        const selectedObjects = omitInterconnectedObjects(
+            scene,
+            getSelectedObjects(step, selection).filter(isMoveable),
+        );
         const value = moveObjectsBy(selectedObjects, offset);
 
         dispatch({ type: 'update', value });
@@ -361,7 +365,7 @@ const EditActionHandler: React.FC = () => {
         }
 
         const value: SceneObject[] = [];
-        const center = getGroupCenter(getSelectedObjects(step, selection).filter(isMoveable));
+        const center = getGroupCenter(scene, getSelectedObjects(step, selection).filter(isMoveable));
 
         selection.forEach((id) => {
             const object = getObjectById(scene, id);

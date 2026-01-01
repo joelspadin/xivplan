@@ -131,7 +131,7 @@ export function getAbsoluteRotation(scene: Scene, object: RotateableObject & Mov
     return rotation;
 }
 
-/** @returns the angle to rotate an up-facing object at the given origin to make it face toards the target (in degrees) */
+/** @returns the angle to rotate an up-facing object at the given origin to make it face towards the target (in degrees) */
 function getFacingAngle(
     scene: Scene,
     origin: MoveableObject & RotateableObject,
@@ -139,6 +139,7 @@ function getFacingAngle(
 ): number {
     // If the origin is _also_ attached to the target positionally and _also_ on exactly the same location, face the same
     // direction as the target instead of whatever arbitrary direction the (0,0) vector yields.
+    // Positional connections are guaranteed to not have a circular dependency [without manual editing of the plan].
     if (origin.parentId === target.id && origin.x == 0 && origin.y == 0 && isRotateable(target)) {
         return getAbsoluteRotation(scene, target);
     }

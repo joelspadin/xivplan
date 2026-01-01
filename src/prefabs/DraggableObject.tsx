@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
-import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
+import { omitInterconnectedObjects, useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
 import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
@@ -113,7 +113,7 @@ function updatePosition(
         return;
     }
 
-    const draggedObjects = getSelectedObjects(step, dragSelection);
+    const draggedObjects = omitInterconnectedObjects(scene, getSelectedObjects(step, dragSelection).filter(isMoveable));
     const value = moveObjectsBy(draggedObjects, offset);
 
     dispatch({ type: 'update', value, transient: true });

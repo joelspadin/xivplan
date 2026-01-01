@@ -54,6 +54,25 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
         .filter((id) => !selectedAndChildren.has(id));
 }
 
+/** Returns a filtered list of objects that has any objects removes that are positionally attached to another object in the list. */
+export function omitInterconnectedObjects(
+    scene: Scene,
+    objects: (SceneObject & MoveableObject)[],
+): (SceneObject & MoveableObject)[] {
+    const objectIds = new Set(objects.map((obj) => obj.id));
+    return objects.filter((obj) => {
+        let parentId = obj.parentId;
+        while (parentId) {
+            if (objectIds.has(parentId)) {
+                return false;
+            }
+            const parent = getObjectById(scene, parentId);
+            parentId = isMoveable(parent) ? parent.parentId : undefined;
+        }
+        return true;
+    });
+}
+
 /**
  * Returns a function that yields a SceneAction to update the given object as the chosen connected ID,
  * determined by the values in the ConnectionSelectionContext
