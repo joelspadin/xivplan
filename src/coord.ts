@@ -38,14 +38,25 @@ export function getCanvasY(scene: Scene, y: number): number {
 }
 
 export function getParentPosition(scene: Scene, p: Position): Vector2d {
-    if (p.parentId !== undefined) {
-        const parent = getObjectById(scene, p.parentId);
+    const parentIdSet = new Set<number>();
+    let parentId = p.parentId;
+    const position: Vector2d = { x: 0, y: 0 };
+    while (parentId !== undefined) {
+        if (parentIdSet.has(parentId)) {
+            console.error('cyclic positional dependency');
+            return { x: 0, y: 0 };
+        }
+        parentIdSet.add(parentId);
+        const parent = getObjectById(scene, parentId);
         if (isMoveable(parent)) {
-            const grandparent = getParentPosition(scene, parent);
-            return { x: grandparent.x + parent.x, y: grandparent.y + parent.y };
+            position.x += parent.x;
+            position.y += parent.y;
+            parentId = parent.parentId;
+        } else {
+            break;
         }
     }
-    return { x: 0, y: 0 };
+    return position;
 }
 
 export function getAbsolutePosition(scene: Scene, p: Position): Vector2d {
