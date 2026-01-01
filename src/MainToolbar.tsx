@@ -23,11 +23,13 @@ import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableT
 import { FileSource, useScene, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
 import { StepScreenshotButton } from './StepScreenshotButton';
 import { ToolbarContext } from './ToolbarContext';
+import { EditMode } from './editMode';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialogButton } from './file/ShareDialogButton';
 import { downloadScene, getBlobSource } from './file/blob';
 import { DialogOpenContext } from './useCloseDialog';
+import { useEditMode } from './useEditMode';
 import { useHotkeys } from './useHotkeys';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 
@@ -44,11 +46,18 @@ export const MainToolbar: React.FC = () => {
     const { dispatch } = useScene();
     const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const [openFileOpen, setOpenFileOpen] = useState(false);
+    const [editMode, setEditMode] = useEditMode();
 
     const undo = () => {
+        if (editMode == EditMode.SelectConnection) {
+            setEditMode(EditMode.Normal);
+        }
         dispatch({ type: 'undo' });
     };
     const redo = () => {
+        if (editMode == EditMode.SelectConnection) {
+            setEditMode(EditMode.Normal);
+        }
         dispatch({ type: 'redo' });
     };
 
