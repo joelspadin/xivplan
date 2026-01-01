@@ -30,12 +30,19 @@ const CATEGORY_STEPS = '7.Steps';
 
 const UndoRedoHandler: React.FC = () => {
     const { dispatch } = useScene();
+    const [editMode, setEditMode] = useEditMode();
 
     const undoCallback: HotkeyCallback = (e) => {
+        if (editMode == EditMode.SelectConnection) {
+            setEditMode(EditMode.Normal);
+        }
         dispatch({ type: 'undo' });
         e.preventDefault();
     };
     const redoCallback: HotkeyCallback = (e) => {
+        if (editMode == EditMode.SelectConnection) {
+            setEditMode(EditMode.Normal);
+        }
         dispatch({ type: 'redo' });
         e.preventDefault();
     };
