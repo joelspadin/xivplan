@@ -24,6 +24,12 @@ export const useControlStyles = makeStyles({
         },
     },
 
+    label: {
+        display: 'flex',
+        gap: tokens.spacingHorizontalXS,
+        alignItems: 'center',
+    },
+
     alignTop: {
         alignItems: 'start',
     },
