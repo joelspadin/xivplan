@@ -77,7 +77,7 @@ export function omitInterconnectedObjects(
     const objectIds = new Set(objects.map((obj) => obj.id));
     return objects.filter((obj) => {
         let parentId = obj.parentId;
-        while (parentId) {
+        while (parentId !== undefined) {
             if (objectIds.has(parentId)) {
                 return false;
             }

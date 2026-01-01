@@ -38,7 +38,7 @@ export function getCanvasY(scene: Scene, y: number): number {
 }
 
 export function getParentPosition(scene: Scene, p: Position): Vector2d {
-    if (p.parentId) {
+    if (p.parentId !== undefined) {
         const parent = getObjectById(scene, p.parentId);
         if (isMoveable(parent)) {
             const grandparent = getParentPosition(scene, parent);
@@ -122,7 +122,7 @@ export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vect
 /** Calculates the rotation of the object while taking into account the object it may be configured to be facing. */
 export function getAbsoluteRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
     let rotation = object.rotation;
-    if (object.facingId) {
+    if (object.facingId !== undefined) {
         const facingObject = getObjectById(scene, object.facingId);
         if (facingObject && isMoveable(facingObject)) {
             rotation += getFacingAngle(scene, object, facingObject);

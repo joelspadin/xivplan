@@ -1,6 +1,6 @@
 import { Vector2d } from 'konva/lib/types';
 import { omitInterconnectedObjects } from './connections';
-import { getAbsolutePosition } from './coord';
+import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import {
     isMoveable,
     isRotateable,
@@ -60,10 +60,10 @@ function copyObject(
     newIdsForCopiedObjects: Record<number, number>,
 ): SceneObject {
     let newObject: SceneObject | (SceneObject & RotateableObject) = { ...object };
-    if (object.parentId) {
+    if (object.parentId !== undefined) {
         // If the parent also gets copied, do not adjust the already-relative position.
         // Otherwise make a detached copy.
-        if (newIdsForCopiedObjects[object.parentId]) {
+        if (newIdsForCopiedObjects[object.parentId] !== undefined) {
             newObject = { ...newObject, parentId: newIdsForCopiedObjects[object.parentId] };
         } else {
             newObject = { ...omit(object, 'parentId'), ...vecAdd(getAbsolutePosition(scene, object), offset) };
@@ -72,12 +72,16 @@ function copyObject(
         newObject = { ...newObject, ...vecAdd(object, offset) };
     }
 
-    if (isRotateable(newObject) && newObject.facingId) {
-        // If the facing target also gets copied, face the copy. Otherwise face north.
-        if (newIdsForCopiedObjects[newObject.facingId]) {
-            newObject = { ...newObject, facingId: newIdsForCopiedObjects[newObject.facingId]! };
+    if (isRotateable(newObject) && newObject.facingId !== undefined) {
+        // If the facing target also gets copied, face the copy. Otherwise keep the rotation.
+        if (newIdsForCopiedObjects[newObject.facingId] !== undefined) {
+            newObject = { ...newObject, facingId: newIdsForCopiedObjects[newObject.facingId] };
         } else {
-            newObject = { ...omit(newObject, 'facingId'), rotation: 0 };
+            // TODO: if copied onto the same step, maybe keep facing the same target instead?
+            newObject = {
+                ...omit(newObject, 'facingId'),
+                rotation: isRotateable(object) ? getAbsoluteRotation(scene, object) : 0,
+            };
         }
     }
 
