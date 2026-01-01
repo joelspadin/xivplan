@@ -3,6 +3,7 @@ import {
     LinkAddRegular,
     LinkDismissRegular,
     LinkMultipleRegular,
+    LinkRegular,
     LockClosedRegular,
     LockMultipleRegular,
     LockOpenRegular,
@@ -36,6 +37,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const y = commonValue(objects, (obj) => obj.y);
     const pinned = commonValue(objects, (obj) => !!obj.pinned);
     const parentId = commonValue(objects, (obj) => obj.parentId);
+    const currentlyLinked = parentId !== undefined;
 
     const onTogglePinned = () =>
         dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'pinned', !pinned)) });
@@ -50,7 +52,6 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const allowedParentIds = getAllowedPositionParentIds(step, objects);
 
     const onToggleLinked = () => {
-        const currentlyLinked = parentId !== undefined;
         if (currentlyLinked) {
             dispatch({
                 type: 'update',
@@ -79,20 +80,19 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const linkedTooltip =
         allowedParentIds.length == 0
             ? 'No available link targets'
-            : parentId !== undefined
+            : currentlyLinked
               ? 'Unlink position'
               : 'Link position';
 
-    const linkIcon =
-        parentId === undefined ? (
-            objects.length == 1 ? (
-                <LinkAddRegular />
-            ) : (
-                <LinkMultipleRegular />
-            )
+    const linkIcon = currentlyLinked ? (
+        objects.length == 1 ? (
+            <LinkAddRegular />
         ) : (
-            <LinkDismissRegular />
-        );
+            <LinkMultipleRegular />
+        )
+    ) : (
+        <LinkDismissRegular />
+    );
 
     const parentObject = parentId && getObjectById(scene, parentId);
     const ParentDisplayComponent = parentObject && getListComponent(parentObject);
@@ -115,10 +115,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     return (
         <>
             <div className={classes.row}>
-                <Field label="X">
+                <Field label={<PositionLabel coordinate="X" currentlyLinked={currentlyLinked} />}>
                     <SpinButton value={x} onChange={onXChanged} step={1} />
                 </Field>
-                <Field label="Y">
+                <Field label={<PositionLabel coordinate="Y" currentlyLinked={currentlyLinked} />}>
                     <SpinButton value={y} onChange={onYChanged} step={1} />
                 </Field>
                 <Tooltip content={tooltip} relationship="label" withArrow>
@@ -150,6 +150,24 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
                     </Field>
                 )}
             </div>
+        </>
+    );
+};
+
+interface PositionLabelProps {
+    readonly coordinate: string;
+    readonly currentlyLinked: boolean;
+}
+
+const PositionLabel: React.FC<PositionLabelProps> = ({ coordinate, currentlyLinked }) => {
+    return (
+        <>
+            {coordinate}
+            {currentlyLinked && (
+                <Tooltip content="Relative to the object below" relationship="description">
+                    <LinkRegular style={{ paddingLeft: '5px' }} />
+                </Tooltip>
+            )}
         </>
     );
 };

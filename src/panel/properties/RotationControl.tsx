@@ -1,5 +1,5 @@
 import { Field, mergeClasses, ToggleButton, Tooltip } from '@fluentui/react-components';
-import { EyeTrackingOffRegular, EyeTrackingRegular } from '@fluentui/react-icons';
+import { EyeTrackingOffRegular, EyeTrackingRegular, LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
 import { getObjectById, useScene } from '../../SceneProvider';
@@ -28,6 +28,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     const rotation = commonValue(objects, (obj) => obj.rotation);
     const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
     const facingId = commonValue(objects, (obj) => obj.facingId);
+    const currentlyLinked = facingId !== undefined;
 
     const onRotationChanged = useSpinChanged((rotation: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, rotation })) }),
@@ -35,7 +36,6 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
 
     const allowedParentIds = getAllowedRotationParentIds(step, objects);
     const onToggleLinked = () => {
-        const currentlyLinked = facingId !== undefined;
         if (currentlyLinked) {
             dispatch({
                 type: 'update',
@@ -61,7 +61,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     const linkedTooltip =
         allowedParentIds.length == 0
             ? 'No available link targets'
-            : facingId !== undefined
+            : currentlyLinked
               ? 'Unlink rotation'
               : 'Face entity';
 
@@ -89,7 +89,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     return (
         <>
             <div className={mergeClasses(classes.row, classes.rightGap)}>
-                <Field label="Rotation" className={classes.cell}>
+                <Field label={<RotationLabel currentlyLinked={currentlyLinked} />} className={classes.cell}>
                     <SpinButtonUnits
                         disabled={noDirection}
                         value={rotation}
@@ -126,6 +126,23 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
                     </Field>
                 )}
             </div>
+        </>
+    );
+};
+
+interface RotationLabelProps {
+    readonly currentlyLinked: boolean;
+}
+
+const RotationLabel: React.FC<RotationLabelProps> = ({ currentlyLinked }) => {
+    return (
+        <>
+            Rotation
+            {currentlyLinked && (
+                <Tooltip content="Relative to 'facing' the object below" relationship="description">
+                    <LinkRegular style={{ paddingLeft: '5px' }} />
+                </Tooltip>
+            )}
         </>
     );
 };
