@@ -4,7 +4,7 @@ import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
 import { getObjectById, useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { getAllowedPositionParentIds } from '../../connections';
+import { getAllowedRotationParentIds } from '../../connections';
 import { EditMode } from '../../editMode';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { EnemyObject, EnemyRingStyle, isEnemy, RotateableObject } from '../../scene';
@@ -32,7 +32,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, rotation })) }),
     );
 
-    const allowedParentIds = getAllowedPositionParentIds(step, objects);
+    const allowedParentIds = getAllowedRotationParentIds(step, objects);
     const onToggleLinked = () => {
         const currentlyLinked = facingId !== undefined;
         if (currentlyLinked) {
