@@ -300,23 +300,35 @@ function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number
 function assignObjectIds(
     scene: Readonly<Scene>,
     objects: readonly SceneObjectWithoutId[],
+    existingObjects: readonly SceneObject[],
 ): { objects: SceneObject[]; nextId: number } {
     let nextId = scene.nextId;
+    let objectsWithExistingId = 0;
+    let objectsWithoutId = 0;
 
     const newObjects = objects
         .map((obj) => {
             if (obj.id !== undefined) {
+                nextId = Math.max(nextId, obj.id + 1);
+                objectsWithExistingId++;
                 return obj as SceneObject;
             }
+            objectsWithoutId++;
             return { ...obj, id: nextId++ };
         })
         .filter((obj) => {
-            if (objects.some((existing) => existing.id === obj.id)) {
+            if (existingObjects.some((existing) => existing.id === obj.id)) {
                 console.error(`Cannot create new object with already-used ID ${obj.id}`);
                 return false;
             }
             return true;
         });
+    if (objectsWithExistingId && objectsWithoutId) {
+        console.error(
+            `Cannot add items both with ID and without ID at the same time. Received ${objectsWithExistingId} with ID, and ${objectsWithoutId} without`,
+        );
+        return { objects: [], nextId: scene.nextId };
+    }
 
     return {
         objects: newObjects,
@@ -335,8 +347,7 @@ function setStep(state: Readonly<EditorState>, index: number): EditorState {
 }
 
 function addStep(state: Readonly<EditorState>, after: number): EditorState {
-    const copy = copyObjects(state.scene, getCurrentStep(state).objects);
-    const { objects, nextId } = assignObjectIds(state.scene, copy);
+    const { objects, nextId } = copyObjects(state.scene, getCurrentStep(state).objects);
 
     const newStep: SceneStep = { objects };
 
@@ -409,7 +420,11 @@ function addObjects(
 ): EditorState {
     const currentStep = getCurrentStep(state);
 
-    const { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
+    const { objects: addedObjects, nextId } = assignObjectIds(
+        state.scene,
+        asArray(objects),
+        state.scene.steps.flatMap((step) => step.objects),
+    );
 
     const newObjects = [...currentStep.objects];
 
