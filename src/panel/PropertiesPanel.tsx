@@ -1,4 +1,4 @@
-import { mergeClasses } from '@fluentui/react-components';
+import { Button, mergeClasses } from '@fluentui/react-components';
 import React from 'react';
 import { ConnectionType } from '../EditModeContext';
 import { useCurrentStep } from '../SceneProvider';
@@ -97,6 +97,32 @@ const NoObjectsMessage: React.FC = () => {
     return <p>No objects selected.</p>;
 };
 
+interface ConnectionSelectionMessageProps {
+    type: ConnectionType;
+}
+
+const ConnectionSelectionMessage: React.FC<ConnectionSelectionMessageProps> = ({ type }) => {
+    const [, setEditMode] = useEditMode();
+    let message: string;
+    switch (type) {
+        case ConnectionType.POSITION:
+            message =
+                'Select an object to attach the selection to. The selection or their attachments are not eligible targets.';
+            break;
+        case ConnectionType.ROTATION:
+            message =
+                'Select an object to make the selection face towards. Objects in the selection are not eligible targets.';
+            break;
+    }
+
+    return (
+        <>
+            <p>{message}</p>
+            <Button onClick={() => setEditMode(EditMode.Normal)}>Cancel</Button>
+        </>
+    );
+};
+
 const Controls: React.FC = () => {
     const classes = useControlStyles();
     const [selection] = useSelection();
@@ -105,22 +131,7 @@ const Controls: React.FC = () => {
     const [{ connectionType }] = useConnectionSelection();
 
     if (editMode == EditMode.SelectConnection) {
-        switch (connectionType) {
-            case ConnectionType.POSITION:
-                return (
-                    <p>
-                        Select an object to attach the selection to. The selection or their attachments are not eligible
-                        targets. (Esc to cancel)
-                    </p>
-                );
-            case ConnectionType.ROTATION:
-                return (
-                    <p>
-                        Select an object to make the selection face towards. Objects in the selection are not eligible
-                        targets. (Esc to cancel)
-                    </p>
-                );
-        }
+        return <ConnectionSelectionMessage type={connectionType} />;
     }
 
     if (selection.size === 0) {
