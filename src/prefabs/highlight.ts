@@ -34,7 +34,7 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
 
     // If one of the objects this is connected to is in the spotlight or selection
     let parentId = isMoveable(object) ? object.parentId : undefined;
-    while (parentId) {
+    while (parentId !== undefined) {
         if (spotlight.has(parentId)) {
             // This is slightly weird when the parent object has a resizer thing.
             // maybe the resizer should follow the spotlight coloring?
