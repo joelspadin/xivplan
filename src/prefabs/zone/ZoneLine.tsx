@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
-import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -9,7 +9,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import { LineZone, ObjectType } from '../../scene';
+import { LineZone, ObjectType, Scene } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
@@ -106,19 +106,19 @@ function getLength(object: LineZone, { pointerPos, activeHandleId }: HandleFuncP
     return object.length;
 }
 
-function getRotation(object: LineZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(scene: Readonly<Scene>, object: LineZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Length) {
         const angle = getPointerAngle(pointerPos);
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
     }
 
-    return object.rotation;
+    return getAbsoluteRotation(scene, object);
 }
 
-function getWidth(object: LineZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getWidth(scene: Readonly<Scene>, object: LineZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId == HandleId.Width) {
         const start = VEC_ZERO;
-        const end = vecAtAngle(object.rotation);
+        const end = vecAtAngle(getAbsoluteRotation(scene, object));
         const distance = getDistanceFromLine(start, end, pointerPos);
 
         return Math.max(MIN_LINE_WIDTH, Math.round(distance * 2));
@@ -128,10 +128,10 @@ function getWidth(object: LineZone, { pointerPos, activeHandleId }: HandleFuncPr
 }
 
 const LineControlPoints = createControlPointManager<LineZone, LineState>({
-    handleFunc: (object, handle) => {
+    handleFunc: (scene, object, handle) => {
         const length = getLength(object, handle) + OUTSET;
-        const width = getWidth(object, handle);
-        const rotation = getRotation(object, handle);
+        const width = getWidth(scene, object, handle);
+        const rotation = getRotation(scene, object, handle);
 
         const x = width / 2;
         const y = -length / 2;
@@ -143,10 +143,10 @@ const LineControlPoints = createControlPointManager<LineZone, LineState>({
         ];
     },
     getRotation: getRotation,
-    stateFunc: (object, handle) => {
+    stateFunc: (scene, object, handle) => {
         const length = getLength(object, handle);
-        const width = getWidth(object, handle);
-        const rotation = getRotation(object, handle);
+        const width = getWidth(scene, object, handle);
+        const rotation = getRotation(scene, object, handle);
 
         return { length, width, rotation };
     },
@@ -222,7 +222,8 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
     const dragging = useIsDragging(object);
 
     const updateObject = (state: LineState) => {
-        state.rotation = Math.round(state.rotation);
+        const baseAngle = getBaseFacingAngle(scene, object);
+        state.rotation = Math.round(state.rotation - baseAngle);
         state.width = Math.round(state.width);
 
         if (!stateChanged(object, state)) {
@@ -241,14 +242,7 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
                     visible={showResizer && !dragging}
                     onTransformEnd={updateObject}
                 >
-                    {(props) => (
-                        <LineRenderer
-                            object={object}
-                            isDragging={dragging || resizing}
-                            {...props}
-                            rotation={getAbsoluteRotation(scene, object)}
-                        />
-                    )}
+                    {(props) => <LineRenderer object={object} isDragging={dragging || resizing} {...props} />}
                 </LineControlPoints>
             </DraggableObject>
         </ActivePortal>

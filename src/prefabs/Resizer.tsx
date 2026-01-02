@@ -3,9 +3,10 @@ import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useLayoutEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
+import { getBaseFacingAngle } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
-import { clamp } from '../util';
+import { clamp, mod360 } from '../util';
 import { useShowResizer } from './highlight';
 
 const DEFAULT_MIN_SIZE = 20;
@@ -35,7 +36,7 @@ export const Resizer: React.FC<ResizerProps> = ({
     transformerProps,
     children,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -56,11 +57,12 @@ export const Resizer: React.FC<ResizerProps> = ({
         if (!node) {
             return;
         }
+        const baseAngle = getBaseFacingAngle(scene, object);
 
         const newProps = {
             x: Math.round(object.x + node.x()),
             y: Math.round(object.y - node.y()),
-            rotation: Math.round(node.rotation()),
+            rotation: mod360(Math.round(node.rotation() - baseAngle) + 180) - 180,
             width: Math.round(Math.max(minWidthRequired, object.width * node.scaleX())),
             height: Math.round(Math.max(minHeightRequired, object.height * node.scaleY())),
         };

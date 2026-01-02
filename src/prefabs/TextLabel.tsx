@@ -5,6 +5,7 @@ import React, { RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
+import { getAbsoluteRotation, getBaseFacingAngle } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -97,7 +98,7 @@ const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
 const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -114,9 +115,13 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
             return;
         }
 
+        const baseAngle = getBaseFacingAngle(scene, object);
         const newProps: Partial<TextObject> = {
-            rotation: Math.round(node.rotation()),
+            rotation: Math.round(node.rotation() - baseAngle),
         };
+        if (object.rotation == newProps.rotation) {
+            return;
+        }
 
         dispatch({ type: 'update', value: { ...object, ...newProps } });
     };
@@ -152,6 +157,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
     const shapeRef = useRef<Konva.Group>(null);
+    const { scene } = useScene();
 
     useKonvaCache(shapeRef, [cacheKey, object]);
 
@@ -167,7 +173,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
                                 onTransformEnd(e);
                                 setResizing(false);
                             },
-                            rotation: object.rotation,
+                            rotation: getAbsoluteRotation(scene, object),
                         });
                     }}
                 </TextResizer>

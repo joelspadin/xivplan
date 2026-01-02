@@ -4,7 +4,7 @@ import { useScene } from '../../SceneProvider';
 import { getAbsoluteRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
-import { StarburstZone, UnknownObject } from '../../scene';
+import { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
@@ -124,7 +124,7 @@ function getSpokeWidth(
     return object.spokeWidth;
 }
 
-function getRotation(object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
@@ -134,7 +134,7 @@ function getRotation(object: StarburstZone, { pointerPos, activeHandleId }: Hand
 }
 
 const StarburstControlPoints = createControlPointManager<StarburstZone, StarburstObjectState, StarburstControlProps>({
-    handleFunc: (object, handle, props) => {
+    handleFunc: (scene, object, handle, props) => {
         const r = getRadius(object, handle) + OUTSET;
         const spokeWidth = getSpokeWidth(object, handle, props);
         const rotation = object.rotation;
@@ -158,9 +158,9 @@ const StarburstControlPoints = createControlPointManager<StarburstZone, Starburs
         ];
     },
     getRotation: getRotation,
-    stateFunc: (object, handle, props) => {
+    stateFunc: (scene, object, handle, props) => {
         const radius = getRadius(object, handle);
-        const rotation = getRotation(object, handle);
+        const rotation = getRotation(scene, object, handle);
         const spokeWidth = getSpokeWidth(object, handle, props);
 
         return { radius, rotation, spokeWidth };

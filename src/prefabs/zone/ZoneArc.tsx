@@ -4,14 +4,14 @@ import { Arc, Circle, Group, Shape } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/arc.svg?react';
-import { getAbsoluteRotation, getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { ArcZone, ObjectType } from '../../scene';
+import { ArcZone, ObjectType, Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -180,7 +180,8 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
     const dragging = useIsDragging(object);
 
     const updateObject = (state: ArcState) => {
-        state.rotation = Math.round(state.rotation);
+        const baseAngle = getBaseFacingAngle(scene, object);
+        state.rotation = Math.round(state.rotation - baseAngle);
         state.coneAngle = Math.round(state.coneAngle);
 
         if (!stateChanged(object, state)) {
@@ -205,7 +206,7 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
                                 object={object}
                                 outerRadius={radius}
                                 innerRadius={innerRadius}
-                                rotation={rotation + getAbsoluteRotation(scene, object) - object.rotation}
+                                rotation={rotation}
                                 coneAngle={coneAngle}
                                 isDragging={dragging}
                             />
@@ -259,9 +260,9 @@ function getRadius(object: ArcZone, { pointerPos, activeHandleId }: HandleFuncPr
     return object.radius;
 }
 
-function getInnerRadius(object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getInnerRadius(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.InnerRadius) {
-        const u = vecAtAngle(object.rotation);
+        const u = vecAtAngle(getAbsoluteRotation(scene, object));
         const r = getIntersectionDistance(VEC_ZERO, u, pointerPos, vecNormal(u));
 
         if (!r) {
@@ -274,22 +275,23 @@ function getInnerRadius(object: ArcZone, { pointerPos, activeHandleId }: HandleF
     return object.innerRadius;
 }
 
-function getRotation(object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Radius) {
         const angle = getPointerAngle(pointerPos);
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
     }
 
-    return object.rotation;
+    return getAbsoluteRotation(scene, object);
 }
 
-function getConeAngle(object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getConeAngle(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos) {
+        const objectRotation = getAbsoluteRotation(scene, object);
         const angle = getPointerAngle(pointerPos);
 
         if (activeHandleId === HandleId.Angle1) {
             const coneAngle = snapAngle(
-                mod360(angle - object.rotation + 90) - 90,
+                mod360(angle - objectRotation + 90) - 90,
                 ROTATE_SNAP_DIVISION,
                 ROTATE_SNAP_TOLERANCE,
             );
@@ -297,7 +299,7 @@ function getConeAngle(object: ArcZone, { pointerPos, activeHandleId }: HandleFun
         }
         if (activeHandleId === HandleId.Angle2) {
             const coneAngle = snapAngle(
-                mod360(angle - object.rotation + 270) - 270,
+                mod360(angle - objectRotation + 270) - 270,
                 ROTATE_SNAP_DIVISION,
                 ROTATE_SNAP_TOLERANCE,
             );
@@ -310,11 +312,11 @@ function getConeAngle(object: ArcZone, { pointerPos, activeHandleId }: HandleFun
 }
 
 const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
-    handleFunc: (object, handle) => {
+    handleFunc: (scene, object, handle) => {
         const radius = getRadius(object, handle) + OUTSET;
-        const innerRadius = getInnerRadius(object, handle) - OUTSET;
-        const rotation = getRotation(object, handle);
-        const coneAngle = getConeAngle(object, handle);
+        const innerRadius = getInnerRadius(scene, object, handle) - OUTSET;
+        const rotation = getRotation(scene, object, handle);
+        const coneAngle = getConeAngle(scene, object, handle);
 
         const x = radius * Math.sin(degtorad(coneAngle / 2));
         const y = radius * Math.cos(degtorad(coneAngle / 2));
@@ -333,11 +335,11 @@ const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
         ];
     },
     getRotation: getRotation,
-    stateFunc: (object, handle) => {
+    stateFunc: (scene, object, handle) => {
         const radius = getRadius(object, handle);
-        const innerRadius = getInnerRadius(object, handle);
-        const rotation = getRotation(object, handle);
-        const coneAngle = getConeAngle(object, handle);
+        const innerRadius = getInnerRadius(scene, object, handle);
+        const rotation = getRotation(scene, object, handle);
+        const coneAngle = getConeAngle(scene, object, handle);
 
         return { radius, innerRadius, rotation, coneAngle };
     },
