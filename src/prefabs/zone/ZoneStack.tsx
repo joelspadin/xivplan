@@ -11,7 +11,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ForegroundPortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { ObjectType, StackZone } from '../../scene';
+import { DefaultAttachPosition, ObjectType, StackZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -56,6 +56,7 @@ registerDropHandler<StackZone>(ObjectType.Stack, (object, position) => {
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
+            defaultAttachPosition: DefaultAttachPosition.CENTER,
             count: 1,
             ...object,
             ...position,
