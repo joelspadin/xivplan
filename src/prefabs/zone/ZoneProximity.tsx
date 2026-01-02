@@ -15,7 +15,7 @@ import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getArrowStyle, getShadowColor } from './style';
 
 const DEFAULT_RADIUS = 200;
@@ -139,6 +139,7 @@ interface ProximityRendererProps extends RendererProps<CircleZone> {
 
 const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const gradient: ShapeConfig = {
         fillRadialGradientColorStops: getGradient(object.color, object.opacity),
         fillRadialGradientStartRadius: 0,
@@ -151,9 +152,9 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
 
     return (
         <>
-            {highlightProps && <Circle radius={radius} {...highlightProps} />}
+            {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
 
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...gradient} />
 
                 <Group scaleX={arrowScale} scaleY={arrowScale}>

@@ -22,7 +22,7 @@ import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
-import { useHighlightProps, useShowResizer } from '../highlight';
+import { useHighlightProps, useOverrideProps, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Cone';
@@ -126,10 +126,11 @@ interface ConeRendererProps extends RendererProps<ConeZone> {
 
 const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, coneAngle }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
-        <Group rotation={rotation - 90 - coneAngle / 2}>
+        <Group rotation={rotation - 90 - coneAngle / 2} {...overrideProps}>
             {highlightProps && (
                 <OffsetWedge
                     radius={radius}

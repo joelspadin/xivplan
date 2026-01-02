@@ -16,7 +16,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 25;
@@ -93,6 +93,7 @@ interface RotateRendererProps extends RendererProps<CircleZone> {
 
 const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRef, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
     const style = getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow);
@@ -113,9 +114,11 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + style.strokeWidth * 0.75} {...highlightProps} />}
+            {highlightProps && (
+                <Circle radius={radius + style.strokeWidth * 0.75} {...highlightProps} {...overrideProps} />
+            )}
 
-            <HideGroup opacity={(object.opacity * 2) / 100} ref={groupRef}>
+            <HideGroup opacity={(object.opacity * 2) / 100} ref={groupRef} {...overrideProps}>
                 <Circle radius={radius} {...style} />
 
                 {ARROW_ANGLES.map((r, i) => (

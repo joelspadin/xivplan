@@ -22,7 +22,7 @@ import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
-import { useHighlightProps, useShowResizer } from './highlight';
+import { useHighlightProps, useOverrideProps, useShowResizer } from './highlight';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
@@ -184,6 +184,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
 
 const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const showHighlight = !!highlightProps;
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
@@ -232,7 +233,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
         <>
             <TextContainer object={object} cacheKey={cacheKey}>
                 {(groupProps) => (
-                    <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2}>
+                    <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2} {...overrideProps}>
                         {highlightProps && (
                             <Text
                                 text={object.text}

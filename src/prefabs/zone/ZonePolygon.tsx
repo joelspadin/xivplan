@@ -17,7 +17,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Regular Polygon';
@@ -68,12 +68,13 @@ interface PolygonRendererProps extends RendererProps<PolygonZone> {
 
 const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotation }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     const orientRotation = object.orient === 'side' ? 180 / object.sides : 0;
 
     return (
-        <Group rotation={rotation + orientRotation}>
+        <Group rotation={rotation + orientRotation} {...overrideProps}>
             {highlightProps && (
                 <RegularPolygon
                     radius={radius + style.strokeWidth / 2}

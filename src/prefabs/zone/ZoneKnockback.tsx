@@ -12,7 +12,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -60,6 +60,7 @@ interface KnockbackRendererProps extends RendererProps<CircleZone> {
 
 const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 3);
 
@@ -70,9 +71,9 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, i
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + ring.strokeWidth / 2} {...highlightProps} />}
+            {highlightProps && <Circle radius={radius + ring.strokeWidth / 2} {...highlightProps} {...overrideProps} />}
 
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...ring} strokeEnabled={false} opacity={0.5} />
 
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={ring.stroke} />}

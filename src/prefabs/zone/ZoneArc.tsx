@@ -22,7 +22,7 @@ import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
-import { useHighlightProps, useShowResizer } from '../highlight';
+import { useHighlightProps, useOverrideProps, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Arc';
@@ -140,13 +140,14 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
     isDragging,
 }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow);
 
     const highlightInnerRadius = Math.min(outerRadius, innerRadius);
     const highlightOuterRadius = Math.max(outerRadius, innerRadius);
 
     return (
-        <Group rotation={rotation - 90 - coneAngle / 2}>
+        <Group rotation={rotation - 90 - coneAngle / 2} {...overrideProps}>
             {highlightProps && (
                 <OffsetArc
                     outerRadius={highlightOuterRadius}
