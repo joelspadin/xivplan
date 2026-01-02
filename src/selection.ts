@@ -1,5 +1,17 @@
 import { Vector2d } from 'konva/lib/types';
 import { use } from 'react';
+import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
+import { LayerName } from './render/layers';
+import { getLayerName } from './render/ObjectRegistry';
+import {
+    isMoveable,
+    isRadiusObject,
+    isResizable,
+    mayBeAttachedToByDefault,
+    Scene,
+    SceneObject,
+    SceneStep,
+} from './scene';
 import {
     DragSelectionContext,
     SceneSelection,
@@ -7,8 +19,6 @@ import {
     SelectionState,
     SpotlightContext,
 } from './SelectionContext';
-import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
-import { isMoveable, isRadiusObject, isResizable, Scene, SceneObject, SceneStep } from './scene';
 
 /**
  * State for selected objects.
@@ -116,10 +126,24 @@ export function toggleSelection(selection: SceneSelection, id: number): SceneSel
     }
 }
 
-export function getObjectAt(s: Scene, step: SceneStep, p: Vector2d): SceneObject | undefined {
-    return step.objects.findLast(
-        (o) =>
-            (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
-            (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p)),
-    );
+export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): SceneObject | undefined {
+    let matchedObject: SceneObject | undefined = undefined;
+    for (const layer of Object.values(LayerName)) {
+        step.objects.forEach((o) => {
+            if (getLayerName(o) !== layer) {
+                return;
+            }
+            if (!mayBeAttachedToByDefault(o)) {
+                return;
+            }
+            // For now, only objects with full coverage within their radius/box will pass the above check.
+            if (
+                (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
+                (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p))
+            ) {
+                matchedObject = o;
+            }
+        });
+    }
+    return matchedObject;
 }

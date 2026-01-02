@@ -11,7 +11,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { ConeZone, ObjectType, Scene } from '../../scene';
+import { ConeZone, DefaultAttachPosition, ObjectType, Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
@@ -66,9 +66,10 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
             radius: DEFAULT_RADIUS,
             coneAngle: DEFAULT_ANGLE,
             rotation: 0,
+            defaultAttachPosition: DefaultAttachPosition.CENTER,
             ...object,
             ...position,
-        },
+        } as ConeZone,
     };
 });
 

@@ -150,7 +150,7 @@ export interface HollowObject {
     readonly hollow?: boolean;
 }
 
-export interface MoveableObject extends Position {
+export interface MoveableObject extends Position, ObjectWithAttachmentPreference {
     readonly pinned?: boolean;
 }
 
@@ -163,7 +163,10 @@ export enum DefaultAttachPosition {
 }
 
 export interface ObjectWithAttachmentPreference {
+    // If this object gets added on top of a viable target, where should it be placed?
     readonly defaultAttachPosition?: DefaultAttachPosition;
+    // Whether this object is a valid target object to attach to by default.
+    readonly allowedAsDefaultAttachmentTarget?: boolean;
 }
 
 export interface RotateableObject {
@@ -226,7 +229,7 @@ export const isText = makeObjectTest<TextObject>(ObjectType.Text);
 
 export type Marker = MarkerObject | ArrowObject | TextObject;
 
-export interface IconObject extends ImageObject, NamedObject, BaseObject, ObjectWithAttachmentPreference {
+export interface IconObject extends ImageObject, NamedObject, BaseObject {
     readonly type: ObjectType.Icon;
     readonly iconId?: number;
     readonly maxStacks?: number;
@@ -257,12 +260,7 @@ export function isActor(object: UnknownObject): object is Actor {
     return isParty(object) || isEnemy(object);
 }
 
-export interface CircleZone
-    extends RadiusObject,
-        ColoredObject,
-        HollowObject,
-        BaseObject,
-        ObjectWithAttachmentPreference {
+export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
         | ObjectType.Circle
         | ObjectType.Proximity
@@ -278,13 +276,7 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.RotateCCW,
 );
 
-export interface StackZone
-    extends StackCountObject,
-        RadiusObject,
-        ColoredObject,
-        HollowObject,
-        BaseObject,
-        ObjectWithAttachmentPreference {
+export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type: ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
@@ -324,12 +316,7 @@ export interface ArcZone extends ConeProps, InnerRadiusObject, BaseObject {
 }
 export const isArcZone = makeObjectTest<ArcZone>(ObjectType.Arc);
 
-export interface RectangleZone
-    extends ResizeableObject,
-        ColoredObject,
-        HollowObject,
-        BaseObject,
-        ObjectWithAttachmentPreference {
+export interface RectangleZone extends ResizeableObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
         | ObjectType.Rect
         | ObjectType.LineStack
@@ -445,6 +432,11 @@ export function getDefaultAttachmentPreference<T>(object: T): DefaultAttachPosit
         return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
     }
     return obj.defaultAttachPosition;
+}
+
+export function mayBeAttachedToByDefault(object: SceneObject): boolean {
+    const obj = object as ObjectWithAttachmentPreference;
+    return obj.allowedAsDefaultAttachmentTarget || false;
 }
 
 export function isRotateable<T>(object: T): object is RotateableObject & T {
