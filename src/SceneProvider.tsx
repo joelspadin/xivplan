@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
-import { getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
+import { getAbsolutePosition, getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -474,7 +474,13 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
             if (idsToDelete.has(obj.id)) {
                 return;
             }
-            if (isMoveable(obj) && obj.parentId !== undefined && idsToDelete.has(obj.parentId)) {
+            if (
+                isMoveable(obj) &&
+                obj.parentId !== undefined &&
+                idsToDelete.has(obj.parentId) &&
+                // Automatically delete attached objects that would attach automatically as well
+                getDefaultAttachmentPreference(obj) != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
+            ) {
                 idsToDelete.add(obj.id);
                 idsAdded++;
             }
@@ -488,12 +494,18 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
     const objects = currentStep.objects
         .filter((object) => !idsToDelete.has(object.id))
         .map((obj) =>
-            // Reset the rotation of any object that was facing a to-be-deleted object
-            isRotateable(obj) && obj.facingId && idsToDelete.has(obj.facingId)
+            // Stabilize the rotation of any object that was facing a to-be-deleted object
+            isRotateable(obj) && obj.facingId !== undefined && idsToDelete.has(obj.facingId)
                 ? {
                       ...omit(obj, 'facingId'),
                       rotation: isMoveable(obj) ? getAbsoluteRotation(state.scene, obj) : 0,
                   }
+                : obj,
+        )
+        .map((obj) =>
+            // Stabilize the position of any object still attached to a to-be-deleted object
+            isMoveable(obj) && obj.parentId !== undefined && idsToDelete.has(obj.parentId)
+                ? { ...omit(obj, 'parentId'), ...getAbsolutePosition(state.scene, obj) }
                 : obj,
         );
 
