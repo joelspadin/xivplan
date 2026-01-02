@@ -21,7 +21,7 @@ import {
     Tether,
     Ticks,
 } from './scene';
-import { getObjectAt } from './selection';
+import { getObjectToAttachToAt } from './selection';
 import { createUndoContext } from './undo/undoContext';
 import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
@@ -432,13 +432,13 @@ function addObjects(
     if (addedObjects.length == 1 && isMoveable(addedObjects[0])) {
         const attachPosition = getDefaultAttachmentPreference(addedObjects[0]);
         if (attachPosition != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
-            const potentialParent = getObjectAt(state.scene, currentStep, addedObjects[0]);
+            const potentialParent = getObjectToAttachToAt(state.scene, currentStep, addedObjects[0]);
             if (isMoveable(potentialParent)) {
+                // TODO: don't attach by default if it'll put the attachment off-screen
                 addedObjects[0] = {
                     ...addedObjects[0],
                     ...getRelativeAttachmentPoint(state.scene, addedObjects[0], potentialParent, attachPosition),
                     ...{ parentId: potentialParent.id },
-                    // TODO: only pin the position, not the rotation, and make line/cone/etc attach to the center by default.
                     pinned: true,
                 } as SceneObject & MoveableObject;
             }

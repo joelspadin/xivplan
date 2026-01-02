@@ -85,6 +85,7 @@ registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
             opacity: DEFAULT_ENEMY_OPACITY,
             radius: DEFAULT_SIZE,
             status: [],
+            allowedAsDefaultAttachmentTarget: true,
             ...object,
             ...position,
         },

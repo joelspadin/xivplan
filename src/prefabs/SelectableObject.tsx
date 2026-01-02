@@ -5,7 +5,7 @@ import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connect
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { addSelection, selectSingle, toggleSelection, useSelection } from '../selection';
+import { addSelection, removeSelection, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
 import { useEditMode } from '../useEditMode';
 
 export interface SelectableObjectProps extends PropsWithChildren {
@@ -14,6 +14,7 @@ export interface SelectableObjectProps extends PropsWithChildren {
 
 export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, children }) => {
     const [selection, setSelection] = useSelection();
+    const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
     const allowedConnectionIds = new Set(useAllowedConnectionIds());
@@ -38,5 +39,20 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
         e.cancelBubble = true;
     };
 
-    return <Group onClick={isSelectable ? onClick : undefined}>{children}</Group>;
+    const onMouseEnter = () => {
+        if (editMode == EditMode.SelectConnection) {
+            setSpotlight(selectSingle(object.id));
+        }
+    };
+    const onMouseLeave = () => {
+        if (editMode == EditMode.SelectConnection) {
+            setSpotlight(removeSelection(spotlight, object.id));
+        }
+    };
+
+    return (
+        <Group onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={isSelectable ? onClick : undefined}>
+            {children}
+        </Group>
+    );
 };
