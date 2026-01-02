@@ -505,7 +505,12 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
         .map((obj) =>
             // Stabilize the position of any object still attached to a to-be-deleted object
             isMoveable(obj) && obj.parentId !== undefined && idsToDelete.has(obj.parentId)
-                ? { ...omit(obj, 'parentId'), ...getAbsolutePosition(state.scene, obj) }
+                ? {
+                      ...omit(obj, 'parentId'),
+                      ...getAbsolutePosition(state.scene, obj),
+                      // Always unpin objects upon detahcing them
+                      pinned: false,
+                  }
                 : obj,
         );
 

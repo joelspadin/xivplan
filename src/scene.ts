@@ -258,7 +258,12 @@ export function isActor(object: UnknownObject): object is Actor {
     return isParty(object) || isEnemy(object);
 }
 
-export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface CircleZone
+    extends RadiusObject,
+        ColoredObject,
+        HollowObject,
+        BaseObject,
+        ObjectWithAttachmentPreference {
     readonly type:
         | ObjectType.Circle
         | ObjectType.Proximity
@@ -274,7 +279,13 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.RotateCCW,
 );
 
-export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface StackZone
+    extends StackCountObject,
+        RadiusObject,
+        ColoredObject,
+        HollowObject,
+        BaseObject,
+        ObjectWithAttachmentPreference {
     readonly type: ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
@@ -314,7 +325,12 @@ export interface ArcZone extends ConeProps, InnerRadiusObject, BaseObject {
 }
 export const isArcZone = makeObjectTest<ArcZone>(ObjectType.Arc);
 
-export interface RectangleZone extends ResizeableObject, ColoredObject, HollowObject, BaseObject {
+export interface RectangleZone
+    extends ResizeableObject,
+        ColoredObject,
+        HollowObject,
+        BaseObject,
+        ObjectWithAttachmentPreference {
     readonly type:
         | ObjectType.Rect
         | ObjectType.LineStack

@@ -90,6 +90,8 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                             const absolutePos = getAbsolutePosition(scene, obj);
                             return {
                                 ...omit(obj, 'parentId'),
+                                // Always unpin objects upon detaching them
+                                pinned: false,
                                 ...absolutePos,
                             };
                         }),
