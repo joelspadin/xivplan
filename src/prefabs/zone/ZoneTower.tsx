@@ -13,7 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getStackCircleProps, STACK_CIRCLE_INSET } from './stackUtil';
 import { getZoneStyle } from './style';
 
@@ -76,15 +76,18 @@ interface TowerRendererProps extends RendererProps<TowerZone> {
 
 const TowerRenderer: React.FC<TowerRendererProps> = ({ object, radius, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const towers = getStackCircleProps(radius, object.count, STACK_CIRCLE_INSET);
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
+            {highlightProps && (
+                <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} {...overrideProps} />
+            )}
 
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...style} opacity={0.75} />
                 {towers.map((props, i) => (
                     <CountZone key={i} {...props} {...style} listening={false} />

@@ -19,7 +19,7 @@ import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
-import { useHighlightProps, useShowResizer } from '../highlight';
+import { useHighlightProps, useOverrideProps, useShowResizer } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { getZoneStyle } from './style';
 
@@ -182,6 +182,7 @@ interface LineRendererProps extends RendererProps<LineZone> {
 
 const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rotation, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, Math.min(length, width), object.hollow);
 
     const x = -width / 2;
@@ -191,7 +192,7 @@ const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rota
     const highlightLength = length + highlightOffset;
 
     return (
-        <Group rotation={rotation}>
+        <Group rotation={rotation} {...overrideProps}>
             {highlightProps && (
                 <Rect
                     x={x}

@@ -15,7 +15,7 @@ import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useHighlightProps } from './highlight';
+import { useHighlightProps, useOverrideProps } from './highlight';
 
 // TODO: This would be a lot nicer if you could just click on start position
 // and drag to end position instead of having a set initial size/rotation.
@@ -73,6 +73,7 @@ const POINTS = [DEFAULT_ARROW_WIDTH / 2, DEFAULT_ARROW_HEIGHT, DEFAULT_ARROW_WID
 
 const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
 
     const pointerLength = DEFAULT_ARROW_HEIGHT * 0.15;
 
@@ -96,7 +97,7 @@ const ArrowRenderer: React.FC<RendererProps<ArrowObject>> = ({ object }) => {
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
-                <Group {...groupProps} listening={!object.hide}>
+                <Group {...groupProps} listening={!object.hide} {...overrideProps}>
                     {highlightProps && (
                         <Arrow
                             {...arrowProps}

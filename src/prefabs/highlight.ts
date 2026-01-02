@@ -1,4 +1,5 @@
 import { ShapeConfig } from 'konva/lib/Shape';
+import { useAllowedConnectionIds } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
@@ -48,6 +49,21 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
     }
 
     return undefined;
+}
+
+export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined {
+    const [editMode] = useEditMode();
+    const [selection] = useSelection();
+    const [spotlight] = useSpotlight();
+    const allowedConnectionSelectionIds = new Set(useAllowedConnectionIds());
+    if (
+        editMode == EditMode.SelectConnection &&
+        !allowedConnectionSelectionIds.has(object.id) &&
+        !selection.has(object.id) &&
+        !spotlight.has(object.id)
+    ) {
+        return { opacity: 0.1 };
+    }
 }
 
 export function useShowResizer(object: UnknownObject): boolean {
