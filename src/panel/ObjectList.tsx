@@ -40,18 +40,10 @@ function getObjectIndex(objects: readonly SceneObject[], id: number) {
 
 export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
     const classes = useStyles();
-    const [editMode] = useEditMode();
-    const allowedParentIds = new Set(useAllowedConnectionIds());
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
-    let objectsToDisplay = [...reversed(objects)];
-
-    // It's simpler to just remove objects that are not allowed to be selected than
-    // to disable them in this list.
-    if (editMode == EditMode.SelectConnection) {
-        objectsToDisplay = objectsToDisplay.filter((obj) => allowedParentIds.has(obj.id));
-    }
+    const objectsToDisplay = [...reversed(objects)];
 
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -106,17 +98,21 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
-    const getUpdateParentIdsAction = useUpdateConnectedIdsAction();
+    const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
+    const allowedConnectionIds = new Set(useAllowedConnectionIds());
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
         if (editMode == EditMode.SelectConnection) {
+            if (!allowedConnectionIds.has(object.id)) {
+                return;
+            }
             if (!isMoveable(object)) {
                 // Such objects should already have been removed from the list. Ignore
                 // any stray events.
                 return;
             }
-            dispatch(getUpdateParentIdsAction(object));
+            dispatch(getUpdateConnectedIdsAction(object));
             setEditMode(EditMode.Normal);
         } else if (e.shiftKey) {
             setSelection(addSelection(selection, object.id));
@@ -145,6 +141,8 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
         transition,
     };
 
+    const isUnselectable = editMode == EditMode.SelectConnection && !allowedConnectionIds.has(object.id);
+
     return (
         <div
             ref={setNodeRef}
@@ -162,6 +160,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                     isSelected && classes.selected,
                     isDragging && classes.dragging,
                     isDragging && isSelected && classes.draggingSelected,
+                    isUnselectable && classes.unselectable,
                 )}
             >
                 {
@@ -208,6 +207,19 @@ const useStyles = makeStyles({
         },
         ':hover:active': {
             backgroundColor: tokens.colorNeutralBackground3Pressed,
+        },
+    },
+
+    unselectable: {
+        color: tokens.colorStatusDangerForeground2,
+        backgroundColor: tokens.colorStatusDangerBackground2,
+        ':hover': {
+            color: tokens.colorStatusDangerForeground3,
+            backgroundColor: tokens.colorStatusDangerBackground3Hover,
+        },
+        ':hover:active': {
+            color: tokens.colorStatusDangerForeground3,
+            backgroundColor: tokens.colorStatusDangerBackground3Pressed,
         },
     },
 

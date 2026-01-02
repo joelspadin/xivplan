@@ -10,8 +10,10 @@ import {
 } from '@fluentui/react-icons';
 import React, { ReactNode } from 'react';
 import { useScene } from '../SceneProvider';
+import { EditMode } from '../editMode';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
 import { SceneObject } from '../scene';
+import { useEditMode } from '../useEditMode';
 import { setOrOmit } from '../util';
 import { detailsItemClassNames } from './detailsItemStyles';
 
@@ -37,6 +39,7 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
     children,
 }) => {
     const classes = useStyles();
+    const [editMode] = useEditMode();
 
     const size = isNested ? 20 : undefined;
 
@@ -50,10 +53,12 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
                         object={object}
                         className={mergeClasses(isSelected && classes.selectedButton, isDragging && classes.visible)}
                     />
-                    <DetailsItemDeleteButton
-                        object={object}
-                        className={mergeClasses(isSelected && classes.selectedButton)}
-                    />
+                    {editMode != EditMode.SelectConnection && (
+                        <DetailsItemDeleteButton
+                            object={object}
+                            className={mergeClasses(isSelected && classes.selectedButton)}
+                        />
+                    )}
                 </div>
             )}
         </div>
