@@ -7,6 +7,7 @@ import { useScene } from '../SceneProvider';
 import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { useStage } from '../render/stage';
+import { Scene } from '../scene';
 import { Handle } from './Handle';
 
 export const CONTROL_POINT_BORDER_COLOR = '#00a1ff';
@@ -32,13 +33,13 @@ export interface ControlPointConfig<T extends Vector2d, S, P> {
      * Returns each control point handle. Positions are relative to the center of the
      * object.
      */
-    handleFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): Handle[];
+    handleFunc(scene: Readonly<Scene>, object: T, handle: HandleFuncProps, props: Readonly<P>): Handle[];
     /**
      * Returns a state object to pass to the child.
      */
-    stateFunc(object: T, handle: HandleFuncProps, props: Readonly<P>): S;
+    stateFunc(scene: Readonly<Scene>, object: T, handle: HandleFuncProps, props: Readonly<P>): S;
 
-    getRotation?(object: T, handle: HandleFuncProps, props: Readonly<P>): number;
+    getRotation?(scene: Readonly<Scene>, object: T, handle: HandleFuncProps, props: Readonly<P>): number;
     /**
      * Renders the border or bounding box.
      */
@@ -102,9 +103,9 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
         const activeHandleId = transform?.handleId ?? 0;
         const handleProps = { pointerPos, activeHandleId };
 
-        const handles = config.handleFunc(object, handleProps, props);
-        const state = config.stateFunc(object, handleProps, props);
-        const rotation = config.getRotation?.(object, handleProps, props) ?? 0;
+        const handles = config.handleFunc(scene, object, handleProps, props);
+        const state = config.stateFunc(scene, object, handleProps, props);
+        const rotation = config.getRotation?.(scene, object, handleProps, props) ?? 0;
 
         // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
         const getPointerPos = () => {
@@ -133,7 +134,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
                     -rotation,
                 );
 
-                const handleId = getHandleId(config.handleFunc(object, {}, props), i);
+                const handleId = getHandleId(config.handleFunc(scene, object, {}, props), i);
 
                 onActive?.(true);
                 setTransform({ pointerPos, handleOffset, handleId });
@@ -160,7 +161,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
 
                 const activeHandleId = transform?.handleId ?? 0;
                 const handleProps = { pointerPos, activeHandleId };
-                const state = config.stateFunc(object, handleProps, props);
+                const state = config.stateFunc(scene, object, handleProps, props);
                 onTransformEnd?.(state);
             };
 
@@ -178,7 +179,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
                 window.removeEventListener('mouseup', handleEnd, true);
                 window.removeEventListener('touchend', handleEnd, true);
             };
-        }, [transform, object, onActive, setTransform, onTransformEnd, getPointerPos, props]);
+        }, [scene, transform, object, onActive, setTransform, onTransformEnd, getPointerPos, props]);
 
         const setCursor = (cursor: string) => {
             if (stage) {

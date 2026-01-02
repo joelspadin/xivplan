@@ -130,16 +130,20 @@ export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vect
     return { x: p.x - parent.x, y: p.y - parent.y };
 }
 
-/** Calculates the rotation of the object while taking into account the object it may be configured to be facing. */
-export function getAbsoluteRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
-    let rotation = object.rotation;
+/** @returns the angle that is considered '0 degrees rotated' for the given object. */
+export function getBaseFacingAngle(scene: Scene, object: RotateableObject & MoveableObject): number {
     if (object.facingId !== undefined) {
         const facingObject = getObjectById(scene, object.facingId);
         if (facingObject && isMoveable(facingObject)) {
-            rotation += getFacingAngle(scene, object, facingObject);
+            return getFacingAngle(scene, object, facingObject);
         }
     }
-    return rotation;
+    return 0;
+}
+
+/** Calculates the rotation of the object while taking into account the object it may be configured to be facing. */
+export function getAbsoluteRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
+    return getBaseFacingAngle(scene, object) + object.rotation;
 }
 
 /** @returns the angle to rotate an up-facing object at the given origin to make it face towards the target (in degrees) */
