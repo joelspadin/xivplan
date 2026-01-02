@@ -5,7 +5,15 @@ import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connect
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
-import { addSelection, removeSelection, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
+import {
+    addSelection,
+    removeSelection,
+    selectNone,
+    selectSingle,
+    toggleSelection,
+    useSelection,
+    useSpotlight,
+} from '../selection';
 import { useEditMode } from '../useEditMode';
 
 export interface SelectableObjectProps extends PropsWithChildren {
@@ -41,7 +49,11 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
 
     const onMouseEnter = () => {
         if (editMode == EditMode.SelectConnection) {
-            setSpotlight(selectSingle(object.id));
+            if (allowedConnectionIds.has(object.id)) {
+                setSpotlight(selectSingle(object.id));
+            } else {
+                setSpotlight(selectNone());
+            }
         }
     };
     const onMouseLeave = () => {

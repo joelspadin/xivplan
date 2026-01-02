@@ -95,7 +95,7 @@ interface SortableItemProps {
 const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
-    const [, setSpotlight] = useSpotlight();
+    const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
     const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
@@ -157,6 +157,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
             <div
                 className={mergeClasses(
                     classes.item,
+                    spotlight.has(object.id) && classes.spotlight,
                     isSelected && classes.selected,
                     isDragging && classes.dragging,
                     isDragging && isSelected && classes.draggingSelected,
@@ -174,6 +175,10 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
 };
 
 const useStyles = makeStyles({
+    spotlight: {
+        background: tokens.colorNeutralBackground3Hover,
+    },
+
     list: {
         display: 'flex',
         flexFlow: 'column',
