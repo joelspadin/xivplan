@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
-import { getAbsoluteRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { Scene, StarburstZone, UnknownObject } from '../../scene';
@@ -45,7 +45,8 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: StarburstObjectState) => {
-        state.rotation = Math.round(state.rotation);
+        const baseAngle = getBaseFacingAngle(scene, object);
+        state.rotation = Math.round(state.rotation - baseAngle);
         state.spokeWidth = Math.round(state.spokeWidth);
 
         if (!stateChanged(object, state)) {
@@ -66,9 +67,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
                     onTransformEnd={updateObject}
                     minSpokeWidth={minSpokeWidth}
                 >
-                    {(props) =>
-                        children({ ...props, isDragging, isResizing, rotation: getAbsoluteRotation(scene, object) })
-                    }
+                    {(props) => children({ ...props, isDragging, isResizing })}
                 </StarburstControlPoints>
             </DraggableObject>
         </ActivePortal>
@@ -112,12 +111,13 @@ function getRadius(object: StarburstZone, { pointerPos, activeHandleId }: Handle
 }
 
 function getSpokeWidth(
+    scene: Readonly<Scene>,
     object: StarburstZone,
     { pointerPos, activeHandleId }: HandleFuncProps,
     { minSpokeWidth }: StarburstControlProps,
 ) {
     if (pointerPos && activeHandleId === HandleId.SpokeWidth) {
-        const pos = rotateCoord(pointerPos, -object.rotation);
+        const pos = rotateCoord(pointerPos, -getAbsoluteRotation(scene, object));
         return Math.max(pos.x * 2, minSpokeWidth);
     }
 
@@ -130,14 +130,14 @@ function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos
         return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
     }
 
-    return object.rotation;
+    return getAbsoluteRotation(scene, object);
 }
 
 const StarburstControlPoints = createControlPointManager<StarburstZone, StarburstObjectState, StarburstControlProps>({
     handleFunc: (scene, object, handle, props) => {
         const r = getRadius(object, handle) + OUTSET;
-        const spokeWidth = getSpokeWidth(object, handle, props);
-        const rotation = object.rotation;
+        const spokeWidth = getSpokeWidth(scene, object, handle, props);
+        const rotation = getAbsoluteRotation(scene, object);
 
         const spokeX = spokeWidth / 2;
         const spokeY = (r * 2) / 3;
@@ -161,7 +161,7 @@ const StarburstControlPoints = createControlPointManager<StarburstZone, Starburs
     stateFunc: (scene, object, handle, props) => {
         const radius = getRadius(object, handle);
         const rotation = getRotation(scene, object, handle);
-        const spokeWidth = getSpokeWidth(object, handle, props);
+        const spokeWidth = getSpokeWidth(scene, object, handle, props);
 
         return { radius, rotation, spokeWidth };
     },
