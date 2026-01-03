@@ -160,6 +160,7 @@ function createUpdatePositionParentIdsAction(
             // Markers and status effects go to the new default position. Anything else just stays where it is.
             let attachmentPreference = getDefaultAttachPosition(obj);
             // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
+            // and ambiguous orderings.
             if (attachPositionCounts[attachmentPreference] > 1) {
                 attachmentPreference = DefaultAttachPosition.ANYWHERE;
             }
