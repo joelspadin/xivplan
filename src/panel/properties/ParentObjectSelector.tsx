@@ -157,7 +157,14 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                 </Tooltip>
             )}
             {haveSharedLink && !ParentDisplayComponent && 'Unknown object'}
-            {!haveSharedLink && haveAnyLink && 'Multiple objects'}
+            {!haveSharedLink && haveAnyLink && (
+                <Tooltip
+                    content={'The selection is connected to two or more different objects'}
+                    relationship="description"
+                >
+                    <div>Multiple objects</div>
+                </Tooltip>
+            )}
             {!haveAnyLink && (
                 <Tooltip content={newLinkTooltip} relationship="description">
                     <div>{newLinkText}</div>
