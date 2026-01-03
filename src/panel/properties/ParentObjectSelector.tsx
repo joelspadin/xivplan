@@ -1,4 +1,4 @@
-import { SplitButton, Tooltip } from '@fluentui/react-components';
+import { SplitButton, tokens, Tooltip } from '@fluentui/react-components';
 import { bundleIcon, DismissFilled, DismissRegular, LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { getAllowedPositionParentIds, getAllowedRotationParentIds } from '../../connections';
@@ -144,6 +144,9 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                 onMouseEnter: onMouseEnterParent,
                 onMouseLeave: onMouseLeaveParent,
                 disabled: !haveAnyLink && allowedParentIds.length == 0,
+                style: {
+                    paddingLeft: tokens.spacingHorizontalXS,
+                },
             }}
             menuButton={{ onClick: onClickUnlink, disabled: !haveAnyLink }}
         >
@@ -152,7 +155,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                     {
                         // https://github.com/facebook/react/issues/34794
                         // eslint-disable-next-line react-hooks/static-components
-                        <ParentDisplayComponent isNested={true} object={parentObject} />
+                        <ParentDisplayComponent size="field" showControls={false} object={parentObject} />
                     }
                 </Tooltip>
             )}

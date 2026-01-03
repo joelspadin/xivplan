@@ -458,7 +458,7 @@ const UnknownTargetComponent: React.FC = () => {
 function getTargetNode(object: SceneObject | undefined) {
     if (object) {
         const Component = getListComponent(object);
-        return <Component object={object} isNested />;
+        return <Component object={object} showControls={false} size="nested" />;
     }
 
     return <UnknownTargetComponent />;

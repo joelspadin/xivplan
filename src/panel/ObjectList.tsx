@@ -167,7 +167,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
                 {
                     // // https://github.com/facebook/react/issues/34794
                     // eslint-disable-next-line react-hooks/static-components
-                    <Component object={object} isDragging={isDragging} isSelected={isSelected} />
+                    <Component object={object} isDragging={isDragging} isSelected={isSelected} showControls={true} />
                 }
             </div>
         </div>
