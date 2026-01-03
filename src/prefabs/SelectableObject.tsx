@@ -57,9 +57,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
         }
     };
     const onMouseLeave = () => {
-        if (editMode == EditMode.SelectConnection) {
-            setSpotlight(removeSelection(spotlight, object.id));
-        }
+        setSpotlight(removeSelection(spotlight, object.id));
     };
 
     return (
