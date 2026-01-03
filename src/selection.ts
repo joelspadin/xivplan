@@ -1,11 +1,5 @@
-import { Vector2d } from 'konva/lib/types';
 import { use } from 'react';
-import { AttachmentDropTarget, isValidAttachmentDropTarget } from './connections';
-import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
-import { LayerName } from './render/layers';
-import { getLayerName } from './render/ObjectRegistry';
-import { isMoveable, isRadiusObject, isResizable, Scene, SceneObject, SceneStep } from './scene';
-import { getObjectById } from './SceneProvider';
+import { isMoveable, Scene, SceneObject, SceneStep } from './scene';
 import {
     DragSelectionContext,
     SceneSelection,
@@ -118,40 +112,4 @@ export function toggleSelection(selection: SceneSelection, id: number): SceneSel
     } else {
         return addSelection(selection, id);
     }
-}
-
-export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): SceneObject | undefined {
-    let matchedObject: SceneObject | undefined = undefined;
-    for (const layer of Object.values(LayerName)) {
-        step.objects.forEach((o) => {
-            if (getLayerName(o) !== layer) {
-                return;
-            }
-            const dropTarget = isValidAttachmentDropTarget(o);
-            if (dropTarget == AttachmentDropTarget.NONE) {
-                return;
-            }
-            // For now, only objects with full coverage within their radius/box will pass the above check.
-            if (
-                (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
-                (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p))
-            ) {
-                if (dropTarget == AttachmentDropTarget.SELF) {
-                    matchedObject = o;
-                } else if (dropTarget == AttachmentDropTarget.PARENT) {
-                    // If the object is an attachment itself, and the parent does allow attaching, attach to that instead.
-                    if (isMoveable(o) && o.positionParentId !== undefined) {
-                        const parentObject = getObjectById(s, o.positionParentId);
-                        if (
-                            isMoveable(parentObject) &&
-                            isValidAttachmentDropTarget(parentObject) == AttachmentDropTarget.SELF
-                        ) {
-                            matchedObject = parentObject;
-                        }
-                    }
-                }
-            }
-        });
-    }
-    return matchedObject;
 }

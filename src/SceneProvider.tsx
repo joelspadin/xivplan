@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
-import { DefaultAttachPosition, getDefaultAttachPosition } from './connections';
+import { DefaultAttachPosition, getDefaultAttachmentSettings, getObjectToAttachToAt } from './connections';
 import { getAbsolutePosition, getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
 import { copyObjects } from './copy';
 import {
@@ -20,7 +20,6 @@ import {
     Tether,
     Ticks,
 } from './scene';
-import { getObjectToAttachToAt } from './selection';
 import { createUndoContext } from './undo/undoContext';
 import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
@@ -432,16 +431,21 @@ function addObjects(
     const newObjects = [...currentStep.objects];
 
     if (addedObjects.length == 1 && isMoveable(addedObjects[0])) {
-        const attachPosition = getDefaultAttachPosition(addedObjects[0]);
-        if (attachPosition != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
+        const attachmentSettings = getDefaultAttachmentSettings(addedObjects[0]);
+        if (attachmentSettings.location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
             const potentialParent = getObjectToAttachToAt(state.scene, currentStep, addedObjects[0]);
             if (isMoveable(potentialParent)) {
-                // TODO: don't attach by default if it'll put the attachment off-screen
+                // TODO: don't attach by default if it'll put the attachment off-screen?
                 addedObjects[0] = {
                     ...addedObjects[0],
-                    ...getRelativeAttachmentPoint(state.scene, addedObjects[0], potentialParent, attachPosition),
+                    ...getRelativeAttachmentPoint(
+                        state.scene,
+                        addedObjects[0],
+                        potentialParent,
+                        attachmentSettings.location,
+                    ),
                     ...{ positionParentId: potentialParent.id },
-                    pinned: true,
+                    pinned: attachmentSettings.pinByDefault,
                 } as SceneObject & MoveableObject;
             }
         }
@@ -481,7 +485,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
                 obj.positionParentId !== undefined &&
                 idsToDelete.has(obj.positionParentId) &&
                 // Automatically delete attached objects that would attach automatically as well
-                getDefaultAttachPosition(obj) != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
+                getDefaultAttachmentSettings(obj).location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
             ) {
                 idsToDelete.add(obj.id);
                 idsAdded++;

@@ -1,8 +1,13 @@
-import { getAbsolutePosition, getRelativeAttachmentPoint } from './coord';
+import { Vector2d } from 'konva/lib/types';
+import { getAbsolutePosition, getRelativeAttachmentPoint, isWithinBox, isWithinRadius } from './coord';
 import { ConnectionType } from './EditModeContext';
+import { LayerName } from './render/layers';
+import { getLayerName } from './render/ObjectRegistry';
 import {
     isIcon,
     isMoveable,
+    isRadiusObject,
+    isResizable,
     isRotateable,
     MoveableObject,
     ObjectType,
@@ -156,14 +161,14 @@ function createUpdatePositionParentIdsAction(
         [DefaultAttachPosition.BOTTOM_RIGHT]: 0,
     };
     objectsToConnect.forEach((obj) => {
-        attachPositionCounts[getDefaultAttachPosition(obj)]++;
+        attachPositionCounts[getDefaultAttachmentSettings(obj).location]++;
     });
     return {
         type: 'update',
         value: objectsToConnect.map((obj) => {
             const absolutePos = getAbsolutePosition(scene, obj);
             // Markers and status effects go to the new default position. Anything else just stays where it is.
-            let attachmentPreference = getDefaultAttachPosition(obj);
+            let attachmentPreference = getDefaultAttachmentSettings(obj).location;
             // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
             // and ambiguous orderings.
             if (attachPositionCounts[attachmentPreference] > 1) {
@@ -199,7 +204,10 @@ export enum DefaultAttachPosition {
 }
 
 /** @returns Where the given object 'prefers' to be attached to a positional parent. */
-export function getDefaultAttachPosition(object: UnknownObject): DefaultAttachPosition {
+export function getDefaultAttachmentSettings(object: UnknownObject): {
+    location: DefaultAttachPosition;
+    pinByDefault: boolean;
+} {
     switch (object.type) {
         case ObjectType.Arc:
         case ObjectType.Cone:
@@ -208,16 +216,17 @@ export function getDefaultAttachPosition(object: UnknownObject): DefaultAttachPo
         case ObjectType.LineStack:
         case ObjectType.Proximity:
         case ObjectType.Stack:
-            return DefaultAttachPosition.CENTER;
+            // TODO: only pin the position by default
+            return { location: DefaultAttachPosition.CENTER, pinByDefault: false };
         case ObjectType.Icon: {
             // Markers and status effects are both ObjectType.Icon. Only status effects have an icon ID.
             if (isIcon(object) && object.iconId !== undefined) {
-                return DefaultAttachPosition.BOTTOM_RIGHT;
+                return { location: DefaultAttachPosition.BOTTOM_RIGHT, pinByDefault: true };
             }
-            return DefaultAttachPosition.TOP;
+            return { location: DefaultAttachPosition.TOP, pinByDefault: true };
         }
         default:
-            return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
+            return { location: DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT, pinByDefault: false };
     }
 }
 
@@ -241,4 +250,39 @@ export function isValidAttachmentDropTarget(object: SceneObject): AttachmentDrop
         default:
             return AttachmentDropTarget.NONE;
     }
+}
+export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): SceneObject | undefined {
+    let matchedObject: SceneObject | undefined = undefined;
+    for (const layer of Object.values(LayerName)) {
+        step.objects.forEach((o) => {
+            if (getLayerName(o) !== layer) {
+                return;
+            }
+            const dropTarget = isValidAttachmentDropTarget(o);
+            if (dropTarget == AttachmentDropTarget.NONE) {
+                return;
+            }
+            // For now, only objects with full coverage within their radius/box will pass the above check.
+            if (
+                (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
+                (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p))
+            ) {
+                if (dropTarget == AttachmentDropTarget.SELF) {
+                    matchedObject = o;
+                } else if (dropTarget == AttachmentDropTarget.PARENT) {
+                    // If the object is an attachment itself, and the parent does allow attaching, attach to that instead.
+                    if (isMoveable(o) && o.positionParentId !== undefined) {
+                        const parentObject = getObjectById(s, o.positionParentId);
+                        if (
+                            isMoveable(parentObject) &&
+                            isValidAttachmentDropTarget(parentObject) == AttachmentDropTarget.SELF
+                        ) {
+                            matchedObject = parentObject;
+                        }
+                    }
+                }
+            }
+        });
+    }
+    return matchedObject;
 }
