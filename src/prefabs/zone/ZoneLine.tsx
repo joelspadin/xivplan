@@ -9,7 +9,7 @@ import { ListComponentProps, registerListComponent } from '../../panel/ListCompo
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
-import { DefaultAttachPosition, LineZone, ObjectType, Scene } from '../../scene';
+import { LineZone, ObjectType, Scene } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
@@ -63,7 +63,6 @@ registerDropHandler<LineZone>(ObjectType.Line, (object, position) => {
             width: DEFAULT_WIDTH,
             length: DEFAULT_LENGTH,
             rotation: 0,
-            defaultAttachPosition: DefaultAttachPosition.CENTER,
             ...object,
             ...position,
         } as LineZone,

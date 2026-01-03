@@ -150,7 +150,7 @@ export interface HollowObject {
     readonly hollow?: boolean;
 }
 
-export interface MoveableObject extends Position, ObjectWithAttachmentPreference {
+export interface MoveableObject extends Position {
     readonly pinned?: boolean;
 }
 
@@ -160,13 +160,6 @@ export enum DefaultAttachPosition {
     CENTER = 'attach_centered',
     TOP = 'attach_at_top',
     BOTTOM_RIGHT = 'attach_at_bottom_right',
-}
-
-export interface ObjectWithAttachmentPreference {
-    // If this object gets added on top of a viable target, where should it be placed?
-    readonly defaultAttachPosition?: DefaultAttachPosition;
-    // Whether this object is a valid target object to attach to by default.
-    readonly allowedAsDefaultAttachmentTarget?: boolean;
 }
 
 export interface RotateableObject {
@@ -426,17 +419,38 @@ export function isMoveable<T>(object: T): object is MoveableObject & T {
     return obj && typeof obj.x === 'number' && typeof obj.y === 'number';
 }
 
-export function getDefaultAttachmentPreference<T>(object: T): DefaultAttachPosition {
-    const obj = object as ObjectWithAttachmentPreference & T;
-    if (obj === undefined || obj.defaultAttachPosition === undefined) {
-        return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
+export function getDefaultAttachmentPreference(object: UnknownObject): DefaultAttachPosition {
+    switch (object.type) {
+        case ObjectType.Arc:
+        case ObjectType.Cone:
+        case ObjectType.Donut:
+        case ObjectType.Line:
+        case ObjectType.LineStack:
+        case ObjectType.Proximity:
+        case ObjectType.Stack:
+            return DefaultAttachPosition.CENTER;
+        case ObjectType.Icon: {
+            // Markers and status effects are both ObjectType.Icon. Only status effects have an icon ID.
+            if (isIcon(object) && object.iconId !== undefined) {
+                return DefaultAttachPosition.BOTTOM_RIGHT;
+            }
+            return DefaultAttachPosition.TOP;
+        }
+        default:
+            return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
     }
-    return obj.defaultAttachPosition;
 }
 
 export function mayBeAttachedToByDefault(object: SceneObject): boolean {
-    const obj = object as ObjectWithAttachmentPreference;
-    return obj.allowedAsDefaultAttachmentTarget || false;
+    switch (object.type) {
+        case ObjectType.Party:
+        case ObjectType.Enemy:
+            // These are the most-common attachment targets, and also have a 'full' shape to make
+            // drop target checking simpler (see getObjectToAttachToAt())
+            return true;
+        default:
+            return false;
+    }
 }
 
 export function isRotateable<T>(object: T): object is RotateableObject & T {

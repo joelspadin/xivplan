@@ -6,7 +6,7 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
-import { DefaultAttachPosition, DonutZone, ObjectType } from '../../scene';
+import { DonutZone, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -49,7 +49,6 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
             opacity: DEFAULT_AOE_OPACITY,
             innerRadius: DEFAULT_INNER_RADIUS,
             radius: DEFAULT_OUTER_RADIUS,
-            defaultAttachPosition: DefaultAttachPosition.CENTER,
             ...object,
             ...position,
         } as DonutZone,

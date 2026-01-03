@@ -7,7 +7,7 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { DefaultAttachPosition, ObjectType, RectangleZone } from '../../scene';
+import { ObjectType, RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
@@ -54,7 +54,6 @@ registerDropHandler<RectangleZone>(ObjectType.LineStack, (object, position) => {
             width: DEFAULT_WIDTH,
             height: DEFAULT_HEIGHT,
             rotation: 0,
-            defaultAttachPosition: DefaultAttachPosition.CENTER,
             ...object,
             ...position,
         } as RectangleZone,
