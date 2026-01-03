@@ -43,7 +43,11 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
             if (selectedAndChildren.has(obj.id)) {
                 return;
             }
-            if (isMoveable(obj) && obj.parentId !== undefined && selectedAndChildren.has(obj.parentId)) {
+            if (
+                isMoveable(obj) &&
+                obj.positionParentId !== undefined &&
+                selectedAndChildren.has(obj.positionParentId)
+            ) {
                 selectedAndChildren.add(obj.id);
                 addedObjects++;
             }
@@ -76,13 +80,13 @@ export function omitInterconnectedObjects(
 ): (SceneObject & MoveableObject)[] {
     const objectIds = new Set(objects.map((obj) => obj.id));
     return objects.filter((obj) => {
-        let parentId = obj.parentId;
-        while (parentId !== undefined) {
-            if (objectIds.has(parentId)) {
+        let positionParentId = obj.positionParentId;
+        while (positionParentId !== undefined) {
+            if (objectIds.has(positionParentId)) {
                 return false;
             }
-            const parent = getObjectById(scene, parentId);
-            parentId = isMoveable(parent) ? parent.parentId : undefined;
+            const parent = getObjectById(scene, positionParentId);
+            positionParentId = isMoveable(parent) ? parent.positionParentId : undefined;
         }
         return true;
     });
@@ -172,7 +176,7 @@ function createUpdatePositionParentIdsAction(
             );
             return {
                 ...obj,
-                parentId: newParent.id,
+                positionParentId: newParent.id,
                 ...newRelativePos,
                 // Pin objects that got moved to a default position
                 pinned:

@@ -18,7 +18,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const x = commonValue(objects, (obj) => obj.x);
     const y = commonValue(objects, (obj) => obj.y);
     const pinned = commonValue(objects, (obj) => !!obj.pinned);
-    const parentId = commonValue(objects, (obj) => obj.parentId);
+    const parentId = commonValue(objects, (obj) => obj.positionParentId);
     const currentlyLinked = parentId !== undefined;
 
     const onTogglePinned = () =>

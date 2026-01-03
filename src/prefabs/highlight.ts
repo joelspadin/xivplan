@@ -34,18 +34,18 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
     }
 
     // If one of the objects this is connected to is in the spotlight or selection
-    let parentId = isMoveable(object) ? object.parentId : undefined;
-    while (parentId !== undefined) {
-        if (spotlight.has(parentId)) {
+    let positionParentId = isMoveable(object) ? object.positionParentId : undefined;
+    while (positionParentId !== undefined) {
+        if (spotlight.has(positionParentId)) {
             // This is slightly weird when the parent object has a resizer thing.
             // maybe the resizer should follow the spotlight coloring?
             return SPOTLIGHT_CONNECTED_PROPS;
         }
-        if (selection.has(parentId)) {
+        if (selection.has(positionParentId)) {
             return SELECTED_CONNECTED_PROPS;
         }
-        const parentObject = getObjectById(scene, parentId);
-        parentId = isMoveable(parentObject) ? parentObject.parentId : undefined;
+        const parentObject = getObjectById(scene, positionParentId);
+        positionParentId = isMoveable(parentObject) ? parentObject.positionParentId : undefined;
     }
 
     return undefined;
