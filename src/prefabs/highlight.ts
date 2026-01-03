@@ -54,13 +54,11 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
 export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined {
     const [editMode] = useEditMode();
     const [selection] = useSelection();
-    const [spotlight] = useSpotlight();
     const allowedConnectionSelectionIds = new Set(useAllowedConnectionIds());
     if (
         editMode == EditMode.SelectConnection &&
         !allowedConnectionSelectionIds.has(object.id) &&
-        !selection.has(object.id) &&
-        !spotlight.has(object.id)
+        !selection.has(object.id)
     ) {
         return { opacity: 0.1 };
     }
