@@ -59,7 +59,6 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
             height: DEFAULT_SIZE,
             opacity: DEFAULT_PARTY_OPACITY,
             rotation: 0,
-            allowedAsDefaultAttachmentTarget: true,
             ...object,
             ...position,
         } as PartyObject,
