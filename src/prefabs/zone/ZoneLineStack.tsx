@@ -56,7 +56,7 @@ registerDropHandler<RectangleZone>(ObjectType.LineStack, (object, position) => {
             rotation: 0,
             ...object,
             ...position,
-        } as RectangleZone,
+        },
     };
 });
 

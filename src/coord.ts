@@ -3,7 +3,7 @@ import { Vector2d } from 'konva/lib/types';
 import { getAttachedObjects, getObjectById, useScene } from './SceneProvider';
 import {
     DefaultAttachPosition,
-    getDefaultAttachmentPreference,
+    getDefaultAttachPosition,
     isMoveable,
     isRadiusObject,
     isResizable,
@@ -123,7 +123,7 @@ export function getSceneCoord(scene: Scene, p: Position): Vector2d {
 }
 
 /**
- * @returns the given [p], as a position relative to the object with the Given [parentId] id
+ * @returns the given [p], as a position relative to the object with the given [parentId] id
  */
 export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vector2d {
     const parent = getParentPosition(scene, { x: 0, y: 0, parentId });
@@ -256,7 +256,7 @@ export function getRelativeAttachmentPoint(
                 if (!attachment.pinned) {
                     continue;
                 }
-                if (getDefaultAttachmentPreference(attachment) == DefaultAttachPosition.TOP) {
+                if (getDefaultAttachPosition(attachment) == DefaultAttachPosition.TOP) {
                     if (isResizable(attachment)) {
                         addedHeight += attachment.height;
                     } else if (isRadiusObject(attachment)) {
@@ -285,7 +285,7 @@ export function getRelativeAttachmentPoint(
                 if (!attachment.pinned) {
                     continue;
                 }
-                if (getDefaultAttachmentPreference(attachment) == DefaultAttachPosition.BOTTOM_RIGHT) {
+                if (getDefaultAttachPosition(attachment) == DefaultAttachPosition.BOTTOM_RIGHT) {
                     if (isResizable(attachment)) {
                         addedOffset += attachment.width;
                     } else if (isRadiusObject(attachment)) {

@@ -98,6 +98,8 @@ function copyTether(
         return null;
     }
 
+    // TODO: also don't copy if one of the end points is not on the same step as
+    // where the objects are pasted.
     const newTether = {
         ...tether,
         startId: newIdsForCopiedObjects[tether.startId] || tether.startId,

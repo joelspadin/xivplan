@@ -51,7 +51,7 @@ registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
             radius: DEFAULT_OUTER_RADIUS,
             ...object,
             ...position,
-        } as DonutZone,
+        },
     };
 });
 
