@@ -442,15 +442,25 @@ export function getDefaultAttachmentPreference(object: UnknownObject): DefaultAt
     }
 }
 
-export function mayBeAttachedToByDefault(object: SceneObject): boolean {
+export enum AttachmentDropTarget {
+    NONE = 'none',
+    SELF = 'self',
+    PARENT = 'parent',
+}
+
+export function isValidAttachmentDropTarget(object: SceneObject): AttachmentDropTarget {
     switch (object.type) {
         case ObjectType.Party:
         case ObjectType.Enemy:
             // These are the most-common attachment targets, and also have a 'full' shape to make
             // drop target checking simpler (see getObjectToAttachToAt())
-            return true;
+            return AttachmentDropTarget.SELF;
+        case ObjectType.Icon:
+            // Dropping something on a marker or status icon should count as if dropping it on the
+            // positional parent (if any) for the purposes of attaching by default.
+            return AttachmentDropTarget.PARENT;
         default:
-            return false;
+            return AttachmentDropTarget.NONE;
     }
 }
 

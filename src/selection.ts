@@ -4,14 +4,16 @@ import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
 import { LayerName } from './render/layers';
 import { getLayerName } from './render/ObjectRegistry';
 import {
+    AttachmentDropTarget,
     isMoveable,
     isRadiusObject,
     isResizable,
-    mayBeAttachedToByDefault,
+    isValidAttachmentDropTarget,
     Scene,
     SceneObject,
     SceneStep,
 } from './scene';
+import { getObjectById } from './SceneProvider';
 import {
     DragSelectionContext,
     SceneSelection,
@@ -133,7 +135,8 @@ export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): S
             if (getLayerName(o) !== layer) {
                 return;
             }
-            if (!mayBeAttachedToByDefault(o)) {
+            const dropTarget = isValidAttachmentDropTarget(o);
+            if (dropTarget == AttachmentDropTarget.NONE) {
                 return;
             }
             // For now, only objects with full coverage within their radius/box will pass the above check.
@@ -141,7 +144,20 @@ export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): S
                 (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(s, o) }, p)) ||
                 (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(s, o) }, p))
             ) {
-                matchedObject = o;
+                if (dropTarget == AttachmentDropTarget.SELF) {
+                    matchedObject = o;
+                } else if (dropTarget == AttachmentDropTarget.PARENT) {
+                    // If the object is an attachment itself, and the parent does allow attaching, attach to that instead.
+                    if (isMoveable(o) && o.parentId !== undefined) {
+                        const parentObject = getObjectById(s, o.parentId);
+                        if (
+                            isMoveable(parentObject) &&
+                            isValidAttachmentDropTarget(parentObject) == AttachmentDropTarget.SELF
+                        ) {
+                            matchedObject = parentObject;
+                        }
+                    }
+                }
             }
         });
     }
