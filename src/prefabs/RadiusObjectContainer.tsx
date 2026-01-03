@@ -161,7 +161,8 @@ function getRotation(
 
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
-        return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
+        const baseRotation = getBaseFacingAngle(scene, object);
+        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 
     return getAbsoluteRotation(scene, object);
