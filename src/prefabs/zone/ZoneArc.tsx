@@ -4,7 +4,7 @@ import { Arc, Circle, Group, Shape } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/arc.svg?react';
-import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -181,8 +181,8 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
     const dragging = useIsDragging(object);
 
     const updateObject = (state: ArcState) => {
-        const baseAngle = getBaseFacingAngle(scene, object);
-        state.rotation = Math.round(state.rotation - baseAngle);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        state.rotation = Math.round(state.rotation - baseRotation);
         state.coneAngle = Math.round(state.coneAngle);
 
         if (!stateChanged(object, state)) {
@@ -279,7 +279,7 @@ function getInnerRadius(scene: Readonly<Scene>, object: ArcZone, { pointerPos, a
 function getRotation(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Radius) {
         const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 

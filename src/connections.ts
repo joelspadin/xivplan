@@ -26,7 +26,7 @@ export function useAllowedConnectionIds(): number[] {
                 step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
             );
         case ConnectionType.ROTATION: {
-            return getAllowedRotationParentIds(
+            return getAllowedRotationConnectionIds(
                 step,
                 step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
             );
@@ -62,9 +62,9 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
 
 /**
  * Returns a list of object IDs that the given selection of objects is allowed to face.
- * This only excludes the selection -- it's OK to face an attached object.
+ * This only excludes the selection -- it's OK to face an attached object or objects that face the selection.
  */
-export function getAllowedRotationParentIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
+export function getAllowedRotationConnectionIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
     const selectedIds = new Set<number>(objectsToConnect.map((obj) => obj.id));
 
     return step.objects

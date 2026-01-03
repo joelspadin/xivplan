@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
-import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -109,7 +109,7 @@ function getLength(object: LineZone, { pointerPos, activeHandleId }: HandleFuncP
 function getRotation(scene: Readonly<Scene>, object: LineZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Length) {
         const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 
@@ -224,8 +224,8 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
     const dragging = useIsDragging(object);
 
     const updateObject = (state: LineState) => {
-        const baseAngle = getBaseFacingAngle(scene, object);
-        state.rotation = Math.round(state.rotation - baseAngle);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        state.rotation = Math.round(state.rotation - baseRotation);
         state.width = Math.round(state.width);
 
         if (!stateChanged(object, state)) {

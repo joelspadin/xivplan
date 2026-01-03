@@ -9,7 +9,7 @@ import { MoveableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue, setOrOmit } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
-import { ParentObjectSelector } from './ParentObjectSelector';
+import { ConnectedObjectSelector } from './ConnectedObjectSelector';
 
 export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> = ({ objects }) => {
     const classes = useControlStyles();
@@ -48,7 +48,7 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
                 </Tooltip>
             </div>
             <div className={classes.row}>
-                <ParentObjectSelector objects={objects} connectionType={ConnectionType.POSITION} />
+                <ConnectedObjectSelector objects={objects} connectionType={ConnectionType.POSITION} />
             </div>
         </>
     );
