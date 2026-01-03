@@ -24,7 +24,7 @@ export const ALIGN_TO_PIXEL = {
 export interface Position {
     readonly x: number;
     readonly y: number;
-    readonly parentId?: number;
+    readonly positionParentId?: number;
 }
 
 export function getCanvasX(scene: Scene, x: number): number {
@@ -39,7 +39,7 @@ export function getCanvasY(scene: Scene, y: number): number {
 
 export function getParentPosition(scene: Scene, p: Position): Vector2d {
     const parentIdSet = new Set<number>();
-    let parentId = p.parentId;
+    let parentId = p.positionParentId;
     const position: Vector2d = { x: 0, y: 0 };
     while (parentId !== undefined) {
         if (parentIdSet.has(parentId)) {
@@ -51,7 +51,7 @@ export function getParentPosition(scene: Scene, p: Position): Vector2d {
         if (isMoveable(parent)) {
             position.x += parent.x;
             position.y += parent.y;
-            parentId = parent.parentId;
+            parentId = parent.positionParentId;
         } else {
             break;
         }
@@ -123,10 +123,10 @@ export function getSceneCoord(scene: Scene, p: Position): Vector2d {
 }
 
 /**
- * @returns the given [p], as a position relative to the object with the given [parentId] id
+ * @returns the given [p], as a position relative to the object with the given [positionParentId] id
  */
-export function makeRelative(scene: Scene, p: Vector2d, parentId?: number): Vector2d {
-    const parent = getParentPosition(scene, { x: 0, y: 0, parentId });
+export function makeRelative(scene: Scene, p: Vector2d, positionParentId?: number): Vector2d {
+    const parent = getParentPosition(scene, { x: 0, y: 0, positionParentId });
     return { x: p.x - parent.x, y: p.y - parent.y };
 }
 
@@ -155,7 +155,7 @@ function getFacingAngle(
     // If the origin is _also_ attached to the target positionally and _also_ on exactly the same location, face the same
     // direction as the target instead of whatever arbitrary direction the (0,0) vector yields.
     // Positional connections are guaranteed to not have a circular dependency [without manual editing of the plan].
-    if (origin.parentId === target.id && origin.x == 0 && origin.y == 0 && isRotateable(target)) {
+    if (origin.positionParentId === target.id && origin.x == 0 && origin.y == 0 && isRotateable(target)) {
         return getAbsoluteRotation(scene, target);
     }
     const originPosition = getAbsolutePosition(scene, origin);

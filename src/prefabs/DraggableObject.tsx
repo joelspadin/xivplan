@@ -99,7 +99,7 @@ function updatePosition(
     // Konva automatically moves the object to e.target.position() in canvas
     // coordinates. Subtracting the object's original position gives the offset
     // that needs to be applied to all objects being dragged.
-    const pos = makeRelative(scene, getSceneCoord(scene, e.target.position()), targetObject.parentId);
+    const pos = makeRelative(scene, getSceneCoord(scene, e.target.position()), targetObject.positionParentId);
     const offset = vecSub(pos, targetObject);
 
     if (offset.x === 0 && offset.y === 0) {

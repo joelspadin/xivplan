@@ -60,13 +60,13 @@ function copyObject(
     newIdsForCopiedObjects: Record<number, number>,
 ): SceneObject {
     let newObject: SceneObject | (SceneObject & RotateableObject) = { ...object };
-    if (object.parentId !== undefined) {
+    if (object.positionParentId !== undefined) {
         // If the parent also gets copied, do not adjust the already-relative position.
         // Otherwise make a detached copy.
-        if (newIdsForCopiedObjects[object.parentId] !== undefined) {
-            newObject = { ...newObject, parentId: newIdsForCopiedObjects[object.parentId] };
+        if (newIdsForCopiedObjects[object.positionParentId] !== undefined) {
+            newObject = { ...newObject, positionParentId: newIdsForCopiedObjects[object.positionParentId] };
         } else {
-            newObject = { ...omit(object, 'parentId'), ...vecAdd(getAbsolutePosition(scene, object), offset) };
+            newObject = { ...omit(object, 'positionParentId'), ...vecAdd(getAbsolutePosition(scene, object), offset) };
         }
     } else {
         newObject = { ...newObject, ...vecAdd(object, offset) };

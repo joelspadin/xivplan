@@ -276,7 +276,7 @@ export function getAttachedObjects(scene: Scene, object: SceneObject): (SceneObj
     const children: (SceneObject & MoveableObject)[] = [];
     for (const step of scene.steps) {
         step.objects.forEach((obj) => {
-            if (isMoveable(obj) && obj.parentId === object.id) {
+            if (isMoveable(obj) && obj.positionParentId === object.id) {
                 children.push(obj);
             }
         });
@@ -441,7 +441,7 @@ function addObjects(
                 addedObjects[0] = {
                     ...addedObjects[0],
                     ...getRelativeAttachmentPoint(state.scene, addedObjects[0], potentialParent, attachPosition),
-                    ...{ parentId: potentialParent.id },
+                    ...{ positionParentId: potentialParent.id },
                     pinned: true,
                 } as SceneObject & MoveableObject;
             }
@@ -479,8 +479,8 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
             }
             if (
                 isMoveable(obj) &&
-                obj.parentId !== undefined &&
-                idsToDelete.has(obj.parentId) &&
+                obj.positionParentId !== undefined &&
+                idsToDelete.has(obj.positionParentId) &&
                 // Automatically delete attached objects that would attach automatically as well
                 getDefaultAttachPosition(obj) != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
             ) {
@@ -507,9 +507,9 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
         )
         .map((obj) =>
             // Stabilize the position of any object still attached to a to-be-deleted object
-            isMoveable(obj) && obj.parentId !== undefined && idsToDelete.has(obj.parentId)
+            isMoveable(obj) && obj.positionParentId !== undefined && idsToDelete.has(obj.positionParentId)
                 ? {
-                      ...omit(obj, 'parentId'),
+                      ...omit(obj, 'positionParentId'),
                       ...getAbsolutePosition(state.scene, obj),
                       // Always unpin objects upon detahcing them
                       pinned: false,

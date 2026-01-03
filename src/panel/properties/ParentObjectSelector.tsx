@@ -25,35 +25,35 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
 
-    const getParentId = (obj: SceneObject) => {
+    const getConnectionId = (obj: SceneObject) => {
         if (isMoveable(obj) && connectionType == ConnectionType.POSITION) {
-            return obj.parentId;
+            return obj.positionParentId;
         }
         if (isRotateable(obj) && connectionType == ConnectionType.ROTATION) {
             return obj.facingId;
         }
     };
-    const commonParentId = commonValue(objects, getParentId);
-    const haveSharedLink = commonParentId !== undefined;
-    const haveAnyLink = objects.find((obj) => getParentId(obj) !== undefined) !== undefined;
+    const commonConnectionId = commonValue(objects, getConnectionId);
+    const haveSharedLink = commonConnectionId !== undefined;
+    const haveAnyLink = objects.find((obj) => getConnectionId(obj) !== undefined) !== undefined;
 
-    let allowedParentIds: number[];
+    let allowedConnectionIds: number[];
     switch (connectionType) {
         case ConnectionType.POSITION:
-            allowedParentIds = getAllowedPositionParentIds(step, objects);
+            allowedConnectionIds = getAllowedPositionParentIds(step, objects);
             break;
         case ConnectionType.ROTATION:
-            allowedParentIds = getAllowedRotationParentIds(step, objects);
+            allowedConnectionIds = getAllowedRotationParentIds(step, objects);
             break;
         default:
-            allowedParentIds = [];
+            allowedConnectionIds = [];
     }
 
-    const parentObject = haveSharedLink && getObjectById(scene, commonParentId);
+    const parentObject = haveSharedLink && getObjectById(scene, commonConnectionId);
     const ParentDisplayComponent = parentObject && getListComponent(parentObject);
 
     const onMouseEnterParent = () => {
-        setSpotlight(haveSharedLink ? selectSingle(commonParentId) : selectNone());
+        setSpotlight(haveSharedLink ? selectSingle(commonConnectionId) : selectNone());
     };
     const onMouseLeaveParent = () => {
         setSpotlight(selectNone());
@@ -63,14 +63,14 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
         if (haveSharedLink) {
             // Don't trigger the selection if modifiers are held
             if (!event.ctrlKey && !event.shiftKey) {
-                setSelection(selectSingle(commonParentId));
+                setSelection(selectSingle(commonConnectionId));
                 // The element disappearing will not trigger an onMouseLeave
                 setSpotlight(selectNone());
             }
             return;
         } else {
             // For both "no current connections" and ""
-            if (allowedParentIds.length == 0) {
+            if (allowedConnectionIds.length == 0) {
                 return;
             }
             setEditMode(EditMode.SelectConnection);
@@ -89,7 +89,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                         value: objects.filter(isMoveable).map((obj) => {
                             const absolutePos = getAbsolutePosition(scene, obj);
                             return {
-                                ...omit(obj, 'parentId'),
+                                ...omit(obj, 'positionParentId'),
                                 // Always unpin objects upon detaching them
                                 pinned: false,
                                 ...absolutePos,
@@ -119,7 +119,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
         case ConnectionType.POSITION:
             newLinkText = 'Link position';
             newLinkTooltip =
-                allowedParentIds.length == 0
+                allowedConnectionIds.length == 0
                     ? 'No available object to attach to'
                     : 'Attach the selection to another object';
             currentLinkTooltip = 'If this object moves, so does the selection';
@@ -127,7 +127,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
         case ConnectionType.ROTATION:
             newLinkText = 'Face object';
             newLinkTooltip =
-                allowedParentIds.length == 0
+                allowedConnectionIds.length == 0
                     ? 'No available object to face'
                     : 'Automatically rotate towards another object';
             currentLinkTooltip = 'If this object moves, the selection will rotate to face it (plus the Rotation value)';
@@ -143,7 +143,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
                 onClick: onClickParent,
                 onMouseEnter: onMouseEnterParent,
                 onMouseLeave: onMouseLeaveParent,
-                disabled: !haveAnyLink && allowedParentIds.length == 0,
+                disabled: !haveAnyLink && allowedConnectionIds.length == 0,
                 style: {
                     paddingLeft: tokens.spacingHorizontalXS,
                 },

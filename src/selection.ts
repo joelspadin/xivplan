@@ -148,8 +148,8 @@ export function getObjectToAttachToAt(s: Scene, step: SceneStep, p: Vector2d): S
                     matchedObject = o;
                 } else if (dropTarget == AttachmentDropTarget.PARENT) {
                     // If the object is an attachment itself, and the parent does allow attaching, attach to that instead.
-                    if (isMoveable(o) && o.parentId !== undefined) {
-                        const parentObject = getObjectById(s, o.parentId);
+                    if (isMoveable(o) && o.positionParentId !== undefined) {
+                        const parentObject = getObjectById(s, o.positionParentId);
                         if (
                             isMoveable(parentObject) &&
                             isValidAttachmentDropTarget(parentObject) == AttachmentDropTarget.SELF
