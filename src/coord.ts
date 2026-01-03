@@ -294,14 +294,15 @@ export function getRelativeAttachmentPoint(
                 }
             }
 
-            const overlap = 0.9;
             if (isResizable(parent)) {
+                const overlap = 0.9;
                 parentAttachmentPoint = {
                     x: (parent.width / 2) * (1 - overlap) + addedOffset,
                     y: -(parent.height / 2) * (1 - overlap),
                 };
             } else if (isRadiusObject(parent)) {
-                const offset = Math.sqrt(parent.radius ** 2 / 2) * (1 - overlap);
+                const overlap = 0.4;
+                const offset = Math.sqrt((parent.radius * (1 - overlap)) ** 2 / 2);
                 parentAttachmentPoint = { x: offset + addedOffset, y: -offset };
             }
             break;
