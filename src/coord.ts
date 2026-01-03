@@ -1,9 +1,8 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import { getAttachedObjects, getObjectById, useScene } from './SceneProvider';
+import { DefaultAttachPosition, getDefaultAttachPosition } from './connections';
 import {
-    DefaultAttachPosition,
-    getDefaultAttachPosition,
     isMoveable,
     isRadiusObject,
     isResizable,

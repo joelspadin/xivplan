@@ -1,14 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
+import { DefaultAttachPosition, getDefaultAttachPosition } from './connections';
 import { getAbsolutePosition, getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
     ArenaShape,
     DEFAULT_SCENE,
-    DefaultAttachPosition,
-    getDefaultAttachPosition,
     Grid,
     isMoveable,
     isRotateable,
