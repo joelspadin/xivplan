@@ -1,8 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
-import { DefaultAttachPosition, getDefaultAttachmentSettings, getObjectToAttachToAt } from './connections';
-import { getAbsolutePosition, getAbsoluteRotation, getRelativeAttachmentPoint } from './coord';
+import {
+    DefaultAttachPosition,
+    getDefaultAttachmentSettings,
+    getObjectToAttachToAt,
+    getRelativeAttachmentPoint,
+} from './connections';
+import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
@@ -270,7 +275,8 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return undefined;
 }
 
-export function getAttachedObjects(scene: Scene, object: SceneObject): (SceneObject & MoveableObject)[] {
+/** @returns the list of objects that have the given object as direct position parent. */
+export function getDirectPositionDescendants(scene: Scene, object: SceneObject): (SceneObject & MoveableObject)[] {
     const children: (SceneObject & MoveableObject)[] = [];
     for (const step of scene.steps) {
         step.objects.forEach((obj) => {
@@ -324,7 +330,7 @@ function assignObjectIds(
         });
     // This has some potential nextId corruption issues, so disallow having a mix of input types.
     // In practice either all or none of the objects will have ids already, where the 'all' case uses
-    // this to prevent duplicate IDs.
+    // this function to prevent duplicate IDs.
     if (objectsWithExistingId && objectsWithoutId) {
         console.error(
             `Cannot add items both with ID and without ID at the same time. Received ${objectsWithExistingId} with ID, and ${objectsWithoutId} without`,
@@ -444,7 +450,7 @@ function addObjects(
                         potentialParent,
                         attachmentSettings.location,
                     ),
-                    ...{ positionParentId: potentialParent.id },
+                    positionParentId: potentialParent.id,
                     pinned: attachmentSettings.pinByDefault,
                 } as SceneObject & MoveableObject;
             }
@@ -484,7 +490,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
                 isMoveable(obj) &&
                 obj.positionParentId !== undefined &&
                 idsToDelete.has(obj.positionParentId) &&
-                // Automatically delete attached objects that would attach automatically as well
+                // Automatically delete positionally-attached objects that would attach automatically as well
                 getDefaultAttachmentSettings(obj).location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
             ) {
                 idsToDelete.add(obj.id);
@@ -509,7 +515,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
                 : obj,
         )
         .map((obj) =>
-            // Stabilize the position of any object still attached to a to-be-deleted object
+            // Stabilize the position of any object still linked to a to-be-deleted object
             isMoveable(obj) && obj.positionParentId !== undefined && idsToDelete.has(obj.positionParentId)
                 ? {
                       ...omit(obj, 'positionParentId'),
