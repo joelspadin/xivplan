@@ -1,7 +1,7 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import { getAttachedObjects, getObjectById, useScene } from './SceneProvider';
-import { DefaultAttachPosition, getDefaultAttachPosition } from './connections';
+import { DefaultAttachPosition, getDefaultAttachmentSettings } from './connections';
 import {
     isMoveable,
     isRadiusObject,
@@ -255,7 +255,7 @@ export function getRelativeAttachmentPoint(
                 if (!attachment.pinned) {
                     continue;
                 }
-                if (getDefaultAttachPosition(attachment) == DefaultAttachPosition.TOP) {
+                if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.TOP) {
                     if (isResizable(attachment)) {
                         addedHeight += attachment.height;
                     } else if (isRadiusObject(attachment)) {
@@ -284,7 +284,7 @@ export function getRelativeAttachmentPoint(
                 if (!attachment.pinned) {
                     continue;
                 }
-                if (getDefaultAttachPosition(attachment) == DefaultAttachPosition.BOTTOM_RIGHT) {
+                if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.BOTTOM_RIGHT) {
                     if (isResizable(attachment)) {
                         addedOffset += attachment.width;
                     } else if (isRadiusObject(attachment)) {
