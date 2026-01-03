@@ -1,18 +1,10 @@
 import { Vector2d } from 'konva/lib/types';
 import { use } from 'react';
+import { AttachmentDropTarget, isValidAttachmentDropTarget } from './connections';
 import { getAbsolutePosition, isWithinBox, isWithinRadius } from './coord';
 import { LayerName } from './render/layers';
 import { getLayerName } from './render/ObjectRegistry';
-import {
-    AttachmentDropTarget,
-    isMoveable,
-    isRadiusObject,
-    isResizable,
-    isValidAttachmentDropTarget,
-    Scene,
-    SceneObject,
-    SceneStep,
-} from './scene';
+import { isMoveable, isRadiusObject, isResizable, Scene, SceneObject, SceneStep } from './scene';
 import { getObjectById } from './SceneProvider';
 import {
     DragSelectionContext,

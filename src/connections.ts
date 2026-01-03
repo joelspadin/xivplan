@@ -1,15 +1,16 @@
 import { getAbsolutePosition, getRelativeAttachmentPoint } from './coord';
 import { ConnectionType } from './EditModeContext';
 import {
-    DefaultAttachPosition,
-    getDefaultAttachPosition,
+    isIcon,
     isMoveable,
     isRotateable,
     MoveableObject,
+    ObjectType,
     RotateableObject,
     Scene,
     SceneObject,
     SceneStep,
+    UnknownObject,
 } from './scene';
 import { getObjectById, SceneAction, useScene } from './SceneProvider';
 import { useConnectionSelection } from './useConnectionSelection';
@@ -187,4 +188,57 @@ function createUpdatePositionParentIdsAction(
             };
         }),
     };
+}
+
+export enum DefaultAttachPosition {
+    DONT_ATTACH_BY_DEFAULT = 'dont_attach_by_default',
+    ANYWHERE = 'attach_anywhere',
+    CENTER = 'attach_centered',
+    TOP = 'attach_at_top',
+    BOTTOM_RIGHT = 'attach_at_bottom_right',
+}
+
+/** @returns Where the given object 'prefers' to be attached to a positional parent. */
+export function getDefaultAttachPosition(object: UnknownObject): DefaultAttachPosition {
+    switch (object.type) {
+        case ObjectType.Arc:
+        case ObjectType.Cone:
+        case ObjectType.Donut:
+        case ObjectType.Line:
+        case ObjectType.LineStack:
+        case ObjectType.Proximity:
+        case ObjectType.Stack:
+            return DefaultAttachPosition.CENTER;
+        case ObjectType.Icon: {
+            // Markers and status effects are both ObjectType.Icon. Only status effects have an icon ID.
+            if (isIcon(object) && object.iconId !== undefined) {
+                return DefaultAttachPosition.BOTTOM_RIGHT;
+            }
+            return DefaultAttachPosition.TOP;
+        }
+        default:
+            return DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT;
+    }
+}
+
+export enum AttachmentDropTarget {
+    NONE = 'none',
+    SELF = 'self',
+    PARENT = 'parent',
+}
+
+export function isValidAttachmentDropTarget(object: SceneObject): AttachmentDropTarget {
+    switch (object.type) {
+        case ObjectType.Party:
+        case ObjectType.Enemy:
+            // These are the most-common attachment targets, and also have a 'full' shape to make
+            // drop target checking simpler (see getObjectToAttachToAt())
+            return AttachmentDropTarget.SELF;
+        case ObjectType.Icon:
+            // Dropping something on a marker or status icon should count as if dropping it on the
+            // positional parent (if any) for the purposes of attaching by default.
+            return AttachmentDropTarget.PARENT;
+        default:
+            return AttachmentDropTarget.NONE;
+    }
 }
