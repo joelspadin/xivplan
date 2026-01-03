@@ -17,8 +17,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
 
     const rotation = commonValue(objects, (obj) => obj.rotation);
     const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
-    const facingId = commonValue(objects, (obj) => obj.facingId);
-    const currentlyLinked = facingId !== undefined;
+    const currentlyLinked = commonValue(objects, (obj) => obj.facingId !== undefined) || false;
 
     const onRotationChanged = useSpinChanged((rotation: number) =>
         dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, rotation })) }),
