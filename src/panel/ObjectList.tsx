@@ -216,16 +216,7 @@ const useStyles = makeStyles({
     },
 
     unselectable: {
-        color: tokens.colorStatusDangerForeground2,
-        backgroundColor: tokens.colorStatusDangerBackground2,
-        ':hover': {
-            color: tokens.colorStatusDangerForeground3,
-            backgroundColor: tokens.colorStatusDangerBackground3Hover,
-        },
-        ':hover:active': {
-            color: tokens.colorStatusDangerForeground3,
-            backgroundColor: tokens.colorStatusDangerBackground3Pressed,
-        },
+        opacity: 0.3,
     },
 
     selected: {
