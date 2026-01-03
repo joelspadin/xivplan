@@ -4,7 +4,7 @@ import { Group, Shape, Wedge } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/cone.svg?react';
-import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -156,8 +156,8 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
     const dragging = useIsDragging(object);
 
     const updateObject = (state: ConeState) => {
-        const baseAngle = getBaseFacingAngle(scene, object);
-        state.rotation = Math.round(state.rotation - baseAngle);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        state.rotation = Math.round(state.rotation - baseRotation);
         state.coneAngle = Math.round(state.coneAngle);
 
         if (!stateChanged(object, state)) {
@@ -226,7 +226,7 @@ function getRadius(object: ConeZone, { pointerPos, activeHandleId }: HandleFuncP
 function getRotation(scene: Readonly<Scene>, object: ConeZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Radius) {
         const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 

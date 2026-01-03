@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
-import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { Scene, StarburstZone, UnknownObject } from '../../scene';
@@ -45,8 +45,8 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: StarburstObjectState) => {
-        const baseAngle = getBaseFacingAngle(scene, object);
-        state.rotation = Math.round(state.rotation - baseAngle);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        state.rotation = Math.round(state.rotation - baseRotation);
         state.spokeWidth = Math.round(state.spokeWidth);
 
         if (!stateChanged(object, state)) {
@@ -127,7 +127,7 @@ function getSpokeWidth(
 function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 

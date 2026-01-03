@@ -5,7 +5,7 @@ import React, { RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
-import { getAbsoluteRotation, getBaseFacingAngle } from '../coord';
+import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -115,9 +115,9 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
             return;
         }
 
-        const baseAngle = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         const newProps: Partial<TextObject> = {
-            rotation: Math.round(node.rotation() - baseAngle),
+            rotation: Math.round(node.rotation() - baseRotation),
         };
         if (object.rotation == newProps.rotation) {
             return;

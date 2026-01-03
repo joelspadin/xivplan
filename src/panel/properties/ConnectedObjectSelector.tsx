@@ -1,7 +1,7 @@
 import { SplitButton, tokens, Tooltip } from '@fluentui/react-components';
 import { bundleIcon, DismissFilled, DismissRegular, LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
-import { getAllowedPositionParentIds, getAllowedRotationParentIds } from '../../connections';
+import { getAllowedPositionParentIds, getAllowedRotationConnectionIds } from '../../connections';
 import { getAbsolutePosition, getAbsoluteRotation } from '../../coord';
 import { EditMode } from '../../editMode';
 import { ConnectionType } from '../../EditModeContext';
@@ -13,12 +13,12 @@ import { useEditMode } from '../../useEditMode';
 import { commonValue, omit } from '../../util';
 import { getListComponent } from '../ListComponentRegistry';
 
-export interface ParentObjectSelectorProps {
+export interface ConnectedObjectSelectorProps {
     readonly connectionType: ConnectionType;
     readonly objects: readonly SceneObject[];
 }
 
-export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ connectionType, objects }) => {
+export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = ({ connectionType, objects }) => {
     const { scene, step, dispatch } = useScene();
     const [, setSpotlight] = useSpotlight();
     const [, setSelection] = useSelection();
@@ -43,23 +43,23 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
             allowedConnectionIds = getAllowedPositionParentIds(step, objects);
             break;
         case ConnectionType.ROTATION:
-            allowedConnectionIds = getAllowedRotationParentIds(step, objects);
+            allowedConnectionIds = getAllowedRotationConnectionIds(step, objects);
             break;
         default:
             allowedConnectionIds = [];
     }
 
-    const parentObject = haveSharedLink && getObjectById(scene, commonConnectionId);
-    const ParentDisplayComponent = parentObject && getListComponent(parentObject);
+    const connectedObject = haveSharedLink && getObjectById(scene, commonConnectionId);
+    const ConnectionDisplayComponent = connectedObject && getListComponent(connectedObject);
 
-    const onMouseEnterParent = () => {
+    const onMouseEnterConnection = () => {
         setSpotlight(haveSharedLink ? selectSingle(commonConnectionId) : selectNone());
     };
-    const onMouseLeaveParent = () => {
+    const onMouseLeaveConnection = () => {
         setSpotlight(selectNone());
     };
 
-    function onClickParent(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
+    function onClickConnection(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
         if (haveSharedLink) {
             // Don't trigger the selection if modifiers are held
             if (!event.ctrlKey && !event.shiftKey) {
@@ -69,7 +69,7 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
             }
             return;
         } else {
-            // For both "no current connections" and ""
+            // For both "no current connections" and "multiple connections"
             if (allowedConnectionIds.length == 0) {
                 return;
             }
@@ -140,9 +140,9 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
             menuIcon={<UnlinkButton />}
             appearance="subtle"
             primaryActionButton={{
-                onClick: onClickParent,
-                onMouseEnter: onMouseEnterParent,
-                onMouseLeave: onMouseLeaveParent,
+                onClick: onClickConnection,
+                onMouseEnter: onMouseEnterConnection,
+                onMouseLeave: onMouseLeaveConnection,
                 disabled: !haveAnyLink && allowedConnectionIds.length == 0,
                 style: {
                     paddingLeft: tokens.spacingHorizontalXS,
@@ -150,16 +150,16 @@ export const ParentObjectSelector: React.FC<ParentObjectSelectorProps> = ({ conn
             }}
             menuButton={{ onClick: onClickUnlink, disabled: !haveAnyLink }}
         >
-            {haveSharedLink && ParentDisplayComponent && (
+            {haveSharedLink && ConnectionDisplayComponent && (
                 <Tooltip content={currentLinkTooltip} relationship="description">
                     {
                         // https://github.com/facebook/react/issues/34794
                         // eslint-disable-next-line react-hooks/static-components
-                        <ParentDisplayComponent size="field" showControls={false} object={parentObject} />
+                        <ConnectionDisplayComponent size="field" showControls={false} object={connectedObject} />
                     }
                 </Tooltip>
             )}
-            {haveSharedLink && !ParentDisplayComponent && 'Unknown object'}
+            {haveSharedLink && !ConnectionDisplayComponent && 'Unknown object'}
             {!haveSharedLink && haveAnyLink && (
                 <Tooltip
                     content={'The selection is connected to two or more different objects'}

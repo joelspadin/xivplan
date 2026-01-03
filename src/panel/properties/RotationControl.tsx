@@ -9,7 +9,7 @@ import { EnemyObject, EnemyRingStyle, isEnemy, RotateableObject } from '../../sc
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
 import { PropertiesControlProps } from '../PropertiesControl';
-import { ParentObjectSelector } from './ParentObjectSelector';
+import { ConnectedObjectSelector } from './ConnectedObjectSelector';
 
 export const RotationControl: React.FC<PropertiesControlProps<RotateableObject | EnemyObject>> = ({ objects }) => {
     const classes = useControlStyles();
@@ -39,7 +39,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
                 </Field>
             </div>
             <div className={classes.row}>
-                <ParentObjectSelector objects={objects} connectionType={ConnectionType.ROTATION} />
+                <ConnectedObjectSelector objects={objects} connectionType={ConnectionType.ROTATION} />
             </div>
         </>
     );

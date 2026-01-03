@@ -131,11 +131,11 @@ export function makeRelative(scene: Scene, p: Vector2d, positionParentId?: numbe
 }
 
 /** @returns the angle that is considered '0 degrees rotated' for the given object. */
-export function getBaseFacingAngle(scene: Scene, object: RotateableObject & MoveableObject): number {
+export function getBaseFacingRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
     if (object.facingId !== undefined) {
         const facingObject = getObjectById(scene, object.facingId);
         if (facingObject && isMoveable(facingObject)) {
-            return getFacingAngle(scene, object, facingObject);
+            return getRotationToFaceTarget(scene, object, facingObject);
         }
     }
     return 0;
@@ -143,18 +143,18 @@ export function getBaseFacingAngle(scene: Scene, object: RotateableObject & Move
 
 /** Calculates the rotation of the object while taking into account the object it may be configured to be facing. */
 export function getAbsoluteRotation(scene: Scene, object: RotateableObject & MoveableObject): number {
-    return getBaseFacingAngle(scene, object) + object.rotation;
+    return getBaseFacingRotation(scene, object) + object.rotation;
 }
 
 /** @returns the angle to rotate an up-facing object at the given origin to make it face towards the target (in degrees) */
-function getFacingAngle(
+function getRotationToFaceTarget(
     scene: Scene,
     origin: MoveableObject & RotateableObject,
     target: SceneObject & MoveableObject,
 ): number {
     // If the origin is _also_ attached to the target positionally and _also_ on exactly the same location, face the same
     // direction as the target instead of whatever arbitrary direction the (0,0) vector yields.
-    // Positional connections are guaranteed to not have a circular dependency [without manual editing of the plan].
+    // Positional connections are guaranteed to not have a circular dependency [without manual editing of the plan files].
     if (origin.positionParentId === target.id && origin.x == 0 && origin.y == 0 && isRotateable(target)) {
         return getAbsoluteRotation(scene, target);
     }

@@ -3,7 +3,7 @@ import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useLayoutEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
-import { getBaseFacingAngle } from '../coord';
+import { getBaseFacingRotation } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { clamp, mod360 } from '../util';
@@ -57,12 +57,12 @@ export const Resizer: React.FC<ResizerProps> = ({
         if (!node) {
             return;
         }
-        const baseAngle = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
 
         const newProps = {
             x: Math.round(object.x + node.x()),
             y: Math.round(object.y - node.y()),
-            rotation: mod360(Math.round(node.rotation() - baseAngle) + 180) - 180,
+            rotation: mod360(Math.round(node.rotation() - baseRotation) + 180) - 180,
             width: Math.round(Math.max(minWidthRequired, object.width * node.scaleX())),
             height: Math.round(Math.max(minHeightRequired, object.height * node.scaleY())),
         };
@@ -83,7 +83,7 @@ export const Resizer: React.FC<ResizerProps> = ({
         return newBox;
     };
 
-    const baseRotation = getBaseFacingAngle(scene, object);
+    const baseRotation = getBaseFacingRotation(scene, object);
 
     return (
         <>

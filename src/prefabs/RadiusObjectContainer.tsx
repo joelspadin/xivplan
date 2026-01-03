@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../SceneProvider';
-import { getAbsoluteRotation, getBaseFacingAngle, getPointerAngle, snapAngle } from '../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, RadiusObject, Scene, SceneObject, UnknownObject, isRotateable } from '../scene';
@@ -54,8 +54,8 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: RadiusObjectState) => {
-        const baseAngle = isRotateable(object) ? getBaseFacingAngle(scene, object) : 0;
-        state.rotation = Math.round(state.rotation - baseAngle);
+        const baseRotation = isRotateable(object) ? getBaseFacingRotation(scene, object) : 0;
+        state.rotation = Math.round(state.rotation - baseRotation);
 
         if (!stateChanged(object, state)) {
             return;
@@ -161,7 +161,7 @@ function getRotation(
 
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingAngle(scene, object);
+        const baseRotation = getBaseFacingRotation(scene, object);
         return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 
