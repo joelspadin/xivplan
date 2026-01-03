@@ -49,7 +49,7 @@ registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
             radius: DEFAULT_RADIUS,
             ...object,
             ...position,
-        } as CircleZone,
+        },
     };
 });
 

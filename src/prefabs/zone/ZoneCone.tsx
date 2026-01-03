@@ -68,7 +68,7 @@ registerDropHandler<ConeZone>(ObjectType.Cone, (object, position) => {
             rotation: 0,
             ...object,
             ...position,
-        } as ConeZone,
+        },
     };
 });
 

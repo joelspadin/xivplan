@@ -29,8 +29,9 @@ export const SceneRenderer: React.FC = () => {
     const [editMode] = useEditMode();
 
     const onClickStage = (e: KonvaEventObject<MouseEvent>) => {
-        // Clicking on nothing while selecting an attachment should keep the current selection
-        // to better keep the visuals of which objects are ineligible for selection.
+        // Clicking on nothing while selecting a connection target should keep the
+        // current selection to better keep the visuals of which objects are going to
+        // get connected.
         if (editMode === EditMode.SelectConnection) {
             return;
         }

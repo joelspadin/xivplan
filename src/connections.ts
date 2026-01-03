@@ -2,7 +2,7 @@ import { getAbsolutePosition, getRelativeAttachmentPoint } from './coord';
 import { ConnectionType } from './EditModeContext';
 import {
     DefaultAttachPosition,
-    getDefaultAttachmentPreference,
+    getDefaultAttachPosition,
     isMoveable,
     isRotateable,
     MoveableObject,
@@ -151,14 +151,14 @@ function createUpdatePositionParentIdsAction(
         [DefaultAttachPosition.BOTTOM_RIGHT]: 0,
     };
     objectsToConnect.forEach((obj) => {
-        attachPositionCounts[getDefaultAttachmentPreference(obj)]++;
+        attachPositionCounts[getDefaultAttachPosition(obj)]++;
     });
     return {
         type: 'update',
         value: objectsToConnect.map((obj) => {
             const absolutePos = getAbsolutePosition(scene, obj);
             // Markers and status effects go to the new default position. Anything else just stays where it is.
-            let attachmentPreference = getDefaultAttachmentPreference(obj);
+            let attachmentPreference = getDefaultAttachPosition(obj);
             // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
             if (attachPositionCounts[attachmentPreference] > 1) {
                 attachmentPreference = DefaultAttachPosition.ANYWHERE;

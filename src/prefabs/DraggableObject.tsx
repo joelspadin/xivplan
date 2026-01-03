@@ -1,6 +1,6 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
-import { omitInterconnectedObjects, useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
+import { omitInterconnectedObjects } from '../connections';
 import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
@@ -27,12 +27,10 @@ export interface DraggableObjectProps {
 }
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, children }) => {
-    const [editMode, setEditMode] = useEditMode();
+    const [editMode] = useEditMode();
     const { scene, step, dispatch } = useScene();
     const [selection, setSelection] = useSelection();
     const [dragSelection, setDragSelection] = useDragSelection();
-    const allowedConnectionIds = new Set(useAllowedConnectionIds());
-    const getUpdateConnectionIdsAction = useUpdateConnectedIdsAction();
     const center = getCanvasCoord(scene, object);
 
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
@@ -40,11 +38,6 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
     const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
         let newSelection: SceneSelection;
         if (editMode == EditMode.SelectConnection) {
-            if (isMoveable(object) && allowedConnectionIds.has(object.id)) {
-                dispatch(getUpdateConnectionIdsAction(object));
-                setEditMode(EditMode.Normal);
-            }
-            // If an object is clicked that is not a valid parent while in this mode, do nothing.
             return;
         }
 

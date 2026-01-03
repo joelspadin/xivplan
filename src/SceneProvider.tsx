@@ -8,7 +8,7 @@ import {
     ArenaShape,
     DEFAULT_SCENE,
     DefaultAttachPosition,
-    getDefaultAttachmentPreference,
+    getDefaultAttachPosition,
     Grid,
     isMoveable,
     isRotateable,
@@ -324,6 +324,9 @@ function assignObjectIds(
             }
             return true;
         });
+    // This has some potential nextId corruption issues, so disallow having a mix of input types.
+    // In practice either all or none of the objects will have ids already, where the 'all' case uses
+    // this to prevent duplicate IDs.
     if (objectsWithExistingId && objectsWithoutId) {
         console.error(
             `Cannot add items both with ID and without ID at the same time. Received ${objectsWithExistingId} with ID, and ${objectsWithoutId} without`,
@@ -430,7 +433,7 @@ function addObjects(
     const newObjects = [...currentStep.objects];
 
     if (addedObjects.length == 1 && isMoveable(addedObjects[0])) {
-        const attachPosition = getDefaultAttachmentPreference(addedObjects[0]);
+        const attachPosition = getDefaultAttachPosition(addedObjects[0]);
         if (attachPosition != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
             const potentialParent = getObjectToAttachToAt(state.scene, currentStep, addedObjects[0]);
             if (isMoveable(potentialParent)) {
@@ -479,7 +482,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
                 obj.parentId !== undefined &&
                 idsToDelete.has(obj.parentId) &&
                 // Automatically delete attached objects that would attach automatically as well
-                getDefaultAttachmentPreference(obj) != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
+                getDefaultAttachPosition(obj) != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
             ) {
                 idsToDelete.add(obj.id);
                 idsAdded++;

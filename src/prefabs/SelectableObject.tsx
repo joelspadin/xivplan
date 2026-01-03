@@ -57,6 +57,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
         }
     };
     const onMouseLeave = () => {
+        // don't selectNone() to avoid overriding another object's onMouseEnter
         setSpotlight(removeSelection(spotlight, object.id));
     };
 

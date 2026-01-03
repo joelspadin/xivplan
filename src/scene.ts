@@ -155,14 +155,6 @@ export interface MoveableObject extends Position {
     readonly pinned?: boolean;
 }
 
-export enum DefaultAttachPosition {
-    DONT_ATTACH_BY_DEFAULT = 'dont_attach_by_default',
-    ANYWHERE = 'attach_anywhere',
-    CENTER = 'attach_centered',
-    TOP = 'attach_at_top',
-    BOTTOM_RIGHT = 'attach_at_bottom_right',
-}
-
 export interface RotateableObject {
     readonly rotation: number;
     readonly facingId?: number;
@@ -420,7 +412,16 @@ export function isMoveable<T>(object: T): object is MoveableObject & T {
     return obj && typeof obj.x === 'number' && typeof obj.y === 'number';
 }
 
-export function getDefaultAttachmentPreference(object: UnknownObject): DefaultAttachPosition {
+export enum DefaultAttachPosition {
+    DONT_ATTACH_BY_DEFAULT = 'dont_attach_by_default',
+    ANYWHERE = 'attach_anywhere',
+    CENTER = 'attach_centered',
+    TOP = 'attach_at_top',
+    BOTTOM_RIGHT = 'attach_at_bottom_right',
+}
+
+/** @returns Where the given object 'prefers' to be attached to a positional parent. */
+export function getDefaultAttachPosition(object: UnknownObject): DefaultAttachPosition {
     switch (object.type) {
         case ObjectType.Arc:
         case ObjectType.Cone:

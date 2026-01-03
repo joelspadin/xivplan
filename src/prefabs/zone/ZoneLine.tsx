@@ -65,7 +65,7 @@ registerDropHandler<LineZone>(ObjectType.Line, (object, position) => {
             rotation: 0,
             ...object,
             ...position,
-        } as LineZone,
+        },
     };
 });
 
