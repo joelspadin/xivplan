@@ -15,7 +15,7 @@ import { ArcZone, ObjectType, Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, degtorad, mod360 } from '../../util';
+import { clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -169,7 +169,7 @@ function stateChanged(object: ArcZone, state: ArcState) {
     return (
         state.radius !== object.innerRadius ||
         state.innerRadius !== object.innerRadius ||
-        state.rotation !== object.rotation ||
+        mod360(state.rotation) !== mod360(object.rotation) ||
         state.coneAngle !== object.coneAngle
     );
 }
@@ -182,7 +182,7 @@ const ArcContainer: React.FC<RendererProps<ArcZone>> = ({ object }) => {
 
     const updateObject = (state: ArcState) => {
         const baseRotation = getBaseFacingRotation(scene, object);
-        state.rotation = Math.round(state.rotation - baseRotation);
+        state.rotation = clampRotation(state.rotation - baseRotation);
         state.coneAngle = Math.round(state.coneAngle);
 
         if (!stateChanged(object, state)) {
@@ -340,7 +340,7 @@ const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
     stateFunc: (scene, object, handle) => {
         const radius = getRadius(object, handle);
         const innerRadius = getInnerRadius(scene, object, handle);
-        const rotation = getRotation(scene, object, handle);
+        const rotation = clampRotation(getRotation(scene, object, handle));
         const coneAngle = getConeAngle(scene, object, handle);
 
         return { radius, innerRadius, rotation, coneAngle };

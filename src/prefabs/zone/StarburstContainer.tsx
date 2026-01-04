@@ -6,6 +6,7 @@ import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
+import { clampRotation, mod360 } from '../../util';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -46,7 +47,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
 
     const updateObject = (state: StarburstObjectState) => {
         const baseRotation = getBaseFacingRotation(scene, object);
-        state.rotation = Math.round(state.rotation - baseRotation);
+        state.rotation = clampRotation(state.rotation - baseRotation);
         state.spokeWidth = Math.round(state.spokeWidth);
 
         if (!stateChanged(object, state)) {
@@ -79,7 +80,7 @@ function stateChanged(object: StarburstZone, state: StarburstObjectState) {
         return true;
     }
 
-    if (state.rotation !== object.rotation) {
+    if (mod360(state.rotation) !== mod360(object.rotation)) {
         return true;
     }
 
