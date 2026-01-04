@@ -6,7 +6,7 @@ import { useScene } from '../SceneProvider';
 import { getBaseFacingRotation } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
-import { clamp, mod360 } from '../util';
+import { clamp, clampRotation } from '../util';
 import { useShowResizer } from './highlight';
 
 const DEFAULT_MIN_SIZE = 20;
@@ -62,7 +62,7 @@ export const Resizer: React.FC<ResizerProps> = ({
         const newProps = {
             x: Math.round(object.x + node.x()),
             y: Math.round(object.y - node.y()),
-            rotation: mod360(Math.round(node.rotation() - baseRotation) + 180) - 180,
+            rotation: clampRotation(node.rotation() - baseRotation),
             width: Math.round(Math.max(minWidthRequired, object.width * node.scaleX())),
             height: Math.round(Math.max(minHeightRequired, object.height * node.scaleY())),
         };

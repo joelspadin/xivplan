@@ -7,6 +7,7 @@ import { ActivePortal } from '../render/Portals';
 import { InnerRadiusObject, RadiusObject, Scene, SceneObject, UnknownObject, isRotateable } from '../scene';
 import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
+import { clampRotation, mod360 } from '../util';
 import { distance } from '../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -55,7 +56,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
 
     const updateObject = (state: RadiusObjectState) => {
         const baseRotation = isRotateable(object) ? getBaseFacingRotation(scene, object) : 0;
-        state.rotation = Math.round(state.rotation - baseRotation);
+        state.rotation = clampRotation(state.rotation - baseRotation);
 
         if (!stateChanged(object, state)) {
             return;
@@ -97,7 +98,7 @@ function stateChanged(object: RadiusObject, state: RadiusObjectState) {
         return true;
     }
 
-    if (isRotateable(object) && state.rotation !== object.rotation) {
+    if (isRotateable(object) && mod360(state.rotation) !== mod360(object.rotation)) {
         return true;
     }
 

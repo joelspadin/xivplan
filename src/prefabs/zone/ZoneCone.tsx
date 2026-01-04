@@ -15,7 +15,7 @@ import { ConeZone, ObjectType, Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, degtorad, mod360 } from '../../util';
+import { clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -146,7 +146,11 @@ const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, c
 };
 
 function stateChanged(object: ConeZone, state: ConeState) {
-    return state.radius !== object.radius || state.rotation !== object.rotation || state.coneAngle !== object.coneAngle;
+    return (
+        state.radius !== object.radius ||
+        mod360(state.rotation) !== mod360(object.rotation) ||
+        state.coneAngle !== object.coneAngle
+    );
 }
 
 const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
@@ -157,7 +161,7 @@ const ConeContainer: React.FC<RendererProps<ConeZone>> = ({ object }) => {
 
     const updateObject = (state: ConeState) => {
         const baseRotation = getBaseFacingRotation(scene, object);
-        state.rotation = Math.round(state.rotation - baseRotation);
+        state.rotation = clampRotation(state.rotation - baseRotation);
         state.coneAngle = Math.round(state.coneAngle);
 
         if (!stateChanged(object, state)) {

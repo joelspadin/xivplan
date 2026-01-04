@@ -16,7 +16,7 @@ import { useIsDragging } from '../selection';
 import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
-import { clamp } from '../util';
+import { clamp, clampRotation } from '../util';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
@@ -117,7 +117,7 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
 
         const baseRotation = getBaseFacingRotation(scene, object);
         const newProps: Partial<TextObject> = {
-            rotation: Math.round(node.rotation() - baseRotation),
+            rotation: clampRotation(node.rotation() - baseRotation),
         };
         if (object.rotation == newProps.rotation) {
             return;

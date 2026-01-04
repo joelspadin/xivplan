@@ -14,6 +14,7 @@ import { useScene } from '../../SceneProvider';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
+import { clampRotation, mod360 } from '../../util';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vector';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { CONTROL_POINT_BORDER_COLOR, createControlPointManager, HandleFuncProps, HandleStyle } from '../ControlPoint';
@@ -214,7 +215,11 @@ const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rota
 };
 
 function stateChanged(object: LineZone, state: LineState) {
-    return state.length !== object.length || state.rotation !== object.rotation || state.width !== object.width;
+    return (
+        state.length !== object.length ||
+        mod360(state.rotation) !== mod360(object.rotation) ||
+        state.width !== object.width
+    );
 }
 
 const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
@@ -225,7 +230,7 @@ const LineContainer: React.FC<RendererProps<LineZone>> = ({ object }) => {
 
     const updateObject = (state: LineState) => {
         const baseRotation = getBaseFacingRotation(scene, object);
-        state.rotation = Math.round(state.rotation - baseRotation);
+        state.rotation = clampRotation(state.rotation - baseRotation);
         state.width = Math.round(state.width);
 
         if (!stateChanged(object, state)) {
