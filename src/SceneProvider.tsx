@@ -520,7 +520,7 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
                 ? {
                       ...omit(obj, 'positionParentId'),
                       ...getAbsolutePosition(state.scene, obj),
-                      // Always unpin objects upon detahcing them
+                      // Always unpin objects upon detaching them
                       pinned: false,
                   }
                 : obj,

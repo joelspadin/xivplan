@@ -61,7 +61,7 @@ registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
             rotation: 0,
             ...object,
             ...position,
-        } as PartyObject,
+        },
     };
 });
 

@@ -340,7 +340,7 @@ const ArcControlPoints = createControlPointManager<ArcZone, ArcState>({
     stateFunc: (scene, object, handle) => {
         const radius = getRadius(object, handle);
         const innerRadius = getInnerRadius(scene, object, handle);
-        const rotation = clampRotation(getRotation(scene, object, handle));
+        const rotation = getRotation(scene, object, handle);
         const coneAngle = getConeAngle(scene, object, handle);
 
         return { radius, innerRadius, rotation, coneAngle };
