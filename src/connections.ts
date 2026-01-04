@@ -172,22 +172,21 @@ function createUpdatePositionParentIdsAction(
     return {
         type: 'update',
         value: objectsToConnect.map((obj) => {
-            const absolutePos = getAbsolutePosition(scene, obj);
-            let attachmentPreference = getDefaultAttachmentSettings(obj).location;
+            const attachmentSettings = getDefaultAttachmentSettings(obj);
             // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
             // and ambiguous orderings. Center-attachments are fine to overlap.
             // TODO: figure out what the expected behavior is for top & bottom-right. is arbitrary ordering fine?
             if (
-                attachPositionCounts[attachmentPreference] > 1 &&
-                attachmentPreference != DefaultAttachPosition.CENTER
+                attachPositionCounts[attachmentSettings.location] > 1 &&
+                attachmentSettings.location != DefaultAttachPosition.CENTER
             ) {
-                attachmentPreference = DefaultAttachPosition.ANYWHERE;
+                attachmentSettings.location = DefaultAttachPosition.ANYWHERE;
             }
             const newRelativePos = getRelativeAttachmentPoint(
                 scene,
-                { ...obj, ...absolutePos },
+                { ...obj, ...getAbsolutePosition(scene, obj) },
                 newParent,
-                attachmentPreference,
+                attachmentSettings.location,
             );
             return {
                 ...obj,
@@ -195,10 +194,10 @@ function createUpdatePositionParentIdsAction(
                 ...newRelativePos,
                 // Pin objects that got moved to a default position
                 pinned:
-                    attachmentPreference == DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT ||
-                    attachmentPreference == DefaultAttachPosition.ANYWHERE
+                    attachmentSettings.location == DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT ||
+                    attachmentSettings.location == DefaultAttachPosition.ANYWHERE
                         ? obj.pinned
-                        : true,
+                        : attachmentSettings.pinByDefault,
             };
         }),
     };
