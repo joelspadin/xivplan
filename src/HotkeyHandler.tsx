@@ -4,10 +4,10 @@ import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { GroupMoveAction, SceneAction, getObjectById, useScene } from './SceneProvider';
+import { GroupMoveAction, SceneAction, useScene } from './SceneProvider';
 import { SceneSelection } from './SelectionContext';
 import { omitInterconnectedObjects } from './connections';
-import { getSceneCoord, rotateCoord } from './coord';
+import { getAbsolutePosition, getSceneCoord, makeRelative, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
 import { EditMode } from './editMode';
 import { moveObjectsBy } from './groupOperations';
@@ -312,10 +312,15 @@ const SMALL_MOVE_OFFSET = 1;
 const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
-function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rotation: number): T {
-    const pos = rotateCoord(object, rotation, center);
+function rotateObject<T extends MoveableObject>(
+    scene: Readonly<Scene>,
+    object: T,
+    center: Vector2d,
+    rotation: number,
+): T {
+    const pos = rotateCoord(getAbsolutePosition(scene, object), rotation, center);
 
-    const update = { ...object, ...pos };
+    const update = { ...object, ...makeRelative(scene, pos, object.positionParentId) };
 
     if (isRotateable(object)) {
         return {
@@ -372,13 +377,15 @@ const EditActionHandler: React.FC = () => {
         }
 
         const value: SceneObject[] = [];
-        const center = getGroupCenter(scene, getSelectedObjects(step, selection).filter(isMoveable));
+        const selectedObjects = getSelectedObjects(step, selection)
+            .filter(isMoveable)
+            // TODO: figure out the expected behavior of rotating a selection of >1 items that includes
+            // objects attached to others (including those not in the selection).
+            .filter((obj) => selection.size == 1 || obj.positionParentId == undefined);
+        const center = getGroupCenter(scene, selectedObjects);
 
-        selection.forEach((id) => {
-            const object = getObjectById(scene, id);
-            if (object && isMoveable(object)) {
-                value.push(rotateObject(object, center, offset));
-            }
+        selectedObjects.forEach((object) => {
+            value.push(rotateObject(scene, object, center, offset));
         });
 
         dispatch({ type: 'update', value });

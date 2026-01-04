@@ -40,6 +40,10 @@ export function useAllowedConnectionIds(): number[] {
     }
 }
 
+/**
+ * @returns a list of object IDs in the current step that the given selection of objects is allowed to have as
+ * position parent. This excludes the selection plus any of its position descendants.
+ */
 export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
     const selectedAndChildren = new Set<number>(objectsToConnect.map((obj) => obj.id));
     let addedObjects = objectsToConnect.length;
@@ -67,7 +71,7 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
 }
 
 /**
- * Returns a list of object IDs that the given selection of objects is allowed to face.
+ * @returns a list of object IDs in the current step that the given selection of objects is allowed to face.
  * This only excludes the selection -- it's OK to face an attached object or objects that face the selection.
  */
 export function getAllowedRotationConnectionIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
@@ -79,7 +83,10 @@ export function getAllowedRotationConnectionIds(step: SceneStep, objectsToConnec
         .filter((id) => !selectedIds.has(id));
 }
 
-/** Returns a filtered list of objects that has any objects removed that are positionally attached to another object in the list. */
+/**
+ * @returns a filtered list of the input objects that has any objects removed that are positionally attached to
+ * another object in the list (directly or indirectly).
+ */
 export function omitInterconnectedObjects(
     scene: Scene,
     objects: (SceneObject & MoveableObject)[],
@@ -141,8 +148,7 @@ function createUpdateRotationParentIdsAction(
     return {
         type: 'update',
         value: objectsToConnect.map((obj) => {
-            // always face the newly-linked target object by default.
-            // (the rendering logic will ensure '0' is facing newParent)
+            // always face the newly-connected target object by default.
             return { ...obj, facingId: newParent.id, rotation: 0 };
         }),
     };
@@ -167,11 +173,14 @@ function createUpdatePositionParentIdsAction(
         type: 'update',
         value: objectsToConnect.map((obj) => {
             const absolutePos = getAbsolutePosition(scene, obj);
-            // Markers and status effects go to the new default position. Anything else just stays where it is.
             let attachmentPreference = getDefaultAttachmentSettings(obj).location;
             // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
-            // and ambiguous orderings.
-            if (attachPositionCounts[attachmentPreference] > 1) {
+            // and ambiguous orderings. Center-attachments are fine to overlap.
+            // TODO: figure out what the expected behavior is for top & bottom-right. is arbitrary ordering fine?
+            if (
+                attachPositionCounts[attachmentPreference] > 1 &&
+                attachmentPreference != DefaultAttachPosition.CENTER
+            ) {
                 attachmentPreference = DefaultAttachPosition.ANYWHERE;
             }
             const newRelativePos = getRelativeAttachmentPoint(
@@ -260,8 +269,8 @@ export function getObjectToAttachToAt(scene: Scene, step: SceneStep, pos: Vector
     // (mouse-enter events are not triggering while dragging something, so unless Konva has an
     // "object at this position" function somewhere that we can also call from here, we need to do this manually)
     let matchedObject: SceneObject | undefined = undefined;
-    // Since the party is rendered at a higher layer than other object types even if the scene order puts them
-    // in the back, it's confusing if they are not the priority drop target.
+    // The party is rendered at a higher layer than other object types even if the scene order puts them
+    // in the back, so go through objects layer by layer instead of relying solely on the scene order.
     for (const layer of Object.values(LayerName)) {
         for (const o of step.objects) {
             if (getLayerName(o) !== layer) {

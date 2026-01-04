@@ -35,7 +35,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
                 dispatch(getUpdateConnectionIdsAction(object));
                 setEditMode(EditMode.Normal);
             }
-            // If an object is clicked that is not a valid parent while in this mode, do nothing.
+            // If an object is clicked that is not a valid connection while in this mode, do nothing.
         } else if (e.evt.shiftKey) {
             setSelection(addSelection(selection, object.id));
         } else if (e.evt.ctrlKey) {

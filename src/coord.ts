@@ -49,6 +49,7 @@ export function getParentPosition(scene: Scene, p: Position): Vector2d {
     return position;
 }
 
+/** @returns the actual position in the scene, while taking into account any position parents. */
 export function getAbsolutePosition(scene: Scene, p: Position): Vector2d {
     const parent = getParentPosition(scene, p);
     return { x: parent.x + p.x, y: parent.y + p.y };
