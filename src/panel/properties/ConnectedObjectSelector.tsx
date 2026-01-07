@@ -7,7 +7,7 @@ import { EditMode } from '../../editMode';
 import { ConnectionType } from '../../EditModeContext';
 import { isMoveable, isRotateable, SceneObject } from '../../scene';
 import { getObjectById, useScene } from '../../SceneProvider';
-import { selectNone, selectSingle, useSelection, useSpotlight } from '../../selection';
+import { selectNone, selectSingle, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useEditMode } from '../../useEditMode';
 import { commonValue, omit } from '../../util';
@@ -21,7 +21,6 @@ export interface ConnectedObjectSelectorProps {
 export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = ({ connectionType, objects }) => {
     const { scene, step, dispatch } = useScene();
     const [, setSpotlight] = useSpotlight();
-    const [, setSelection] = useSelection();
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
 
@@ -59,26 +58,18 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
         setSpotlight(selectNone());
     };
 
-    function onClickConnection(event: React.MouseEvent<HTMLElement, MouseEvent>): void {
-        if (haveSharedLink) {
-            // Don't trigger the selection if modifiers are held
-            if (!event.ctrlKey && !event.shiftKey) {
-                setSelection(selectSingle(commonConnectionId));
-                // The element disappearing will not trigger an onMouseLeave
-                setSpotlight(selectNone());
-            }
+    function onClickConnection(): void {
+        // The button should be disabled if there are no available connections.
+        if (allowedConnectionIds.length == 0) {
             return;
-        } else {
-            // For both "no current connections" and "multiple connections"
-            if (allowedConnectionIds.length == 0) {
-                return;
-            }
-            setEditMode(EditMode.SelectConnection);
-            setConnectionSelection({
-                objectIdsToConnect: objects.map((obj) => obj.id),
-                connectionType,
-            });
         }
+        setEditMode(EditMode.SelectConnection);
+        setConnectionSelection({
+            objectIdsToConnect: objects.map((obj) => obj.id),
+            connectionType,
+        });
+        // The list component disappears, so there's no onMouseLeave to clear the spotlight.
+        setSpotlight(selectNone());
     }
     function onClickUnlink(): void {
         if (haveAnyLink) {
@@ -136,7 +127,11 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
 
     return (
         <SplitButton
-            icon={<LinkRegular />}
+            icon={
+                <Tooltip content={haveAnyLink ? currentLinkTooltip : newLinkTooltip} relationship="description">
+                    <LinkRegular />
+                </Tooltip>
+            }
             menuIcon={<UnlinkButton />}
             appearance="subtle"
             primaryActionButton={{
@@ -151,13 +146,9 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
             menuButton={{ onClick: onClickUnlink, disabled: !haveAnyLink }}
         >
             {haveSharedLink && ConnectionDisplayComponent && (
-                <Tooltip content={currentLinkTooltip} relationship="description">
-                    {
-                        // https://github.com/facebook/react/issues/34794
-                        // eslint-disable-next-line react-hooks/static-components
-                        <ConnectionDisplayComponent size="field" showControls={false} object={connectedObject} />
-                    }
-                </Tooltip>
+                // https://github.com/facebook/react/issues/34794
+                // eslint-disable-next-line react-hooks/static-components
+                <ConnectionDisplayComponent size="field" showControls={false} object={connectedObject} />
             )}
             {haveSharedLink && !ConnectionDisplayComponent && 'Unknown object'}
             {!haveSharedLink && haveAnyLink && (
