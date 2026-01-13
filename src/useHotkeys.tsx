@@ -1,6 +1,7 @@
 import { RefObject, useContext, useEffect, useId } from 'react';
 import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
+import { useCancelConnectionSelection } from './useEditMode';
 
 export enum HotkeyScopes {
     AlwaysEnabled = 'alwaysEnabled', // Workaround for https://github.com/JohannesKlauss/react-hotkeys-hook/issues/908
@@ -76,12 +77,14 @@ export function useRegisteredHotkeys(): HotkeyInfo[] {
 
 export function useHotkeyBlocker() {
     const { disableScope, enableScope } = useHotkeysContext();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     return useEffect(() => {
         disableScope(HotkeyScopes.Default);
+        cancelConnectionSelection();
 
         return () => {
             enableScope(HotkeyScopes.Default);
         };
-    }, [disableScope, enableScope]);
+    }, [disableScope, enableScope, cancelConnectionSelection]);
 }

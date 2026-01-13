@@ -15,7 +15,7 @@ import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
 import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
-import { useEditMode } from './useEditMode';
+import { useCancelConnectionSelection, useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
 import { commonValue, setOrOmit } from './util';
@@ -30,19 +30,15 @@ const CATEGORY_STEPS = '7.Steps';
 
 const UndoRedoHandler: React.FC = () => {
     const { dispatch } = useScene();
-    const [editMode, setEditMode] = useEditMode();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     const undoCallback: HotkeyCallback = (e) => {
-        if (editMode == EditMode.SelectConnection) {
-            setEditMode(EditMode.Normal);
-        }
+        cancelConnectionSelection();
         dispatch({ type: 'undo' });
         e.preventDefault();
     };
     const redoCallback: HotkeyCallback = (e) => {
-        if (editMode == EditMode.SelectConnection) {
-            setEditMode(EditMode.Normal);
-        }
+        cancelConnectionSelection();
         dispatch({ type: 'redo' });
         e.preventDefault();
     };
