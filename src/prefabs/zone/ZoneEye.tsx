@@ -60,21 +60,16 @@ function getIrisGradient(color: string) {
 
     const eye = '#ffffff';
 
-    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
-    const inside = c.clone();
-    inside.alpha = 0.8;
-    const insideStr = inside.display();
+    const inside = c.clone().set('alpha', 0.8).display();
 
-    const middle = c.to('hsv');
-    middle.alpha = 0;
-    middle.v -= 40;
-    const middleStr = middle.display();
+    const middle = c
+        .to('hsv')
+        .set({ v: (v) => v - 40, alpha: 0 })
+        .display();
 
-    const edge = c.clone();
-    edge.alpha = 0;
-    const edgeStr = edge.display();
+    const edge = c.clone().set('alpha', 0).display();
 
-    return [0, eye, 0.1, eye, 0.14, insideStr, 0.18, middleStr, 1, edgeStr];
+    return [0, eye, 0.1, eye, 0.14, inside, 0.18, middle, 1, edge];
 }
 
 function getEyeGradient(color: string, invert?: boolean) {
@@ -94,9 +89,7 @@ function getEyeGradient(color: string, invert?: boolean) {
 }
 
 function getHighlightColor(color: string) {
-    const c = new Color(color);
-
-    return c
+    return new Color(color)
         .to('hsv')
         .set({
             s: (s) => s - 30,
@@ -106,14 +99,9 @@ function getHighlightColor(color: string) {
 }
 
 function getStrokeColor(color: string) {
-    const c = new Color(color);
-
-    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
-    c.alpha = 0.5;
-
-    return c
+    return new Color(color)
         .to('hsv')
-        .set({ v: (v) => v - 80 })
+        .set({ v: (v) => v - 80, alpha: 0.5 })
         .display();
 }
 

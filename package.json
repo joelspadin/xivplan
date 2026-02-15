@@ -23,7 +23,7 @@
     "@uiw/react-color-hue": "^2.9.5",
     "@uiw/react-color-saturation": "^2.9.5",
     "client-zip": "^2.5.0",
-    "colorjs.io": "^0.5.2",
+    "colorjs.io": "^0.6.1",
     "history": "^5.3.0",
     "i": "^0.3.7",
     "idb": "^8.0.3",

@@ -103,11 +103,8 @@ function parseColorHsva(value: string | undefined): HsvaColor | undefined {
         return undefined;
     }
 
-    try {
-        return colorToHsva(new Color(value));
-    } catch {
-        return undefined;
-    }
+    const color = Color.try(value);
+    return color ? colorToHsva(color) : undefined;
 }
 
 const useStyles = makeStyles({

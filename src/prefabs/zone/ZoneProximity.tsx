@@ -108,16 +108,14 @@ const SCALE2 = 2;
 function getGradient(color: string, opacity: number) {
     const c = new Color(color);
 
-    // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
-    const center = c.clone();
-    center.alpha = opacity / 100;
-    const centerStr = center.display();
+    const center = c
+        .clone()
+        .set('alpha', opacity / 100)
+        .display();
 
-    const edge = c.clone();
-    edge.alpha = 0.05;
-    const edgeStr = edge.display();
+    const edge = c.clone().set('alpha', 0.05).display();
 
-    return [0, centerStr, 1, edgeStr];
+    return [0, center, 1, edge];
 }
 
 function getShadowOffset(i: number): ShapeConfig {
