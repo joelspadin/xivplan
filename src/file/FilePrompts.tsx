@@ -26,7 +26,7 @@ export const OverwriteFilePrompt: React.FC<OverwriteFilePromptProps> = ({ resolv
 
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
-            <DialogSurface>
+            <DialogSurface backdrop={{ appearance: 'dimmed' }}>
                 <HotkeyBlockingDialogBody>
                     <DialogTitle>Overwrite {filename}</DialogTitle>
                     <DialogContent>A file with this name already exists. Overwrite it?</DialogContent>
@@ -56,7 +56,7 @@ export const DeleteFilePrompt: React.FC<DeleteFilePromptProps> = ({ resolve, fil
 
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
-            <DialogSurface>
+            <DialogSurface backdrop={{ appearance: 'dimmed' }}>
                 <HotkeyBlockingDialogBody>
                     <DialogTitle>Delete {filename}</DialogTitle>
                     <DialogContent>Are you sure you want to delete this file?</DialogContent>
