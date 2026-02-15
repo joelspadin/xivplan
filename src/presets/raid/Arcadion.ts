@@ -174,6 +174,28 @@ const PRESET_8_SAVAGE_PHASE_2_MIRROR: ArenaPreset = {
     backgroundImage: '/arena/arcadion8-sp2-mirror.svg',
 };
 
+const PRESET_11: ArenaPreset = {
+    name: 'AAC Heavyweight M3',
+    spoilerFreeName: 'AAC Heavyweight M3 ████',
+    shape: ArenaShape.Rectangle,
+    width: 640,
+    height: 640,
+    padding: 100,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/arcadion11.svg',
+};
+
+const PRESET_11_SPLIT: ArenaPreset = {
+    name: 'AAC Heavyweight M3 (Split)',
+    spoilerFreeName: 'AAC Heavyweight M3 ████',
+    shape: ArenaShape.None,
+    width: 800,
+    height: 640,
+    padding: 100,
+    grid: { type: GridType.None },
+    backgroundImage: '/arena/arcadion11-split.svg',
+};
+
 export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_2,
     PRESET_3,
@@ -191,4 +213,6 @@ export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_8_PHASE_2,
     PRESET_8_SAVAGE_PHASE_2,
     PRESET_8_SAVAGE_PHASE_2_MIRROR,
+    PRESET_11,
+    PRESET_11_SPLIT,
 ];
