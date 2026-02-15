@@ -24,6 +24,9 @@ import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 import { useHighlightProps } from './highlight';
 
+// https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
+/* eslint-disable react-refresh/only-export-components */
+
 const DEFAULT_SIZE = 42;
 const ICON_RATIO = 32 / DEFAULT_SIZE;
 

@@ -25,6 +25,9 @@ import { PrefabIcon } from './PrefabIcon';
 import { RadiusObjectContainer } from './RadiusObjectContainer';
 import { useHighlightProps } from './highlight';
 
+// https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
+/* eslint-disable react-refresh/only-export-components */
+
 const DEFAULT_SIZE = 32;
 
 const SIZE_SMALL = 20;

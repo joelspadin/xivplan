@@ -9,6 +9,9 @@ import { ControlsPortal } from '../render/Portals';
 import { useStage } from '../render/stage';
 import { Handle } from './Handle';
 
+// https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
+/* eslint-disable react-refresh/only-export-components */
+
 export const CONTROL_POINT_BORDER_COLOR = '#00a1ff';
 
 export enum HandleStyle {
