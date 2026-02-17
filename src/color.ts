@@ -25,36 +25,35 @@ export function isValidColor(color: string) {
     }
 }
 
-export function rgbToHex(color: RgbColor): string {
-    function hex(channel: number) {
-        return channel.toString(16).padStart(2, '0');
-    }
-
-    return '#' + hex(color.r) + hex(color.g) + hex(color.b);
+export function colorToHex(color: Color): string {
+    return color.toString({ format: 'hex', collapse: false });
 }
 
-export function colorToHex(color: Color): string {
-    const rgb = colorToRgb(color);
-
-    return rgbToHex(rgb);
+export function rgbToHex(color: RgbColor): string {
+    return colorToHex(rgbToColor(color));
 }
 
 export function hsvToHex(color: HsvColor): string {
-    const rgb = hsvToRgb(color);
+    return colorToHex(hsvToColor(color));
+}
 
-    return rgbToHex(rgb);
+/**
+ * Rescales a color component from float [0, 1] to integer [0, 255]
+ */
+function scaleTo255(channel: number | null) {
+    return Math.round((channel ?? 0) * 255);
 }
 
 export function colorToRgb(color: Color): RgbColor {
     const rgb = color.to('srgb');
 
-    return { r: Math.round(rgb.r * 255), g: Math.round(rgb.g * 255), b: Math.round(rgb.b * 255) };
+    return { r: scaleTo255(rgb.r), g: scaleTo255(rgb.g), b: scaleTo255(rgb.b) };
 }
 
 export function colorToHsv(color: Color): HsvColor {
     const hsv = color.to('hsv');
 
-    return { h: isNaN(hsv.h) ? 0 : hsv.h, s: hsv.s, v: hsv.v };
+    return { h: hsv.h ?? 0, s: hsv.s ?? 0, v: hsv.v ?? 0 };
 }
 
 export function colorToHsva(color: Color): HsvaColor {
@@ -67,20 +66,18 @@ export function rgbToColor(color: RgbColor): Color {
     return new Color('srgb', [color.r / 255, color.g / 255, color.b / 255]);
 }
 
-export function hsvToRgb(color: HsvColor): RgbColor {
-    const rgb = new Color('hsv', [color.h, color.s, color.v]).to('srgb');
+export function hsvToColor(color: HsvColor): Color {
+    return new Color('hsv', [color.h, color.s, color.v]);
+}
 
-    return colorToRgb(rgb);
+export function hsvToRgb(color: HsvColor): RgbColor {
+    return colorToRgb(hsvToColor(color));
 }
 
 export function rgbToHsv(color: RgbColor): HsvColor {
-    const hsv = rgbToColor(color).to('hsv');
-
-    return { h: hsv.h, s: hsv.s, v: hsv.v };
+    return colorToHsv(rgbToColor(color));
 }
 
 export function rgbToHsva(color: RgbColor): HsvaColor {
-    const hsv = rgbToHsv(color);
-
-    return { ...hsv, a: 1 };
+    return colorToHsva(rgbToColor(color));
 }

@@ -16,6 +16,9 @@ import { useHighlightProps, useOverrideProps } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
 
+// https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
+/* eslint-disable react-refresh/only-export-components */
+
 const DEFAULT_SIZE = 32;
 
 function makeIcon(job: Job) {

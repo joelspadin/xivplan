@@ -2,6 +2,10 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## February 15, 2026
+
+- Added arena presets for Arcadion M11.
+
 ## October 26, 2025
 
 - Dragging an object will now move all selected objects with it.

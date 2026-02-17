@@ -18,7 +18,7 @@ export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ resolve, ...pr
 
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>
-            <DialogSurface>
+            <DialogSurface backdrop={{ appearance: 'dimmed' }}>
                 <HotkeyBlockingDialogBody>
                     <DialogTitle>Unsaved changes</DialogTitle>
                     <DialogContent>
