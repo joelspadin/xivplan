@@ -189,7 +189,7 @@ const PRESET_11_SPLIT: ArenaPreset = {
     name: 'AAC Heavyweight M3 (Split)',
     spoilerFreeName: 'AAC Heavyweight M3 ████',
     shape: ArenaShape.None,
-    width: 860,
+    width: 820,
     height: 640,
     padding: 100,
     grid: { type: GridType.None },
