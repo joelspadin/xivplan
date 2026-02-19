@@ -11,7 +11,7 @@ import { ExaflareZone, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { EXAFLARE_SPACING_DEFAULT } from './constants';
@@ -82,6 +82,7 @@ interface ExaflareRendererProps extends RendererProps<ExaflareZone> {
 
 const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rotation, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const arrow = getArrowStyle(object.color, object.opacity * 3);
@@ -90,7 +91,7 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
 
     return (
         <>
-            <Group rotation={rotation}>
+            <Group rotation={rotation} {...overrideProps}>
                 <HideGroup>
                     {trail.map((point, i) => (
                         <Circle

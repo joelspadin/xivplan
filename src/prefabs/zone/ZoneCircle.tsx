@@ -12,7 +12,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Circle';
@@ -60,13 +60,16 @@ interface CircleRendererProps extends RendererProps<CircleZone> {
 
 const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} />}
+            {highlightProps && (
+                <Circle radius={radius + style.strokeWidth / 2} {...highlightProps} {...overrideProps} />
+            )}
 
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...style} />
 
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}

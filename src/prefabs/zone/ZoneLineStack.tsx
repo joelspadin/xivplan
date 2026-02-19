@@ -13,7 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle } from './style';
 
@@ -71,6 +71,7 @@ const ARROW_PAD = 0.3;
 
 const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
 
     const patternWidth = object.width;
@@ -103,7 +104,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
         <>
             <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true, keepRatio: false }}>
                 {(groupProps) => (
-                    <Group {...groupProps}>
+                    <Group {...groupProps} {...overrideProps}>
                         {highlightProps && <Rect width={object.width} height={object.height} {...highlightProps} />}
                         <HideGroup>
                             <Rect
@@ -130,7 +131,7 @@ const LineStackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
                 )}
             </ResizeableObjectContainer>
 
-            <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
+            <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y} {...overrideProps}>
                 <ChevronTail x={patternWidth * ARROW_PAD} rotation={90} {...arrow} />
                 <ChevronTail x={patternWidth * (1 - ARROW_PAD)} rotation={-90} {...arrow} />
             </Group>

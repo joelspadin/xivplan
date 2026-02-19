@@ -14,7 +14,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../bounds';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { StarburstControlContainer } from './StarburstContainer';
 import { getZoneStyle } from './style';
 
@@ -175,6 +175,7 @@ interface StarburstRendererProps extends RendererProps<StarburstZone> {
 
 const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, rotation, spokeWidth, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, object.spokeWidth * 2);
 
     const config: StarburstConfig = {
@@ -187,7 +188,7 @@ const StarburstRenderer: React.FC<StarburstRendererProps> = ({ object, radius, r
     };
 
     return (
-        <Group>
+        <Group {...overrideProps}>
             {object.spokes % 2 === 0 ? <StarburstEven {...config} /> : <StarburstOdd {...config} />}
 
             {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}

@@ -45,6 +45,11 @@ export const HIGHLIGHT_COLOR = '#ffffff';
 export const SPOTLIGHT_COLOR = '#ffc800';
 export const HIGHLIGHT_WIDTH = 1.5;
 
+const CONNECTION_HIGHLIGHT_PROPS: ShapeConfig = {
+    dashEnabled: true,
+    dash: [8, 15],
+};
+
 export const SELECTED_PROPS: ShapeConfig = {
     fillEnabled: false,
     listening: false,
@@ -55,6 +60,11 @@ export const SELECTED_PROPS: ShapeConfig = {
     opacity: 0.75,
 };
 
+export const SELECTED_CONNECTED_PROPS: ShapeConfig = {
+    ...SELECTED_PROPS,
+    ...CONNECTION_HIGHLIGHT_PROPS,
+};
+
 export const SPOTLIGHT_PROPS: ShapeConfig = {
     fillEnabled: false,
     listening: false,
@@ -63,6 +73,11 @@ export const SPOTLIGHT_PROPS: ShapeConfig = {
     shadowColor: '#ffff00',
     shadowBlur: 4,
     opacity: 0.75,
+};
+
+export const SPOTLIGHT_CONNECTED_PROPS: ShapeConfig = {
+    ...SPOTLIGHT_PROPS,
+    ...CONNECTION_HIGHLIGHT_PROPS,
 };
 
 export interface SceneTheme {

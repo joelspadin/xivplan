@@ -5,6 +5,7 @@ import React, { RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
+import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -15,13 +16,13 @@ import { useIsDragging } from '../selection';
 import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
 import { usePanelDrag } from '../usePanelDrag';
-import { clamp } from '../util';
+import { clamp, clampRotation, mod360 } from '../util';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { GroupProps } from './ResizeableObjectContainer';
-import { useHighlightProps, useShowResizer } from './highlight';
+import { useHighlightProps, useOverrideProps, useShowResizer } from './highlight';
 
 const DEFAULT_TEXT = 'Text';
 const DEFAULT_TEXT_ALIGN = 'center';
@@ -97,7 +98,7 @@ const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
 const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -114,9 +115,13 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
             return;
         }
 
+        const baseRotation = getBaseFacingRotation(scene, object);
         const newProps: Partial<TextObject> = {
-            rotation: Math.round(node.rotation()),
+            rotation: clampRotation(node.rotation() - baseRotation),
         };
+        if (mod360(object.rotation) == mod360(newProps.rotation!)) {
+            return;
+        }
 
         dispatch({ type: 'update', value: { ...object, ...newProps } });
     };
@@ -152,6 +157,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
     const shapeRef = useRef<Konva.Group>(null);
+    const { scene } = useScene();
 
     useKonvaCache(shapeRef, [cacheKey, object]);
 
@@ -167,7 +173,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
                                 onTransformEnd(e);
                                 setResizing(false);
                             },
-                            rotation: object.rotation,
+                            rotation: getAbsoluteRotation(scene, object),
                         });
                     }}
                 </TextResizer>
@@ -178,6 +184,7 @@ const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, childre
 
 const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const showHighlight = !!highlightProps;
 
     const [measuredFontSize, setMeasuredFontSize] = useState(object.fontSize);
@@ -226,7 +233,7 @@ const TextRenderer: React.FC<RendererProps<TextObject>> = ({ object }) => {
         <>
             <TextContainer object={object} cacheKey={cacheKey}>
                 {(groupProps) => (
-                    <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2}>
+                    <Group {...groupProps} offsetX={size.width / 2} offsetY={size.height / 2} {...overrideProps}>
                         {highlightProps && (
                             <Text
                                 text={object.text}

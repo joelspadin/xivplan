@@ -1,9 +1,11 @@
 import { ShapeConfig } from 'konva/lib/Shape';
+import { useAllowedConnectionIds } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
+import { getObjectById, useScene } from '../SceneProvider';
 import { useSelection, useSpotlight } from '../selection';
 import { SceneSelection } from '../SelectionContext';
-import { SELECTED_PROPS, SPOTLIGHT_PROPS } from '../theme';
+import { SELECTED_CONNECTED_PROPS, SELECTED_PROPS, SPOTLIGHT_CONNECTED_PROPS, SPOTLIGHT_PROPS } from '../theme';
 import { useEditMode } from '../useEditMode';
 
 function shouldShowResizer(object: UnknownObject, selection: SceneSelection, editMode: EditMode) {
@@ -20,13 +22,46 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
     const [editMode] = useEditMode();
     const [selection] = useSelection();
     const [spotlight] = useSpotlight();
+    const scene = useScene().scene;
 
     // Regular selection styling takes precedence if it's the only selected object.
     if (spotlight.has(object.id) && !(selection.size === 1 && selection.has(object.id))) {
         return SPOTLIGHT_PROPS;
     }
 
-    return selection.has(object.id) && !shouldShowResizer(object, selection, editMode) ? SELECTED_PROPS : undefined;
+    if (selection.has(object.id) && !shouldShowResizer(object, selection, editMode)) {
+        return SELECTED_PROPS;
+    }
+
+    // If one of the objects this is connected to is in the spotlight or selection
+    let positionParentId = isMoveable(object) ? object.positionParentId : undefined;
+    while (positionParentId !== undefined) {
+        if (spotlight.has(positionParentId)) {
+            // This is slightly weird when the parent object has a resizer thing.
+            // maybe the resizer should follow the spotlight coloring?
+            return SPOTLIGHT_CONNECTED_PROPS;
+        }
+        if (selection.has(positionParentId)) {
+            return SELECTED_CONNECTED_PROPS;
+        }
+        const parentObject = getObjectById(scene, positionParentId);
+        positionParentId = isMoveable(parentObject) ? parentObject.positionParentId : undefined;
+    }
+
+    return undefined;
+}
+
+export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined {
+    const [editMode] = useEditMode();
+    const [selection] = useSelection();
+    const allowedConnectionSelectionIds = new Set(useAllowedConnectionIds());
+    if (
+        editMode == EditMode.SelectConnection &&
+        !allowedConnectionSelectionIds.has(object.id) &&
+        !selection.has(object.id)
+    ) {
+        return { opacity: 0.1 };
+    }
 }
 
 export function useShowResizer(object: UnknownObject): boolean {

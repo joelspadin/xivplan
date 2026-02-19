@@ -12,7 +12,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Rectangle';
@@ -58,6 +58,7 @@ registerDropHandler<RectangleZone>(ObjectType.Rect, (object, position) => {
 
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
 
     const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
 
@@ -68,7 +69,7 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
             {(groupProps) => (
-                <Group {...groupProps}>
+                <Group {...groupProps} {...overrideProps}>
                     {highlightProps && (
                         <Rect
                             offsetX={highlightOffset / 2}

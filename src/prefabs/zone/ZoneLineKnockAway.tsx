@@ -13,7 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
@@ -67,6 +67,7 @@ const ARROW_PAD = 0.08;
 
 const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const [pattern, setPattern] = useState<HTMLImageElement>();
     const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height));
     const { fill, ...stroke } = style;
@@ -106,7 +107,7 @@ const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
         <>
             <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
                 {(groupProps) => (
-                    <Group {...groupProps}>
+                    <Group {...groupProps} {...overrideProps}>
                         {highlightProps && (
                             <Rect
                                 offsetX={highlightOffset / 2}

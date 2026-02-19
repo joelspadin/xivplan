@@ -10,7 +10,7 @@ import { HIGHLIGHT_WIDTH } from '../theme';
 import { DRAW_LINE_PROPS } from './DrawObjectStyles';
 import { HideCutoutGroup } from './HideGroup';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useHighlightProps } from './highlight';
+import { useHighlightProps, useOverrideProps } from './highlight';
 
 function getLinePoints(object: DrawObject) {
     return object.points.map((v, i) => v * (i % 2 === 0 ? object.width : -object.height));
@@ -18,6 +18,7 @@ function getLinePoints(object: DrawObject) {
 
 export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const points = getLinePoints(object);
 
     return (
@@ -28,7 +29,7 @@ export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object
             transformerProps={{ centeredScaling: true }}
         >
             {(groupProps) => (
-                <Group {...groupProps} offsetX={0} offsetY={0} opacity={object.opacity / 100}>
+                <Group {...groupProps} offsetX={0} offsetY={0} opacity={object.opacity / 100} {...overrideProps}>
                     {highlightProps && (
                         <Line
                             {...DRAW_LINE_PROPS}

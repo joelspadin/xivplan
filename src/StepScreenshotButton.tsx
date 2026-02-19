@@ -28,6 +28,7 @@ import { ObjectLoadingProvider } from './ObjectLoadingProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { useScene } from './SceneProvider';
 import { ToastDismissButton } from './ToastDismissButton';
+import { useCancelConnectionSelection } from './useEditMode';
 import { useHotkeys } from './useHotkeys';
 
 const SCREENSHOT_TIMEOUT = 1000;
@@ -39,6 +40,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
     const [scale, setScale] = useLocalStorage('screenshotPixelRatio', 1);
     const [takingScreenshot, setTakingScreenshot] = useState(false);
     const { dispatchToast } = useToastController();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     const checkedValues: Record<string, string[]> = {
         scale: [scale?.toString() ?? '1'],
@@ -73,6 +75,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
     const [, , startTimeout] = useTimeoutFn(handleTimeout, SCREENSHOT_TIMEOUT);
 
     const startScreenshot = () => {
+        cancelConnectionSelection();
         setTakingScreenshot(true);
         startTimeout();
     };
@@ -81,6 +84,7 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
         'ctrl+shift+c',
         { category: '7.Steps', help: 'Screenshot current step' },
         (ev) => {
+            cancelConnectionSelection();
             setTakingScreenshot(true);
             ev.preventDefault();
         },

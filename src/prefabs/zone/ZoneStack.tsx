@@ -18,7 +18,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { Orb } from './Orb';
 import { ChevronTail } from './shapes';
 import { getStackCircleProps } from './stackUtil';
@@ -71,6 +71,7 @@ interface StackRendererProps extends RendererProps<StackZone> {
 
 const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 2);
 
@@ -83,9 +84,9 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
 
     return (
         <>
-            {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} />}
+            {highlightProps && <Circle radius={radius + ring.strokeWidth} {...highlightProps} {...overrideProps} />}
 
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
 
                 {object.count === 1 && (

@@ -22,7 +22,7 @@ import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useHighlightProps } from './highlight';
+import { useHighlightProps, useOverrideProps } from './highlight';
 
 // https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
 /* eslint-disable react-refresh/only-export-components */
@@ -179,6 +179,7 @@ const RectangleOutline: React.FC<OutlineProps> = ({
 
 const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const [image] = useImageTracked(object.image);
 
     const iconWidth = object.width * ICON_RATIO;
@@ -204,7 +205,7 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
-                <Group {...groupProps}>
+                <Group {...groupProps} {...overrideProps}>
                     {object.shape === 'circle' && (
                         <EllipseOutline
                             width={object.width}

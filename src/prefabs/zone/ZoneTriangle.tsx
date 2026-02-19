@@ -13,7 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Triangle';
@@ -73,6 +73,7 @@ const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) 
 
 const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
 
     const highlightOffset = style.strokeWidth;
@@ -84,7 +85,7 @@ const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =>
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
-                <Group {...groupProps} offsetY={offsetY}>
+                <Group {...groupProps} offsetY={offsetY} {...overrideProps}>
                     {highlightProps && (
                         <EquilateralTriangle
                             offsetX={highlightOffset / 2}

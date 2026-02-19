@@ -36,13 +36,16 @@ import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { Scene } from './scene';
 import { MIN_STAGE_WIDTH } from './theme';
+import { useCancelConnectionSelection } from './useEditMode';
 
 export const StepSelect: React.FC = () => {
     const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
+    const cancelConnectionSelection = useCancelConnectionSelection();
     const steps = scene.steps.map((_, i) => i);
 
     const handleTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
+        cancelConnectionSelection();
         const index = data.value as number;
         dispatch({ type: 'setStep', index });
     };
@@ -98,10 +101,16 @@ const StepButton: React.FC<StepButtonProps> = ({ index }) => {
 
 const AddStepButton: React.FC<ButtonProps> = (props) => {
     const { dispatch } = useScene();
+    const cancelConnectionSelection = useCancelConnectionSelection();
+
+    const handleAddStep = () => {
+        cancelConnectionSelection();
+        dispatch({ type: 'addStep' });
+    };
 
     return (
         <Tooltip content="Add new step" relationship="label" withArrow>
-            <Button icon={<AddFilled />} appearance="subtle" onClick={() => dispatch({ type: 'addStep' })} {...props} />
+            <Button icon={<AddFilled />} appearance="subtle" onClick={handleAddStep} {...props} />
         </Tooltip>
     );
 };
@@ -110,7 +119,13 @@ const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
 const RemoveStepButton: React.FC = () => {
     const { scene, stepIndex, dispatch } = useScene();
+    const cancelConnectionSelection = useCancelConnectionSelection();
     const stepText = getStepText(stepIndex);
+
+    const handleDeleteStep = () => {
+        cancelConnectionSelection();
+        dispatch({ type: 'removeStep', index: stepIndex });
+    };
 
     return (
         <Tooltip content={`Delete step ${stepText}`} relationship="label" withArrow>
@@ -118,7 +133,7 @@ const RemoveStepButton: React.FC = () => {
                 icon={<DeleteIcon />}
                 appearance="subtle"
                 disabled={scene.steps.length < 2}
-                onClick={() => dispatch({ type: 'removeStep', index: stepIndex })}
+                onClick={handleDeleteStep}
             />
         </Tooltip>
     );

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
-import { getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
-import { StarburstZone, UnknownObject } from '../../scene';
+import { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
+import { clampRotation, mod360 } from '../../util';
 import { distance } from '../../vector';
 import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -39,13 +40,14 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
     children,
     minSpokeWidth,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: StarburstObjectState) => {
-        state.rotation = Math.round(state.rotation);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        state.rotation = clampRotation(state.rotation - baseRotation);
         state.spokeWidth = Math.round(state.spokeWidth);
 
         if (!stateChanged(object, state)) {
@@ -78,7 +80,7 @@ function stateChanged(object: StarburstZone, state: StarburstObjectState) {
         return true;
     }
 
-    if (state.rotation !== object.rotation) {
+    if (mod360(state.rotation) !== mod360(object.rotation)) {
         return true;
     }
 
@@ -110,32 +112,34 @@ function getRadius(object: StarburstZone, { pointerPos, activeHandleId }: Handle
 }
 
 function getSpokeWidth(
+    scene: Readonly<Scene>,
     object: StarburstZone,
     { pointerPos, activeHandleId }: HandleFuncProps,
     { minSpokeWidth }: StarburstControlProps,
 ) {
     if (pointerPos && activeHandleId === HandleId.SpokeWidth) {
-        const pos = rotateCoord(pointerPos, -object.rotation);
+        const pos = rotateCoord(pointerPos, -getAbsoluteRotation(scene, object));
         return Math.max(pos.x * 2, minSpokeWidth);
     }
 
     return object.spokeWidth;
 }
 
-function getRotation(object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
-        return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 
-    return object.rotation;
+    return getAbsoluteRotation(scene, object);
 }
 
 const StarburstControlPoints = createControlPointManager<StarburstZone, StarburstObjectState, StarburstControlProps>({
-    handleFunc: (object, handle, props) => {
+    handleFunc: (scene, object, handle, props) => {
         const r = getRadius(object, handle) + OUTSET;
-        const spokeWidth = getSpokeWidth(object, handle, props);
-        const rotation = object.rotation;
+        const spokeWidth = getSpokeWidth(scene, object, handle, props);
+        const rotation = getAbsoluteRotation(scene, object);
 
         const spokeX = spokeWidth / 2;
         const spokeY = (r * 2) / 3;
@@ -156,10 +160,10 @@ const StarburstControlPoints = createControlPointManager<StarburstZone, Starburs
         ];
     },
     getRotation: getRotation,
-    stateFunc: (object, handle, props) => {
+    stateFunc: (scene, object, handle, props) => {
         const radius = getRadius(object, handle);
-        const rotation = getRotation(object, handle);
-        const spokeWidth = getSpokeWidth(object, handle, props);
+        const rotation = getRotation(scene, object, handle);
+        const spokeWidth = getSpokeWidth(scene, object, handle, props);
 
         return { radius, rotation, spokeWidth };
     },

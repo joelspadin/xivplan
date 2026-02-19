@@ -28,6 +28,7 @@ import { OpenDialog, SaveAsDialog } from './file/FileDialog';
 import { ShareDialogButton } from './file/ShareDialogButton';
 import { downloadScene, getBlobSource } from './file/blob';
 import { DialogOpenContext } from './useCloseDialog';
+import { useCancelConnectionSelection } from './useEditMode';
 import { useHotkeys } from './useHotkeys';
 import { useIsDirty, useSetSavedState } from './useIsDirty';
 
@@ -44,11 +45,14 @@ export const MainToolbar: React.FC = () => {
     const { dispatch } = useScene();
     const [undoPossible, redoPossible] = useSceneUndoRedoPossible();
     const [openFileOpen, setOpenFileOpen] = useState(false);
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     const undo = () => {
+        cancelConnectionSelection();
         dispatch({ type: 'undo' });
     };
     const redo = () => {
+        cancelConnectionSelection();
         dispatch({ type: 'redo' });
     };
 
