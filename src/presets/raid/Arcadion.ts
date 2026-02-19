@@ -189,11 +189,11 @@ const PRESET_11_SPLIT: ArenaPreset = {
     name: 'AAC Heavyweight M3 (Split)',
     spoilerFreeName: 'AAC Heavyweight M3 ████',
     shape: ArenaShape.None,
-    width: 800,
+    width: 860,
     height: 640,
     padding: 100,
     grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion11-split.svg',
+    backgroundImage: '/arena/arcadion11-split-v2.svg',
 };
 
 export const ARENA_PRESETS_RAID_ARCADION = [
