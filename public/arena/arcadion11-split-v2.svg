@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="860"
+   width="820"
    height="640"
-   viewBox="0 0 860 640"
+   viewBox="0 0 820 640"
    version="1.1"
    id="svg1"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
@@ -69,7 +69,7 @@
        style="stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
        id="rect90"
        height="639"
-       x="539.5"
+       x="499.5"
        y="0.5"
        width="320"
        class="floor" />
@@ -414,7 +414,7 @@
        id="rect42"
        width="40"
        height="80"
-       x="539.5"
+       x="499.5"
        y="0.5"
        class="grid " />
     <rect
@@ -422,7 +422,7 @@
        id="rect43"
        width="40"
        height="40"
-       x="539.5"
+       x="499.5"
        y="80.5"
        class="grid " />
     <rect
@@ -430,7 +430,7 @@
        id="rect44"
        width="80"
        height="40"
-       x="579.5"
+       x="539.5"
        y="0.5"
        class="grid " />
     <rect
@@ -438,7 +438,7 @@
        id="rect45"
        width="80"
        height="80"
-       x="579.5"
+       x="539.5"
        y="40.5"
        class="grid " />
     <rect
@@ -446,7 +446,7 @@
        id="rect46"
        width="80"
        height="80"
-       x="779.5"
+       x="739.5"
        y="0.5"
        class="grid " />
     <rect
@@ -454,7 +454,7 @@
        id="rect47"
        width="40"
        height="80"
-       x="739.5"
+       x="699.5"
        y="0.5"
        class="grid " />
     <rect
@@ -462,7 +462,7 @@
        id="rect48"
        width="80"
        height="40"
-       x="659.5"
+       x="619.5"
        y="40.5"
        class="grid " />
     <rect
@@ -470,7 +470,7 @@
        id="rect49"
        width="40"
        height="40"
-       x="659.5"
+       x="619.5"
        y="0.5"
        class="grid " />
     <rect
@@ -478,7 +478,7 @@
        id="rect50"
        width="40"
        height="40"
-       x="699.5"
+       x="659.5"
        y="0.5"
        class="grid " />
     <rect
@@ -486,7 +486,7 @@
        id="rect51"
        width="40"
        height="40"
-       x="659.5"
+       x="619.5"
        y="80.5"
        class="grid " />
     <rect
@@ -494,7 +494,7 @@
        id="rect52"
        width="40"
        height="40"
-       x="619.5"
+       x="579.5"
        y="120.5"
        class="grid " />
     <rect
@@ -502,7 +502,7 @@
        id="rect53"
        width="40"
        height="40"
-       x="619.5"
+       x="579.5"
        y="160.5"
        class="grid " />
     <rect
@@ -510,7 +510,7 @@
        id="rect54"
        width="40"
        height="80"
-       x="659.5"
+       x="619.5"
        y="120.5"
        class="grid " />
     <rect
@@ -518,7 +518,7 @@
        id="rect55"
        width="80"
        height="40"
-       x="699.5"
+       x="659.5"
        y="160.5"
        class="grid " />
     <rect
@@ -526,7 +526,7 @@
        id="rect56"
        width="80"
        height="40"
-       x="619.5"
+       x="579.5"
        y="200.5"
        class="grid " />
     <rect
@@ -534,7 +534,7 @@
        id="rect57"
        width="80"
        height="40"
-       x="539.5"
+       x="499.5"
        y="120.5"
        class="grid " />
     <rect
@@ -542,7 +542,7 @@
        id="rect58"
        width="80"
        height="80"
-       x="539.5"
+       x="499.5"
        y="160.5"
        class="grid " />
     <rect
@@ -550,7 +550,7 @@
        id="rect59"
        width="80"
        height="80"
-       x="699.5"
+       x="659.5"
        y="200.5"
        class="grid " />
     <rect
@@ -558,7 +558,7 @@
        id="rect60"
        width="80"
        height="80"
-       x="779.5"
+       x="739.5"
        y="160.5"
        class="grid " />
     <rect
@@ -566,7 +566,7 @@
        id="rect61"
        width="160"
        height="80"
-       x="699.5"
+       x="659.5"
        y="80.5"
        class="grid " />
     <rect
@@ -574,7 +574,7 @@
        id="rect62"
        width="40"
        height="40"
-       x="779.5"
+       x="739.5"
        y="240.5"
        class="grid " />
     <rect
@@ -582,7 +582,7 @@
        id="rect63"
        width="40"
        height="40"
-       x="819.5"
+       x="779.5"
        y="240.5"
        class="grid " />
     <rect
@@ -590,7 +590,7 @@
        id="rect64"
        width="120"
        height="120"
-       x="699.5"
+       x="659.5"
        y="280.5"
        class="grid " />
     <rect
@@ -598,7 +598,7 @@
        id="rect65"
        width="40"
        height="80"
-       x="819.5"
+       x="779.5"
        y="280.5"
        class="grid " />
     <rect
@@ -606,7 +606,7 @@
        id="rect66"
        width="40"
        height="40"
-       x="819.5"
+       x="779.5"
        y="360.5"
        class="grid " />
     <rect
@@ -614,7 +614,7 @@
        id="rect67"
        width="120"
        height="120"
-       x="539.5"
+       x="499.5"
        y="240.5"
        class="grid " />
     <rect
@@ -622,7 +622,7 @@
        id="rect68"
        width="40"
        height="80"
-       x="659.5"
+       x="619.5"
        y="240.5"
        class="grid " />
     <rect
@@ -630,7 +630,7 @@
        id="rect69"
        width="40"
        height="40"
-       x="659.5"
+       x="619.5"
        y="320.5"
        class="grid " />
     <rect
@@ -638,7 +638,7 @@
        id="rect70"
        width="40"
        height="40"
-       x="539.5"
+       x="499.5"
        y="360.5"
        class="grid " />
     <rect
@@ -646,7 +646,7 @@
        id="rect71"
        width="40"
        height="40"
-       x="659.5"
+       x="619.5"
        y="360.5"
        class="grid " />
     <rect
@@ -654,7 +654,7 @@
        id="rect72"
        width="80"
        height="40"
-       x="579.5"
+       x="539.5"
        y="360.5"
        class="grid " />
     <rect
@@ -662,7 +662,7 @@
        id="rect73"
        width="160"
        height="80"
-       x="539.5"
+       x="499.5"
        y="400.5"
        class="grid " />
     <rect
@@ -670,7 +670,7 @@
        id="rect74"
        width="80"
        height="40"
-       x="539.5"
+       x="499.5"
        y="600.5"
        class="grid " />
     <rect
@@ -678,7 +678,7 @@
        id="rect75"
        width="40"
        height="40"
-       x="539.5"
+       x="499.5"
        y="560.5"
        class="grid " />
     <rect
@@ -686,7 +686,7 @@
        id="rect76"
        width="40"
        height="40"
-       x="579.5"
+       x="539.5"
        y="560.5"
        class="grid " />
     <rect
@@ -694,7 +694,7 @@
        id="rect77"
        width="80"
        height="80"
-       x="579.5"
+       x="539.5"
        y="480.5"
        class="grid " />
     <rect
@@ -702,7 +702,7 @@
        id="rect78"
        width="40"
        height="80"
-       x="539.5"
+       x="499.5"
        y="480.5"
        class="grid " />
     <rect
@@ -710,7 +710,7 @@
        id="rect79"
        width="40"
        height="80"
-       x="619.5"
+       x="579.5"
        y="560.5"
        class="grid " />
     <rect
@@ -718,7 +718,7 @@
        id="rect80"
        width="80"
        height="160"
-       x="659.5"
+       x="619.5"
        y="480.5"
        class="grid " />
     <rect
@@ -726,7 +726,7 @@
        id="rect81"
        width="40"
        height="80"
-       x="699.5"
+       x="659.5"
        y="400.5"
        class="grid " />
     <rect
@@ -734,7 +734,7 @@
        id="rect82"
        width="80"
        height="80"
-       x="779.5"
+       x="739.5"
        y="400.5"
        class="grid " />
     <rect
@@ -742,7 +742,7 @@
        id="rect83"
        width="40"
        height="40"
-       x="739.5"
+       x="699.5"
        y="400.5"
        class="grid " />
     <rect
@@ -750,7 +750,7 @@
        id="rect84"
        width="40"
        height="40"
-       x="739.5"
+       x="699.5"
        y="440.5"
        class="grid " />
     <rect
@@ -758,7 +758,7 @@
        id="rect85"
        width="120"
        height="120"
-       x="739.5"
+       x="699.5"
        y="480.5"
        class="grid " />
     <rect
@@ -766,7 +766,7 @@
        id="rect86"
        width="40"
        height="40"
-       x="739.5"
+       x="699.5"
        y="600.5"
        class="grid " />
     <rect
@@ -774,7 +774,7 @@
        id="rect87"
        width="40"
        height="40"
-       x="779.5"
+       x="739.5"
        y="600.5"
        class="grid " />
     <rect
@@ -782,7 +782,7 @@
        id="rect88"
        width="40"
        height="40"
-       x="819.5"
+       x="779.5"
        y="600.5"
        class="grid " />
   </g>
