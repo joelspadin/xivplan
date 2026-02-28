@@ -1,6 +1,7 @@
 import { RefObject, useContext, useEffect } from 'react';
 import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
+import { rotateArray } from './util';
 
 export enum HotkeyScopes {
     AlwaysEnabled = 'alwaysEnabled', // Workaround for https://github.com/JohannesKlauss/react-hotkeys-hook/issues/908
@@ -54,7 +55,7 @@ export function useHotkeyHelp(info: HotkeyInfo): void {
         }
 
         const id = `${info.keys}-${info.category}-${info.help}`;
-        map.set(id, info);
+        map.set(id, { ...info, sortKey: getSortKey(info) });
 
         return () => {
             map.delete(id);
@@ -65,12 +66,7 @@ export function useHotkeyHelp(info: HotkeyInfo): void {
 export function useRegisteredHotkeys(): HotkeyInfo[] {
     const map = useContext(HotkeyHelpContext);
     return [...map.values()].sort((a, b) => {
-        const result = a.category.localeCompare(b.category);
-        if (result !== 0) {
-            return result;
-        }
-
-        return a.keys.localeCompare(b.keys);
+        return a.sortKey.localeCompare(b.sortKey);
     });
 }
 
@@ -84,4 +80,14 @@ export function useHotkeyBlocker() {
             enableScope(HotkeyScopes.Default);
         };
     }, [disableScope, enableScope]);
+}
+
+function getSortKey(info: HotkeyInfo) {
+    let keys = info.keys.split('+').map((k) => k.trim().toLowerCase());
+    const nonModifierIdx = keys.findIndex((k) => k !== 'ctrl' && k !== 'shift' && k !== 'alt');
+    if (nonModifierIdx > 0) {
+        keys = rotateArray(keys, nonModifierIdx);
+    }
+
+    return [info.category, ...keys].join('+');
 }

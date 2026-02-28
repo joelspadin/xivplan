@@ -6,4 +6,8 @@ export interface HotkeyInfo {
     help: string;
 }
 
-export const HotkeyHelpContext = createContext<Map<string, HotkeyInfo>>(new Map());
+export interface HotkeyInfoWithSortKey extends HotkeyInfo {
+    sortKey: string;
+}
+
+export const HotkeyHelpContext = createContext<Map<string, HotkeyInfoWithSortKey>>(new Map());
