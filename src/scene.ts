@@ -130,8 +130,9 @@ export interface Arena {
     readonly backgroundOpacity?: number;
 }
 
-export interface ArenaPreset extends Arena {
+export interface ArenaPreset {
     name: string;
+    arena: Arena;
     spoilerFreeName?: string;
     isSpoilerFree?: boolean;
 }

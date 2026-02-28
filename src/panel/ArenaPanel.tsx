@@ -125,9 +125,7 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     const [selectedPreset, setSelectedPreset] = useState<ArenaPreset>();
 
     const applyPreset = (preset: ArenaPreset) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { name, ...arena } = preset;
-        dispatch({ type: 'arena', value: arena });
+        dispatch({ type: 'arena', value: preset.arena });
         setOpen(false);
     };
 
@@ -268,7 +266,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
 
     const scene: Scene = {
         nextId: 0,
-        arena: preset,
+        arena: preset.arena,
         steps: [{ objects: [] }],
     };
 

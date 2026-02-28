@@ -2,198 +2,234 @@ import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../
 
 const PRESET_2: ArenaPreset = {
     name: 'AAC Light-heavyweight M2',
-    shape: ArenaShape.Circle,
-    width: 800,
-    height: 800,
-    padding: 20,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion2.svg',
+    arena: {
+        shape: ArenaShape.Circle,
+        width: 800,
+        height: 800,
+        padding: 20,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion2.svg',
+    },
 };
 
 const PRESET_3: ArenaPreset = {
     name: 'AAC Light-heavyweight M3',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion3.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion3.svg',
+    },
 };
 
 const PRESET_4: ArenaPreset = {
     name: 'AAC Light-heavyweight M4',
     spoilerFreeName: 'AAC Light-heavyweight M4 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.Rectangular, rows: 4, columns: 4 },
-    backgroundImage: '/arena/arcadion4.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.Rectangular, rows: 4, columns: 4 },
+        backgroundImage: '/arena/arcadion4.svg',
+    },
 };
 
 const PRESET_4_PHASE_2: ArenaPreset = {
     name: 'AAC Light-heavyweight M4 (Phase 2)',
     spoilerFreeName: 'AAC Light-heavyweight M4 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 450,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.Rectangular, rows: 3, columns: 4 },
-    backgroundImage: '/arena/arcadion4-p2.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 450,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.Rectangular, rows: 3, columns: 4 },
+        backgroundImage: '/arena/arcadion4-p2.svg',
+    },
 };
 
 const PRESET_6: ArenaPreset = {
     name: 'AAC Cruiserweight M2',
     spoilerFreeName: 'AAC Cruiserweight M2 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion6.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion6.svg',
+    },
 };
 
 const PRESET_6_QUICKSAND: ArenaPreset = {
     name: 'AAC Cruiserweight M2 (Quicksand)',
     spoilerFreeName: 'AAC Cruiserweight M2 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion6-quicksand.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion6-quicksand.svg',
+    },
 };
 
 const PRESET_6_QUICKSAND_2: ArenaPreset = {
     name: 'AAC Cruiserweight M2 (Quicksand 2)',
     spoilerFreeName: 'AAC Cruiserweight M2 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion6-quicksand2.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion6-quicksand2.svg',
+    },
 };
 
 const PRESET_6_RIVER: ArenaPreset = {
     name: 'AAC Cruiserweight M2 (Riverscape)',
     spoilerFreeName: 'AAC Cruiserweight M2 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion6-river.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion6-river.svg',
+    },
 };
 
 const PRESET_6_VOLCANO: ArenaPreset = {
     name: 'AAC Cruiserweight M2 (Volcano)',
     spoilerFreeName: 'AAC Cruiserweight M2 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion6-volcano.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion6-volcano.svg',
+    },
 };
 
 const PRESET_7: ArenaPreset = {
     name: 'AAC Cruiserweight M3',
     spoilerFreeName: 'AAC Cruiserweight M3 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.Rectangular, rows: 4, columns: 4 },
-    backgroundImage: '/arena/arcadion7.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.Rectangular, rows: 4, columns: 4 },
+        backgroundImage: '/arena/arcadion7.svg',
+    },
 };
 
 const PRESET_7_PHASE_2: ArenaPreset = {
     name: 'AAC Cruiserweight M3 (Phase 2)',
     spoilerFreeName: 'AAC Cruiserweight M3 ████',
-    shape: ArenaShape.Rectangle,
-    width: 300,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.CustomRectangular, rows: [-150, 150], columns: [0] },
-    backgroundImage: '/arena/arcadion7-p2.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 300,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.CustomRectangular, rows: [-150, 150], columns: [0] },
+        backgroundImage: '/arena/arcadion7-p2.svg',
+    },
 };
 
 const PRESET_7_PHASE_3: ArenaPreset = {
     name: 'AAC Cruiserweight M3 (Phase 3)',
     spoilerFreeName: 'AAC Cruiserweight M3 ████',
-    shape: ArenaShape.Rectangle,
-    width: 600,
-    height: 600,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.Rectangular, rows: 8, columns: 8 },
-    backgroundImage: '/arena/arcadion7-p3.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 600,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.Rectangular, rows: 8, columns: 8 },
+        backgroundImage: '/arena/arcadion7-p3.svg',
+    },
 };
 
 const PRESET_8: ArenaPreset = {
     name: 'AAC Cruiserweight M4',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
-    shape: ArenaShape.Circle,
-    width: 800,
-    height: 800,
-    padding: 20,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion8.svg',
+    arena: {
+        shape: ArenaShape.Circle,
+        width: 800,
+        height: 800,
+        padding: 20,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion8.svg',
+    },
 };
 
 const PRESET_8_PHASE_2: ArenaPreset = {
     name: 'AAC Cruiserweight M4 (Phase 2)',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
-    shape: ArenaShape.Circle,
-    width: 580,
-    height: 580,
-    padding: DEFAULT_ARENA_PADDING,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion8-p2.svg',
+    arena: {
+        shape: ArenaShape.Circle,
+        width: 580,
+        height: 580,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion8-p2.svg',
+    },
 };
 
 const PRESET_8_SAVAGE_PHASE_2: ArenaPreset = {
     name: 'AAC Cruiserweight M4 (Savage Phase 2)',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
-    shape: ArenaShape.None,
-    width: 840,
-    height: 840,
-    padding: 0,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion8-sp2.svg',
+    arena: {
+        shape: ArenaShape.None,
+        width: 840,
+        height: 840,
+        padding: 0,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion8-sp2.svg',
+    },
 };
 
 const PRESET_8_SAVAGE_PHASE_2_MIRROR: ArenaPreset = {
     name: 'AAC Cruiserweight M4 (Savage Phase 2 Mirror)',
     spoilerFreeName: 'AAC Cruiserweight M4 ████',
-    shape: ArenaShape.None,
-    width: 840,
-    height: 840,
-    padding: 0,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion8-sp2-mirror.svg',
+    arena: {
+        shape: ArenaShape.None,
+        width: 840,
+        height: 840,
+        padding: 0,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion8-sp2-mirror.svg',
+    },
 };
 
 const PRESET_11: ArenaPreset = {
     name: 'AAC Heavyweight M3',
     spoilerFreeName: 'AAC Heavyweight M3 ████',
-    shape: ArenaShape.Rectangle,
-    width: 640,
-    height: 640,
-    padding: 100,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion11.svg',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 640,
+        height: 640,
+        padding: 100,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion11.svg',
+    },
 };
 
 const PRESET_11_SPLIT: ArenaPreset = {
     name: 'AAC Heavyweight M3 (Split)',
     spoilerFreeName: 'AAC Heavyweight M3 ████',
-    shape: ArenaShape.None,
-    width: 820,
-    height: 640,
-    padding: 100,
-    grid: { type: GridType.None },
-    backgroundImage: '/arena/arcadion11-split-v2.svg',
+    arena: {
+        shape: ArenaShape.None,
+        width: 820,
+        height: 640,
+        padding: 100,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion11-split-v2.svg',
+    },
 };
 
 export const ARENA_PRESETS_RAID_ARCADION = [
