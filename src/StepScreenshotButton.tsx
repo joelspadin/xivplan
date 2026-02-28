@@ -18,7 +18,7 @@ import {
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
@@ -153,25 +153,26 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     const [frozenStepIndex] = useState(stepIndex);
     const ref = useRef<Konva.Stage>(null);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
-    const takeScreenshot = async () => {
-        try {
-            if (!ref.current) {
-                throw new Error('Stage missing');
-            }
+    // https://github.com/reactwg/react-compiler/discussions/18
+    const takeScreenshot = useCallback(async () => {
+        if (!ref.current) {
+            onScreenshotDone(new Error('Stage missing'));
+            return;
+        }
 
+        try {
             await copyToClipboard(ref.current, scale);
             onScreenshotDone();
         } catch (ex) {
             onScreenshotDone(ex);
         }
-    };
+    }, [scale, onScreenshotDone]);
 
     // Delay screenshot by at least one render to make sure any objects that need
     // to load resources have reported that they are loading.
     const [firstRender, setFirstRender] = useState(true);
     useEffect(() => {
-        setFirstRender(false);
+        setTimeout(() => setFirstRender(false));
     }, [setFirstRender]);
 
     // Avoid double screenshot in development builds.

@@ -73,22 +73,21 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
     );
 };
 
-interface ControlConditionProps {
+interface ControlConditionProps<T extends UnknownObject> {
     objects: readonly SceneObject[];
-    test: (object: UnknownObject) => boolean;
+    test: (object: UnknownObject) => object is T;
     invert?: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: React.FC<PropertiesControlProps<any>>;
+    control: React.FC<PropertiesControlProps<T>>;
     className?: string;
 }
 
-const ControlCondition: React.FC<ControlConditionProps> = ({ objects, test, invert, control, className }) => {
+function ControlCondition<T>({ objects, test, invert, control, className }: ControlConditionProps<T & UnknownObject>) {
     const result = objects.every(test);
     const isValid = invert ? !result : result;
 
     const Control = control;
-    return isValid ? <Control objects={objects} className={className} /> : null;
-};
+    return isValid ? <Control objects={objects as (T & UnknownObject)[]} className={className} /> : null;
+}
 
 const NoObjectsMessage: React.FC = () => {
     return <p>No objects selected.</p>;

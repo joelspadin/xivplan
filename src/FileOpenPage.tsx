@@ -1,5 +1,5 @@
 import { Button, makeStyles, tokens } from '@fluentui/react-components';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFileLoader } from './useFileLoader';
 
@@ -17,8 +17,8 @@ export const FileOpenPage: React.FC = () => {
     const loadFile = useFileLoader();
     const [error, setError] = useState<ReactNode>();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
-    const navigateToMainPage = () => navigate('/', { replace: true });
+    // https://github.com/reactwg/react-compiler/discussions/18
+    const navigateToMainPage = useCallback(() => navigate('/', { replace: true }), [navigate]);
 
     useEffect(() => {
         if (window.launchQueue) {

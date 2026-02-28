@@ -1,5 +1,5 @@
 import { Vector2d } from 'konva/lib/types';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getPointerPosition } from '../coord';
@@ -25,8 +25,8 @@ const TetherEditLayer: React.FC = () => {
     const { scene, step } = useScene();
     const stage = useStage();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
-    const onMouseMove = () => setCursor(getPointerPosition(scene, stage));
+    // https://github.com/reactwg/react-compiler/discussions/18
+    const onMouseMove = useCallback(() => setCursor(getPointerPosition(scene, stage)), [setCursor, scene, stage]);
 
     useLayoutEffect(() => {
         if (stage) {
