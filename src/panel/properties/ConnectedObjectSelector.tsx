@@ -42,12 +42,12 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
 
     function onClickConnection(): void {
         // The button should be disabled if there are no available connections.
-        if (allowedConnectionIds.length == 0) {
+        if (allowedConnectionIds.size == 0) {
             return;
         }
         setEditMode(EditMode.SelectConnection);
         setConnectionSelection({
-            objectIdsToConnect: objects.map((obj) => obj.id),
+            objectIdsToConnect: new Set(objects.map((obj) => obj.id)),
             connectionType,
         });
         // The list component disappears, so there's no onMouseLeave to clear the spotlight.
@@ -59,7 +59,7 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
         }
     }
 
-    const linkTexts = getLinkTexts(connectionType, haveAnyLink, allowedConnectionIds.length > 0);
+    const linkTexts = getLinkTexts(connectionType, haveAnyLink, allowedConnectionIds.size > 0);
 
     return (
         <SplitButton
@@ -74,7 +74,7 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
                 onClick: onClickConnection,
                 onMouseEnter: onMouseEnterConnection,
                 onMouseLeave: onMouseLeaveConnection,
-                disabled: !haveAnyLink && allowedConnectionIds.length == 0,
+                disabled: !haveAnyLink && allowedConnectionIds.size == 0,
                 style: {
                     paddingLeft: tokens.spacingHorizontalXS,
                 },

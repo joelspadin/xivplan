@@ -25,7 +25,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
     const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
-    const allowedConnectionIds = new Set(useAllowedConnectionIds());
+    const allowedConnectionIds = useAllowedConnectionIds();
     const getUpdateConnectionIdsAction = useUpdateConnectedIdsAction();
     const isSelectable = editMode === EditMode.Normal || editMode === EditMode.SelectConnection;
 

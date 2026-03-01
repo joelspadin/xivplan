@@ -41,12 +41,12 @@ export enum ConnectionType {
 }
 
 export interface ConnectionSelectionConfig {
-    objectIdsToConnect: number[];
+    objectIdsToConnect: ReadonlySet<number>;
     connectionType: ConnectionType;
 }
 
 export const DEFAULT_CONNECTION_SELECTION_CONFIG: ConnectionSelectionConfig = {
-    objectIdsToConnect: [],
+    objectIdsToConnect: new Set(),
     connectionType: ConnectionType.POSITION,
 };
 

@@ -26,7 +26,10 @@ import { useConnectionSelection } from './useConnectionSelection';
  */
 export function getConnectionIdFuncs(
     connectionType: ConnectionType,
-): [(obj: SceneObject) => number | undefined, (step: SceneStep, objectsToConnect: readonly SceneObject[]) => number[]] {
+): [
+    (obj: SceneObject) => number | undefined,
+    (step: SceneStep, objectsToConnect: readonly SceneObject[]) => ReadonlySet<number>,
+] {
     switch (connectionType) {
         case ConnectionType.POSITION:
             return [getPositionParentId, getAllowedPositionParentIds];
@@ -43,10 +46,10 @@ export function getRotationConnectionId(obj: SceneObject | undefined) {
     return isRotateable(obj) ? obj.facingId : undefined;
 }
 
-export function useAllowedConnectionIds(): number[] {
+export function useAllowedConnectionIds(): ReadonlySet<number> {
     const { step } = useScene();
     const [connectionSelection] = useConnectionSelection();
-    const objectIdsToConnect = new Set(connectionSelection.objectIdsToConnect);
+    const objectIdsToConnect = connectionSelection.objectIdsToConnect;
 
     switch (connectionSelection.connectionType) {
         case ConnectionType.POSITION:
@@ -67,7 +70,10 @@ export function useAllowedConnectionIds(): number[] {
  * @returns a list of object IDs in the current step that the given selection of objects is allowed to have as
  * position parent. This excludes the selection plus any of its position descendants.
  */
-export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
+export function getAllowedPositionParentIds(
+    step: SceneStep,
+    objectsToConnect: readonly SceneObject[],
+): ReadonlySet<number> {
     const selectedAndChildren = new Set<number>(objectsToConnect.map((obj) => obj.id));
     let addedObjects = objectsToConnect.length;
     while (addedObjects > 0) {
@@ -87,17 +93,22 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
         });
     }
 
-    return step.objects.filter((obj) => isMoveable(obj) && !selectedAndChildren.has(obj.id)).map((obj) => obj.id);
+    return new Set(
+        step.objects.filter((obj) => isMoveable(obj) && !selectedAndChildren.has(obj.id)).map((obj) => obj.id),
+    );
 }
 
 /**
  * @returns a list of object IDs in the current step that the given selection of objects is allowed to face.
  * This only excludes the selection -- it's OK to face an attached object or objects that face the selection.
  */
-export function getAllowedRotationConnectionIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
+export function getAllowedRotationConnectionIds(
+    step: SceneStep,
+    objectsToConnect: readonly SceneObject[],
+): ReadonlySet<number> {
     const selectedIds = new Set<number>(objectsToConnect.map((obj) => obj.id));
 
-    return step.objects.filter((obj) => isMoveable(obj) && !selectedIds.has(obj.id)).map((obj) => obj.id);
+    return new Set(step.objects.filter((obj) => isMoveable(obj) && !selectedIds.has(obj.id)).map((obj) => obj.id));
 }
 
 /**

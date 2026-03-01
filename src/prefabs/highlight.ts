@@ -54,7 +54,7 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
 export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined {
     const [editMode] = useEditMode();
     const [selection] = useSelection();
-    const allowedConnectionSelectionIds = new Set(useAllowedConnectionIds());
+    const allowedConnectionSelectionIds = useAllowedConnectionIds();
     if (
         editMode == EditMode.SelectConnection &&
         !allowedConnectionSelectionIds.has(object.id) &&

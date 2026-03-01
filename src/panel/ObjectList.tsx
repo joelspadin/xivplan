@@ -99,7 +99,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
     const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
-    const allowedConnectionIds = new Set(useAllowedConnectionIds());
+    const allowedConnectionIds = useAllowedConnectionIds();
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
