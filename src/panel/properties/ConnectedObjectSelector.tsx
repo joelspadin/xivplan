@@ -59,7 +59,11 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
         }
     }
 
-    const linkTexts = getLinkTexts(connectionType, haveAnyLink, allowedConnectionIds.size > 0);
+    const linkTexts = getLinkTexts({
+        connectionType,
+        haveAnyLink,
+        hasAllowedConnections: allowedConnectionIds.size > 0,
+    });
 
     return (
         <SplitButton
@@ -109,7 +113,13 @@ interface LinkTexts {
     tooltip: string;
 }
 
-function getLinkTexts(connectionType: ConnectionType, haveAnyLink: boolean, hasAllowedConnections: boolean): LinkTexts {
+interface GetLinkTextsArgs {
+    connectionType: ConnectionType;
+    haveAnyLink: boolean;
+    hasAllowedConnections: boolean;
+}
+
+function getLinkTexts({ connectionType, haveAnyLink, hasAllowedConnections }: GetLinkTextsArgs): LinkTexts {
     let newLinkText = '';
     let tooltip = '';
     switch (connectionType) {
