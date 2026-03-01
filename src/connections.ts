@@ -20,6 +20,29 @@ import {
 import { getDirectPositionDescendants, getObjectById, SceneAction, useScene } from './SceneProvider';
 import { useConnectionSelection } from './useConnectionSelection';
 
+/**
+ * Returns the ConnectionType-appropriate functions to get the current connection ID for a single object,
+ * and the allowed connection IDs for a selection of objects.
+ */
+export function getConnectionIdFuncs(
+    connectionType: ConnectionType,
+): [(obj: SceneObject) => number | undefined, (step: SceneStep, objectsToConnect: readonly SceneObject[]) => number[]] {
+    switch (connectionType) {
+        case ConnectionType.POSITION:
+            return [getPositionParentId, getAllowedPositionParentIds];
+        case ConnectionType.ROTATION:
+            return [getRotationConnectionId, getAllowedRotationConnectionIds];
+    }
+}
+
+export function getPositionParentId(obj: SceneObject | undefined) {
+    return isMoveable(obj) ? obj.positionParentId : undefined;
+}
+
+export function getRotationConnectionId(obj: SceneObject | undefined) {
+    return isRotateable(obj) ? obj.facingId : undefined;
+}
+
 export function useAllowedConnectionIds(): number[] {
     const { step } = useScene();
     const [connectionSelection] = useConnectionSelection();
@@ -64,10 +87,7 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
         });
     }
 
-    return step.objects
-        .filter(isMoveable)
-        .map((obj) => obj.id)
-        .filter((id) => !selectedAndChildren.has(id));
+    return step.objects.filter((obj) => isMoveable(obj) && !selectedAndChildren.has(obj.id)).map((obj) => obj.id);
 }
 
 /**
@@ -77,10 +97,7 @@ export function getAllowedPositionParentIds(step: SceneStep, objectsToConnect: r
 export function getAllowedRotationConnectionIds(step: SceneStep, objectsToConnect: readonly SceneObject[]): number[] {
     const selectedIds = new Set<number>(objectsToConnect.map((obj) => obj.id));
 
-    return step.objects
-        .filter(isMoveable)
-        .map((obj) => obj.id)
-        .filter((id) => !selectedIds.has(id));
+    return step.objects.filter((obj) => isMoveable(obj) && !selectedIds.has(obj.id)).map((obj) => obj.id);
 }
 
 /**
@@ -99,7 +116,7 @@ export function omitInterconnectedObjects(
                 return false;
             }
             const parent = getObjectById(scene, positionParentId);
-            positionParentId = isMoveable(parent) ? parent.positionParentId : undefined;
+            positionParentId = getPositionParentId(parent);
         }
         return true;
     });
@@ -204,11 +221,11 @@ function createUpdatePositionParentIdsAction(
 }
 
 export enum DefaultAttachPosition {
-    DONT_ATTACH_BY_DEFAULT = 'dont_attach_by_default',
-    ANYWHERE = 'attach_anywhere',
-    CENTER = 'attach_centered',
-    TOP = 'attach_at_top',
-    BOTTOM_RIGHT = 'attach_at_bottom_right',
+    DONT_ATTACH_BY_DEFAULT = 0,
+    ANYWHERE,
+    CENTER,
+    TOP,
+    BOTTOM_RIGHT,
 }
 
 /** @returns Where the given object 'prefers' to be attached to a positional parent. */
@@ -239,9 +256,9 @@ export function getDefaultAttachmentSettings(object: UnknownObject): {
 }
 
 export enum AttachmentDropTarget {
-    NONE = 'none',
-    SELF = 'self',
-    PARENT = 'parent',
+    NONE = 0,
+    SELF,
+    PARENT,
 }
 
 export function isValidAttachmentDropTarget(object: SceneObject): AttachmentDropTarget {
@@ -283,11 +300,7 @@ export function getObjectToAttachToAt(scene: Scene, step: SceneStep, pos: Vector
             if (o.hide) {
                 continue;
             }
-            // For now, only objects with full coverage within their radius/box will pass the above check.
-            if (
-                (isRadiusObject(o) && isWithinRadius({ ...o, ...getAbsolutePosition(scene, o) }, pos)) ||
-                (isResizable(o) && isWithinBox({ ...o, ...getAbsolutePosition(scene, o) }, pos))
-            ) {
+            if (hitTest(scene, o, pos)) {
                 if (dropTarget == AttachmentDropTarget.SELF) {
                     matchedObject = o;
                 } else if (dropTarget == AttachmentDropTarget.PARENT) {
@@ -310,6 +323,21 @@ export function getObjectToAttachToAt(scene: Scene, step: SceneStep, pos: Vector
 }
 
 /**
+ * Calculate whether the given position is inside the given object.
+ *
+ * Only some basic shapes are supported right now, as only objects with these basic shapes can be attached to by default.
+ */
+function hitTest(scene: Scene, obj: SceneObject, pos: Vector2d): boolean {
+    if (isRadiusObject(obj)) {
+        return isWithinRadius({ ...obj, ...getAbsolutePosition(scene, obj) }, pos);
+    }
+    if (isResizable(obj)) {
+        return isWithinBox({ ...obj, ...getAbsolutePosition(scene, obj) }, pos);
+    }
+    return false;
+}
+
+/**
  * @returns the position, relative to the given parent, to place the given object given its
  * default attachment preferences.
  */
@@ -319,9 +347,6 @@ export function getRelativeAttachmentPoint(
     parent: SceneObject & MoveableObject,
     positionPreference: DefaultAttachPosition,
 ): Vector2d {
-    // points relative to each object's origin where the attachment should happen.
-    let objectAttatchmentPoint = { x: 0, y: 0 };
-    let parentAttachmentPoint = { x: 0, y: 0 };
     switch (positionPreference) {
         case DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT:
         case DefaultAttachPosition.ANYWHERE:
@@ -329,72 +354,89 @@ export function getRelativeAttachmentPoint(
             return makeRelative(scene, objectToAttach, parent.id);
         case DefaultAttachPosition.CENTER:
             return { x: 0, y: 0 };
-        case DefaultAttachPosition.TOP: {
-            if (isResizable(objectToAttach)) {
-                objectAttatchmentPoint = { x: 0, y: -objectToAttach.height / 2 };
-            } else if (isRadiusObject(objectToAttach)) {
-                objectAttatchmentPoint = { x: 0, y: -objectToAttach.radius };
-            }
+        case DefaultAttachPosition.TOP:
+            return getAttachTopPoint(scene, objectToAttach, parent);
+        case DefaultAttachPosition.BOTTOM_RIGHT:
+            return getAttachBottomRightPoint(scene, objectToAttach, parent);
+    }
+}
 
-            // If there are already-attached and still-pinned TOP objects, assume they're all
-            // in their default position and add this new one above them.
-            let addedHeight = 0;
-            for (const attachment of getDirectPositionDescendants(scene, parent)) {
-                if (!attachment.pinned) {
-                    continue;
-                }
-                if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.TOP) {
-                    if (isResizable(attachment)) {
-                        addedHeight += attachment.height;
-                    } else if (isRadiusObject(attachment)) {
-                        addedHeight += attachment.radius * 2;
-                    }
-                }
-            }
-            if (isResizable(parent)) {
-                parentAttachmentPoint = { x: 0, y: parent.height / 2 + addedHeight };
-            } else if (isRadiusObject(parent)) {
-                parentAttachmentPoint = { x: 0, y: parent.radius + addedHeight };
-            }
-            break;
+function getAttachTopPoint(scene: Scene, objectToAttach: SceneObject, parent: SceneObject): Vector2d {
+    // points relative to each object's origin where the attachment should happen.
+    let objectAttatchmentPoint = { x: 0, y: 0 };
+    let parentAttachmentPoint = { x: 0, y: 0 };
+    if (isResizable(objectToAttach)) {
+        objectAttatchmentPoint = { x: 0, y: -objectToAttach.height / 2 };
+    } else if (isRadiusObject(objectToAttach)) {
+        objectAttatchmentPoint = { x: 0, y: -objectToAttach.radius };
+    }
+
+    // If there are already-attached and still-pinned TOP objects, assume they're all
+    // in their default position and add this new one above them.
+    let addedHeight = 0;
+    for (const attachment of getDirectPositionDescendants(scene, parent)) {
+        if (!attachment.pinned) {
+            continue;
         }
-        case DefaultAttachPosition.BOTTOM_RIGHT: {
-            if (isResizable(objectToAttach)) {
-                objectAttatchmentPoint = { x: -objectToAttach.width / 2, y: objectToAttach.height / 2 };
-            } else if (isRadiusObject(objectToAttach)) {
-                const offset = Math.sqrt(objectToAttach.radius ** 2 / 2);
-                objectAttatchmentPoint = { x: -offset, y: offset };
+        if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.TOP) {
+            if (isResizable(attachment)) {
+                addedHeight += attachment.height;
+            } else if (isRadiusObject(attachment)) {
+                addedHeight += attachment.radius * 2;
             }
-            // If there are already-attached and still-pinned BOTTOM_RIGHT objects, assume
-            // they're all in their default position and add this new one to the right of them.
-            let addedOffset = 0;
-            for (const attachment of getDirectPositionDescendants(scene, parent)) {
-                if (!attachment.pinned) {
-                    continue;
-                }
-                if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.BOTTOM_RIGHT) {
-                    if (isResizable(attachment)) {
-                        addedOffset += attachment.width;
-                    } else if (isRadiusObject(attachment)) {
-                        addedOffset += attachment.radius * 2;
-                    }
-                }
-            }
-
-            if (isResizable(parent)) {
-                const overlap = 0.9;
-                parentAttachmentPoint = {
-                    x: (parent.width / 2) * (1 - overlap) + addedOffset,
-                    y: -(parent.height / 2) * (1 - overlap),
-                };
-            } else if (isRadiusObject(parent)) {
-                const overlap = 0.4;
-                const offset = Math.sqrt((parent.radius * (1 - overlap)) ** 2 / 2);
-                parentAttachmentPoint = { x: offset + addedOffset, y: -offset };
-            }
-            break;
         }
     }
+
+    if (isResizable(parent)) {
+        parentAttachmentPoint = { x: 0, y: parent.height / 2 + addedHeight };
+    } else if (isRadiusObject(parent)) {
+        parentAttachmentPoint = { x: 0, y: parent.radius + addedHeight };
+    }
+    return {
+        x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
+        y: parentAttachmentPoint.y - objectAttatchmentPoint.y,
+    };
+}
+
+function getAttachBottomRightPoint(scene: Scene, objectToAttach: SceneObject, parent: SceneObject): Vector2d {
+    // points relative to each object's origin where the attachment should happen.
+    let objectAttatchmentPoint = { x: 0, y: 0 };
+    let parentAttachmentPoint = { x: 0, y: 0 };
+    if (isResizable(objectToAttach)) {
+        objectAttatchmentPoint = { x: -objectToAttach.width / 2, y: objectToAttach.height / 2 };
+    } else if (isRadiusObject(objectToAttach)) {
+        const offset = Math.sqrt(objectToAttach.radius ** 2 / 2);
+        objectAttatchmentPoint = { x: -offset, y: offset };
+    }
+
+    // If there are already-attached and still-pinned BOTTOM_RIGHT objects, assume
+    // they're all in their default position and add this new one to the right of them.
+    let addedOffset = 0;
+    for (const attachment of getDirectPositionDescendants(scene, parent)) {
+        if (!attachment.pinned) {
+            continue;
+        }
+        if (getDefaultAttachmentSettings(attachment).location == DefaultAttachPosition.BOTTOM_RIGHT) {
+            if (isResizable(attachment)) {
+                addedOffset += attachment.width;
+            } else if (isRadiusObject(attachment)) {
+                addedOffset += attachment.radius * 2;
+            }
+        }
+    }
+
+    if (isResizable(parent)) {
+        const overlap = 0.9;
+        parentAttachmentPoint = {
+            x: (parent.width / 2) * (1 - overlap) + addedOffset,
+            y: -(parent.height / 2) * (1 - overlap),
+        };
+    } else if (isRadiusObject(parent)) {
+        const overlap = 0.4;
+        const offset = Math.sqrt((parent.radius * (1 - overlap)) ** 2 / 2);
+        parentAttachmentPoint = { x: offset + addedOffset, y: -offset };
+    }
+
     return {
         x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
         y: parentAttachmentPoint.y - objectAttatchmentPoint.y,

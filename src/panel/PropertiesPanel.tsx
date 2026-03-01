@@ -103,17 +103,7 @@ interface ConnectionSelectionMessageProps {
 
 const ConnectionSelectionMessage: React.FC<ConnectionSelectionMessageProps> = ({ type }) => {
     const [, setEditMode] = useEditMode();
-    let message: string;
-    switch (type) {
-        case ConnectionType.POSITION:
-            message =
-                'Select an object to attach the selection to. The selection or their attachments are not eligible targets.';
-            break;
-        case ConnectionType.ROTATION:
-            message =
-                'Select an object to make the selection face towards. Objects in the selection are not eligible targets.';
-            break;
-    }
+    const message = getConnectionMessage(type);
 
     return (
         <>
@@ -122,6 +112,15 @@ const ConnectionSelectionMessage: React.FC<ConnectionSelectionMessageProps> = ({
         </>
     );
 };
+
+function getConnectionMessage(type: ConnectionType) {
+    switch (type) {
+        case ConnectionType.POSITION:
+            return 'Select an object to attach the selection to. The selection or their attachments are not eligible targets.';
+        case ConnectionType.ROTATION:
+            return 'Select an object to make the selection face towards. Objects in the selection are not eligible targets.';
+    }
+}
 
 const Controls: React.FC = () => {
     const classes = useControlStyles();

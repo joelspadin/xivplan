@@ -1,12 +1,12 @@
 import { SplitButton, tokens, Tooltip } from '@fluentui/react-components';
 import { bundleIcon, DismissFilled, DismissRegular, LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
-import { getAllowedPositionParentIds, getAllowedRotationConnectionIds } from '../../connections';
+import { getConnectionIdFuncs } from '../../connections';
 import { getAbsolutePosition, getAbsoluteRotation } from '../../coord';
 import { EditMode } from '../../editMode';
 import { ConnectionType } from '../../EditModeContext';
-import { isMoveable, isRotateable, SceneObject } from '../../scene';
-import { getObjectById, useScene } from '../../SceneProvider';
+import { isMoveable, isRotateable, Scene, SceneObject } from '../../scene';
+import { getObjectById, SceneAction, useScene } from '../../SceneProvider';
 import { selectNone, selectSingle, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useEditMode } from '../../useEditMode';
@@ -24,29 +24,11 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
 
-    const getConnectionId = (obj: SceneObject) => {
-        if (isMoveable(obj) && connectionType == ConnectionType.POSITION) {
-            return obj.positionParentId;
-        }
-        if (isRotateable(obj) && connectionType == ConnectionType.ROTATION) {
-            return obj.facingId;
-        }
-    };
+    const [getConnectionId, getAllowedConnectionIds] = getConnectionIdFuncs(connectionType);
     const commonConnectionId = commonValue(objects, getConnectionId);
     const haveSharedLink = commonConnectionId !== undefined;
     const haveAnyLink = objects.find((obj) => getConnectionId(obj) !== undefined) !== undefined;
-
-    let allowedConnectionIds: number[];
-    switch (connectionType) {
-        case ConnectionType.POSITION:
-            allowedConnectionIds = getAllowedPositionParentIds(step, objects);
-            break;
-        case ConnectionType.ROTATION:
-            allowedConnectionIds = getAllowedRotationConnectionIds(step, objects);
-            break;
-        default:
-            allowedConnectionIds = [];
-    }
+    const allowedConnectionIds = getAllowedConnectionIds(step, objects);
 
     const connectedObject = haveSharedLink && getObjectById(scene, commonConnectionId);
     const ConnectionDisplayComponent = connectedObject && getListComponent(connectedObject);
@@ -73,62 +55,16 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
     }
     function onClickUnlink(): void {
         if (haveAnyLink) {
-            switch (connectionType) {
-                case ConnectionType.POSITION:
-                    dispatch({
-                        type: 'update',
-                        value: objects.filter(isMoveable).map((obj) => {
-                            const absolutePos = getAbsolutePosition(scene, obj);
-                            return {
-                                ...omit(obj, 'positionParentId'),
-                                // Always unpin objects upon detaching them
-                                pinned: false,
-                                ...absolutePos,
-                            };
-                        }),
-                    });
-                    break;
-                case ConnectionType.ROTATION:
-                    dispatch({
-                        type: 'update',
-                        value: objects.filter(isRotateable).map((obj) => {
-                            return {
-                                ...omit(obj, 'facingId'),
-                                rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0,
-                            };
-                        }),
-                    });
-                    break;
-            }
+            dispatch(unlinkAction(connectionType, objects, scene));
         }
     }
 
-    let newLinkText: string;
-    let newLinkTooltip: string;
-    let currentLinkTooltip: string;
-    switch (connectionType) {
-        case ConnectionType.POSITION:
-            newLinkText = 'Link position';
-            newLinkTooltip =
-                allowedConnectionIds.length == 0
-                    ? 'No available object to attach to'
-                    : 'Attach the selection to another object';
-            currentLinkTooltip = 'If this object moves, so does the selection';
-            break;
-        case ConnectionType.ROTATION:
-            newLinkText = 'Face object';
-            newLinkTooltip =
-                allowedConnectionIds.length == 0
-                    ? 'No available object to face'
-                    : 'Automatically rotate towards another object';
-            currentLinkTooltip = 'If this object moves, the selection will rotate to face it (plus the Rotation value)';
-            break;
-    }
+    const linkTexts = getLinkTexts(connectionType, haveAnyLink, allowedConnectionIds.length > 0);
 
     return (
         <SplitButton
             icon={
-                <Tooltip content={haveAnyLink ? currentLinkTooltip : newLinkTooltip} relationship="description">
+                <Tooltip content={linkTexts.tooltip} relationship="description">
                     <LinkRegular />
                 </Tooltip>
             }
@@ -159,17 +95,78 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
                     <div>Multiple objects</div>
                 </Tooltip>
             )}
-            {!haveAnyLink && (
-                <Tooltip content={newLinkTooltip} relationship="description">
-                    <div>{newLinkText}</div>
+            {!haveSharedLink && !haveAnyLink && (
+                <Tooltip content={linkTexts.tooltip} relationship="description">
+                    <div>{linkTexts.newLink}</div>
                 </Tooltip>
             )}
         </SplitButton>
     );
 };
 
+interface LinkTexts {
+    newLink: string;
+    tooltip: string;
+}
+
+function getLinkTexts(connectionType: ConnectionType, haveAnyLink: boolean, hasAllowedConnections: boolean): LinkTexts {
+    let newLinkText = '';
+    let tooltip = '';
+    switch (connectionType) {
+        case ConnectionType.POSITION:
+            newLinkText = 'Link position';
+            if (haveAnyLink) {
+                tooltip = 'If this object moves, so does the selection';
+            } else if (hasAllowedConnections) {
+                tooltip = 'Attach the selection to another object';
+            } else {
+                tooltip = 'No available object to attach to';
+            }
+            break;
+        case ConnectionType.ROTATION:
+            newLinkText = 'Face object';
+            if (haveAnyLink) {
+                tooltip = 'If this object moves, the selection will rotate to face it (plus the Rotation value)';
+            } else if (hasAllowedConnections) {
+                tooltip = 'Automatically rotate towards another object';
+            } else {
+                tooltip = 'No available object to face';
+            }
+            break;
+    }
+    return { newLink: newLinkText, tooltip };
+}
+
 const UnlinkIcon = bundleIcon(DismissFilled, DismissRegular);
 
 const UnlinkButton: React.FC = () => {
     return <UnlinkIcon />;
 };
+
+function unlinkAction(connectionType: ConnectionType, objects: readonly SceneObject[], scene: Scene): SceneAction {
+    switch (connectionType) {
+        case ConnectionType.POSITION:
+            return {
+                type: 'update',
+                value: objects.filter(isMoveable).map((obj) => {
+                    const absolutePos = getAbsolutePosition(scene, obj);
+                    return {
+                        ...omit(obj, 'positionParentId'),
+                        // Always unpin objects upon detaching them
+                        pinned: false,
+                        ...absolutePos,
+                    };
+                }),
+            };
+        case ConnectionType.ROTATION:
+            return {
+                type: 'update',
+                value: objects.filter(isRotateable).map((obj) => {
+                    return {
+                        ...omit(obj, 'facingId'),
+                        rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0,
+                    };
+                }),
+            };
+    }
+}

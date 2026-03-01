@@ -1,5 +1,5 @@
 import { ShapeConfig } from 'konva/lib/Shape';
-import { useAllowedConnectionIds } from '../connections';
+import { getPositionParentId, useAllowedConnectionIds } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
@@ -34,7 +34,7 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
     }
 
     // If one of the objects this is connected to is in the spotlight or selection
-    let positionParentId = isMoveable(object) ? object.positionParentId : undefined;
+    let positionParentId = getPositionParentId(object);
     while (positionParentId !== undefined) {
         if (spotlight.has(positionParentId)) {
             // This is slightly weird when the parent object has a resizer thing.
@@ -45,7 +45,7 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
             return SELECTED_CONNECTED_PROPS;
         }
         const parentObject = getObjectById(scene, positionParentId);
-        positionParentId = isMoveable(parentObject) ? parentObject.positionParentId : undefined;
+        positionParentId = getPositionParentId(parentObject);
     }
 
     return undefined;
@@ -62,6 +62,7 @@ export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined
     ) {
         return { opacity: 0.1 };
     }
+    return undefined;
 }
 
 export function useShowResizer(object: UnknownObject): boolean {

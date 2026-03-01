@@ -84,6 +84,7 @@ export const Resizer: React.FC<ResizerProps> = ({
     };
 
     const baseRotation = getBaseFacingRotation(scene, object);
+    const rotationSnaps = ROTATION_SNAPS.map((r) => r + baseRotation);
 
     return (
         <>
@@ -96,7 +97,7 @@ export const Resizer: React.FC<ResizerProps> = ({
                     <Transformer
                         ref={trRef}
                         visible={!dragging}
-                        rotationSnaps={ROTATION_SNAPS.map((r) => r + baseRotation)}
+                        rotationSnaps={rotationSnaps}
                         rotationSnapTolerance={2}
                         boundBoxFunc={boundBoxFunc}
                         anchorSize={anchorSize}
