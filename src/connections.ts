@@ -98,9 +98,8 @@ export function getAllowedPositionParentIds(
         });
     }
 
-    return new Set(
-        step.objects.filter((obj) => isMoveable(obj) && !selectedAndChildren.has(obj.id)).map((obj) => obj.id),
-    );
+    const isAllowed = (obj: SceneObject) => isMoveable(obj) && !selectedAndChildren.has(obj.id);
+    return new Set(step.objects.filter(isAllowed).map((obj) => obj.id));
 }
 
 /**
@@ -113,7 +112,8 @@ export function getAllowedRotationConnectionIds(
 ): ReadonlySet<number> {
     const selectedIds = new Set<number>(objectsToConnect.map((obj) => obj.id));
 
-    return new Set(step.objects.filter((obj) => isMoveable(obj) && !selectedIds.has(obj.id)).map((obj) => obj.id));
+    const isAllowed = (obj: SceneObject) => isMoveable(obj) && !selectedIds.has(obj.id);
+    return new Set(step.objects.filter(isAllowed).map((obj) => obj.id));
 }
 
 /**
