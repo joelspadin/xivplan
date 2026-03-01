@@ -1,7 +1,7 @@
 import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import { ShapeConfig } from 'konva/lib/Shape';
-import React, { RefObject, useLayoutEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
@@ -109,7 +109,9 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
         }
     }, [showResizer, nodeRef, trRef]);
 
-    const handleTransformEnd = () => {
+    // Manual memoization because React Compiler thinks handleTransformEnd being passed to
+    // children() means it is used during render, and it uses a ref's .current property.
+    const handleTransformEnd = useCallback(() => {
         const node = nodeRef.current;
         if (!node) {
             return;
@@ -124,7 +126,7 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
         }
 
         dispatch({ type: 'update', value: { ...object, ...newProps } });
-    };
+    }, [dispatch, nodeRef, object, scene]);
 
     return (
         <>

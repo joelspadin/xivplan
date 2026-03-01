@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Vector2d } from 'konva/lib/types';
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, rotateCoord } from '../coord';
@@ -110,15 +110,15 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
         const state = config.stateFunc(scene, object, handleProps, props);
         const rotation = config.getRotation?.(scene, object, handleProps, props) ?? 0;
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- https://github.com/reactwg/react-compiler/discussions/18
-        const getPointerPos = () => {
+        // https://github.com/reactwg/react-compiler/discussions/18
+        const getPointerPos = useCallback(() => {
             if (!groupRef.current) {
                 return { x: 0, y: 0 };
             }
 
             const { x, y } = groupRef.current.getRelativePointerPosition() ?? { x: 0, y: 0 };
             return { x, y: -y };
-        };
+        }, []);
 
         const getTransformStart = (i: number) => {
             return (e: KonvaEventObject<Event>) => {

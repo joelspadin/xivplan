@@ -16,7 +16,7 @@ export interface CustomSpinButtonProps extends Omit<SpinButtonProps, 'displayVal
  * and properly handles direct data entry.
  */
 export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, fractionDigits, ...props }) => {
-    fractionDigits ??= 0;
+    const nonNullFractionDigits = fractionDigits ?? 0;
 
     const wrappedOnChange = (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
         if (!isValid(data.value)) {
@@ -29,7 +29,7 @@ export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, f
                 return;
             }
 
-            value = round(value, fractionDigitsToStep(fractionDigits));
+            value = round(value, fractionDigitsToStep(nonNullFractionDigits));
 
             if (props.min !== undefined) {
                 value = Math.max(value, props.min);
@@ -48,7 +48,7 @@ export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, f
         <FluentSpinButton
             {...props}
             value={value ?? NaN}
-            displayValue={formatNumber(value, fractionDigits)}
+            displayValue={formatNumber(value, nonNullFractionDigits)}
             onChange={wrappedOnChange}
         />
     );

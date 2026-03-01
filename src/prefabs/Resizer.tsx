@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import { Box } from 'konva/lib/shapes/Transformer';
-import React, { RefObject, useLayoutEffect, useRef } from 'react';
+import React, { RefObject, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getBaseFacingRotation } from '../coord';
@@ -52,7 +52,9 @@ export const Resizer: React.FC<ResizerProps> = ({
         }
     }, [object, showResizer, nodeRef, trRef]);
 
-    const handleTransformEnd = () => {
+    // Manual memoization because React Compiler thinks handleTransformEnd being passed to
+    // children() means it is used during render, and it uses a ref's .current property.
+    const handleTransformEnd = useCallback(() => {
         const node = nodeRef.current;
         if (!node) {
             return;
@@ -74,17 +76,20 @@ export const Resizer: React.FC<ResizerProps> = ({
         node.clearCache();
 
         dispatch({ type: 'update', value: { ...object, ...newProps } as SceneObject });
-    };
+    }, [dispatch, minHeightRequired, minWidthRequired, nodeRef, object, scene]);
 
-    const boundBoxFunc = (oldBox: Box, newBox: Box) => {
-        if (newBox.width < minWidthRequired || newBox.height < minHeightRequired) {
-            return oldBox;
-        }
-        return newBox;
-    };
+    const boundBoxFunc = useCallback(
+        (oldBox: Box, newBox: Box) => {
+            if (newBox.width < minWidthRequired || newBox.height < minHeightRequired) {
+                return oldBox;
+            }
+            return newBox;
+        },
+        [minHeightRequired, minWidthRequired],
+    );
 
-    const baseRotation = getBaseFacingRotation(scene, object);
-    const rotationSnaps = ROTATION_SNAPS.map((r) => r + baseRotation);
+    const baseRotation = useMemo(() => getBaseFacingRotation(scene, object), [scene, object]);
+    const rotationSnaps = useMemo(() => ROTATION_SNAPS.map((r) => r + baseRotation), [baseRotation]);
 
     return (
         <>

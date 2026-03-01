@@ -29,16 +29,16 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({
     onChange,
     ...props
 }) => {
-    fractionDigits ??= 0;
+    const nonNullFractionDigits = fractionDigits ?? 0;
 
-    const displayValue = value === undefined ? '' : `${formatNumber(value, fractionDigits)}${suffix}`;
+    const displayValue = value === undefined ? '' : `${formatNumber(value, nonNullFractionDigits)}${suffix}`;
 
     const wrappedOnChange = (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
         if (data.value === undefined && data.displayValue) {
             let value = getNumericPart(data.displayValue);
 
             if (value !== undefined) {
-                value = round(value, fractionDigitsToStep(fractionDigits));
+                value = round(value, fractionDigitsToStep(nonNullFractionDigits));
 
                 if (props.min !== undefined) {
                     value = Math.max(value, props.min);
