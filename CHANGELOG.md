@@ -2,6 +2,13 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## March 1, 2026
+
+- Added an option to link an object's position to a parent object, so moving the parent also moves the children. Contributed by @Aygox-XIV.
+  - Dropping a marker or buff/debuff icon onto a party object will automatically link its position.
+- Added an option to link an object's rotation so it always faces another object, optionally with an angle offset. Contributed by @Aygox-XIV.
+- Fixed some hotkeys not appearing on the help page. Contributed by @superjump22.
+
 ## February 15, 2026
 
 - Added arena presets for Arcadion M11.
@@ -24,7 +31,7 @@ This page tracks notable changes made to XIVPlan. Not every change will be liste
 
 ## September 29, 2025
 
-- Dragging an object now updates the positions of tethers attached to it.
+- Dragging an object now updates the positions of tethers attached to it. Based on work originally done by @Aygox-XIV.
 
 ## September 13, 2025
 
@@ -37,7 +44,7 @@ This page tracks notable changes made to XIVPlan. Not every change will be liste
 
 - Added a control to change a "look away" marker into a "look towards" marker.
 - Added a control to set the number of players required in a stack AOE.
-- Fixed parts of tether arrow heads getting cut off.
+- Fixed parts of tether arrow heads getting cut off. Contributed by @Tanimodori.
 
 ## Jun 25, 2025
 
@@ -218,7 +225,7 @@ This page tracks notable changes made to XIVPlan. Not every change will be liste
 
 ## Aug 21, 2023
 
-- Added a way to share a plan encoded in a URL.
+- Added a way to share a plan encoded in a URL. Contributed by @Envian.
 
 ## Jul 27, 2023
 
