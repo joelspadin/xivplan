@@ -1,12 +1,14 @@
 import { Registry } from '../Registry';
 import { SceneObject } from '../scene';
 import { asArray } from '../util';
+import { DetailsItemSize } from './DetailsItem';
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;
     isDragging?: boolean;
-    isNested?: boolean;
     isSelected?: boolean;
+    showControls?: boolean;
+    size?: DetailsItemSize;
 }
 
 export type ListComponent<T extends SceneObject> = React.FC<ListComponentProps<T>>;

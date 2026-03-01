@@ -1,3 +1,5 @@
+import { Position } from './coord';
+
 export enum ArenaShape {
     None = 'none',
     Rectangle = 'rectangle',
@@ -149,14 +151,13 @@ export interface HollowObject {
     readonly hollow?: boolean;
 }
 
-export interface MoveableObject {
-    readonly x: number;
-    readonly y: number;
+export interface MoveableObject extends Position {
     readonly pinned?: boolean;
 }
 
 export interface RotateableObject {
     readonly rotation: number;
+    readonly facingId?: number;
 }
 
 export interface ResizeableObject extends MoveableObject, RotateableObject {

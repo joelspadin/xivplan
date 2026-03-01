@@ -10,7 +10,7 @@ import { DonutZone, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { getZoneStyle } from './style';
@@ -63,6 +63,7 @@ interface DonutRendererProps extends RendererProps<DonutZone> {
 
 const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadius, isDragging }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, radius * 2);
 
     const highlightInnerRadius = Math.min(radius, innerRadius);
@@ -75,9 +76,10 @@ const DonutRenderer: React.FC<DonutRendererProps> = ({ object, radius, innerRadi
                     innerRadius={highlightInnerRadius - style.strokeWidth / 2}
                     outerRadius={highlightOuterRadius + style.strokeWidth / 2}
                     {...highlightProps}
+                    {...overrideProps}
                 />
             )}
-            <HideGroup>
+            <HideGroup {...overrideProps}>
                 <Ring innerRadius={innerRadius} outerRadius={radius} {...style} />
 
                 {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={style.stroke} />}

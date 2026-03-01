@@ -1,6 +1,7 @@
 import { RefObject, useContext, useEffect } from 'react';
 import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
+import { useCancelConnectionSelection } from './useEditMode';
 import { rotateArray } from './util';
 
 export enum HotkeyScopes {
@@ -72,14 +73,16 @@ export function useRegisteredHotkeys(): HotkeyInfo[] {
 
 export function useHotkeyBlocker() {
     const { disableScope, enableScope } = useHotkeysContext();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     return useEffect(() => {
         disableScope(HotkeyScopes.Default);
+        cancelConnectionSelection();
 
         return () => {
             enableScope(HotkeyScopes.Default);
         };
-    }, [disableScope, enableScope]);
+    }, [disableScope, enableScope, cancelConnectionSelection]);
 }
 
 function getSortKey(info: HotkeyInfo) {

@@ -1,8 +1,10 @@
 import Konva from 'konva';
 import React, { useRef, useState } from 'react';
 import { KonvaNodeEvents } from 'react-konva';
+import { getAbsoluteRotation } from '../coord';
 import { ActivePortal } from '../render/Portals';
 import { ResizeableObject, UnknownObject } from '../scene';
+import { useScene } from '../SceneProvider';
 import { useIsDragging } from '../selection';
 import { useKonvaCache } from '../useKonvaCache';
 import { DraggableObject } from './DraggableObject';
@@ -29,6 +31,7 @@ export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps>
 }) => {
     const [resizing, setResizing] = useState(false);
     const dragging = useIsDragging(object);
+    const { scene } = useScene();
     const shapeRef = useRef<Konva.Group>(null);
 
     useKonvaCache(shapeRef, { enabled: !!cache }, [cacheKey, object]);
@@ -53,7 +56,7 @@ export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps>
                             },
                             offsetX: object.width / 2,
                             offsetY: object.height / 2,
-                            rotation: object.rotation,
+                            rotation: getAbsoluteRotation(scene, object),
                         });
                     }}
                 </Resizer>

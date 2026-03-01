@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../SceneProvider';
-import { getPointerAngle, snapAngle } from '../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
-import { InnerRadiusObject, RadiusObject, SceneObject, UnknownObject, isRotateable } from '../scene';
+import { InnerRadiusObject, RadiusObject, Scene, SceneObject, UnknownObject, isRotateable } from '../scene';
 import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
+import { clampRotation, mod360 } from '../util';
 import { distance } from '../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -48,13 +49,14 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
     allowRotate,
     allowInnerRadius,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const [isResizing, setResizing] = useState(false);
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: RadiusObjectState) => {
-        state.rotation = Math.round(state.rotation);
+        const baseRotation = isRotateable(object) ? getBaseFacingRotation(scene, object) : 0;
+        state.rotation = clampRotation(state.rotation - baseRotation);
 
         if (!stateChanged(object, state)) {
             return;
@@ -96,7 +98,7 @@ function stateChanged(object: RadiusObject, state: RadiusObjectState) {
         return true;
     }
 
-    if (isRotateable(object) && state.rotation !== object.rotation) {
+    if (isRotateable(object) && mod360(state.rotation) !== mod360(object.rotation)) {
         return true;
     }
 
@@ -149,6 +151,7 @@ function getInnerRadius(
 }
 
 function getRotation(
+    scene: Readonly<Scene>,
     object: RadiusObject,
     { pointerPos, activeHandleId }: HandleFuncProps,
     { allowRotate }: ControlPointProps,
@@ -159,10 +162,11 @@ function getRotation(
 
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
-        return snapAngle(angle, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
+        const baseRotation = getBaseFacingRotation(scene, object);
+        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
     }
 
-    return object.rotation;
+    return getAbsoluteRotation(scene, object);
 }
 
 function getNormalHandles(r: number, rotation: number): Handle[] {
@@ -189,9 +193,9 @@ function getInnerRadiusHandles(r: number): Handle[] {
 }
 
 const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObjectState, ControlPointProps>({
-    handleFunc: (object, handle, props) => {
+    handleFunc: (scene, object, handle, props) => {
         const radius = getRadius(object, handle) + OUTSET;
-        const rotation = isRotateable(object) ? object.rotation : 0;
+        const rotation = isRotateable(object) ? getAbsoluteRotation(scene, object) : 0;
         const handles = getNormalHandles(radius, rotation);
 
         if (props.allowRotate) {
@@ -206,10 +210,10 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
         return handles;
     },
     getRotation: getRotation,
-    stateFunc: (object, handle, props) => {
+    stateFunc: (scene, object, handle, props) => {
         const radius = getRadius(object, handle);
         const innerRadius = getInnerRadius(object, handle, props);
-        const rotation = getRotation(object, handle, props);
+        const rotation = getRotation(scene, object, handle, props);
 
         return { radius, rotation, innerRadius };
     },

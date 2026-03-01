@@ -13,7 +13,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
 const NAME = 'Right triangle';
@@ -72,6 +72,7 @@ const RightTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
 
 const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
 
     const highlightOffset = style.strokeWidth;
@@ -81,7 +82,7 @@ const RightTriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
     return (
         <ResizeableObjectContainer object={object}>
             {(groupProps) => (
-                <Group {...groupProps}>
+                <Group {...groupProps} {...overrideProps}>
                     {highlightProps && (
                         <RightTriangle
                             offsetX={highlightOffset / 2}

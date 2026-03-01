@@ -18,8 +18,12 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { SceneObject } from '../scene';
+import { useIsAllowedConnectionTarget, useUpdateConnectedIdsAction } from '../connections';
+import { EditMode } from '../editMode';
+import { isMoveable, SceneObject } from '../scene';
+import { useScene } from '../SceneProvider';
 import { addSelection, selectNone, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
+import { useEditMode } from '../useEditMode';
 import { reversed } from '../util';
 import { getListComponent } from './ListComponentRegistry';
 
@@ -39,7 +43,7 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
 
     // Objects are rendered with later objects on top, but it is more natural
     // to have the objects rendered on top be at the top of the list in the UI.
-    const reversedObjects = [...reversed(objects)];
+    const objectsToDisplay = [...reversed(objects)];
 
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -74,8 +78,8 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext items={reversedObjects} strategy={verticalListSortingStrategy}>
-                    {reversedObjects.map((object) => (
+                <SortableContext items={objectsToDisplay} strategy={verticalListSortingStrategy}>
+                    {objectsToDisplay.map((object) => (
                         <SortableItem key={object.id} object={object} />
                     ))}
                 </SortableContext>
@@ -91,11 +95,26 @@ interface SortableItemProps {
 const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
-    const [, setSpotlight] = useSpotlight();
+    const [spotlight, setSpotlight] = useSpotlight();
+    const [editMode, setEditMode] = useEditMode();
+    const { dispatch } = useScene();
+    const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
+    const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
-        if (e.shiftKey) {
+        if (editMode == EditMode.SelectConnection) {
+            if (!isAllowedConnectionTarget) {
+                return;
+            }
+            if (!isMoveable(object)) {
+                // Such objects should already have been removed from the list. Ignore
+                // any stray events.
+                return;
+            }
+            dispatch(getUpdateConnectedIdsAction(object));
+            setEditMode(EditMode.Normal);
+        } else if (e.shiftKey) {
             setSelection(addSelection(selection, object.id));
         } else if (e.ctrlKey) {
             setSelection(toggleSelection(selection, object.id));
@@ -122,6 +141,8 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
         transition,
     };
 
+    const isUnselectable = editMode == EditMode.SelectConnection && !isAllowedConnectionTarget;
+
     return (
         <div
             ref={setNodeRef}
@@ -136,15 +157,17 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
             <div
                 className={mergeClasses(
                     classes.item,
+                    spotlight.has(object.id) && classes.spotlight,
                     isSelected && classes.selected,
                     isDragging && classes.dragging,
                     isDragging && isSelected && classes.draggingSelected,
+                    isUnselectable && classes.unselectable,
                 )}
             >
                 {
                     // // https://github.com/facebook/react/issues/34794
                     // eslint-disable-next-line react-hooks/static-components
-                    <Component object={object} isDragging={isDragging} isSelected={isSelected} />
+                    <Component object={object} isDragging={isDragging} isSelected={isSelected} showControls={true} />
                 }
             </div>
         </div>
@@ -152,6 +175,10 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
 };
 
 const useStyles = makeStyles({
+    spotlight: {
+        background: tokens.colorNeutralBackground3Hover,
+    },
+
     list: {
         display: 'flex',
         flexFlow: 'column',
@@ -186,6 +213,10 @@ const useStyles = makeStyles({
         ':hover:active': {
             backgroundColor: tokens.colorNeutralBackground3Pressed,
         },
+    },
+
+    unselectable: {
+        opacity: 0.3,
     },
 
     selected: {

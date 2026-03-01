@@ -4,9 +4,10 @@ import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { GroupMoveAction, SceneAction, getObjectById, useScene } from './SceneProvider';
+import { GroupMoveAction, SceneAction, useScene } from './SceneProvider';
 import { SceneSelection } from './SelectionContext';
-import { getSceneCoord, rotateCoord } from './coord';
+import { omitInterconnectedObjects } from './connections';
+import { getAbsolutePosition, getSceneCoord, makeRelative, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
 import { EditMode } from './editMode';
 import { moveObjectsBy } from './groupOperations';
@@ -14,7 +15,7 @@ import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, TetherType, isMoveable, isRotateable } from './scene';
 import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
-import { useEditMode } from './useEditMode';
+import { useCancelConnectionSelection, useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
 import { commonValue, setOrOmit } from './util';
@@ -29,12 +30,15 @@ const CATEGORY_STEPS = '7.Steps';
 
 const UndoRedoHandler: React.FC = () => {
     const { dispatch } = useScene();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     const undoCallback: HotkeyCallback = (e) => {
+        cancelConnectionSelection();
         dispatch({ type: 'undo' });
         e.preventDefault();
     };
     const redoCallback: HotkeyCallback = (e) => {
+        cancelConnectionSelection();
         dispatch({ type: 'redo' });
         e.preventDefault();
     };
@@ -56,7 +60,7 @@ function pasteObjects(
 ): void {
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
     const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
-    const newObjects = copyObjects(scene, objects, newCenter);
+    const { objects: newObjects } = copyObjects(scene, objects, newCenter);
 
     if (newObjects.length) {
         dispatch({ type: 'add', object: newObjects });
@@ -106,7 +110,9 @@ const SelectionActionHandler: React.FC = () => {
         'escape',
         { category: CATEGORY_SELECTION, help: 'Unselect all, cancel tool' },
         (e) => {
-            if (selection.size) {
+            if (editMode == EditMode.SelectConnection) {
+                setEditMode(EditMode.Normal);
+            } else if (selection.size) {
                 setSelection(selectNone());
             } else if (editMode !== EditMode.Normal) {
                 setEditMode(EditMode.Normal);
@@ -302,10 +308,15 @@ const SMALL_MOVE_OFFSET = 1;
 const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
-function rotateObject<T extends MoveableObject>(object: T, center: Vector2d, rotation: number): T {
-    const pos = rotateCoord(object, rotation, center);
+function rotateObject<T extends MoveableObject>(
+    scene: Readonly<Scene>,
+    object: T,
+    center: Vector2d,
+    rotation: number,
+): T {
+    const pos = rotateCoord(getAbsolutePosition(scene, object), rotation, center);
 
-    const update = { ...object, ...pos };
+    const update = { ...object, ...makeRelative(scene, pos, object.positionParentId) };
 
     if (isRotateable(object)) {
         return {
@@ -327,7 +338,10 @@ const EditActionHandler: React.FC = () => {
             return;
         }
 
-        const selectedObjects = getSelectedObjects(step, selection);
+        const selectedObjects = omitInterconnectedObjects(
+            scene,
+            getSelectedObjects(step, selection).filter(isMoveable),
+        );
         const value = moveObjectsBy(selectedObjects, offset);
 
         dispatch({ type: 'update', value });
@@ -359,13 +373,15 @@ const EditActionHandler: React.FC = () => {
         }
 
         const value: SceneObject[] = [];
-        const center = getGroupCenter(getSelectedObjects(step, selection).filter(isMoveable));
+        const selectedObjects = getSelectedObjects(step, selection)
+            .filter(isMoveable)
+            // TODO: figure out the expected behavior of rotating a selection of >1 items that includes
+            // objects attached to others (including those not in the selection).
+            .filter((obj) => selection.size == 1 || obj.positionParentId == undefined);
+        const center = getGroupCenter(scene, selectedObjects);
 
-        selection.forEach((id) => {
-            const object = getObjectById(scene, id);
-            if (object && isMoveable(object)) {
-                value.push(rotateObject(object, center, offset));
-            }
+        selectedObjects.forEach((object) => {
+            value.push(rotateObject(scene, object, center, offset));
         });
 
         dispatch({ type: 'update', value });
@@ -424,11 +440,13 @@ const DrawModeHandler: React.FC = () => {
 
 const StepHandler: React.FC = () => {
     const { dispatch } = useScene();
+    const cancelConnectionSelection = useCancelConnectionSelection();
 
     useHotkeys(
         'alt+left',
         { category: CATEGORY_STEPS, help: 'Previous step' },
         (e) => {
+            cancelConnectionSelection();
             dispatch({ type: 'previousStep' });
             e.preventDefault();
         },
@@ -439,6 +457,7 @@ const StepHandler: React.FC = () => {
         'alt+right',
         { category: CATEGORY_STEPS, help: 'Next step' },
         (e) => {
+            cancelConnectionSelection();
             dispatch({ type: 'nextStep' });
             e.preventDefault();
         },
@@ -449,6 +468,7 @@ const StepHandler: React.FC = () => {
         'ctrl+enter',
         { category: CATEGORY_STEPS, help: 'Add step' },
         (e) => {
+            cancelConnectionSelection();
             dispatch({ type: 'addStep' });
             e.preventDefault();
         },

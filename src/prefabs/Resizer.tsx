@@ -3,9 +3,10 @@ import { Box } from 'konva/lib/shapes/Transformer';
 import React, { RefObject, useLayoutEffect, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
+import { getBaseFacingRotation } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
-import { clamp } from '../util';
+import { clamp, clampRotation } from '../util';
 import { useShowResizer } from './highlight';
 
 const DEFAULT_MIN_SIZE = 20;
@@ -35,7 +36,7 @@ export const Resizer: React.FC<ResizerProps> = ({
     transformerProps,
     children,
 }) => {
-    const { dispatch } = useScene();
+    const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
 
@@ -56,11 +57,12 @@ export const Resizer: React.FC<ResizerProps> = ({
         if (!node) {
             return;
         }
+        const baseRotation = getBaseFacingRotation(scene, object);
 
         const newProps = {
             x: Math.round(object.x + node.x()),
             y: Math.round(object.y - node.y()),
-            rotation: Math.round(node.rotation()),
+            rotation: clampRotation(node.rotation() - baseRotation),
             width: Math.round(Math.max(minWidthRequired, object.width * node.scaleX())),
             height: Math.round(Math.max(minHeightRequired, object.height * node.scaleY())),
         };
@@ -81,6 +83,9 @@ export const Resizer: React.FC<ResizerProps> = ({
         return newBox;
     };
 
+    const baseRotation = getBaseFacingRotation(scene, object);
+    const rotationSnaps = ROTATION_SNAPS.map((r) => r + baseRotation);
+
     return (
         <>
             {
@@ -92,7 +97,7 @@ export const Resizer: React.FC<ResizerProps> = ({
                     <Transformer
                         ref={trRef}
                         visible={!dragging}
-                        rotationSnaps={ROTATION_SNAPS}
+                        rotationSnaps={rotationSnaps}
                         rotationSnapTolerance={2}
                         boundBoxFunc={boundBoxFunc}
                         anchorSize={anchorSize}

@@ -16,7 +16,7 @@ import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
-import { useHighlightProps } from '../highlight';
+import { useHighlightProps, useOverrideProps } from '../highlight';
 
 const DEFAULT_RADIUS = 25;
 const DEFAULT_OPACITY = 100;
@@ -115,6 +115,7 @@ interface EyeRendererProps extends RendererProps<EyeObject> {
 
 const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const scale = radius / 20;
     const eyeStyle: ShapeConfig = {
         fillRadialGradientColorStops: getEyeGradient(object.color, object.invert),
@@ -135,7 +136,7 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
 
     return (
         <>
-            <Group ref={groupRef}>
+            <Group ref={groupRef} {...overrideProps}>
                 <Group scaleX={scale} scaleY={scale}>
                     {highlightProps && (
                         <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...highlightProps} />

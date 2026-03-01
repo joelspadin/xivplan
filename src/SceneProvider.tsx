@@ -1,13 +1,23 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
+import {
+    DefaultAttachPosition,
+    getDefaultAttachmentSettings,
+    getObjectToAttachToAt,
+    getRelativeAttachmentPoint,
+} from './connections';
+import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import { copyObjects } from './copy';
 import {
     Arena,
     ArenaShape,
     DEFAULT_SCENE,
     Grid,
+    isMoveable,
+    isRotateable,
     isTether,
+    MoveableObject,
     Scene,
     SceneObject,
     SceneObjectWithoutId,
@@ -18,7 +28,7 @@ import {
 import { createUndoContext } from './undo/undoContext';
 import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
-import { asArray, clamp } from './util';
+import { asArray, clamp, omit } from './util';
 
 export interface SetArenaAction {
     type: 'arena';
@@ -265,6 +275,19 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return undefined;
 }
 
+/** @returns the list of objects that have the given object as direct position parent. */
+export function getDirectPositionDescendants(scene: Scene, object: SceneObject): (SceneObject & MoveableObject)[] {
+    const children: (SceneObject & MoveableObject)[] = [];
+    for (const step of scene.steps) {
+        step.objects.forEach((obj) => {
+            if (isMoveable(obj) && obj.positionParentId === object.id) {
+                children.push(obj);
+            }
+        });
+    }
+    return children;
+}
+
 function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number {
     // Tethers should be created below their targets.
     let startIdx = objects.findIndex((x) => x.id === tether.startId);
@@ -282,23 +305,38 @@ function getTetherIndex(objects: readonly SceneObject[], tether: Tether): number
 function assignObjectIds(
     scene: Readonly<Scene>,
     objects: readonly SceneObjectWithoutId[],
+    existingObjects: readonly SceneObject[],
 ): { objects: SceneObject[]; nextId: number } {
     let nextId = scene.nextId;
+    let objectsWithExistingId = 0;
+    let objectsWithoutId = 0;
 
     const newObjects = objects
         .map((obj) => {
             if (obj.id !== undefined) {
+                nextId = Math.max(nextId, obj.id + 1);
+                objectsWithExistingId++;
                 return obj as SceneObject;
             }
+            objectsWithoutId++;
             return { ...obj, id: nextId++ };
         })
         .filter((obj) => {
-            if (objects.some((existing) => existing.id === obj.id)) {
+            if (existingObjects.some((existing) => existing.id === obj.id)) {
                 console.error(`Cannot create new object with already-used ID ${obj.id}`);
                 return false;
             }
             return true;
         });
+    // This has some potential nextId corruption issues, so disallow having a mix of input types.
+    // In practice either all or none of the objects will have ids already, where the 'all' case uses
+    // this function to prevent duplicate IDs.
+    if (objectsWithExistingId && objectsWithoutId) {
+        console.error(
+            `Cannot add items both with ID and without ID at the same time. Received ${objectsWithExistingId} with ID, and ${objectsWithoutId} without`,
+        );
+        return { objects: [], nextId: scene.nextId };
+    }
 
     return {
         objects: newObjects,
@@ -317,8 +355,7 @@ function setStep(state: Readonly<EditorState>, index: number): EditorState {
 }
 
 function addStep(state: Readonly<EditorState>, after: number): EditorState {
-    const copy = copyObjects(state.scene, getCurrentStep(state).objects);
-    const { objects, nextId } = assignObjectIds(state.scene, copy);
+    const { objects, nextId } = copyObjects(state.scene, getCurrentStep(state).objects);
 
     const newStep: SceneStep = { objects };
 
@@ -391,9 +428,34 @@ function addObjects(
 ): EditorState {
     const currentStep = getCurrentStep(state);
 
-    const { objects: addedObjects, nextId } = assignObjectIds(state.scene, asArray(objects));
+    const { objects: addedObjects, nextId } = assignObjectIds(
+        state.scene,
+        asArray(objects),
+        state.scene.steps.flatMap((step) => step.objects),
+    );
 
     const newObjects = [...currentStep.objects];
+
+    if (addedObjects.length == 1 && isMoveable(addedObjects[0])) {
+        const attachmentSettings = getDefaultAttachmentSettings(addedObjects[0]);
+        if (attachmentSettings.location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT) {
+            const potentialParent = getObjectToAttachToAt(state.scene, currentStep, addedObjects[0]);
+            if (isMoveable(potentialParent)) {
+                // TODO: don't attach by default if it'll put the attachment off-screen?
+                addedObjects[0] = {
+                    ...addedObjects[0],
+                    ...getRelativeAttachmentPoint(
+                        state.scene,
+                        addedObjects[0],
+                        potentialParent,
+                        attachmentSettings.location,
+                    ),
+                    positionParentId: potentialParent.id,
+                    pinned: attachmentSettings.pinByDefault,
+                } as SceneObject & MoveableObject;
+            }
+        }
+    }
 
     for (const object of addedObjects) {
         if (isTether(object)) {
@@ -415,18 +477,54 @@ function addObjects(
 function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
     const currentStep = getCurrentStep(state);
 
-    const objects = currentStep.objects.filter((object) => {
-        if (ids.includes(object.id)) {
-            return false;
-        }
+    // Also delete any object with the to-be-deleted objects as parent
+    const idsToDelete = new Set(ids);
+    let idsAdded = idsToDelete.size;
+    while (idsAdded > 0) {
+        idsAdded = 0;
+        currentStep.objects.forEach((obj) => {
+            if (idsToDelete.has(obj.id)) {
+                return;
+            }
+            if (
+                isMoveable(obj) &&
+                obj.positionParentId !== undefined &&
+                idsToDelete.has(obj.positionParentId) &&
+                // Automatically delete positionally-attached objects that would attach automatically as well
+                getDefaultAttachmentSettings(obj).location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
+            ) {
+                idsToDelete.add(obj.id);
+                idsAdded++;
+            }
+            if (isTether(obj) && (idsToDelete.has(obj.startId) || idsToDelete.has(obj.endId))) {
+                idsToDelete.add(obj.id);
+                idsAdded++;
+            }
+        });
+    }
 
-        if (isTether(object)) {
-            // Delete any tether that is tethered to a deleted object.
-            return !ids.includes(object.startId) && !ids.includes(object.endId);
-        }
-
-        return true;
-    });
+    const objects = currentStep.objects
+        .filter((object) => !idsToDelete.has(object.id))
+        .map((obj) =>
+            // Stabilize the rotation of any object that was facing a to-be-deleted object
+            isRotateable(obj) && obj.facingId !== undefined && idsToDelete.has(obj.facingId)
+                ? {
+                      ...omit(obj, 'facingId'),
+                      rotation: isMoveable(obj) ? getAbsoluteRotation(state.scene, obj) : 0,
+                  }
+                : obj,
+        )
+        .map((obj) =>
+            // Stabilize the position of any object still linked to a to-be-deleted object
+            isMoveable(obj) && obj.positionParentId !== undefined && idsToDelete.has(obj.positionParentId)
+                ? {
+                      ...omit(obj, 'positionParentId'),
+                      ...getAbsolutePosition(state.scene, obj),
+                      // Always unpin objects upon detaching them
+                      pinned: false,
+                  }
+                : obj,
+        );
 
     return updateCurrentStep(state, { objects });
 }

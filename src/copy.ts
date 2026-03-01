@@ -1,19 +1,22 @@
 import { Vector2d } from 'konva/lib/types';
+import { omitInterconnectedObjects } from './connections';
+import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import {
     isMoveable,
+    isRotateable,
     isTether,
     MoveableObject,
+    RotateableObject,
     Scene,
     SceneObject,
-    SceneObjectWithoutId,
     Tether,
     UnknownObject,
 } from './scene';
-import { isNotNull } from './util';
-import { vecAdd, vecSub, VEC_ZERO } from './vector';
+import { isNotNull, omit } from './util';
+import { VEC_ZERO, vecAdd, vecSub } from './vector';
 
-export function getGroupCenter(objects: readonly MoveableObject[]): Vector2d {
-    const moveable = objects.filter(isMoveable);
+export function getGroupCenter(scene: Readonly<Scene>, objects: readonly MoveableObject[]): Vector2d {
+    const moveable = objects.filter(isMoveable).map((obj) => getAbsolutePosition(scene, obj));
     if (!moveable.length) {
         return { x: 0, y: 0 };
     }
@@ -28,17 +31,10 @@ function isTargetCopied(originalTargets: readonly UnknownObject[], id: number) {
     return originalTargets.some((obj) => obj.id === id);
 }
 
-function retargetTether(scene: Scene, originalTargets: readonly UnknownObject[], id: number) {
-    const targetIndex = originalTargets.findIndex((obj) => obj.id === id);
-    if (targetIndex >= 0) {
-        return scene.nextId + targetIndex;
-    }
-    return id;
-}
-
-function getOffset(objects: readonly SceneObject[], newCenter?: Vector2d) {
+function getOffset(scene: Readonly<Scene>, objects: readonly SceneObject[], newCenter?: Vector2d) {
     if (newCenter) {
-        const currentCenter = getGroupCenter(objects.filter(isMoveable));
+        // Only count the centers of parent objects within the set to calculate the offset.
+        const currentCenter = getGroupCenter(scene, omitInterconnectedObjects(scene, objects.filter(isMoveable)));
         return vecSub(newCenter, currentCenter);
     }
 
@@ -57,49 +53,93 @@ function isCopyable(object: Readonly<SceneObject>, objects: readonly SceneObject
     return false;
 }
 
-function copyObject(object: Readonly<MoveableObject & UnknownObject>, offset: Vector2d): SceneObjectWithoutId {
-    const pos = vecAdd(object, offset);
-    return { ...object, ...pos, id: undefined };
+function copyObject(
+    scene: Readonly<Scene>,
+    object: Readonly<MoveableObject & UnknownObject>,
+    offset: Vector2d,
+    newIdsForCopiedObjects: Record<number, number>,
+): SceneObject {
+    let newObject: SceneObject | (SceneObject & RotateableObject) = { ...object };
+    if (object.positionParentId !== undefined) {
+        // If the parent also gets copied, do not adjust the already-relative position.
+        // Otherwise make a detached copy.
+        if (newIdsForCopiedObjects[object.positionParentId] !== undefined) {
+            newObject = { ...newObject, positionParentId: newIdsForCopiedObjects[object.positionParentId] };
+        } else {
+            newObject = { ...omit(object, 'positionParentId'), ...vecAdd(getAbsolutePosition(scene, object), offset) };
+        }
+    } else {
+        newObject = { ...newObject, ...vecAdd(object, offset) };
+    }
+
+    if (isRotateable(newObject) && newObject.facingId !== undefined) {
+        // If the facing target also gets copied, face the copy. Otherwise keep the rotation.
+        if (newIdsForCopiedObjects[newObject.facingId] !== undefined) {
+            newObject = { ...newObject, facingId: newIdsForCopiedObjects[newObject.facingId] };
+        } else {
+            // TODO: if copied onto the same step, maybe keep facing the same target instead?
+            newObject = {
+                ...omit(newObject, 'facingId'),
+                rotation: isRotateable(object) ? getAbsoluteRotation(scene, object) : 0,
+            };
+        }
+    }
+
+    return newObject;
 }
 
 function copyTether(
     scene: Readonly<Scene>,
     tether: Readonly<Tether>,
     originalTargets: readonly UnknownObject[],
-): SceneObjectWithoutId | null {
-    if (!isTargetCopied(originalTargets, tether.startId) && !isTargetCopied(originalTargets, tether.endId)) {
+    newIdsForCopiedObjects: Record<number, number>,
+): SceneObject | null {
+    if (!newIdsForCopiedObjects[tether.startId] && !newIdsForCopiedObjects[tether.endId]) {
         return null;
     }
 
+    // TODO: also don't copy if the not-copied end point is not on the same step as
+    // where the objects are pasted.
     const newTether = {
         ...tether,
-        startId: retargetTether(scene, originalTargets, tether.startId),
-        endId: retargetTether(scene, originalTargets, tether.endId),
+        startId: newIdsForCopiedObjects[tether.startId] || tether.startId,
+        endId: newIdsForCopiedObjects[tether.endId] || tether.endId,
     };
 
-    return { ...newTether, id: undefined };
+    return { ...newTether };
 }
 
 export function copyObjects(
     scene: Readonly<Scene>,
     objects: readonly SceneObject[],
     newCenter?: Vector2d,
-): SceneObjectWithoutId[] {
+): { objects: SceneObject[]; nextId: number } {
+    let nextId = scene.nextId;
     const copyable = objects.slice().filter((o) => isCopyable(o, objects));
 
-    const offset = getOffset(copyable, newCenter);
+    const idMap: Record<number, number> = {};
 
-    return objects
-        .map((obj) => {
-            if (isMoveable(obj)) {
-                return copyObject(obj, offset);
-            }
+    const offset = getOffset(scene, copyable, newCenter);
 
-            if (isTether(obj)) {
-                return copyTether(scene, obj, copyable);
-            }
+    return {
+        objects: objects
+            .map((obj) => {
+                // Assign new IDs first so that ID references can be updated
+                idMap[obj.id] = nextId++;
+                return { ...obj, id: idMap[obj.id] } as SceneObject;
+            })
+            .map((obj) => {
+                if (isMoveable(obj)) {
+                    return copyObject(scene, obj, offset, idMap);
+                }
 
-            return null;
-        })
-        .filter(isNotNull);
+                if (isTether(obj)) {
+                    return copyTether(scene, obj, copyable, idMap);
+                }
+
+                return null;
+            })
+            .filter(isNotNull),
+        nextId,
+    };
 }

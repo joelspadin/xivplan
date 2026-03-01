@@ -14,7 +14,7 @@ import { usePanelDrag } from '../usePanelDrag';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
-import { useHighlightProps } from './highlight';
+import { useHighlightProps, useOverrideProps } from './highlight';
 
 const DEFAULT_SIZE = 32;
 
@@ -89,12 +89,13 @@ const IconTimer: React.FC<IconTimerProps> = ({ time, width, height }) => {
 
 const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const [image] = useImageTracked(object.image);
 
     return (
         <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
             {(groupProps) => (
-                <Group {...groupProps}>
+                <Group {...groupProps} {...overrideProps}>
                     {highlightProps && (
                         <Rect
                             width={object.width}

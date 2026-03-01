@@ -44,7 +44,7 @@ import { PrefabToggle } from './PrefabToggle';
 import { SelectableObject } from './SelectableObject';
 import { getTetherName, makeTether } from './TetherConfig';
 import { TetherIcon } from './TetherIcon';
-import { useHighlightProps } from './highlight';
+import { useHighlightProps, useOverrideProps } from './highlight';
 
 interface TetherButtonProps {
     tether: TetherType;
@@ -150,6 +150,7 @@ function getHighlightProps(object: Tether, baseHighlightProps: ShapeConfig): Nod
 interface TetherProps extends RendererProps<Tether> {
     scene: Scene;
     highlightProps?: ShapeConfig;
+    magnetOverrideProps?: ShapeConfig;
     startObject: SceneObject | undefined;
     endObject: SceneObject | undefined;
 }
@@ -264,6 +265,7 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
     object,
     scene,
     highlightProps,
+    magnetOverrideProps,
     startObject,
     endObject,
     startType,
@@ -288,7 +290,7 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
             {highlightProps && (
                 <>
                     <Line {...lineProps} {...getHighlightProps(object, highlightProps)} />
-                    <HideGroup>
+                    <HideGroup {...magnetOverrideProps}>
                         <Circle x={start.x} y={start.y} radius={magnetRadius} {...highlightProps} />
                         <Circle x={end.x} y={end.y} radius={magnetRadius} {...highlightProps} />
                     </HideGroup>
@@ -298,7 +300,7 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
                 <Line {...lineProps} />
             </HideCutoutGroup>
             <ForegroundPortal>
-                <HideGroup>
+                <HideGroup {...magnetOverrideProps}>
                     {
                         // https://github.com/facebook/react/issues/34794
                         // eslint-disable-next-line react-hooks/static-components
@@ -366,6 +368,7 @@ function getCacheConfig(object: Tether): UseKonvaCacheOptions {
 
 const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
+    const overrideProps = useOverrideProps(object);
     const groupRef = React.useRef<Konva.Group>(null);
     const [editMode] = useEditMode();
     const { scene } = useScene();
@@ -384,7 +387,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     return (
         <SelectableObject object={object}>
             <CursorGroup cursor={isSelectable ? 'pointer' : undefined}>
-                <Group ref={groupRef} opacity={object.opacity / 100}>
+                <Group ref={groupRef} opacity={object.opacity / 100} {...overrideProps}>
                     {
                         // // https://github.com/facebook/react/issues/34794
                         // eslint-disable-next-line react-hooks/static-components
@@ -392,6 +395,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
                             object={object}
                             scene={scene}
                             highlightProps={highlightProps}
+                            magnetOverrideProps={overrideProps}
                             startObject={startObject}
                             endObject={endObject}
                         />
@@ -454,7 +458,7 @@ const UnknownTargetComponent: React.FC = () => {
 function getTargetNode(object: SceneObject | undefined) {
     if (object) {
         const Component = getListComponent(object);
-        return <Component object={object} isNested />;
+        return <Component object={object} showControls={false} size="nested" />;
     }
 
     return <UnknownTargetComponent />;

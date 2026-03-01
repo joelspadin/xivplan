@@ -1,6 +1,8 @@
-import { mergeClasses } from '@fluentui/react-components';
+import { Button, mergeClasses } from '@fluentui/react-components';
 import React from 'react';
+import { ConnectionType } from '../EditModeContext';
 import { useCurrentStep } from '../SceneProvider';
+import { EditMode } from '../editMode';
 import {
     SceneObject,
     UnknownObject,
@@ -31,7 +33,9 @@ import {
     supportsStackCount,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
+import { useConnectionSelection } from '../useConnectionSelection';
 import { useControlStyles } from '../useControlStyles';
+import { useEditMode } from '../useEditMode';
 import { PropertiesControlProps } from './PropertiesControl';
 import { ArrowPointersControl } from './properties/ArrowControls';
 import { DrawObjectBrushControl } from './properties/BrushControl';
@@ -93,10 +97,41 @@ const NoObjectsMessage: React.FC = () => {
     return <p>No objects selected.</p>;
 };
 
+interface ConnectionSelectionMessageProps {
+    type: ConnectionType;
+}
+
+const ConnectionSelectionMessage: React.FC<ConnectionSelectionMessageProps> = ({ type }) => {
+    const [, setEditMode] = useEditMode();
+    const message = getConnectionMessage(type);
+
+    return (
+        <>
+            <p>{message}</p>
+            <Button onClick={() => setEditMode(EditMode.Normal)}>Cancel</Button>
+        </>
+    );
+};
+
+function getConnectionMessage(type: ConnectionType) {
+    switch (type) {
+        case ConnectionType.POSITION:
+            return 'Select an object to attach the selection to. The selection or their attachments are not eligible targets.';
+        case ConnectionType.ROTATION:
+            return 'Select an object to make the selection face towards. Objects in the selection are not eligible targets.';
+    }
+}
+
 const Controls: React.FC = () => {
     const classes = useControlStyles();
     const [selection] = useSelection();
     const step = useCurrentStep();
+    const [editMode] = useEditMode();
+    const [{ connectionType }] = useConnectionSelection();
+
+    if (editMode == EditMode.SelectConnection) {
+        return <ConnectionSelectionMessage type={connectionType} />;
+    }
 
     if (selection.size === 0) {
         return <NoObjectsMessage />;
@@ -143,8 +178,8 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
             </div>
 
+            <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
-                <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
                 <ControlCondition objects={objects} test={isEnemy} control={EnemyRingControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareSpacingControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeCountControl} />

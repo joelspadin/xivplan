@@ -1,10 +1,11 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { Dispatch, ReactNode } from 'react';
-import { getCanvasCoord, getSceneCoord } from '../coord';
+import { omitInterconnectedObjects } from '../connections';
+import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
 import { moveObjectsBy } from '../groupOperations';
-import { MoveableObject, Scene, SceneStep, UnknownObject } from '../scene';
+import { isMoveable, MoveableObject, Scene, SceneStep, UnknownObject } from '../scene';
 import { SceneAction, useScene } from '../SceneProvider';
 import {
     getNewDragSelection,
@@ -36,6 +37,9 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
 
     const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
         let newSelection: SceneSelection;
+        if (editMode == EditMode.SelectConnection) {
+            return;
+        }
 
         // If we start dragging an object that isn't selected, it should
         // become the new selection.
@@ -71,7 +75,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
             <TetherTarget object={object}>
                 <CursorGroup
                     {...center}
-                    cursor={isDraggable ? 'move' : undefined}
+                    cursor={editMode === EditMode.SelectConnection ? 'pointer' : isDraggable ? 'move' : undefined}
                     draggable={isDraggable}
                     onDragStart={handleDragStart}
                     onDragMove={handleDragMove}
@@ -95,14 +99,14 @@ function updatePosition(
     // Konva automatically moves the object to e.target.position() in canvas
     // coordinates. Subtracting the object's original position gives the offset
     // that needs to be applied to all objects being dragged.
-    const pos = getSceneCoord(scene, e.target.position());
+    const pos = makeRelative(scene, getSceneCoord(scene, e.target.position()), targetObject.positionParentId);
     const offset = vecSub(pos, targetObject);
 
     if (offset.x === 0 && offset.y === 0) {
         return;
     }
 
-    const draggedObjects = getSelectedObjects(step, dragSelection);
+    const draggedObjects = omitInterconnectedObjects(scene, getSelectedObjects(step, dragSelection).filter(isMoveable));
     const value = moveObjectsBy(draggedObjects, offset);
 
     dispatch({ type: 'update', value, transient: true });
