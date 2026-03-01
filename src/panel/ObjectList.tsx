@@ -18,7 +18,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
+import { useIsAllowedConnectionTarget, useUpdateConnectedIdsAction } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -99,12 +99,12 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
     const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
-    const allowedConnectionIds = useAllowedConnectionIds();
+    const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
     const isSelected = selection.has(object.id);
 
     const onClick = (e: React.MouseEvent) => {
         if (editMode == EditMode.SelectConnection) {
-            if (!allowedConnectionIds.has(object.id)) {
+            if (!isAllowedConnectionTarget) {
                 return;
             }
             if (!isMoveable(object)) {
@@ -141,7 +141,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
         transition,
     };
 
-    const isUnselectable = editMode == EditMode.SelectConnection && !allowedConnectionIds.has(object.id);
+    const isUnselectable = editMode == EditMode.SelectConnection && !isAllowedConnectionTarget;
 
     return (
         <div

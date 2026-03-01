@@ -46,6 +46,11 @@ export function getRotationConnectionId(obj: SceneObject | undefined) {
     return isRotateable(obj) ? obj.facingId : undefined;
 }
 
+export function useIsAllowedConnectionTarget(id: number): boolean {
+    const allowedConnectionIds = useAllowedConnectionIds();
+    return allowedConnectionIds.has(id);
+}
+
 export function useAllowedConnectionIds(): ReadonlySet<number> {
     const { step } = useScene();
     const [connectionSelection] = useConnectionSelection();
@@ -143,36 +148,30 @@ export function useUpdateConnectedIdsAction(): (newParent: SceneObject & Moveabl
 
     switch (connectionType) {
         case ConnectionType.POSITION: {
-            const objectsToConnect: (SceneObject & MoveableObject)[] = [];
-            objectIdsToConnect.forEach((id) => {
-                const object = getObjectById(scene, id);
-                if (isMoveable(object)) {
-                    objectsToConnect.push(object);
-                }
-            });
-
-            return (newParent: SceneObject & MoveableObject) =>
-                createUpdatePositionParentIdsAction(scene, objectsToConnect, newParent);
+            return (newParent: SceneObject & MoveableObject) => {
+                return createUpdatePositionParentIdsAction(scene, objectIdsToConnect, newParent);
+            };
         }
         case ConnectionType.ROTATION: {
-            const objectsToConnect: (SceneObject & RotateableObject)[] = [];
-            objectIdsToConnect.forEach((id) => {
-                const object = getObjectById(scene, id);
-                if (isRotateable(object)) {
-                    objectsToConnect.push(object);
-                }
-            });
-            return (newParent: SceneObject & MoveableObject) =>
-                createUpdateRotationParentIdsAction(scene, objectsToConnect, newParent);
+            return (newParent: SceneObject & MoveableObject) => {
+                return createUpdateRotationParentIdsAction(scene, objectIdsToConnect, newParent);
+            };
         }
     }
 }
 
 function createUpdateRotationParentIdsAction(
     scene: Scene,
-    objectsToConnect: readonly (SceneObject & RotateableObject)[],
+    objectIdsToConnect: ReadonlySet<number>,
     newParent: SceneObject & MoveableObject,
 ): SceneAction {
+    const objectsToConnect: (SceneObject & RotateableObject)[] = [];
+    objectIdsToConnect.forEach((id) => {
+        const object = getObjectById(scene, id);
+        if (isRotateable(object)) {
+            objectsToConnect.push(object);
+        }
+    });
     return {
         type: 'update',
         value: objectsToConnect.map((obj) => {
@@ -184,9 +183,17 @@ function createUpdateRotationParentIdsAction(
 
 function createUpdatePositionParentIdsAction(
     scene: Scene,
-    objectsToConnect: readonly (SceneObject & MoveableObject)[],
+    objectIdsToConnect: ReadonlySet<number>,
     newParent: SceneObject & MoveableObject,
 ): SceneAction {
+    const objectsToConnect: (SceneObject & MoveableObject)[] = [];
+    objectIdsToConnect.forEach((id) => {
+        const object = getObjectById(scene, id);
+        if (isMoveable(object)) {
+            objectsToConnect.push(object);
+        }
+    });
+
     const attachPositionCounts: Record<DefaultAttachPosition, number> = {
         [DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT]: 0,
         [DefaultAttachPosition.ANYWHERE]: 0,

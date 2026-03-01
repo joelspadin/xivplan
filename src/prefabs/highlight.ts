@@ -1,5 +1,5 @@
 import { ShapeConfig } from 'konva/lib/Shape';
-import { getPositionParentId, useAllowedConnectionIds } from '../connections';
+import { getPositionParentId, useIsAllowedConnectionTarget } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, UnknownObject } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
@@ -54,12 +54,8 @@ export function useHighlightProps(object: UnknownObject): ShapeConfig | undefine
 export function useOverrideProps(object: UnknownObject): ShapeConfig | undefined {
     const [editMode] = useEditMode();
     const [selection] = useSelection();
-    const allowedConnectionSelectionIds = useAllowedConnectionIds();
-    if (
-        editMode == EditMode.SelectConnection &&
-        !allowedConnectionSelectionIds.has(object.id) &&
-        !selection.has(object.id)
-    ) {
+    const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
+    if (editMode == EditMode.SelectConnection && !isAllowedConnectionTarget && !selection.has(object.id)) {
         return { opacity: 0.1 };
     }
     return undefined;

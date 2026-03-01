@@ -1,7 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node';
 import React, { PropsWithChildren } from 'react';
 import { Group } from 'react-konva';
-import { useAllowedConnectionIds, useUpdateConnectedIdsAction } from '../connections';
+import { useIsAllowedConnectionTarget, useUpdateConnectedIdsAction } from '../connections';
 import { EditMode } from '../editMode';
 import { isMoveable, SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
@@ -25,13 +25,13 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
     const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
     const { dispatch } = useScene();
-    const allowedConnectionIds = useAllowedConnectionIds();
+    const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
     const getUpdateConnectionIdsAction = useUpdateConnectedIdsAction();
     const isSelectable = editMode === EditMode.Normal || editMode === EditMode.SelectConnection;
 
     const onClick = (e: KonvaEventObject<MouseEvent>) => {
         if (editMode == EditMode.SelectConnection) {
-            if (isMoveable(object) && allowedConnectionIds.has(object.id)) {
+            if (isMoveable(object) && isAllowedConnectionTarget) {
                 dispatch(getUpdateConnectionIdsAction(object));
                 setEditMode(EditMode.Normal);
             }
@@ -49,7 +49,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
 
     const onMouseEnter = () => {
         if (editMode == EditMode.SelectConnection) {
-            if (allowedConnectionIds.has(object.id)) {
+            if (isAllowedConnectionTarget) {
                 setSpotlight(selectSingle(object.id));
             } else {
                 setSpotlight(selectNone());
