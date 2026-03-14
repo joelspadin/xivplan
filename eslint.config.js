@@ -27,7 +27,10 @@ export default defineConfig(
         },
         settings: {
             react: {
-                version: 'detect',
+                // version: 'detect',
+                // Workaround for eslint-plugin-react compatibility with eslint 10.
+                // https://github.com/jsx-eslint/eslint-plugin-react/issues/3977
+                version: '19.2.4',
             },
         },
     },

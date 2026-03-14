@@ -1,19 +1,8 @@
-import react from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { UserConfig, defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
-
-function getModeOptions(mode: string): UserConfig {
-    if (mode === 'production') {
-        return {};
-    }
-
-    return {
-        esbuild: {
-            minifyIdentifiers: false,
-        },
-    };
-}
 
 function getEnvOptions(mode: string): UserConfig {
     const env = loadEnv(mode, process.cwd());
@@ -32,13 +21,11 @@ function getEnvOptions(mode: string): UserConfig {
 }
 
 export default defineConfig(({ mode }) => ({
-    ...getModeOptions(mode),
     ...getEnvOptions(mode),
     plugins: [
-        react({
-            babel: {
-                plugins: ['babel-plugin-react-compiler'],
-            },
+        react(),
+        babel({
+            presets: [reactCompilerPreset()],
         }),
         svgr({
             svgrOptions: {
