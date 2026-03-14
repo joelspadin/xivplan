@@ -232,6 +232,19 @@ const PRESET_11_SPLIT: ArenaPreset = {
     },
 };
 
+const PRESET_12: ArenaPreset = {
+    name: 'AAC Heavyweight M4',
+    spoilerFreeName: 'AAC Heavyweight M4 ████',
+    arena: {
+        shape: ArenaShape.Rectangle,
+        width: 800,
+        height: 600,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion12.svg',
+    },
+};
+
 export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_2,
     PRESET_3,
@@ -251,4 +264,5 @@ export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_8_SAVAGE_PHASE_2_MIRROR,
     PRESET_11,
     PRESET_11_SPLIT,
+    PRESET_12,
 ];

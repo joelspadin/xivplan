@@ -18,7 +18,7 @@ You may discuss the following content:
 - ✅ The Final Verse (Quantum)
 - ✅ Arcadion: Light-heavyweight Division normal and savage
 - ✅ Arcadion: Cruiserweight Division normal and savage
-- ✅ Arcadion: Heavyweight Division normal M1-4 and savage M1-2
+- ✅ Arcadion: Heavyweight Division normal M1-4 and savage M1-3
 - ✅ Forked Tower
 
 Please do not discuss the following content:

@@ -2,6 +2,10 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## March 14
+
+- Added arena preset for Arcadion M12.
+
 ## March 1, 2026
 
 - Added an option to link an object's position to a parent object, so moving the parent also moves the children. Contributed by @Aygox-XIV.
