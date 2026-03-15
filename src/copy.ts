@@ -9,6 +9,7 @@ import {
     RotateableObject,
     Scene,
     SceneObject,
+    SceneStep,
     Tether,
     UnknownObject,
 } from './scene';
@@ -53,8 +54,13 @@ function isCopyable(object: Readonly<SceneObject>, objects: readonly SceneObject
     return false;
 }
 
+function stepContainsObject(step: Readonly<SceneStep>, id: number) {
+    return step.objects.find((obj) => obj.id === id) !== undefined;
+}
+
 function copyObject(
     scene: Readonly<Scene>,
+    targetStep: Readonly<SceneStep> | undefined,
     object: Readonly<MoveableObject & UnknownObject>,
     offset: Vector2d,
     newIdsForCopiedObjects: Record<number, number>,
@@ -73,11 +79,14 @@ function copyObject(
     }
 
     if (isRotateable(newObject) && newObject.facingId !== undefined) {
-        // If the facing target also gets copied, face the copy. Otherwise keep the rotation.
         if (newIdsForCopiedObjects[newObject.facingId] !== undefined) {
+            // If the facing target also gets copied, face the copy.
             newObject = { ...newObject, facingId: newIdsForCopiedObjects[newObject.facingId] };
+        } else if (targetStep && stepContainsObject(targetStep, newObject.facingId)) {
+            // If the facing target is not copied but is in the target step, face the existing object
+            // (no change to the copied object's facingId).
         } else {
-            // TODO: if copied onto the same step, maybe keep facing the same target instead?
+            // Otherwise keep the rotation but drop the facing target.
             newObject = {
                 ...omit(newObject, 'facingId'),
                 rotation: isRotateable(object) ? getAbsoluteRotation(scene, object) : 0,
@@ -88,12 +97,7 @@ function copyObject(
     return newObject;
 }
 
-function copyTether(
-    scene: Readonly<Scene>,
-    tether: Readonly<Tether>,
-    originalTargets: readonly UnknownObject[],
-    newIdsForCopiedObjects: Record<number, number>,
-): SceneObject | null {
+function copyTether(tether: Readonly<Tether>, newIdsForCopiedObjects: Record<number, number>): SceneObject | null {
     if (!newIdsForCopiedObjects[tether.startId] && !newIdsForCopiedObjects[tether.endId]) {
         return null;
     }
@@ -111,6 +115,7 @@ function copyTether(
 
 export function copyObjects(
     scene: Readonly<Scene>,
+    targetStep: Readonly<SceneStep> | undefined,
     objects: readonly SceneObject[],
     newCenter?: Vector2d,
 ): { objects: SceneObject[]; nextId: number } {
@@ -130,11 +135,11 @@ export function copyObjects(
             })
             .map((obj) => {
                 if (isMoveable(obj)) {
-                    return copyObject(scene, obj, offset, idMap);
+                    return copyObject(scene, targetStep, obj, offset, idMap);
                 }
 
                 if (isTether(obj)) {
-                    return copyTether(scene, obj, copyable, idMap);
+                    return copyTether(obj, idMap);
                 }
 
                 return null;

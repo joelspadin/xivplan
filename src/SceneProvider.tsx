@@ -355,7 +355,7 @@ function setStep(state: Readonly<EditorState>, index: number): EditorState {
 }
 
 function addStep(state: Readonly<EditorState>, after: number): EditorState {
-    const { objects, nextId } = copyObjects(state.scene, getCurrentStep(state).objects);
+    const { objects, nextId } = copyObjects(state.scene, undefined, getCurrentStep(state).objects);
 
     const newStep: SceneStep = { objects };
 
