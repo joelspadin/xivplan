@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { GroupMoveAction, PasteWithTrackIdsAction, SceneAction, useScene } from './SceneProvider';
+import { GroupMoveAction, SceneAction, useScene } from './SceneProvider';
 import { SceneSelection } from './SelectionContext';
 import { omitInterconnectedObjects } from './connections';
 import { getAbsolutePosition, getSceneCoord, makeRelative, rotateCoord } from './coord';
@@ -50,11 +50,6 @@ const UndoRedoHandler: React.FC = () => {
     return null;
 };
 
-/** Tiny unique ID for auto-assigned trackIds: "t_<base36 timestamp>_<random>". */
-function generateTrackId(): string {
-    return `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
-}
-
 function pasteObjects(
     stage: Stage,
     scene: Scene,
@@ -62,37 +57,15 @@ function pasteObjects(
     dispatch: Dispatch<SceneAction>,
     setSelection: Dispatch<SetStateAction<SceneSelection>>,
     objects: readonly SceneObject[],
-    setClipboard: Dispatch<SetStateAction<readonly SceneObject[]>>,
     centerOnMouse = true,
 ): void {
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
     const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
 
-    // Auto-assign trackIds to clipboard objects that don't have one.
-    // This links the pasted copy to the original so they interpolate together.
-    const trackIdUpdates: PasteWithTrackIdsAction['trackIdUpdates'][number][] = [];
-    const effectiveClipboard = objects.map((obj) => {
-        if (!obj.trackId) {
-            const trackId = generateTrackId();
-            trackIdUpdates.push({ id: obj.id, trackId });
-            return { ...obj, trackId } as SceneObject;
-        }
-        return obj;
-    });
-
-    if (trackIdUpdates.length > 0) {
-        // Persist the updated clipboard so future pastes reuse the same trackIds.
-        setClipboard(effectiveClipboard);
-    }
-
-    const { objects: newObjects } = copyObjects(scene, step, effectiveClipboard, newCenter);
+    const { objects: newObjects } = copyObjects(scene, step, objects, newCenter);
 
     if (newObjects.length) {
-        if (trackIdUpdates.length > 0) {
-            dispatch({ type: 'pasteWithTrackIds', newObjects, trackIdUpdates });
-        } else {
-            dispatch({ type: 'add', object: newObjects });
-        }
+        dispatch({ type: 'add', object: newObjects });
         setSelection(selectNewObjects(scene, newObjects.length));
     }
 }
@@ -201,10 +174,10 @@ const SelectionActionHandler: React.FC = () => {
             if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, setClipboard);
+            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard);
             e.preventDefault();
         },
-        [stage, scene, step, dispatch, setSelection, clipboard, setClipboard, editMode],
+        [stage, scene, step, dispatch, setSelection, clipboard, editMode],
     );
 
     useHotkeys(
@@ -214,10 +187,10 @@ const SelectionActionHandler: React.FC = () => {
             if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, setClipboard, false);
+            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, false);
             e.preventDefault();
         },
-        [stage, scene, step, dispatch, setSelection, clipboard, setClipboard, editMode],
+        [stage, scene, step, dispatch, setSelection, clipboard, editMode],
     );
 
     useHotkeys(
@@ -227,8 +200,7 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            // Ctrl+D duplicates within the same step — no cross-step linking needed, pass a no-op setter
-            pasteObjects(stage, scene, step, dispatch, setSelection, getSelectedObjects(step, selection), () => {}, false);
+            pasteObjects(stage, scene, step, dispatch, setSelection, getSelectedObjects(step, selection), false);
             e.preventDefault();
         },
         [stage, scene, step, dispatch, selection, setSelection, editMode],

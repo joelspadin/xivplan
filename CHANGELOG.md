@@ -2,6 +2,15 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## March 23, 2026
+
+- Added a playback mode with a timeline slider, play/pause controls, and speed selector.
+  - Steps are smoothly interpolated between, so scrubbing the slider shows blended object positions and opacities.
+  - Objects can be assigned a Track ID to link the same object across steps for interpolation.
+- Added per-object animation controls: enter/exit easing (linear, ease in/out, circular), timing offsets, and a smoothness (Catmull-Rom) slider for tracked objects.
+- Added pulse/blink effects that animate continuously during playback: Pulse, Blink, Snapshot, and Highlight.
+- Added a video export button that renders the playback animation to a 60 FPS WebM file, with options for speed and resolution.
+
 ## March 14
 
 - Added arena preset for Arcadion M12.

@@ -19,11 +19,9 @@ const EASING_OPTIONS: { value: EasingStyle; label: string }[] = [
 ];
 
 const PULSE_OPTIONS: { value: PulseStyle; label: string }[] = [
-    { value: 'none',      label: 'None'      },
-    { value: 'pulse',     label: 'Pulse'     },
-    { value: 'blink',     label: 'Blink'     },
-    { value: 'snapshot',  label: 'Snapshot'  },
-    { value: 'highlight', label: 'Highlight' },
+    { value: 'none',  label: 'None'  },
+    { value: 'pulse', label: 'Pulse' },
+    { value: 'blink', label: 'Blink' },
 ];
 
 // ─── Easing math (mirrored from interpolate.ts) ───────────────────────────────
