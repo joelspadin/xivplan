@@ -112,12 +112,25 @@ export interface GroupMoveAction {
     ids: number | readonly number[];
 }
 
+/**
+ * Atomically assigns trackIds to existing objects across ALL steps by their IDs,
+ * then adds new objects to the current step — all in a single undo entry.
+ * Used by the paste handler so that copy→paste automatically links objects.
+ */
+export interface PasteWithTrackIdsAction {
+    type: 'pasteWithTrackIds';
+    newObjects: readonly SceneObject[];
+    /** { id: objectId, trackId: generated string } — applied across every step. */
+    trackIdUpdates: readonly { id: number; trackId: string }[];
+}
+
 export type ObjectAction =
     | ObjectAddAction
     | ObjectRemoveAction
     | ObjectMoveAction
     | GroupMoveAction
-    | ObjectUpdateAction;
+    | ObjectUpdateAction
+    | PasteWithTrackIdsAction;
 
 export interface SetStepAction {
     type: 'setStep';
@@ -131,6 +144,8 @@ export interface IncrementStepAction {
 export interface AddStepAction {
     type: 'addStep';
     after?: number;
+    /** Optional pre-built objects for the new step (e.g. interpolated snapshot). */
+    objects?: readonly SceneObject[];
 }
 
 export interface RemoveStepAction {
@@ -354,8 +369,13 @@ function setStep(state: Readonly<EditorState>, index: number): EditorState {
     };
 }
 
-function addStep(state: Readonly<EditorState>, after: number): EditorState {
-    const { objects, nextId } = copyObjects(state.scene, undefined, getCurrentStep(state).objects);
+function addStep(state: Readonly<EditorState>, after: number, sourceObjects?: readonly SceneObject[]): EditorState {
+    // Strip any interpolation-only markers before copying
+    const base = (sourceObjects ?? getCurrentStep(state).objects).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (obj) => { const { _ceilOnly, ...rest } = obj as any; return rest as SceneObject; },
+    );
+    const { objects, nextId } = copyObjects(state.scene, undefined, base);
 
     const newStep: SceneStep = { objects };
 
@@ -648,7 +668,7 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
             return setStep(state, state.currentStep - 1);
 
         case 'addStep':
-            return addStep(state, action.after ?? state.currentStep);
+            return addStep(state, action.after ?? state.currentStep, action.objects);
 
         case 'removeStep':
             return removeStep(state, action.index);
@@ -685,6 +705,24 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'add':
             return addObjects(state, action.object);
+
+        case 'pasteWithTrackIds': {
+            // Apply trackId updates across ALL steps
+            const idToTrackId = new Map(action.trackIdUpdates.map((u) => [u.id, u.trackId]));
+            const updatedSteps = state.scene.steps.map((step) => ({
+                ...step,
+                objects: step.objects.map((obj) => {
+                    const trackId = idToTrackId.get(obj.id);
+                    return trackId ? { ...obj, trackId } : obj;
+                }),
+            }));
+            const stateWithTrackIds: EditorState = {
+                ...state,
+                scene: { ...state.scene, steps: updatedSteps },
+            };
+            // Then add new objects to the current step
+            return addObjects(stateWithTrackIds, action.newObjects);
+        }
 
         case 'remove':
             return removeObjects(state, asArray(action.ids));

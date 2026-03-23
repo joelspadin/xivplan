@@ -40,7 +40,8 @@
     "react-router-dom": "^7.13.1",
     "react-use": "^17.6.0",
     "simplify-js": "^1.2.4",
-    "use-image": "^1.1.4"
+    "use-image": "^1.1.4",
+    "webm-muxer": "^5.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

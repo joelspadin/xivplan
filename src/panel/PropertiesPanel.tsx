@@ -62,6 +62,8 @@ import { StackCountControl } from './properties/StackCountControl';
 import { StarburstSpokeCountControl, StarburstSpokeWidthControl } from './properties/StarburstControls';
 import { TetherTypeControl, TetherWidthControl } from './properties/TetherControls';
 import { TextLayoutControl, TextOutlineControl, TextValueControl } from './properties/TextControls';
+import { AnimationControl } from './properties/AnimationControl';
+import { TrackIdControl } from './properties/TrackIdControl';
 
 export interface PropertiesPanelProps {
     className?: string;
@@ -207,6 +209,10 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isIcon} control={IconStacksControl} />
                 <ControlCondition objects={objects} test={isIcon} control={IconTimeControl} />
             </div>
+
+            {/* Playback */}
+            <TrackIdControl objects={objects} />
+            <AnimationControl objects={objects} />
         </>
     );
 };

@@ -22,6 +22,7 @@ import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
 import { FileSource, useScene, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
 import { StepScreenshotButton } from './StepScreenshotButton';
+import { VideoExportButton } from './export/VideoExportButton';
 import { ToolbarContext } from './ToolbarContext';
 import { saveFile } from './file';
 import { OpenDialog, SaveAsDialog } from './file/FileDialog';
@@ -93,6 +94,7 @@ export const MainToolbar: React.FC = () => {
                     <ShareDialogButton>Share</ShareDialogButton>
 
                     <StepScreenshotButton>Screenshot</StepScreenshotButton>
+                    <VideoExportButton>Export video</VideoExportButton>
                 </Toolbar>
             </InPortal>
         </>

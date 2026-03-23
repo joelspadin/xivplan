@@ -1,7 +1,7 @@
 import { Stage } from 'konva/lib/Stage';
 import { Vector2d } from 'konva/lib/types';
 import { getObjectById, useScene } from './SceneProvider';
-import { isMoveable, isRotateable, MoveableObject, RotateableObject, Scene, SceneObject } from './scene';
+import { isMoveable, isRotateable, MoveableObject, RotateableObject, Scene, SceneObject, SceneStep } from './scene';
 import { degtorad, round } from './util';
 import { vecAngle } from './vector';
 
@@ -119,6 +119,46 @@ export function getSceneCoord(scene: Scene, p: Position): Vector2d {
 export function makeRelative(scene: Scene, p: Vector2d, positionParentId?: number): Vector2d {
     const parent = getParentPosition(scene, { x: 0, y: 0, positionParentId });
     return { x: p.x - parent.x, y: p.y - parent.y };
+}
+
+/**
+ * Step-local version of getAbsolutePosition.
+ * Resolves positionParentId within a single SceneStep's object list, not the full scene.
+ * Used by the interpolation engine so parent lookups stay within each step's coordinate frame.
+ */
+export function getAbsolutePositionInStep(step: SceneStep, p: Position): Vector2d {
+    const seen = new Set<number>();
+    let parentId = p.positionParentId;
+    let px = 0;
+    let py = 0;
+    while (parentId !== undefined && !seen.has(parentId)) {
+        seen.add(parentId);
+        const parent = step.objects.find((o) => o.id === parentId);
+        if (parent && isMoveable(parent)) {
+            px += parent.x;
+            py += parent.y;
+            parentId = parent.positionParentId;
+        } else {
+            break;
+        }
+    }
+    return { x: px + p.x, y: py + p.y };
+}
+
+/**
+ * Step-local version of getAbsoluteRotation.
+ * Resolves facingId within a single SceneStep, then adds object.rotation.
+ */
+export function getAbsoluteRotationInStep(step: SceneStep, obj: RotateableObject & MoveableObject): number {
+    if (obj.facingId !== undefined) {
+        const target = step.objects.find((o) => o.id === obj.facingId);
+        if (target && isMoveable(target)) {
+            const posObj = getAbsolutePositionInStep(step, obj);
+            const posTgt = getAbsolutePositionInStep(step, target);
+            return getPointerAngle({ x: posTgt.x - posObj.x, y: posTgt.y - posObj.y }) + obj.rotation;
+        }
+    }
+    return obj.rotation;
 }
 
 /** @returns the angle that is considered '0 degrees rotated' for the given object. */

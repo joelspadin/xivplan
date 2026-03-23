@@ -83,7 +83,7 @@ export function objectMap<V, T extends object, K extends keyof T>(
     ) as ObjectMapResult<T, V>;
 }
 
-type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | undefined ? T : never;
+type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | number | undefined ? T : never;
 
 export function setOrOmit<T extends object, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
     if (value) {

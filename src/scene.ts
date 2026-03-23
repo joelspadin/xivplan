@@ -54,10 +54,54 @@ export enum ObjectType {
     Triangle = 'triangle',
 }
 
+export type EasingStyle =
+    | 'instant'
+    | 'linear'
+    | 'easeIn'
+    | 'easeOut'
+    | 'easeInOut'
+    | 'easeInCirc'
+    | 'easeOutCirc';
+
+export type PulseStyle = 'none' | 'pulse' | 'blink' | 'snapshot' | 'highlight';
+
+export interface AnimationProps {
+    /** Easing curve applied to the enter transition. Default: 'instant'. */
+    enterEase?: EasingStyle;
+    /** Easing curve applied to the exit transition. Default: 'instant'. */
+    exitEase?: EasingStyle;
+    /**
+     * Fraction [0–1] into the transition at which the enter begins.
+     * 0 = immediately, 0.5 = halfway through (default).
+     */
+    enterStart?: number;
+    /**
+     * Fraction [0–1] into the transition at which the exit finishes.
+     * 1 = at step boundary, 0.5 = halfway through (default).
+     */
+    exitEnd?: number;
+    /** Continuous on-step animation. 'pulse' = slow opacity oscillation, 'blink' = sharp on/off. */
+    pulse?: PulseStyle;
+    /**
+     * Catmull-Rom path smoothing for tracked objects (0 = linear, 1 = full spline).
+     * When > 0, this object curves through intermediate step positions instead of
+     * making hard stops and direction changes at each step boundary.
+     * Has no effect on untracked objects.
+     */
+    smoothness?: number;
+}
+
 export interface BaseObject {
     readonly id: number;
     readonly opacity: number;
     readonly hide?: boolean;
+    /** Stable string identity used to match this object across steps for smooth interpolation.
+     *  Objects with the same trackId in adjacent steps will lerp their position/rotation/size.
+     *  Example: "T1", "healer_1", "spirit_line" */
+    readonly trackId?: string;
+    /** Controls how this object animates in/out when it has no matching trackId in the adjacent step.
+     *  Defaults to 'fade' for both enter and exit when not set. */
+    readonly animation?: AnimationProps;
 }
 
 export interface UnknownObject extends BaseObject {
@@ -148,7 +192,8 @@ export interface ColoredObject {
 }
 
 export interface HollowObject {
-    readonly hollow?: boolean;
+    /** false/undefined = solid, true/1 = hollow, 0–1 = interpolated (lerp only) */
+    readonly hollow?: boolean | number;
 }
 
 export interface MoveableObject extends Position {

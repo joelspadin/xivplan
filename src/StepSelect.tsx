@@ -33,8 +33,10 @@ import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } 
 import React, { HTMLAttributes, RefAttributes, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
+import { useOptionalPlayback } from './playback/PlaybackContext';
+import { interpolateStep } from './playback/interpolate';
 import { ScenePreview } from './render/SceneRenderer';
-import { Scene } from './scene';
+import { Scene, SceneObject } from './scene';
 import { MIN_STAGE_WIDTH } from './theme';
 import { useCancelConnectionSelection } from './useEditMode';
 
@@ -42,12 +44,14 @@ export const StepSelect: React.FC = () => {
     const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
+    const playback = useOptionalPlayback();
     const steps = scene.steps.map((_, i) => i);
 
     const handleTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
         cancelConnectionSelection();
         const index = data.value as number;
         dispatch({ type: 'setStep', index });
+        playback?.setPlaybackTime(index);
     };
 
     const maxWidth = scene.arena.width + scene.arena.padding * 2;
@@ -66,11 +70,6 @@ export const StepSelect: React.FC = () => {
                         <StepButton key={i} index={i} />
                     ))}
                 </TabList>
-            </div>
-            <div className={classes.actions}>
-                <AddStepButton className={classes.addButton} />
-                <ReorderStepsButton />
-                <RemoveStepButton />
             </div>
         </div>
     );
@@ -99,13 +98,34 @@ const StepButton: React.FC<StepButtonProps> = ({ index }) => {
     );
 };
 
-const AddStepButton: React.FC<ButtonProps> = (props) => {
+export const AddStepButton: React.FC<ButtonProps> = (props) => {
+    const { scene } = useScene();
     const { dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
+    const playback = useOptionalPlayback();
 
     const handleAddStep = () => {
         cancelConnectionSelection();
-        dispatch({ type: 'addStep' });
+        // If scrubbed to a fractional position, snapshot tracked objects at their
+        // interpolated state. Ceil-only entering objects are excluded.
+        let snapshotObjects: readonly SceneObject[] | undefined;
+        if (playback) {
+            const t = playback.state.playbackTime;
+            const frac = t - Math.floor(t);
+            if (frac !== 0) {
+                const maxStep = scene.steps.length - 1;
+                const floorIdx = Math.min(Math.floor(t), maxStep);
+                const ceilIdx = Math.min(Math.ceil(t), maxStep);
+                const stepA = scene.steps[floorIdx] ?? { objects: [] };
+                const stepB = scene.steps[ceilIdx] ?? { objects: [] };
+                const interpolated = interpolateStep(stepA, stepB, frac);
+                // Keep only floor-origin objects (no _ceilOnly) — these have IDs and
+                // positions from the current editing step.
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                snapshotObjects = interpolated.filter((obj) => !(obj as any)._ceilOnly);
+            }
+        }
+        dispatch({ type: 'addStep', objects: snapshotObjects });
     };
 
     return (
@@ -117,7 +137,7 @@ const AddStepButton: React.FC<ButtonProps> = (props) => {
 
 const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 
-const RemoveStepButton: React.FC = () => {
+export const RemoveStepButton: React.FC = () => {
     const { scene, stepIndex, dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
     const stepText = getStepText(stepIndex);
@@ -139,7 +159,7 @@ const RemoveStepButton: React.FC = () => {
     );
 };
 
-const ReorderStepsButton: React.FC = () => {
+export const ReorderStepsButton: React.FC = () => {
     const classes = useStyles();
     const { scene } = useScene();
 
@@ -312,17 +332,6 @@ const useStyles = makeStyles({
     listWrapper: {
         overflow: 'auto',
         padding: '4px 0 4px 4px',
-    },
-    actions: {
-        display: 'flex',
-        columnGap: tokens.spacingHorizontalXS,
-        marginTop: '4px',
-        height: '32px',
-        flexShrink: 0,
-        flexGrow: 1,
-    },
-    addButton: {
-        marginRight: 'auto',
     },
     tabList: {
         flexWrap: 'wrap',

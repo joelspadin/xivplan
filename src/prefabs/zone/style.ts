@@ -8,14 +8,17 @@ export function getZoneStyle(
     color: string,
     opacity: number,
     size = 0,
-    hollow = false,
+    hollow: boolean | number = false,
 ): { fill: string; stroke: string; strokeWidth: number } {
     const strokeWidth = getStrokeWidth(size);
     const c = new Color(color);
 
+    // hollow: boolean (true=fully hollow) or number 0–1 (interpolated during lerp)
+    const hollowFraction = typeof hollow === 'number' ? hollow : (hollow ? 1 : 0);
+
     // TODO: update to c.set({ alpha: value }) once colorjs.io v0.6.0 is released
     const fill = c.clone();
-    fill.alpha = hollow ? 0 : opacity / 100;
+    fill.alpha = (1 - hollowFraction) * (opacity / 100);
     const fillStr = fill.display();
 
     const stroke = c.clone();

@@ -14,6 +14,7 @@ import { selectNewObjects, selectNone, useSelection } from '../selection';
 import { UndoContext } from '../undo/undoContext';
 import { useEditMode } from '../useEditMode';
 import { usePanelDrag } from '../usePanelDrag';
+import { useDisplayObjects } from '../playback/PlaybackContext';
 import { ArenaRenderer } from './ArenaRenderer';
 import { DrawTarget } from './DrawTarget';
 import { ObjectRenderer } from './ObjectRenderer';
@@ -27,7 +28,6 @@ export const SceneRenderer: React.FC = () => {
     const size = getCanvasSize(scene);
     const [stage, stageRef] = useState<Konva.Stage | null>(null);
     const [editMode] = useEditMode();
-
     const onClickStage = (e: KonvaEventObject<MouseEvent>) => {
         // Clicking on nothing while selecting a connection target should keep the
         // current selection to better keep the visuals of which objects are going to
@@ -139,7 +139,12 @@ interface SceneContentsProps {
 const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgroundColor }) => {
     listening = listening ?? true;
 
+    const { scene } = useScene();
     const step = useCurrentStep();
+
+    // In playback mode, useDisplayObjects returns interpolated objects.
+    // In edit mode (or when used outside PlaybackProvider, e.g. ScenePreview), returns step.objects.
+    const objects = useDisplayObjects(scene, step.objects);
 
     return (
         <>
@@ -147,13 +152,13 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgr
 
             <Layer name={LayerName.Ground} listening={listening}>
                 <ArenaRenderer backgroundColor={backgroundColor} simple={simple} />
-                <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
+                <ObjectRenderer objects={objects} layer={LayerName.Ground} />
             </Layer>
             <Layer name={LayerName.Default} listening={listening}>
-                <ObjectRenderer objects={step.objects} layer={LayerName.Default} />
+                <ObjectRenderer objects={objects} layer={LayerName.Default} />
             </Layer>
             <Layer name={LayerName.Foreground} listening={listening}>
-                <ObjectRenderer objects={step.objects} layer={LayerName.Foreground} />
+                <ObjectRenderer objects={objects} layer={LayerName.Foreground} />
 
                 <TetherEditRenderer />
             </Layer>
