@@ -4,10 +4,10 @@ import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { ArcZone, ConeZone } from '../../scene';
+import type { ArcZone, ConeZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZone>> = ({ objects }) => {
     const classes = useControlStyles();

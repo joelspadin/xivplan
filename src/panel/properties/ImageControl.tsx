@@ -2,9 +2,9 @@ import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { DeferredInput } from '../../DeferredInput';
 import { useScene } from '../../SceneProvider';
-import { ImageObject } from '../../scene';
+import type { ImageObject } from '../../scene';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ImageControl: React.FC<PropertiesControlProps<ImageObject>> = ({ objects }) => {
     const { dispatch } = useScene();

@@ -1,10 +1,10 @@
 import { ToggleButton, Tooltip } from '@fluentui/react-components';
 import { EyeLinesRegular, EyeOffRegular, EyeRegular } from '@fluentui/react-icons';
 import React from 'react';
-import { BaseObject } from '../../scene';
+import type { BaseObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { commonValue, setOrOmit } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const HideControl: React.FC<PropertiesControlProps<BaseObject>> = ({ objects }) => {
     const { dispatch } = useScene();

@@ -1,11 +1,11 @@
 import Konva from 'konva';
-import { Box } from 'konva/lib/shapes/Transformer';
-import React, { RefObject, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import type { Box } from 'konva/lib/shapes/Transformer';
+import React, { type RefObject, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getBaseFacingRotation } from '../coord';
 import { ControlsPortal } from '../render/Portals';
-import { ResizeableObject, SceneObject, UnknownObject } from '../scene';
+import type { ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { clamp, clampRotation } from '../util';
 import { useShowResizer } from './highlight';
 

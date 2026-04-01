@@ -1,4 +1,4 @@
-import { Input, InputProps } from '@fluentui/react-components';
+import { Input, type InputProps } from '@fluentui/react-components';
 import React from 'react';
 
 export interface DeferredInputProps extends InputProps {

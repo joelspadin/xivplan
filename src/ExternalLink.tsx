@@ -1,6 +1,6 @@
 import { Link, makeStyles } from '@fluentui/react-components';
 import { NavigateExternalInlineIcon } from '@fluentui/react-icons-mdl2';
-import React, { AnchorHTMLAttributes } from 'react';
+import React, { type AnchorHTMLAttributes } from 'react';
 
 const useStyles = makeStyles({
     external: {

@@ -1,13 +1,13 @@
 import Konva from 'konva';
-import { KonvaEventObject } from 'konva/lib/Node';
-import { Vector2d } from 'konva/lib/types';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import type { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { useStage } from '../render/stage';
-import { Scene } from '../scene';
+import type { Scene } from '../scene';
 import { Handle } from './Handle';
 
 // https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103

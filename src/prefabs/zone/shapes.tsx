@@ -1,4 +1,4 @@
-import { ShapeConfig } from 'konva/lib/Shape';
+import type { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
 import { Group, Line } from 'react-konva';
 import { degtorad } from '../../util';

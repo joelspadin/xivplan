@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { Dispatch, SetStateAction, createContext } from 'react';
+import { type Dispatch, type SetStateAction, createContext } from 'react';
 
 export type DialogOpenState = Dispatch<SetStateAction<boolean>>;
 

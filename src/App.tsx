@@ -1,5 +1,5 @@
 import { makeStyles, Spinner, Toaster, tokens } from '@fluentui/react-components';
-import React, { PropsWithChildren, Suspense } from 'react';
+import React, { type PropsWithChildren, Suspense } from 'react';
 import { HotkeysProvider } from 'react-hotkeys-hook';
 import { createBrowserRouter, createRoutesFromElements, Outlet, Route, RouterProvider } from 'react-router-dom';
 import { DirtyProvider } from './DirtyProvider';

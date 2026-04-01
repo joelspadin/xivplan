@@ -1,11 +1,11 @@
 import { Stage } from 'konva/lib/Stage';
-import { Vector2d } from 'konva/lib/types';
-import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
-import { HotkeyCallback } from 'react-hotkeys-hook';
+import type { Vector2d } from 'konva/lib/types';
+import React, { type Dispatch, type SetStateAction, useContext, useState } from 'react';
+import type { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
-import { GroupMoveAction, SceneAction, useScene } from './SceneProvider';
-import { SceneSelection } from './SelectionContext';
+import { type GroupMoveAction, type SceneAction, useScene } from './SceneProvider';
+import type { SceneSelection } from './SelectionContext';
 import { omitInterconnectedObjects } from './connections';
 import { getAbsolutePosition, getSceneCoord, makeRelative, rotateCoord } from './coord';
 import { copyObjects, getGroupCenter } from './copy';
@@ -13,7 +13,15 @@ import { EditMode } from './editMode';
 import { moveObjectsBy } from './groupOperations';
 import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
-import { MoveableObject, Scene, SceneObject, SceneStep, TetherType, isMoveable, isRotateable } from './scene';
+import {
+    type MoveableObject,
+    type Scene,
+    type SceneObject,
+    type SceneStep,
+    TetherType,
+    isMoveable,
+    isRotateable,
+} from './scene';
 import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
 import { useCancelConnectionSelection, useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';

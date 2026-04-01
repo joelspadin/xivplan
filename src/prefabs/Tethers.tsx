@@ -1,10 +1,10 @@
 import { makeStyles } from '@fluentui/react-components';
 import Konva from 'konva';
-import { NodeConfig } from 'konva/lib/Node';
-import { ShapeConfig } from 'konva/lib/Shape';
-import { ArrowConfig } from 'konva/lib/shapes/Arrow';
-import { LineConfig } from 'konva/lib/shapes/Line';
-import { Vector2d } from 'konva/lib/types';
+import type { NodeConfig } from 'konva/lib/Node';
+import type { ShapeConfig } from 'konva/lib/Shape';
+import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
+import type { LineConfig } from 'konva/lib/shapes/Line';
+import type { Vector2d } from 'konva/lib/types';
 import * as React from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
@@ -13,16 +13,16 @@ import { getArrowStrokeExtent } from '../arrowUtil';
 import { getCanvasCoord } from '../coord';
 import { EditMode } from '../editMode';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { type ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
+import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ForegroundPortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
 import {
-    FakeCursorObject,
+    type FakeCursorObject,
     ObjectType,
-    Scene,
-    SceneObject,
-    Tether,
+    type Scene,
+    type SceneObject,
+    type Tether,
     TetherType,
     isEnemy,
     isMarker,
@@ -34,7 +34,7 @@ import {
 import { selectNone, useSelection } from '../selection';
 import { panelVars } from '../theme';
 import { useEditMode } from '../useEditMode';
-import { UseKonvaCacheOptions, useKonvaCache } from '../useKonvaCache';
+import { type UseKonvaCacheOptions, useKonvaCache } from '../useKonvaCache';
 import { useTetherConfig } from '../useTetherConfig';
 import { distance, vecAdd, vecMult, vecSub, vecUnit } from '../vector';
 import { HideCutoutGroup, HideGroup } from './HideGroup';

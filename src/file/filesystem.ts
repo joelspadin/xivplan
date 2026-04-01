@@ -1,6 +1,6 @@
-import { DBSchema, openDB } from 'idb';
-import { FileSystemFileSource } from '../SceneProvider';
-import { Scene } from '../scene';
+import { type DBSchema, openDB } from 'idb';
+import type { FileSystemFileSource } from '../SceneProvider';
+import type { Scene } from '../scene';
 
 const FILE_PICKER_ID = 'plan-file';
 const FOLDER_PICKER_ID = 'plan-folder';

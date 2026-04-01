@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { PanelDragContext, PanelDragObject, PanelDragState } from './PanelDragContext';
+import { PanelDragContext, type PanelDragObject, type PanelDragState } from './PanelDragContext';
 import { EditMode } from './editMode';
 import { useEditMode } from './useEditMode';
 

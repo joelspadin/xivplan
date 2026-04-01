@@ -4,8 +4,8 @@ import { ConnectionType } from '../EditModeContext';
 import { useCurrentStep } from '../SceneProvider';
 import { EditMode } from '../editMode';
 import {
-    SceneObject,
-    UnknownObject,
+    type SceneObject,
+    type UnknownObject,
     isArcZone,
     isArrow,
     isColored,
@@ -36,7 +36,7 @@ import { getSelectedObjects, useSelection } from '../selection';
 import { useConnectionSelection } from '../useConnectionSelection';
 import { useControlStyles } from '../useControlStyles';
 import { useEditMode } from '../useEditMode';
-import { PropertiesControlProps } from './PropertiesControl';
+import type { PropertiesControlProps } from './PropertiesControl';
 import { ArrowPointersControl } from './properties/ArrowControls';
 import { DrawObjectBrushControl } from './properties/BrushControl';
 import { ColorControl, ColorSwatchControl } from './properties/ColorControl';

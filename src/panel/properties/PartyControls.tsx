@@ -2,8 +2,8 @@ import { Button, Image, Label, makeStyles, tokens } from '@fluentui/react-compon
 import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Job, getJob, getJobIconUrl } from '../../jobs';
-import { PartyObject } from '../../scene';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PartyObject } from '../../scene';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
     [Job.RoleSupport, Job.RoleTank, Job.RoleHealer, Job.RoleDps, Job.RoleAny],

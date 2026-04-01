@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import React from 'react';
-import { Group, KonvaNodeEvents } from 'react-konva';
+import { Group, type KonvaNodeEvents } from 'react-konva';
 import { useDefaultCursor } from './cursor';
 import { useStage } from './render/stage';
 

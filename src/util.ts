@@ -1,4 +1,4 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 
 export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x as Readonly<T>];

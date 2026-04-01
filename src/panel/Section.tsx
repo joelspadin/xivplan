@@ -1,6 +1,6 @@
 import { Divider, makeStyles, mergeClasses } from '@fluentui/react-components';
+import type { HTMLAttributes } from 'react';
 import * as React from 'react';
-import { HTMLAttributes } from 'react';
 import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING } from './PanelStyles';
 

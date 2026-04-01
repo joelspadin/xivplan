@@ -1,7 +1,7 @@
 import {
     Field,
     ToggleButton,
-    ToggleButtonProps,
+    type ToggleButtonProps,
     makeStyles,
     mergeClasses,
     shorthands,
@@ -16,7 +16,7 @@ import {
 } from '@fluentui/react-icons';
 import React from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
-import { CompactColorPicker, CompactColorPickerProps } from '../CompactColorPicker';
+import { CompactColorPicker, type CompactColorPickerProps } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';

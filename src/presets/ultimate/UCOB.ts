@@ -1,4 +1,4 @@
-import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../scene';
+import { type ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../../scene';
 
 const PRESET_3: ArenaPreset = {
     name: 'Phase 3',

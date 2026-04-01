@@ -1,4 +1,4 @@
-import { Textarea, TextareaProps } from '@fluentui/react-components';
+import { Textarea, type TextareaProps } from '@fluentui/react-components';
 import React from 'react';
 
 export interface DeferredTextareaProps extends TextareaProps {

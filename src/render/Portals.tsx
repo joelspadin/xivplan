@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { Portal } from 'react-konva-utils';
 import { LayerSelector } from './layers';
 

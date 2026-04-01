@@ -5,10 +5,10 @@ import { ConnectionType } from '../../EditModeContext';
 import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { EnemyObject, EnemyRingStyle, isEnemy, RotateableObject } from '../../scene';
+import { type EnemyObject, EnemyRingStyle, isEnemy, type RotateableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 import { ConnectedObjectSelector } from './ConnectedObjectSelector';
 
 export const RotationControl: React.FC<PropertiesControlProps<RotateableObject | EnemyObject>> = ({ objects }) => {

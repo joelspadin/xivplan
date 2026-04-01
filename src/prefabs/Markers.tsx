@@ -1,14 +1,14 @@
-import { ShapeConfig } from 'konva/lib/Shape';
-import { EllipseConfig } from 'konva/lib/shapes/Ellipse';
+import type { ShapeConfig } from 'konva/lib/Shape';
+import type { EllipseConfig } from 'konva/lib/shapes/Ellipse';
 import * as React from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { MarkerObject, ObjectType } from '../scene';
+import { type MarkerObject, ObjectType } from '../scene';
 import {
     COLOR_MARKER_BLUE,
     COLOR_MARKER_PURPLE,

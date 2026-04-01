@@ -1,6 +1,6 @@
-import { downloadZip, InputWithSizeMeta } from 'client-zip';
+import { downloadZip, type InputWithSizeMeta } from 'client-zip';
 import localforage from 'localforage';
-import { Scene } from '../scene';
+import type { Scene } from '../scene';
 
 interface FileMetadata {
     timestamp: string;

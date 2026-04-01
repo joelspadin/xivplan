@@ -3,33 +3,33 @@ import {
     DataGrid,
     DataGridBody,
     DataGridCell,
-    DataGridCellFocusMode,
+    type DataGridCellFocusMode,
     DataGridHeader,
     DataGridHeaderCell,
-    DataGridProps,
+    type DataGridProps,
     DataGridRow,
     DialogActions,
     DialogTrigger,
     Field,
     Input,
-    TableColumnDefinition,
-    TableColumnId,
-    TableRowId,
+    type TableColumnDefinition,
+    type TableColumnId,
+    type TableRowId,
     Tooltip,
     createTableColumn,
     makeStyles,
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { KeyboardEvent, MouseEvent, useState } from 'react';
-import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
+import React, { type KeyboardEvent, type MouseEvent, useState } from 'react';
+import { type HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useAsync, useAsyncFn, useCounter } from 'react-use';
-import { FileSource, useLoadScene, useScene, useSetSource } from '../SceneProvider';
+import { type FileSource, useLoadScene, useScene, useSetSource } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { DownloadLocalStorageButton } from './DownloadLocalStorageButton';
 import { useConfirmDeleteFile, useConfirmOverwriteFile, useConfirmUnsavedChanges } from './confirm';
-import { LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
+import { type LocalStorageFileInfo, deleteFileLocalStorage, listLocalStorageFiles } from './localStorage';
 
 const getCellFocusMode = (columnId: TableColumnId): DataGridCellFocusMode => {
     switch (columnId) {

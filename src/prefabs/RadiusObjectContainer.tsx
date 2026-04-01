@@ -4,15 +4,22 @@ import { useScene } from '../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
-import { InnerRadiusObject, RadiusObject, Scene, SceneObject, UnknownObject, isRotateable } from '../scene';
+import {
+    type InnerRadiusObject,
+    type RadiusObject,
+    type Scene,
+    type SceneObject,
+    type UnknownObject,
+    isRotateable,
+} from '../scene';
 import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
 import { clampRotation, mod360 } from '../util';
 import { distance } from '../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
-    Handle,
-    HandleFuncProps,
+    type Handle,
+    type HandleFuncProps,
     HandleStyle,
     createControlPointManager,
 } from './ControlPoint';

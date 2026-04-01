@@ -4,10 +4,10 @@ import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_SIZE } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { ResizeableObject } from '../../scene';
+import type { ResizeableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = ({ objects }) => {
     const classes = useControlStyles();

@@ -1,4 +1,4 @@
-import { Button, ButtonProps, makeStyles } from '@fluentui/react-components';
+import { Button, type ButtonProps, makeStyles } from '@fluentui/react-components';
 import { ArrowDownloadRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { useAsyncFn } from 'react-use';

@@ -3,10 +3,10 @@ import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { InnerRadiusObject, RadiusObject, isInnerRadiusObject } from '../../scene';
+import { type InnerRadiusObject, type RadiusObject, isInnerRadiusObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const RadiusControl: React.FC<PropertiesControlProps<RadiusObject>> = ({ objects }) => {
     const classes = useControlStyles();

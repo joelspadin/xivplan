@@ -1,10 +1,10 @@
-import { ShapeConfig } from 'konva/lib/Shape';
+import type { ShapeConfig } from 'konva/lib/Shape';
 import { getPositionParentId, useIsAllowedConnectionTarget } from '../connections';
 import { EditMode } from '../editMode';
-import { isMoveable, UnknownObject } from '../scene';
+import { isMoveable, type UnknownObject } from '../scene';
 import { getObjectById, useScene } from '../SceneProvider';
 import { useSelection, useSpotlight } from '../selection';
-import { SceneSelection } from '../SelectionContext';
+import type { SceneSelection } from '../SelectionContext';
 import { SELECTED_CONNECTED_PROPS, SELECTED_PROPS, SPOTLIGHT_CONNECTED_PROPS, SPOTLIGHT_PROPS } from '../theme';
 import { useEditMode } from '../useEditMode';
 

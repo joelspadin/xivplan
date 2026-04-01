@@ -1,4 +1,4 @@
-import { Field, makeStyles, mergeClasses, SpinButtonProps, tokens } from '@fluentui/react-components';
+import { Field, makeStyles, mergeClasses, type SpinButtonProps, tokens } from '@fluentui/react-components';
 import React from 'react';
 import { SpinButton } from './SpinButton';
 import { sceneTokens } from './theme';

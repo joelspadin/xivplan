@@ -1,7 +1,7 @@
 import React from 'react';
 import { CompactColorPicker } from '../../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../../CompactSwatchColorPicker';
-import { ColoredObject, isMarker } from '../../scene';
+import { type ColoredObject, isMarker } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import {
     COLOR_MARKER_BLUE,
@@ -12,7 +12,7 @@ import {
     useColorSwatches,
 } from '../../theme';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
     const { dispatch } = useScene();

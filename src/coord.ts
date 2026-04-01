@@ -1,7 +1,14 @@
 import { Stage } from 'konva/lib/Stage';
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import { getObjectById, useScene } from './SceneProvider';
-import { isMoveable, isRotateable, MoveableObject, RotateableObject, Scene, SceneObject } from './scene';
+import {
+    isMoveable,
+    isRotateable,
+    type MoveableObject,
+    type RotateableObject,
+    type Scene,
+    type SceneObject,
+} from './scene';
 import { degtorad, round } from './util';
 import { vecAngle } from './vector';
 

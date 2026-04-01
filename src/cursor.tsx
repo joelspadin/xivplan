@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { DefaultCursorContext, DefaultCursorState } from './DefaultCursorContext';
+import { DefaultCursorContext, type DefaultCursorState } from './DefaultCursorContext';
 import { mod360 } from './util';
 
 export function getResizeCursor(angle: number): string {

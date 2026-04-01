@@ -1,7 +1,7 @@
 import {
     Button,
     Checkbox,
-    CheckboxProps,
+    type CheckboxProps,
     Dialog,
     DialogActions,
     DialogContent,
@@ -13,7 +13,7 @@ import {
     mergeClasses,
     NavDrawer,
     NavDrawerBody,
-    NavDrawerProps,
+    type NavDrawerProps,
     NavItem,
     NavSectionHeader,
     shorthands,
@@ -22,13 +22,20 @@ import {
     useArrowNavigationGroup,
 } from '@fluentui/react-components';
 import { OptionsFilled } from '@fluentui/react-icons';
-import React, { ButtonHTMLAttributes, Dispatch, MouseEventHandler, SetStateAction, useRef, useState } from 'react';
+import React, {
+    type ButtonHTMLAttributes,
+    type Dispatch,
+    type MouseEventHandler,
+    type SetStateAction,
+    useRef,
+    useState,
+} from 'react';
 import { useAsync, useCounter, useLocalStorage, useSessionStorage } from 'react-use';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
 import { ARENA_PRESETS } from '../presets/ArenaPresets';
 import { ScenePreview } from '../render/SceneRenderer';
-import { ArenaPreset, Scene } from '../scene';
+import type { ArenaPreset, Scene } from '../scene';
 import { getRevealedArenaPresets, revealArenaPreset } from '../spoilers';
 import { useControlStyles } from '../useControlStyles';
 import { ArenaBackgroundEdit } from './ArenaBackgroundEdit';

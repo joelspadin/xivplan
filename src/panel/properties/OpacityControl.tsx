@@ -1,9 +1,9 @@
 import React from 'react';
 import { OpacitySlider } from '../../OpacitySlider';
-import { SceneObject } from '../../scene';
+import type { SceneObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const OpacityControl: React.FC<PropertiesControlProps<SceneObject>> = ({ objects, className }) => {
     const { dispatch } = useScene();

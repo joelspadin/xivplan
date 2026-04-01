@@ -1,5 +1,5 @@
-import { BlobFileSource } from '../SceneProvider';
-import { Scene } from '../scene';
+import type { BlobFileSource } from '../SceneProvider';
+import type { Scene } from '../scene';
 
 const DEFAULT_FILENAME = 'plan.xivplan';
 

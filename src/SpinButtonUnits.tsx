@@ -1,6 +1,6 @@
-import { SpinButton, SpinButtonChangeEvent, SpinButtonOnChangeData } from '@fluentui/react-components';
+import { SpinButton, type SpinButtonChangeEvent, type SpinButtonOnChangeData } from '@fluentui/react-components';
 import React from 'react';
-import { CustomSpinButtonProps } from './SpinButton';
+import type { CustomSpinButtonProps } from './SpinButton';
 import { formatNumber, fractionDigitsToStep, round } from './util';
 
 export interface SpinButtonUnitsProps extends CustomSpinButtonProps {

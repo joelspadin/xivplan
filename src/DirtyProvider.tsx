@@ -3,18 +3,18 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogProps,
+    type DialogProps,
     DialogSurface,
     DialogTitle,
     DialogTrigger,
 } from '@fluentui/react-components';
 import { Action } from 'history';
-import React, { PropsWithChildren, useId, useState } from 'react';
-import { Location, useNavigate } from 'react-router-dom';
+import React, { type PropsWithChildren, useId, useState } from 'react';
+import { type Location, useNavigate } from 'react-router-dom';
 import { useBeforeUnload } from 'react-use';
 import { DirtyContext, SavedStateContext } from './DirtyContext';
 import { useScene } from './SceneProvider';
-import { Scene } from './scene';
+import type { Scene } from './scene';
 
 export const DirtyProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { canonicalScene } = useScene();

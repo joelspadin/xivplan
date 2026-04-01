@@ -1,5 +1,5 @@
-import { PropsWithChildren, useRef, useState } from 'react';
-import { ObjectLoadingContext, ObjectLoadingState } from './ObjectLoadingContext';
+import { type PropsWithChildren, useRef, useState } from 'react';
+import { ObjectLoadingContext, type ObjectLoadingState } from './ObjectLoadingContext';
 
 /**
  * Tracks whether any descendants using useObjectLoading()

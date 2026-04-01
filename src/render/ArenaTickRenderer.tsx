@@ -1,7 +1,7 @@
 import React from 'react';
 import { Rect } from 'react-konva';
 import { getCanvasArenaEllipse, getCanvasArenaRect } from '../coord';
-import { RadialTicks, RectangularTicks, Scene, Ticks, TickType } from '../scene';
+import { type RadialTicks, type RectangularTicks, type Scene, type Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { useSceneTheme } from '../theme';
 import { degtorad, getLinearGridDivs } from '../util';

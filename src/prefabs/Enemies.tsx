@@ -1,15 +1,15 @@
 import Konva from 'konva';
-import { ShapeConfig } from 'konva/lib/Shape';
-import { TextConfig } from 'konva/lib/shapes/Text';
+import type { ShapeConfig } from 'konva/lib/Shape';
+import type { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
-import { RefObject, useRef } from 'react';
+import { type RefObject, useRef } from 'react';
 import { Arc, Circle, Path, Text } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { registerRenderer, RendererProps } from '../render/ObjectRegistry';
+import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
+import { type EnemyObject, EnemyRingStyle, ObjectType } from '../scene';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,

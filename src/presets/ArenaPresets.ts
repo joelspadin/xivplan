@@ -1,4 +1,4 @@
-import { ArenaPreset } from '../scene';
+import type { ArenaPreset } from '../scene';
 import { ARENA_PRESETS_CRITERION } from './Criterion';
 import { ARENA_PRESETS_GENERAL } from './General';
 import { ARENA_PRESETS_TRIALS } from './Trials';

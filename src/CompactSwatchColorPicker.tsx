@@ -1,7 +1,7 @@
 import {
-    ColorSwatchProps,
+    type ColorSwatchProps,
     SwatchPicker,
-    SwatchPickerProps,
+    type SwatchPickerProps,
     makeStyles,
     mergeClasses,
     renderSwatchPickerGrid,

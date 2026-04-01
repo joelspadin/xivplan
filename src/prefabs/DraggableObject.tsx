@@ -1,12 +1,12 @@
-import { KonvaEventObject } from 'konva/lib/Node';
-import React, { Dispatch, ReactNode } from 'react';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import React, { type Dispatch, type ReactNode } from 'react';
 import { omitInterconnectedObjects } from '../connections';
 import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
 import { moveObjectsBy } from '../groupOperations';
-import { isMoveable, MoveableObject, Scene, SceneStep, UnknownObject } from '../scene';
-import { SceneAction, useScene } from '../SceneProvider';
+import { isMoveable, type MoveableObject, type Scene, type SceneStep, type UnknownObject } from '../scene';
+import { type SceneAction, useScene } from '../SceneProvider';
 import {
     getNewDragSelection,
     getSelectedObjects,
@@ -15,7 +15,7 @@ import {
     useDragSelection,
     useSelection,
 } from '../selection';
-import { SceneSelection } from '../SelectionContext';
+import type { SceneSelection } from '../SelectionContext';
 import { useEditMode } from '../useEditMode';
 import { vecSub } from '../vector';
 import { SelectableObject } from './SelectableObject';

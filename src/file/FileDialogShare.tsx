@@ -4,13 +4,13 @@ import {
     DialogTrigger,
     Field,
     Textarea,
-    TextareaOnChangeData,
+    type TextareaOnChangeData,
 } from '@fluentui/react-components';
-import React, { ChangeEvent, useState } from 'react';
-import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
+import React, { type ChangeEvent, useState } from 'react';
+import { type HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { useLoadScene } from '../SceneProvider';
 import { textToScene } from '../file';
-import { Scene } from '../scene';
+import type { Scene } from '../scene';
 import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty } from '../useIsDirty';
 import { useConfirmUnsavedChanges } from './confirm';

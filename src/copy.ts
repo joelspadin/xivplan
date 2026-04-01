@@ -1,17 +1,17 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import { omitInterconnectedObjects } from './connections';
 import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import {
     isMoveable,
     isRotateable,
     isTether,
-    MoveableObject,
-    RotateableObject,
-    Scene,
-    SceneObject,
-    SceneStep,
-    Tether,
-    UnknownObject,
+    type MoveableObject,
+    type RotateableObject,
+    type Scene,
+    type SceneObject,
+    type SceneStep,
+    type Tether,
+    type UnknownObject,
 } from './scene';
 import { isNotNull, omit } from './util';
 import { VEC_ZERO, vecAdd, vecSub } from './vector';

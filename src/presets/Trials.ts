@@ -1,4 +1,4 @@
-import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../scene';
+import { type ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../scene';
 
 const PRESET_DIAMOND_WEAPON_1: ArenaPreset = {
     name: 'The Cloud Deck',

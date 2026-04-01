@@ -1,5 +1,5 @@
 import { FluentProvider, makeStyles } from '@fluentui/react-components';
-import React, { PropsWithChildren, useEffect } from 'react';
+import React, { type PropsWithChildren, useEffect } from 'react';
 import { useLocalStorage, useMedia } from 'react-use';
 import { getFluentTheme, usePanelThemeStyle, useSceneThemeStyle } from './theme';
 import { DarkModeContext } from './ThemeContext';

@@ -1,12 +1,12 @@
 import { Field, mergeClasses } from '@fluentui/react-components';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { LineZone } from '../../scene';
+import type { LineZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const LineSizeControl: React.FC<PropertiesControlProps<LineZone>> = ({ objects }) => {
     const classes = useControlStyles();

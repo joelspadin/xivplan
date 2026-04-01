@@ -1,4 +1,4 @@
-import { CircleConfig } from 'konva/lib/shapes/Circle';
+import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import { degtorad } from '../../util';
 
 export interface StackCircleOptions {

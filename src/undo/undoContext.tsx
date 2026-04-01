@@ -1,5 +1,12 @@
-import React, { ComponentType, createContext, Dispatch, PropsWithChildren, use, useReducer } from 'react';
-import { createUndoReducer, StateActionBase, UndoRedoAction, UndoRedoState } from './undoReducer';
+import React, {
+    type ComponentType,
+    createContext,
+    type Dispatch,
+    type PropsWithChildren,
+    use,
+    useReducer,
+} from 'react';
+import { createUndoReducer, type StateActionBase, type UndoRedoAction, type UndoRedoState } from './undoReducer';
 
 export interface UndoProviderProps<S> extends PropsWithChildren {
     initialState: S;

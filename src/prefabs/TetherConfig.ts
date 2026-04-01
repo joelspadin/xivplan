@@ -1,4 +1,4 @@
-import { ObjectType, SceneObject, Tether, TetherType, isMoveable } from '../scene';
+import { ObjectType, type SceneObject, type Tether, TetherType, isMoveable } from '../scene';
 import { COLOR_FUSCHIA, COLOR_GREEN, COLOR_ORANGE } from '../theme';
 import { combinations } from '../util';
 

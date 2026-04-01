@@ -1,14 +1,14 @@
 import Konva from 'konva';
 import React, { useRef, useState } from 'react';
-import { KonvaNodeEvents } from 'react-konva';
+import type { KonvaNodeEvents } from 'react-konva';
 import { getAbsoluteRotation } from '../coord';
 import { ActivePortal } from '../render/Portals';
-import { ResizeableObject, UnknownObject } from '../scene';
+import type { ResizeableObject, UnknownObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { useIsDragging } from '../selection';
 import { useKonvaCache } from '../useKonvaCache';
 import { DraggableObject } from './DraggableObject';
-import { Resizer, ResizerProps } from './Resizer';
+import { Resizer, type ResizerProps } from './Resizer';
 
 export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
 

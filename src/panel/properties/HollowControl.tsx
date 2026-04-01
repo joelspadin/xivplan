@@ -3,9 +3,9 @@ import { CircleFilled, CircleRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
-import { HollowObject } from '../../scene';
+import type { HollowObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 enum Styles {
     Solid = 'solid',

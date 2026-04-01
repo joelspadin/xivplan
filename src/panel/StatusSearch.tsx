@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useAsync, useDebounce, useLocalStorage } from 'react-use';
 import { MessageToast } from '../MessageToast';
 import { PANEL_PADDING } from './PanelStyles';
-import { StatusGrid, StatusItem } from './StatusGrid';
+import { StatusGrid, type StatusItem } from './StatusGrid';
 
 interface Result {
     score: number;

@@ -1,7 +1,7 @@
 import { Registry } from '../Registry';
-import { SceneObject } from '../scene';
+import type { SceneObject } from '../scene';
 import { asArray } from '../util';
-import { DetailsItemSize } from './DetailsItem';
+import type { DetailsItemSize } from './DetailsItem';
 
 export interface ListComponentProps<T extends SceneObject = SceneObject> {
     object: T;

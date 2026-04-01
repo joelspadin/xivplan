@@ -10,7 +10,7 @@ import {
 import React, { useId } from 'react';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useAsyncModalResolveCallback } from '../useAsyncModal';
-import { FilePromptProps } from './FilePrompts';
+import { type FilePromptProps } from './FilePrompts';
 
 export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ resolve, ...props }) => {
     const confirmId = useId();

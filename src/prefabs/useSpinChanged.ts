@@ -1,4 +1,4 @@
-import { SpinButtonChangeEvent, SpinButtonOnChangeData } from '@fluentui/react-components';
+import type { SpinButtonChangeEvent, SpinButtonOnChangeData } from '@fluentui/react-components';
 
 export function useSpinChanged(callback: (value: number) => void) {
     return (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {

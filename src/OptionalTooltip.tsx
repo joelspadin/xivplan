@@ -1,4 +1,4 @@
-import { Tooltip, TooltipProps } from '@fluentui/react-components';
+import { Tooltip, type TooltipProps } from '@fluentui/react-components';
 import React from 'react';
 
 export interface OptionalTooltipProps extends Omit<TooltipProps, 'content' | 'children'> {

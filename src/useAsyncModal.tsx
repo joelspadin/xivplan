@@ -1,5 +1,5 @@
-import { DialogProps } from '@fluentui/react-components';
-import { ReactNode, useRef, useState } from 'react';
+import type { DialogProps } from '@fluentui/react-components';
+import { type ReactNode, useRef, useState } from 'react';
 
 export type ModalProps = Omit<DialogProps, 'children'>;
 

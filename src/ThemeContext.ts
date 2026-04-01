@@ -1,4 +1,4 @@
-import { createContext, Dispatch } from 'react';
+import { createContext, type Dispatch } from 'react';
 
 export type DarkModeValue = [boolean, Dispatch<boolean>];
 

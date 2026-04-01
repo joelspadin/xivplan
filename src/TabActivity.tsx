@@ -1,4 +1,4 @@
-import { Activity, PropsWithChildren } from 'react';
+import { Activity, type PropsWithChildren } from 'react';
 
 export interface TabActivityProps<T> extends PropsWithChildren {
     /** The identifier for this tab */

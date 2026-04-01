@@ -1,5 +1,5 @@
-import { Field, FieldProps, InfoLabel, InfoLabelProps, LabelProps } from '@fluentui/react-components';
-import React, { RefAttributes } from 'react';
+import { Field, type FieldProps, InfoLabel, type InfoLabelProps, type LabelProps } from '@fluentui/react-components';
+import React, { type RefAttributes } from 'react';
 
 export interface InfoFieldProps extends FieldProps, RefAttributes<HTMLDivElement> {
     info?: InfoLabelProps['info'];

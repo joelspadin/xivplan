@@ -9,7 +9,7 @@ import {
     SquareRegular,
 } from '@fluentui/react-icons';
 import React from 'react';
-import { DEFAULT_RADIAL_TICKS, DEFAULT_RECT_TICKS, NO_TICKS, Ticks, TickType } from '../scene';
+import { DEFAULT_RADIAL_TICKS, DEFAULT_RECT_TICKS, NO_TICKS, type Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { Segment, SegmentedGroup } from '../Segmented';
 import { SpinButton } from '../SpinButton';

@@ -1,4 +1,4 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, type Dispatch, type SetStateAction } from 'react';
 import { EditMode } from './editMode';
 import { TetherType } from './scene';
 import { COLOR_YELLOW } from './theme';

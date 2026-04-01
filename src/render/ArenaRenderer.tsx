@@ -1,7 +1,7 @@
 import { Context as KonvaContext } from 'konva/lib/Context';
-import { ShapeConfig } from 'konva/lib/Shape';
-import { ImageConfig } from 'konva/lib/shapes/Image';
-import React, { PropsWithChildren } from 'react';
+import type { ShapeConfig } from 'konva/lib/Shape';
+import type { ImageConfig } from 'konva/lib/shapes/Image';
+import React, { type PropsWithChildren } from 'react';
 import { Ellipse, Group, Image, Rect, Shape } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import {
@@ -17,12 +17,12 @@ import {
 } from '../coord';
 import {
     ArenaShape,
-    CustomRadialGrid,
-    CustomRectangularGrid,
+    type CustomRadialGrid,
+    type CustomRectangularGrid,
     GridType,
-    RadialGrid,
-    RectangularGrid,
-    Scene,
+    type RadialGrid,
+    type RectangularGrid,
+    type Scene,
 } from '../scene';
 import { getArenaShapeConfig, getGridShapeConfig, useSceneTheme, useSceneThemeHtmlStyle } from '../theme';
 import { useImageTracked } from '../useObjectLoading';

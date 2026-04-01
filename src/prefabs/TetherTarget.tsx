@@ -1,10 +1,10 @@
-import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren } from 'react';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import React, { type PropsWithChildren } from 'react';
 import { CursorGroup } from '../CursorGroup';
-import { TetherConfig } from '../EditModeContext';
+import type { TetherConfig } from '../EditModeContext';
 import { useScene } from '../SceneProvider';
 import { EditMode } from '../editMode';
-import { MoveableObject, Tether, UnknownObject, isMoveable } from '../scene';
+import { type MoveableObject, type Tether, type UnknownObject, isMoveable } from '../scene';
 import { getSelectedObjects, selectNone, selectSingle, useSelection } from '../selection';
 import { useEditMode } from '../useEditMode';
 import { useTetherConfig } from '../useTetherConfig';

@@ -1,8 +1,8 @@
 import {
     Radio,
     RadioGroup,
-    RadioGroupProps,
-    RadioProps,
+    type RadioGroupProps,
+    type RadioProps,
     makeStyles,
     mergeClasses,
     radioClassNames,
@@ -11,7 +11,7 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { iconFilledClassName, iconRegularClassName } from '@fluentui/react-icons';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { OptionalTooltip } from './OptionalTooltip';
 
 export type SegmentedGroupProps = RadioGroupProps;

@@ -1,4 +1,4 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import { Group } from 'react-konva';
 import { useScene } from '../SceneProvider';

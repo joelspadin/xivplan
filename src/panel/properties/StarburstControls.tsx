@@ -4,10 +4,10 @@ import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { StarburstZone } from '../../scene';
+import type { StarburstZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const MIN_SPOKE_COUNT = 3;
 const MAX_SPOKE_COUNT = 16;

@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useState } from 'react';
-import { PanelDragContext, PanelDragObject } from './PanelDragContext';
+import React, { type PropsWithChildren, useState } from 'react';
+import { PanelDragContext, type PanelDragObject } from './PanelDragContext';
 
 export const PanelDragProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const state = useState<PanelDragObject | null>(null);

@@ -2,10 +2,10 @@ import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
-import { StackCountObject } from '../../scene';
+import type { StackCountObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const STACK_VALUES = [1, 2, 3, 4];
 

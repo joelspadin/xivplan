@@ -1,4 +1,4 @@
-import { Position } from './coord';
+import type { Position } from './coord';
 
 export enum ArenaShape {
     None = 'none',

@@ -1,4 +1,4 @@
-import { Text, Toast, ToastBody, ToastProps, ToastTitle } from '@fluentui/react-components';
+import { Text, Toast, ToastBody, type ToastProps, ToastTitle } from '@fluentui/react-components';
 import React from 'react';
 import { ToastDismissButton } from './ToastDismissButton';
 

@@ -2,7 +2,7 @@ import {
     Button,
     Dialog,
     DialogContent,
-    DialogProps,
+    type DialogProps,
     DialogSurface,
     DialogTitle,
     DialogTrigger,

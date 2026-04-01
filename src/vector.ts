@@ -1,4 +1,4 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import { degtorad, radtodeg } from './util';
 
 export const VEC_ZERO: Vector2d = { x: 0, y: 0 };

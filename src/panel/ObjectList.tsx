@@ -1,7 +1,7 @@
 import {
     closestCenter,
     DndContext,
-    DragEndEvent,
+    type DragEndEvent,
     KeyboardSensor,
     MouseSensor,
     TouchSensor,
@@ -20,7 +20,7 @@ import { makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-co
 import React from 'react';
 import { useIsAllowedConnectionTarget, useUpdateConnectedIdsAction } from '../connections';
 import { EditMode } from '../editMode';
-import { isMoveable, SceneObject } from '../scene';
+import { isMoveable, type SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import { addSelection, selectNone, selectSingle, toggleSelection, useSelection, useSpotlight } from '../selection';
 import { useEditMode } from '../useEditMode';

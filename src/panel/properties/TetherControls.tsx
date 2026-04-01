@@ -7,10 +7,10 @@ import { getTetherName } from '../../prefabs/TetherConfig';
 import { TetherIcon } from '../../prefabs/TetherIcon';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { Tether, TetherType } from '../../scene';
+import { type Tether, TetherType } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const TETHER_TYPES = [
     TetherType.Line,

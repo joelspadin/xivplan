@@ -14,12 +14,12 @@ import {
     useToastController,
 } from '@fluentui/react-components';
 import { CopyRegular, ShareRegular } from '@fluentui/react-icons';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { CollapsableToolbarButton } from '../CollapsableToolbarButton';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
 import { useScene } from '../SceneProvider';
 import { sceneToText } from '../file';
-import { Scene } from '../scene';
+import type { Scene } from '../scene';
 import { DownloadButton } from './DownloadButton';
 
 export interface ShareDialogButtonProps {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ObjectContext } from '../prefabs/ObjectContext';
-import { SceneObject } from '../scene';
+import { type SceneObject } from '../scene';
 import { LayerName } from './layers';
 import { getLayerName, getRenderer } from './ObjectRegistry';
 

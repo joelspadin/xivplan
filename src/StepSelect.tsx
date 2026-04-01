@@ -1,6 +1,6 @@
 import {
     DndContext,
-    DragEndEvent,
+    type DragEndEvent,
     KeyboardSensor,
     PointerSensor,
     closestCenter,
@@ -12,15 +12,15 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable } 
 import { CSS } from '@dnd-kit/utilities';
 import {
     Button,
-    ButtonProps,
+    type ButtonProps,
     Dialog,
     DialogActions,
     DialogContent,
     DialogSurface,
     DialogTitle,
     DialogTrigger,
-    SelectTabData,
-    SelectTabEvent,
+    type SelectTabData,
+    type SelectTabEvent,
     Tab,
     TabList,
     Tooltip,
@@ -30,11 +30,11 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { HTMLAttributes, RefAttributes, useState } from 'react';
+import React, { type HTMLAttributes, type RefAttributes, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
-import { Scene } from './scene';
+import type { Scene } from './scene';
 import { MIN_STAGE_WIDTH } from './theme';
 import { useCancelConnectionSelection } from './useEditMode';
 

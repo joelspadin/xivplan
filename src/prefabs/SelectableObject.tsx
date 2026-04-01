@@ -1,9 +1,9 @@
-import { KonvaEventObject } from 'konva/lib/Node';
-import React, { PropsWithChildren } from 'react';
+import type { KonvaEventObject } from 'konva/lib/Node';
+import React, { type PropsWithChildren } from 'react';
 import { Group } from 'react-konva';
 import { useIsAllowedConnectionTarget, useUpdateConnectedIdsAction } from '../connections';
 import { EditMode } from '../editMode';
-import { isMoveable, SceneObject } from '../scene';
+import { isMoveable, type SceneObject } from '../scene';
 import { useScene } from '../SceneProvider';
 import {
     addSelection,

@@ -1,4 +1,4 @@
-import { CircleConfig } from 'konva/lib/shapes/Circle';
+import { type CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle } from 'react-konva';
 import { getSphericalGradientStops } from './style';

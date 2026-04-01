@@ -1,9 +1,9 @@
 import { Switch } from '@fluentui/react-components';
 import React from 'react';
 import { useScene } from '../../SceneProvider';
-import { EyeObject } from '../../scene';
+import type { EyeObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const EyeInvertControl: React.FC<PropertiesControlProps<EyeObject>> = ({ objects }) => {
     const { dispatch } = useScene();

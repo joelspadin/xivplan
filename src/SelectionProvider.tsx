@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useState } from 'react';
-import { DragSelectionContext, SceneSelection, SelectionContext, SpotlightContext } from './SelectionContext';
+import React, { type PropsWithChildren, useState } from 'react';
+import { DragSelectionContext, type SceneSelection, SelectionContext, SpotlightContext } from './SelectionContext';
 
 export const SelectionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const state = useState<SceneSelection>(new Set());

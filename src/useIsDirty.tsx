@@ -1,6 +1,6 @@
-import { Dispatch, useContext } from 'react';
+import { type Dispatch, useContext } from 'react';
 import { DirtyContext, SavedStateContext } from './DirtyContext';
-import { Scene } from './scene';
+import type { Scene } from './scene';
 
 /**
  * @returns whether the scene has changed since the last save.

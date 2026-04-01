@@ -23,7 +23,7 @@ import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { TextObject, TextStyle } from '../../scene';
+import type { TextObject, TextStyle } from '../../scene';
 import {
     COLOR_BLACK,
     COLOR_BLUE,
@@ -36,7 +36,7 @@ import {
 } from '../../theme';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const AlignLeft = bundleIcon(TextAlignLeftFilled, TextAlignLeftRegular);
 const AlignCenter = bundleIcon(TextAlignCenterFilled, TextAlignCenterRegular);

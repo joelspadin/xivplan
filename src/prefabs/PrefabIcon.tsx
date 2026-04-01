@@ -1,5 +1,5 @@
-import { Image, ImageProps, makeStyles, mergeClasses } from '@fluentui/react-components';
-import React, { CSSProperties, ReactNode } from 'react';
+import { Image, type ImageProps, makeStyles, mergeClasses } from '@fluentui/react-components';
+import React, { type CSSProperties, type ReactNode } from 'react';
 import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 
 export interface PrefabIconProps extends Omit<ImageProps, 'width' | 'height'> {

@@ -1,6 +1,6 @@
 import {
     Menu,
-    MenuButtonProps,
+    type MenuButtonProps,
     MenuItem,
     MenuList,
     MenuPopover,
@@ -17,10 +17,10 @@ import {
     SaveEditRegular,
     SaveRegular,
 } from '@fluentui/react-icons';
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { type ReactElement, useContext, useState } from 'react';
 import { InPortal } from 'react-reverse-portal';
 import { CollapsableSplitButton, CollapsableToolbarButton } from './CollapsableToolbarButton';
-import { FileSource, useScene, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
+import { type FileSource, useScene, useSceneUndoRedoPossible, useSetSource } from './SceneProvider';
 import { StepScreenshotButton } from './StepScreenshotButton';
 import { ToolbarContext } from './ToolbarContext';
 import { saveFile } from './file';

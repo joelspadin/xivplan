@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from 'react';
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react';
+import { createContext, type Dispatch, type PropsWithChildren, type SetStateAction, useContext, useState } from 'react';
 import {
     DefaultAttachPosition,
     getDefaultAttachmentSettings,
@@ -10,23 +10,23 @@ import {
 import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import { copyObjects } from './copy';
 import {
-    Arena,
+    type Arena,
     ArenaShape,
     DEFAULT_SCENE,
-    Grid,
+    type Grid,
     isMoveable,
     isRotateable,
     isTether,
-    MoveableObject,
-    Scene,
-    SceneObject,
-    SceneObjectWithoutId,
-    SceneStep,
-    Tether,
-    Ticks,
+    type MoveableObject,
+    type Scene,
+    type SceneObject,
+    type SceneObjectWithoutId,
+    type SceneStep,
+    type Tether,
+    type Ticks,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
-import { StateActionBase, UndoRedoAction } from './undo/undoReducer';
+import type { StateActionBase, UndoRedoAction } from './undo/undoReducer';
 import { useSetSavedState } from './useIsDirty';
 import { asArray, clamp, omit } from './util';
 

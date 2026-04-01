@@ -1,4 +1,4 @@
-import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType, Ticks, TickType } from '../../scene';
+import { type ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType, type Ticks, TickType } from '../../scene';
 
 const RADIAL_TICKS: Ticks = {
     type: TickType.Radial,

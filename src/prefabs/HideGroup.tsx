@@ -1,6 +1,6 @@
 import Konva from 'konva';
-import { GroupConfig } from 'konva/lib/Group';
-import React, { ReactNode, RefAttributes } from 'react';
+import type { GroupConfig } from 'konva/lib/Group';
+import React, { type ReactNode, type RefAttributes } from 'react';
 import { Group } from 'react-konva';
 import { useObject } from './useObject';
 

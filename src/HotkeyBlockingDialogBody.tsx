@@ -1,4 +1,4 @@
-import { DialogBody, DialogBodyProps } from '@fluentui/react-components';
+import { DialogBody, type DialogBodyProps } from '@fluentui/react-components';
 import React from 'react';
 import { useHotkeyBlocker } from './useHotkeys';
 

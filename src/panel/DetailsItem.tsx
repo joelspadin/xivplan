@@ -8,11 +8,11 @@ import {
     EyeOffRegular,
     EyeRegular,
 } from '@fluentui/react-icons';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { useScene } from '../SceneProvider';
 import { EditMode } from '../editMode';
 import { PrefabIcon } from '../prefabs/PrefabIcon';
-import { SceneObject } from '../scene';
+import type { SceneObject } from '../scene';
 import { useEditMode } from '../useEditMode';
 import { setOrOmit } from '../util';
 import { detailsItemClassNames } from './detailsItemStyles';

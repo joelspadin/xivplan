@@ -1,5 +1,5 @@
-import { GroupConfig } from 'konva/lib/Group';
-import React, { ReactNode } from 'react';
+import type { GroupConfig } from 'konva/lib/Group';
+import React, { type ReactNode } from 'react';
 import { Group } from 'react-konva';
 
 export interface CompositeReplaceGroup extends GroupConfig {

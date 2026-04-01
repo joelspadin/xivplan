@@ -1,4 +1,4 @@
-import { ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../scene';
+import { type ArenaPreset, ArenaShape, DEFAULT_ARENA_PADDING, GridType } from '../scene';
 
 const PRESET_ZELESS_GAH: ArenaPreset = {
     name: "Sil'dihn Subterrane: Shadowcaster Zeless Gah",

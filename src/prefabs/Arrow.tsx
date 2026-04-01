@@ -1,14 +1,14 @@
 import { ArrowUpRegular } from '@fluentui/react-icons';
-import { ArrowConfig } from 'konva/lib/shapes/Arrow';
+import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
 import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { getArrowStrokeExtent } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
-import { ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
-import { RendererProps, registerRenderer } from '../render/ObjectRegistry';
+import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { ArrowObject, ObjectType } from '../scene';
+import { type ArrowObject, ObjectType } from '../scene';
 import { COLOR_RED } from '../theme';
 import { usePanelDrag } from '../usePanelDrag';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';

@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 
 export function themeToCssVars<T extends object>(theme: T): Record<keyof T, `--${string}`> {
     const vars = {} as Record<keyof T, `--${string}`>;

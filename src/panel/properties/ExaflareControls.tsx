@@ -10,10 +10,10 @@ import {
     EXAFLARE_SPACING_MAX,
     EXAFLARE_SPACING_MIN,
 } from '../../prefabs/zone/constants';
-import { ExaflareZone } from '../../scene';
+import type { ExaflareZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ objects }) => {
     const classes = useControlStyles();

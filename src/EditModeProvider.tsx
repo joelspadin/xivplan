@@ -1,15 +1,15 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { type PropsWithChildren, useState } from 'react';
 import { EditMode } from './editMode';
 import {
-    ConnectionSelectionConfig,
+    type ConnectionSelectionConfig,
     ConnectionSelectionContext,
     DEFAULT_CONNECTION_SELECTION_CONFIG,
     DEFAULT_DRAW_CONFIG,
     DEFAULT_TETHER_CONFIG,
-    DrawConfig,
+    type DrawConfig,
     DrawConfigContext,
     EditModeContext,
-    TetherConfig,
+    type TetherConfig,
     TetherConfigContext,
 } from './EditModeContext';
 

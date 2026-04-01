@@ -1,12 +1,12 @@
 import { use } from 'react';
 import {
     DragSelectionContext,
-    SceneSelection,
+    type SceneSelection,
     SelectionContext,
-    SelectionState,
+    type SelectionState,
     SpotlightContext,
 } from './SelectionContext';
-import { isMoveable, Scene, SceneObject, SceneStep } from './scene';
+import { isMoveable, type Scene, type SceneObject, type SceneStep } from './scene';
 
 /**
  * State for selected objects.

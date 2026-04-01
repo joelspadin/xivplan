@@ -1,5 +1,5 @@
 import { Node } from 'konva/lib/Node';
-import { DependencyList, useLayoutEffect } from 'react';
+import { type DependencyList, useLayoutEffect } from 'react';
 
 type CacheConfig = Exclude<Parameters<Node['cache']>[0], undefined>;
 

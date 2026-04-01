@@ -1,4 +1,4 @@
-import { CircleConfig } from 'konva/lib/shapes/Circle';
+import { type CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle, Group, Rect, Shape } from 'react-konva';
 import { COLOR_ORANGE } from '../theme';

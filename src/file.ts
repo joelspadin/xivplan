@@ -1,12 +1,12 @@
 import { Base64 } from 'js-base64';
 import { deflate, inflate } from 'pako';
 
-import { FileSource } from './SceneProvider';
+import type { FileSource } from './SceneProvider';
 import { downloadScene, openFileBlob } from './file/blob';
 import { openFileFs, saveFileFs } from './file/filesystem';
 import { openFileLocalStorage, saveFileLocalStorage } from './file/localStorage';
 import { upgradeScene } from './file/upgrade';
-import { Scene } from './scene';
+import type { Scene } from './scene';
 
 export async function saveFile(scene: Readonly<Scene>, source: FileSource): Promise<void> {
     switch (source.type) {

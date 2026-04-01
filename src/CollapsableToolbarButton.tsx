@@ -1,4 +1,10 @@
-import { SplitButton, SplitButtonProps, ToolbarButton, ToolbarButtonProps, Tooltip } from '@fluentui/react-components';
+import {
+    SplitButton,
+    type SplitButtonProps,
+    ToolbarButton,
+    type ToolbarButtonProps,
+    Tooltip,
+} from '@fluentui/react-components';
 import React from 'react';
 import { useMedia } from 'react-use';
 

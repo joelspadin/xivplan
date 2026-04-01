@@ -3,9 +3,9 @@ import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } 
 import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
-import { MarkerObject } from '../../scene';
+import type { MarkerObject } from '../../scene';
 import { commonValue } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
 const SquareIcon = bundleIcon(SquareFilled, SquareRegular);

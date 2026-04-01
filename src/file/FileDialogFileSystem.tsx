@@ -1,6 +1,6 @@
 import { Button, DialogActions, DialogTrigger } from '@fluentui/react-components';
 import React, { useState } from 'react';
-import { HtmlPortalNode, InPortal } from 'react-reverse-portal';
+import { type HtmlPortalNode, InPortal } from 'react-reverse-portal';
 import { ExternalLink } from '../ExternalLink';
 import { useLoadScene, useScene, useSetSource } from '../SceneProvider';
 import { openFile, saveFile } from '../file';

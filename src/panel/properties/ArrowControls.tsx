@@ -2,9 +2,9 @@ import { Button, Field, makeStyles } from '@fluentui/react-components';
 import { ArrowLeftRegular, ArrowRightRegular, SubtractRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { useScene } from '../../SceneProvider';
-import { ArrowObject } from '../../scene';
+import type { ArrowObject } from '../../scene';
 import { commonValue, setOrOmit } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ArrowPointersControl: React.FC<PropertiesControlProps<ArrowObject>> = ({ objects }) => {
     const classes = useStyles();

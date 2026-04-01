@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@fluentui/react-components';
+import { Button, type ButtonProps } from '@fluentui/react-components';
 import { ArrowDownloadRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { useScene } from '../SceneProvider';

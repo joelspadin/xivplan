@@ -1,7 +1,7 @@
 import {
     Field,
     Popover,
-    PopoverProps,
+    type PopoverProps,
     PopoverSurface,
     PopoverTrigger,
     createCustomFocusIndicatorStyle,

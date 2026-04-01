@@ -1,8 +1,8 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import React from 'react';
-import { PanelDragObject } from './PanelDragContext';
-import { SceneAction } from './SceneProvider';
-import { SceneObject } from './scene';
+import type { PanelDragObject } from './PanelDragContext';
+import type { SceneAction } from './SceneProvider';
+import type { SceneObject } from './scene';
 import { asArray, round } from './util';
 
 export type DropHandler<T extends SceneObject> = (object: Partial<T>, position: Vector2d) => SceneAction;

@@ -4,11 +4,16 @@ import { useScene } from '../../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
-import { Scene, StarburstZone, UnknownObject } from '../../scene';
+import type { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { clampRotation, mod360 } from '../../util';
 import { distance } from '../../vector';
-import { CONTROL_POINT_BORDER_COLOR, HandleFuncProps, HandleStyle, createControlPointManager } from '../ControlPoint';
+import {
+    CONTROL_POINT_BORDER_COLOR,
+    type HandleFuncProps,
+    HandleStyle,
+    createControlPointManager,
+} from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { MIN_RADIUS } from '../bounds';
 import { useShowResizer } from '../highlight';

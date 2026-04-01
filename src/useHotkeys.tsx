@@ -1,6 +1,6 @@
-import { RefObject, useContext, useEffect } from 'react';
-import { HotkeyCallback, Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
-import { HotkeyHelpContext, HotkeyInfo } from './HotkeyHelpContext';
+import { type RefObject, useContext, useEffect } from 'react';
+import { type HotkeyCallback, type Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
+import { HotkeyHelpContext, type HotkeyInfo } from './HotkeyHelpContext';
 import { useCancelConnectionSelection } from './useEditMode';
 import { rotateArray } from './util';
 

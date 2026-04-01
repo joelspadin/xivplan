@@ -1,8 +1,8 @@
 import {
     SpinButton as FluentSpinButton,
-    SpinButtonChangeEvent,
-    SpinButtonOnChangeData,
-    SpinButtonProps,
+    type SpinButtonChangeEvent,
+    type SpinButtonOnChangeData,
+    type SpinButtonProps,
 } from '@fluentui/react-components';
 import React from 'react';
 import { formatNumber, fractionDigitsToStep, round } from './util';

@@ -19,13 +19,13 @@ import { SpinButton } from '../SpinButton';
 import { SpinButtonUnits } from '../SpinButtonUnits';
 import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../icon/ThreeQuarterCircle';
 import {
-    CustomRadialGrid,
-    CustomRectangularGrid,
+    type CustomRadialGrid,
+    type CustomRectangularGrid,
     DEFAULT_CUSTOM_RADIAL_GRID,
     DEFAULT_CUSTOM_RECT_GRID,
     DEFAULT_RADIAL_GRID,
     DEFAULT_RECT_GRID,
-    Grid,
+    type Grid,
     GridType,
     NO_GRID,
 } from '../scene';

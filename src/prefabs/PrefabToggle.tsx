@@ -1,6 +1,6 @@
 import {
     ToggleButton,
-    ToggleButtonProps,
+    type ToggleButtonProps,
     Tooltip,
     makeStyles,
     mergeClasses,

@@ -5,10 +5,10 @@ import { ConnectionType } from '../../EditModeContext';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
-import { MoveableObject } from '../../scene';
+import type { MoveableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { commonValue, setOrOmit } from '../../util';
-import { PropertiesControlProps } from '../PropertiesControl';
+import type { PropertiesControlProps } from '../PropertiesControl';
 import { ConnectedObjectSelector } from './ConnectedObjectSelector';
 
 export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> = ({ objects }) => {

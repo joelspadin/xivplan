@@ -1,4 +1,4 @@
-import { Vector2d } from 'konva/lib/types';
+import type { Vector2d } from 'konva/lib/types';
 import { getAbsolutePosition, isWithinBox, isWithinRadius, makeRelative } from './coord';
 import { ConnectionType } from './EditModeContext';
 import { LayerName } from './render/layers';
@@ -9,15 +9,15 @@ import {
     isRadiusObject,
     isResizable,
     isRotateable,
-    MoveableObject,
+    type MoveableObject,
     ObjectType,
-    RotateableObject,
-    Scene,
-    SceneObject,
-    SceneStep,
-    UnknownObject,
+    type RotateableObject,
+    type Scene,
+    type SceneObject,
+    type SceneStep,
+    type UnknownObject,
 } from './scene';
-import { getDirectPositionDescendants, getObjectById, SceneAction, useScene } from './SceneProvider';
+import { getDirectPositionDescendants, getObjectById, type SceneAction, useScene } from './SceneProvider';
 import { useConnectionSelection } from './useConnectionSelection';
 
 /**
