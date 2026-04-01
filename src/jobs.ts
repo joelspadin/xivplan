@@ -1,41 +1,44 @@
+import type { Enum } from './util';
+
 export interface JobProps {
     name: string;
     icon: string;
 }
 
-export enum Job {
-    RoleAny,
-    RoleTank,
-    RoleHealer,
-    RoleSupport,
-    RoleDps,
-    RoleMelee,
-    RoleRanged,
-    RoleMagicRanged,
-    RolePhysicalRanged,
-    Paladin,
-    Warrior,
-    DarkKnight,
-    Gunbreaker,
-    WhiteMage,
-    Scholar,
-    Astrologian,
-    Monk,
-    Dragoon,
-    Ninja,
-    Viper,
-    Reaper,
-    Sage,
-    Samurai,
-    Bard,
-    Machinist,
-    Dancer,
-    BlackMage,
-    Summoner,
-    RedMage,
-    Pictomancer,
-    BlueMage,
-}
+export const Job = {
+    RoleAny: 0,
+    RoleTank: 1,
+    RoleHealer: 2,
+    RoleSupport: 3,
+    RoleDps: 4,
+    RoleMelee: 5,
+    RoleRanged: 6,
+    RoleMagicRanged: 7,
+    RolePhysicalRanged: 8,
+    Paladin: 9,
+    Warrior: 10,
+    DarkKnight: 11,
+    Gunbreaker: 12,
+    WhiteMage: 13,
+    Scholar: 14,
+    Astrologian: 15,
+    Monk: 16,
+    Dragoon: 17,
+    Ninja: 18,
+    Viper: 19,
+    Reaper: 20,
+    Sage: 21,
+    Samurai: 22,
+    Bard: 23,
+    Machinist: 24,
+    Dancer: 25,
+    BlackMage: 26,
+    Summoner: 27,
+    RedMage: 28,
+    Pictomancer: 29,
+    BlueMage: 30,
+} as const;
+export type Job = Enum<typeof Job>;
 
 const JOBS: Record<Job, JobProps> = {
     [Job.RoleAny]: { name: 'Any player', icon: 'any.png' },

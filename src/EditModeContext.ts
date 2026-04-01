@@ -2,6 +2,7 @@ import { createContext, type Dispatch, type SetStateAction } from 'react';
 import { EditMode } from './editMode';
 import { TetherType } from './scene';
 import { COLOR_YELLOW } from './theme';
+import type { Enum } from './util';
 
 export type EditModeState = [EditMode, Dispatch<SetStateAction<EditMode>>];
 
@@ -35,10 +36,11 @@ export type TetherConfigState = [TetherConfig, Dispatch<SetStateAction<TetherCon
 
 export const TetherConfigContext = createContext<TetherConfigState>([DEFAULT_TETHER_CONFIG, () => undefined]);
 
-export enum ConnectionType {
-    POSITION = 'position',
-    ROTATION = 'rotation',
-}
+export const ConnectionType = {
+    POSITION: 'position',
+    ROTATION: 'rotation',
+} as const;
+export type ConnectionType = Enum<typeof ConnectionType>;
 
 export interface ConnectionSelectionConfig {
     objectIdsToConnect: ReadonlySet<number>;

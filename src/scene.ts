@@ -1,58 +1,63 @@
 import type { Position } from './coord';
+import type { Enum } from './util';
 
-export enum ArenaShape {
-    None = 'none',
-    Rectangle = 'rectangle',
-    Circle = 'circle',
-}
+export const ArenaShape = {
+    None: 'none',
+    Rectangle: 'rectangle',
+    Circle: 'circle',
+} as const;
+export type ArenaShape = Enum<typeof ArenaShape>;
 
-export enum GridType {
-    None = 'none',
-    Rectangular = 'rectangle',
-    Radial = 'radial',
-    CustomRectangular = 'custom',
-    CustomRadial = 'customRadial',
-}
+export const GridType = {
+    None: 'none',
+    Rectangular: 'rectangle',
+    Radial: 'radial',
+    CustomRectangular: 'custom',
+    CustomRadial: 'customRadial',
+} as const;
+export type GridType = Enum<typeof GridType>;
 
-export enum TickType {
-    None = 'none',
-    Rectangular = 'rectangle',
-    Radial = 'radial',
-}
+export const TickType = {
+    None: 'none',
+    Rectangular: 'rectangle',
+    Radial: 'radial',
+} as const;
+export type TickType = Enum<typeof TickType>;
 
-export enum ObjectType {
-    Undefined = '',
-    Arc = 'arc',
-    Arrow = 'arrow',
-    Circle = 'circle',
-    Cone = 'cone',
-    Cursor = 'cursor',
-    Donut = 'donut',
-    Draw = 'draw',
-    Enemy = 'enemy',
-    Exaflare = 'exaflare',
-    Eye = 'eye',
-    Icon = 'icon',
-    Knockback = 'knockback',
-    Line = 'line',
-    LineKnockAway = 'lineKnockAway',
-    LineKnockback = 'lineKnockback',
-    LineStack = 'lineStack',
-    Marker = 'marker',
-    Party = 'party',
-    Polygon = 'polygon',
-    Proximity = 'proximity',
-    Rect = 'rect',
-    RightTriangle = 'rightTriangle',
-    RotateCCW = 'rotateCCW',
-    RotateCW = 'rotateCW',
-    Stack = 'stack',
-    Starburst = 'starburst',
-    Tether = 'tether',
-    Text = 'text',
-    Tower = 'tower',
-    Triangle = 'triangle',
-}
+export const ObjectType = {
+    Undefined: '',
+    Arc: 'arc',
+    Arrow: 'arrow',
+    Circle: 'circle',
+    Cone: 'cone',
+    Cursor: 'cursor',
+    Donut: 'donut',
+    Draw: 'draw',
+    Enemy: 'enemy',
+    Exaflare: 'exaflare',
+    Eye: 'eye',
+    Icon: 'icon',
+    Knockback: 'knockback',
+    Line: 'line',
+    LineKnockAway: 'lineKnockAway',
+    LineKnockback: 'lineKnockback',
+    LineStack: 'lineStack',
+    Marker: 'marker',
+    Party: 'party',
+    Polygon: 'polygon',
+    Proximity: 'proximity',
+    Rect: 'rect',
+    RightTriangle: 'rightTriangle',
+    RotateCCW: 'rotateCCW',
+    RotateCW: 'rotateCW',
+    Stack: 'stack',
+    Starburst: 'starburst',
+    Tether: 'tether',
+    Text: 'text',
+    Tower: 'tower',
+    Triangle: 'triangle',
+} as const;
+export type ObjectType = Enum<typeof ObjectType>;
 
 export interface BaseObject {
     readonly id: number;
@@ -71,30 +76,30 @@ function makeObjectTest<T extends UnknownObject>(
 }
 
 export interface NoGrid {
-    readonly type: GridType.None;
+    readonly type: typeof GridType.None;
 }
 
 export interface RectangularGrid {
-    readonly type: GridType.Rectangular;
+    readonly type: typeof GridType.Rectangular;
     readonly rows: number;
     readonly columns: number;
 }
 
 export interface RadialGrid {
-    readonly type: GridType.Radial;
+    readonly type: typeof GridType.Radial;
     readonly angularDivs: number;
     readonly radialDivs: number;
     readonly startAngle?: number;
 }
 
 export interface CustomRectangularGrid {
-    readonly type: GridType.CustomRectangular;
+    readonly type: typeof GridType.CustomRectangular;
     readonly rows: number[];
     readonly columns: number[];
 }
 
 export interface CustomRadialGrid {
-    readonly type: GridType.CustomRadial;
+    readonly type: typeof GridType.CustomRadial;
     readonly rings: number[];
     readonly spokes: number[];
 }
@@ -102,17 +107,17 @@ export interface CustomRadialGrid {
 export type Grid = NoGrid | RectangularGrid | RadialGrid | CustomRectangularGrid | CustomRadialGrid;
 
 export interface NoTicks {
-    readonly type: TickType.None;
+    readonly type: typeof TickType.None;
 }
 
 export interface RectangularTicks {
-    readonly type: TickType.Rectangular;
+    readonly type: typeof TickType.Rectangular;
     readonly rows: number;
     readonly columns: number;
 }
 
 export interface RadialTicks {
-    readonly type: TickType.Radial;
+    readonly type: typeof TickType.Radial;
     readonly majorStart: number;
     readonly majorCount: number;
     readonly minorStart: number;
@@ -185,17 +190,17 @@ export interface StackCountObject {
  * Special object for treating the cursor location as a tether target.
  */
 export interface FakeCursorObject extends MoveableObject, BaseObject {
-    readonly type: ObjectType.Cursor;
+    readonly type: typeof ObjectType.Cursor;
 }
 
 export interface MarkerObject extends NamedObject, ImageObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Marker;
+    readonly type: typeof ObjectType.Marker;
     readonly shape: 'circle' | 'square';
 }
 export const isMarker = makeObjectTest<MarkerObject>(ObjectType.Marker);
 
 export interface ArrowObject extends ResizeableObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Arrow;
+    readonly type: typeof ObjectType.Arrow;
     readonly arrowBegin?: boolean;
     readonly arrowEnd?: boolean;
 }
@@ -204,7 +209,7 @@ export const isArrow = makeObjectTest<ArrowObject>(ObjectType.Arrow);
 export type TextStyle = 'outline' | 'shadow' | 'plain';
 
 export interface TextObject extends MoveableObject, RotateableObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Text;
+    readonly type: typeof ObjectType.Text;
     readonly text: string;
     readonly style: TextStyle;
     readonly stroke: string;
@@ -216,7 +221,7 @@ export const isText = makeObjectTest<TextObject>(ObjectType.Text);
 export type Marker = MarkerObject | ArrowObject | TextObject;
 
 export interface IconObject extends ImageObject, NamedObject, BaseObject {
-    readonly type: ObjectType.Icon;
+    readonly type: typeof ObjectType.Icon;
     readonly iconId?: number;
     readonly maxStacks?: number;
     readonly time?: number;
@@ -224,18 +229,19 @@ export interface IconObject extends ImageObject, NamedObject, BaseObject {
 export const isIcon = makeObjectTest<IconObject>(ObjectType.Icon);
 
 export interface PartyObject extends ImageObject, NamedObject, BaseObject {
-    readonly type: ObjectType.Party;
+    readonly type: typeof ObjectType.Party;
 }
 export const isParty = makeObjectTest<PartyObject>(ObjectType.Party);
 
-export enum EnemyRingStyle {
-    NoDirection = 'none',
-    Directional = 'dir',
-    Omnidirectional = 'omni',
-}
+export const EnemyRingStyle = {
+    NoDirection: 'none',
+    Directional: 'dir',
+    Omnidirectional: 'omni',
+} as const;
+export type EnemyRingStyle = Enum<typeof EnemyRingStyle>;
 
 export interface EnemyObject extends RadiusObject, RotateableObject, NamedObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Enemy;
+    readonly type: typeof ObjectType.Enemy;
     readonly icon: string;
     readonly ring: EnemyRingStyle;
 }
@@ -248,11 +254,11 @@ export function isActor(object: UnknownObject): object is Actor {
 
 export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
-        | ObjectType.Circle
-        | ObjectType.Proximity
-        | ObjectType.Knockback
-        | ObjectType.RotateCW
-        | ObjectType.RotateCCW;
+        | typeof ObjectType.Circle
+        | typeof ObjectType.Proximity
+        | typeof ObjectType.Knockback
+        | typeof ObjectType.RotateCW
+        | typeof ObjectType.RotateCCW;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
@@ -263,18 +269,18 @@ export const isCircleZone = makeObjectTest<CircleZone>(
 );
 
 export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
-    readonly type: ObjectType.Stack;
+    readonly type: typeof ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
 
 export interface EyeObject extends RadiusObject, ColoredObject, HollowObject, BaseObject {
-    readonly type: ObjectType.Eye;
+    readonly type: typeof ObjectType.Eye;
     readonly invert?: boolean;
 }
 export const isEye = makeObjectTest<EyeObject>(ObjectType.Eye);
 
 export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Donut;
+    readonly type: typeof ObjectType.Donut;
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
@@ -284,7 +290,7 @@ export interface LineProps extends MoveableObject, ColoredObject, HollowObject, 
 }
 
 export interface LineZone extends LineProps, BaseObject {
-    readonly type: ObjectType.Line;
+    readonly type: typeof ObjectType.Line;
 }
 export const isLineZone = makeObjectTest<LineZone>(ObjectType.Line);
 
@@ -293,23 +299,23 @@ export interface ConeProps extends RadiusObject, ColoredObject, HollowObject, Ro
 }
 
 export interface ConeZone extends ConeProps, BaseObject {
-    readonly type: ObjectType.Cone;
+    readonly type: typeof ObjectType.Cone;
 }
 export const isConeZone = makeObjectTest<ConeZone>(ObjectType.Cone);
 
 export interface ArcZone extends ConeProps, InnerRadiusObject, BaseObject {
-    readonly type: ObjectType.Arc;
+    readonly type: typeof ObjectType.Arc;
 }
 export const isArcZone = makeObjectTest<ArcZone>(ObjectType.Arc);
 
 export interface RectangleZone extends ResizeableObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
-        | ObjectType.Rect
-        | ObjectType.LineStack
-        | ObjectType.LineKnockback
-        | ObjectType.LineKnockAway
-        | ObjectType.Triangle
-        | ObjectType.RightTriangle;
+        | typeof ObjectType.Rect
+        | typeof ObjectType.LineStack
+        | typeof ObjectType.LineKnockback
+        | typeof ObjectType.LineKnockAway
+        | typeof ObjectType.Triangle
+        | typeof ObjectType.RightTriangle;
 }
 export const isRectangleZone = makeObjectTest<RectangleZone>(
     ObjectType.Rect,
@@ -323,28 +329,28 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
 export type PolygonOrientation = 'point' | 'side';
 
 export interface PolygonZone extends RadiusObject, ColoredObject, HollowObject, RotateableObject, BaseObject {
-    readonly type: ObjectType.Polygon;
+    readonly type: typeof ObjectType.Polygon;
     readonly sides: number;
     readonly orient: PolygonOrientation;
 }
 export const isPolygonZone = makeObjectTest<PolygonZone>(ObjectType.Polygon);
 
 export interface ExaflareZone extends RadiusObject, RotateableObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Exaflare;
+    readonly type: typeof ObjectType.Exaflare;
     readonly length: number;
     readonly spacing: number;
 }
 export const isExaflareZone = makeObjectTest<ExaflareZone>(ObjectType.Exaflare);
 
 export interface StarburstZone extends RadiusObject, RotateableObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Starburst;
+    readonly type: typeof ObjectType.Starburst;
     readonly spokes: number;
     readonly spokeWidth: number;
 }
 export const isStarburstZone = makeObjectTest<StarburstZone>(ObjectType.Starburst);
 
 export interface TowerZone extends RadiusObject, ColoredObject, StackCountObject, BaseObject {
-    readonly type: ObjectType.Tower;
+    readonly type: typeof ObjectType.Tower;
 }
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
@@ -372,17 +378,18 @@ export function isZone(object: UnknownObject): object is Zone {
     );
 }
 
-export enum TetherType {
-    Line = 'line',
-    Close = 'close',
-    Far = 'far',
-    MinusMinus = '--',
-    PlusMinus = '+-',
-    PlusPlus = '++',
-}
+export const TetherType = {
+    Line: 'line',
+    Close: 'close',
+    Far: 'far',
+    MinusMinus: '--',
+    PlusMinus: '+-',
+    PlusPlus: '++',
+} as const;
+export type TetherType = Enum<typeof TetherType>;
 
 export interface Tether extends BaseObject, ColoredObject {
-    readonly type: ObjectType.Tether;
+    readonly type: typeof ObjectType.Tether;
     readonly tether: TetherType;
     readonly startId: number;
     readonly endId: number;
@@ -391,7 +398,7 @@ export interface Tether extends BaseObject, ColoredObject {
 export const isTether = makeObjectTest<Tether>(ObjectType.Tether);
 
 export interface DrawObject extends ResizeableObject, RotateableObject, ColoredObject, BaseObject {
-    readonly type: ObjectType.Draw;
+    readonly type: typeof ObjectType.Draw;
     readonly points: readonly number[];
     readonly brushSize: number;
 }

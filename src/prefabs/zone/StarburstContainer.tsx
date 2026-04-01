@@ -6,13 +6,13 @@ import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import type { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
-import { clampRotation, mod360 } from '../../util';
+import { clampRotation, mod360, type Enum } from '../../util';
 import { distance } from '../../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
-    type HandleFuncProps,
     HandleStyle,
     createControlPointManager,
+    type HandleFuncProps,
 } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { MIN_RADIUS } from '../bounds';
@@ -96,11 +96,12 @@ function stateChanged(object: StarburstZone, state: StarburstObjectState) {
     return false;
 }
 
-enum HandleId {
-    Radius,
-    Rotate,
-    SpokeWidth,
-}
+const HandleId = {
+    Radius: 0,
+    Rotate: 1,
+    SpokeWidth: 2,
+} as const;
+type HandleId = Enum<typeof HandleId>;
 
 const OUTSET = 2;
 const ROTATE_HANDLE_OFFSET = 50;

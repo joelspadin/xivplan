@@ -1,5 +1,11 @@
 import type { Vector2d } from 'konva/lib/types';
 
+/**
+ * Given an object like `const Foo { A: 0, B: 1 } as const;`, `Enum<typeof Foo>`
+ * generates a type with a value for each key, e.g `0 | 1`.
+ */
+export type Enum<T> = T[keyof T];
+
 export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x as Readonly<T>];
 }

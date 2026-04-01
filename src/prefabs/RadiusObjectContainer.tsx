@@ -14,7 +14,7 @@ import {
 } from '../scene';
 import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
-import { clampRotation, mod360 } from '../util';
+import { type Enum, clampRotation, mod360 } from '../util';
 import { distance } from '../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -116,11 +116,12 @@ function stateChanged(object: RadiusObject, state: RadiusObjectState) {
     return false;
 }
 
-enum HandleId {
-    Radius,
-    Rotate,
-    InnerRadius,
-}
+const HandleId = {
+    Radius: 0,
+    Rotate: 1,
+    InnerRadius: 2,
+} as const;
+type HandleId = Enum<typeof HandleId>;
 
 const OUTSET = 2;
 const ROTATE_HANDLE_OFFSET = 50;

@@ -14,7 +14,7 @@ import { useScene } from '../../SceneProvider';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clampRotation, mod360 } from '../../util';
+import { clampRotation, type Enum, mod360 } from '../../util';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vector';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import {
@@ -88,10 +88,11 @@ const LineDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props 
 
 registerListComponent<LineZone>(ObjectType.Line, LineDetails);
 
-enum HandleId {
-    Length,
-    Width,
-}
+const HandleId = {
+    Length: 0,
+    Width: 1,
+} as const;
+type HandleId = Enum<typeof HandleId>;
 
 interface LineState {
     length: number;

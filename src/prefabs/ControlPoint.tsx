@@ -8,6 +8,7 @@ import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import { useStage } from '../render/stage';
 import type { Scene } from '../scene';
+import type { Enum } from '../util';
 import { Handle } from './Handle';
 
 // https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
@@ -15,10 +16,11 @@ import { Handle } from './Handle';
 
 export const CONTROL_POINT_BORDER_COLOR = '#00a1ff';
 
-export enum HandleStyle {
-    Square,
-    Diamond,
-}
+export const HandleStyle = {
+    Square: 0,
+    Diamond: 1,
+} as const;
+export type HandleStyle = Enum<typeof HandleStyle>;
 
 export interface Handle extends Vector2d {
     readonly id: number;

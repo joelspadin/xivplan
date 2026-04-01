@@ -19,6 +19,7 @@ import {
 } from './scene';
 import { getDirectPositionDescendants, getObjectById, type SceneAction, useScene } from './SceneProvider';
 import { useConnectionSelection } from './useConnectionSelection';
+import type { Enum } from './util';
 
 /**
  * Returns the ConnectionType-appropriate functions to get the current connection ID for a single object,
@@ -238,13 +239,14 @@ function createUpdatePositionParentIdsAction(
     };
 }
 
-export enum DefaultAttachPosition {
-    DONT_ATTACH_BY_DEFAULT = 0,
-    ANYWHERE,
-    CENTER,
-    TOP,
-    BOTTOM_RIGHT,
-}
+export const DefaultAttachPosition = {
+    DONT_ATTACH_BY_DEFAULT: 0,
+    ANYWHERE: 1,
+    CENTER: 2,
+    TOP: 3,
+    BOTTOM_RIGHT: 4,
+} as const;
+export type DefaultAttachPosition = Enum<typeof DefaultAttachPosition>;
 
 /** @returns Where the given object 'prefers' to be attached to a positional parent. */
 export function getDefaultAttachmentSettings(object: UnknownObject): {
@@ -273,11 +275,12 @@ export function getDefaultAttachmentSettings(object: UnknownObject): {
     }
 }
 
-export enum AttachmentDropTarget {
-    NONE = 0,
-    SELF,
-    PARENT,
-}
+export const AttachmentDropTarget = {
+    NONE: 0,
+    SELF: 1,
+    PARENT: 2,
+} as const;
+export type AttachmentDropTarget = Enum<typeof AttachmentDropTarget>;
 
 export function isValidAttachmentDropTarget(object: SceneObject): AttachmentDropTarget {
     switch (object.type) {

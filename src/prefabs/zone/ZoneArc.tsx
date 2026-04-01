@@ -15,7 +15,7 @@ import { type ArcZone, ObjectType, type Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, clampRotation, degtorad, mod360 } from '../../util';
+import { type Enum, clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -239,12 +239,13 @@ const ArcDetails: React.FC<ListComponentProps<ArcZone>> = ({ object, ...props })
 
 registerListComponent<ArcZone>(ObjectType.Arc, ArcDetails);
 
-enum HandleId {
-    Radius,
-    InnerRadius,
-    Angle1,
-    Angle2,
-}
+const HandleId = {
+    Radius: 0,
+    InnerRadius: 1,
+    Angle1: 2,
+    Angle2: 3,
+} as const;
+type HandleId = Enum<typeof HandleId>;
 
 interface ArcState {
     radius: number;

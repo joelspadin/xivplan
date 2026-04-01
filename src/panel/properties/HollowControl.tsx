@@ -4,13 +4,14 @@ import React from 'react';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import type { HollowObject } from '../../scene';
-import { commonValue, setOrOmit } from '../../util';
+import { commonValue, setOrOmit, type Enum } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
-enum Styles {
-    Solid = 'solid',
-    Hollow = 'hollow',
-}
+const Styles = {
+    Solid: 'solid',
+    Hollow: 'hollow',
+} as const;
+type Styles = Enum<typeof Styles>;
 
 export const HollowControl: React.FC<PropertiesControlProps<HollowObject>> = ({ objects }) => {
     const { dispatch } = useScene();

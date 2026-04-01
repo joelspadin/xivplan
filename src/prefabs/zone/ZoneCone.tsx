@@ -15,7 +15,7 @@ import { type ConeZone, ObjectType, type Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { usePanelDrag } from '../../usePanelDrag';
-import { clamp, clampRotation, degtorad, mod360 } from '../../util';
+import { type Enum, clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
 import {
     CONTROL_POINT_BORDER_COLOR,
@@ -207,11 +207,12 @@ const ConeDetails: React.FC<ListComponentProps<ConeZone>> = ({ object, ...props 
 
 registerListComponent<ConeZone>(ObjectType.Cone, ConeDetails);
 
-enum HandleId {
-    Radius,
-    Angle1,
-    Angle2,
-}
+const HandleId = {
+    Radius: 0,
+    Angle1: 1,
+    Angle2: 2,
+} as const;
+type HandleId = Enum<typeof HandleId>;
 
 interface ConeState {
     radius: number;

@@ -2,12 +2,13 @@ import { type RefObject, useContext, useEffect } from 'react';
 import { type HotkeyCallback, type Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, type HotkeyInfo } from './HotkeyHelpContext';
 import { useCancelConnectionSelection } from './useEditMode';
-import { rotateArray } from './util';
+import { type Enum, rotateArray } from './util';
 
-export enum HotkeyScopes {
-    AlwaysEnabled = 'alwaysEnabled', // Workaround for https://github.com/JohannesKlauss/react-hotkeys-hook/issues/908
-    Default = 'default',
-}
+export const HotkeyScopes = {
+    AlwaysEnabled: 'alwaysEnabled', // Workaround for https://github.com/JohannesKlauss/react-hotkeys-hook/issues/908
+    Default: 'default',
+} as const;
+export type HotkeyScopes = Enum<typeof HotkeyScopes>;
 
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
