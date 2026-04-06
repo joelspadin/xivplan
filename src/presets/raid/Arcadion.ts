@@ -245,6 +245,19 @@ const PRESET_12: ArenaPreset = {
     },
 };
 
+const PRESET_12_PHASE_2: ArenaPreset = {
+    name: 'AAC Heavyweight M4 (Phase 2)',
+    spoilerFreeName: 'AAC Heavyweight M4 ████',
+    arena: {
+        shape: ArenaShape.Circle,
+        width: 520,
+        height: 520,
+        padding: DEFAULT_ARENA_PADDING,
+        grid: { type: GridType.None },
+        backgroundImage: '/arena/arcadion12-p2.svg',
+    },
+};
+
 export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_2,
     PRESET_3,
@@ -265,4 +278,5 @@ export const ARENA_PRESETS_RAID_ARCADION = [
     PRESET_11,
     PRESET_11_SPLIT,
     PRESET_12,
+    PRESET_12_PHASE_2,
 ];
