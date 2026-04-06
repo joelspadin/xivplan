@@ -2,23 +2,21 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-  width="520"
-  height="520"
-  viewBox="140 40 520 520"
-  version="1.1"
-  id="svg1"
-  inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
-  xml:space="preserve"
-  sodipodi:docname="arcadion12.svg"
-  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"><style
-     id="style62">
-.dark {
-    fill:var(--xiv-colorArenaDark, #352b21);
-}
+   width="600"
+   height="600"
+   viewBox="100 0 600 600"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xml:space="preserve"
+   sodipodi:docname="arcadion12-p2.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><style
+     id="style62">.arena {   }
+.dark { fill:var(--xiv-colorArenaDark, #352b21); }
 .grid { stroke:var(--xiv-colorArenaLight, #4c4034); }
 </style><sodipodi:namedview
      id="namedview1"
@@ -33,8 +31,8 @@
      showgrid="true"
      showguides="true"
      inkscape:zoom="1.3272063"
-     inkscape:cx="445.673"
-     inkscape:cy="291.21321"
+     inkscape:cx="325.49574"
+     inkscape:cy="291.2132"
      inkscape:window-width="2194"
      inkscape:window-height="1163"
      inkscape:window-x="1912"
@@ -59,21 +57,26 @@
        is_visible="true"
        lpeversion="1"
        nr_x="5"
-       nr_y="5" /><clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath62"><rect
-         style="fill:none;stroke-linecap:round"
-         id="path62"
-         width="800"
-         height="600"
-         x="0"
-         y="0"
-         sodipodi:type="rect" /></clipPath></defs><g
+       nr_y="5" /><mask
+       maskUnits="userSpaceOnUse"
+       id="mask3"><circle
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-linecap:round"
+         id="circle3"
+         cx="400"
+         cy="300"
+         r="300" /></mask></defs><g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"><g
+     id="layer1"><ellipse
+       style="stroke-linecap:round;stroke:none;fill-opacity:1;fill:var(--xiv-colorArena, #40352c);"
+       id="path2"
+       cx="399.50128"
+       cy="299.87802"
+       rx="299.50101"
+       ry="299.87802" /><g
        id="g47"
-       clip-path="url(#clipPath62)"><path
+       clip-path="none"
+       mask="url(#mask3)"><path
          id="rect10"
          style="fill-opacity:1;stroke:none;stroke-linecap:round;stroke-opacity:1"
          d="M 400,-18.198052 258.57864,123.22331 400,264.64467 541.42136,123.22331 Z m 0,70.71068 70.71068,70.710682 L 400,193.93399 329.28932,123.22331 Z"
@@ -149,8 +152,16 @@
          height="50"
          x="375"
          y="275"
-         inkscape:path-effect="#path-effect8"
          sodipodi:type="rect"
-         d="M 425,275 H -625 M 425,325 H -625 M 425,375 H -625 M 425,425 H -625 M 425,475 H -625 M 425,525 H -625 M 425,575 H -625 M 425,625 H -625 M 425,675 H -625 M 425,725 H -625 M 425,775 H -625 M 425,825 H -625 M 425,875 H -625 M 425,925 H -625 M 425,975 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 M 425,275 V 1325 M 375,275 V 1325 M 325,275 V 1325 M 275,275 V 1325 M 225,275 V 1325 M 175,275 V 1325 M 125,275 V 1325 M 75,275 V 1325 M 25,275 V 1325 M -25,275 V 1325 M -75,275 V 1325 M -125,275 V 1325 M -175,275 V 1325 M -225,275 V 1325 M -275,275 V 1325 M -325,275 V 1325 M -375,275 V 1325 M -425,275 V 1325 M -475,275 V 1325 M -525,275 V 1325 M -575,275 V 1325 M -625,275 v 1050"
          transform="rotate(45,753.55339,1153.5534)"
-         class="grid" /></g></g></svg>
+         class="grid"
+         d="M 425,275 H -625 M 425,325 H -625 M 425,375 H -625 M 425,425 H -625 M 425,475 H -625 M 425,525 H -625 M 425,575 H -625 M 425,625 H -625 M 425,675 H -625 M 425,725 H -625 M 425,775 H -625 M 425,825 H -625 M 425,875 H -625 M 425,925 H -625 M 425,975 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 m 1050,50 H -625 M 425,275 V 1325 M 375,275 V 1325 M 325,275 V 1325 M 275,275 V 1325 M 225,275 V 1325 M 175,275 V 1325 M 125,275 V 1325 M 75,275 V 1325 M 25,275 V 1325 M -25,275 V 1325 M -75,275 V 1325 M -125,275 V 1325 M -175,275 V 1325 M -225,275 V 1325 M -275,275 V 1325 M -325,275 V 1325 M -375,275 V 1325 M -425,275 V 1325 M -475,275 V 1325 M -525,275 V 1325 M -575,275 V 1325 M -625,275 v 1050"
+         inkscape:path-effect="#path-effect8" /></g><path
+       id="path3"
+       style="fill:#3b061d;fill-opacity:1;stroke:none;stroke-linecap:round"
+       d="M 400 0 A 300 300 0 0 0 100 300 A 300 300 0 0 0 400 600 A 300 300 0 0 0 700 300 A 300 300 0 0 0 400 0 z M 400 40 A 260 260 0 0 1 660 300 A 260 260 0 0 1 400 560 A 260 260 0 0 1 140 300 A 260 260 0 0 1 400 40 z " /><circle
+       style="fill:none;fill-opacity:1;stroke:#574839;stroke-linecap:round;stroke-opacity:1"
+       id="path4"
+       cx="400"
+       cy="300"
+       r="260" /></g></svg>

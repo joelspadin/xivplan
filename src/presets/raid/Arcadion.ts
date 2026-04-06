@@ -249,9 +249,9 @@ const PRESET_12_PHASE_2: ArenaPreset = {
     name: 'AAC Heavyweight M4 (Phase 2)',
     spoilerFreeName: 'AAC Heavyweight M4 ████',
     arena: {
-        shape: ArenaShape.Circle,
-        width: 520,
-        height: 520,
+        shape: ArenaShape.None,
+        width: 600,
+        height: 600,
         padding: DEFAULT_ARENA_PADDING,
         grid: { type: GridType.None },
         backgroundImage: '/arena/arcadion12-p2.svg',
