@@ -43,33 +43,48 @@ import { useScene } from '../SceneProvider';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+/**
+ * Flush the encoder every this many frames. Aligned with the keyframe interval so
+ * each flush completes a clean segment. Prevents unbounded queue growth on large
+ * exports, which would otherwise cause the browser to stall on the final flush.
+ */
+const ENCODER_FLUSH_INTERVAL = 60;
+
 const DEFAULT_OPTIONS = {
     speed: 2,
-    pixelRatio: 0.5,
+    pixelRatio: 0.6,
     framerate: 30,
 };
 
 const SPEED_OPTIONS = [
-    { value: 0.25, label: '0.25×' },
-    { value: 0.5, label: '0.5×' },
-    { value: 0.75, label: '0.75×' },
+    { value: 0.1, label: '0.1×' },
+    { value: 0.2, label: '0.2×' },
+    { value: 0.4, label: '0.4×' },
+    { value: 0.6, label: '0.6×' },
+    { value: 0.8, label: '0.8×' },
     { value: 1, label: '1×' },
     { value: 2, label: '2×' },
+    { value: 3, label: '3×' },
     { value: 4, label: '4×' },
+    { value: 5, label: '5×' },
 ];
 
 const RESOLUTION_OPTIONS = [
-    { value: 0.25, label: '0.25× (tiny)' },
-    { value: 0.5, label: '0.5× (small)' },
-    { value: 1, label: '1× (native)' },
-    { value: 2, label: '2× (crisp)' },
+    { value: 0.1, label: '0.1×' },
+    { value: 0.2, label: '0.2×' },
+    { value: 0.4, label: '0.4×' },
+    { value: 0.6, label: '0.6×' },
+    { value: 0.8, label: '0.8×' },
+    { value: 1, label: '1×' },
+    { value: 2, label: '2×' },
 ];
 
 const FRAMERATE_OPTIONS = [
-    { value: 5, label: '5 FPS' },
-    { value: 15, label: '15 FPS' },
+    { value: 8, label: '8 FPS' },
+    { value: 16, label: '16 FPS' },
+    { value: 24, label: '24 FPS' },
     { value: 30, label: '30 FPS' },
-    { value: 45, label: '45 FPS' },
+    { value: 48, label: '48 FPS' },
     { value: 60, label: '60 FPS' },
 ];
 
@@ -86,7 +101,7 @@ function contentFrameCount(maxStep: number, speed: number, framerate: number): n
 
 /** Number of frames to hold at the start and end of the video. */
 function pausedFrameCount(speed: number, framerate: number): number {
-    return Math.ceil((0.2 / speed) * framerate);
+    return Math.ceil(0.2 * framerate);
 }
 
 /** Total frames including the start and end pause. */
@@ -225,9 +240,16 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
                 const duration = Math.round(1_000_000 / framerate);
                 const videoFrame = new VideoFrame(bitmap, { timestamp, duration });
 
-                encoder.encode(videoFrame, { keyFrame: frame % 60 === 0 });
+                encoder.encode(videoFrame, { keyFrame: frame % ENCODER_FLUSH_INTERVAL === 0 });
                 videoFrame.close();
                 bitmap.close();
+
+                // Flush incrementally at keyframe boundaries to drain the encoder queue
+                // in small chunks. Without this, large exports accumulate hundreds of
+                // queued frames and the browser stalls on the final flush.
+                if (frame > 0 && frame % ENCODER_FLUSH_INTERVAL === 0) {
+                    await encoder.flush();
+                }
 
                 onProgress((frame + 1) / totalFrames);
 
@@ -275,6 +297,7 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
     const [progress, setProgress] = useState(0);
     const [notifyWhenDone, setNotifyWhenDone] = useState(false);
     const cancelRef = useRef(false);
+    const exportStartRef = useRef(0);
 
     const { source } = useScene();
     const disabled = scene.steps.length < 2 || !playback;
@@ -304,6 +327,7 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
 
     const handleExport = () => {
         cancelRef.current = false;
+        exportStartRef.current = Date.now();
         setProgress(0);
         setNotifyWhenDone(false);
         setExporting(true);
@@ -319,12 +343,17 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
         const baseName = source?.name
             ? source.name.replace(/\.[^.]+$/, '') // strip file extension
             : 'animation';
-        downloadBlob(blob, `${baseName}.webm`);
+        const fileName = `${baseName}_${speed}x_${pixelRatio}res_${framerate}fps.webm`;
+        downloadBlob(blob, fileName);
         setExporting(false);
         setProgress(0);
         setOpen(false);
         if (notifyWhenDone && document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-            new Notification('Export complete', { body: `${baseName}.webm is ready` });
+            const elapsed = Math.round((Date.now() - exportStartRef.current) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            const duration = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+            new Notification('Export complete', { body: `${baseName}.webm is ready · ${duration}` });
         }
     };
 
