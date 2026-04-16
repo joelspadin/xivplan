@@ -348,7 +348,7 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
         setExporting(false);
         setProgress(0);
         setOpen(false);
-        if (notifyWhenDone && document.visibilityState === 'hidden' && Notification.permission === 'granted') {
+        if (notifyWhenDone && Notification.permission === 'granted') {
             const elapsed = Math.round((Date.now() - exportStartRef.current) / 1000);
             const mins = Math.floor(elapsed / 60);
             const secs = elapsed % 60;
