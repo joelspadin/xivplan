@@ -343,7 +343,7 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
         const baseName = source?.name
             ? source.name.replace(/\.[^.]+$/, '') // strip file extension
             : 'animation';
-        const fileName = `${baseName}_${speed}x_${pixelRatio}res_${framerate}fps.webm`;
+        const fileName = `${baseName}_${framerate}fps_x${speed}_r${pixelRatio}.webm`;
         downloadBlob(blob, fileName);
         setExporting(false);
         setProgress(0);
