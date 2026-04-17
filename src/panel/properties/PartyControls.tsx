@@ -7,9 +7,9 @@ import { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
     [Job.RoleSupport, Job.RoleTank, Job.RoleHealer, Job.RoleDps, Job.RoleAny],
+    [Job.RoleFakeTank, Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
+    [Job.RoleFakeHeal, Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
     [Job.RoleMelee, Job.RoleRanged, Job.RoleMagicRanged, Job.RolePhysicalRanged],
-    [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
-    [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
     [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
     [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer, Job.BlueMage],
     [Job.Bard, Job.Machinist, Job.Dancer],
