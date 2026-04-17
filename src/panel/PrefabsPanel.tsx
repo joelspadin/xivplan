@@ -32,6 +32,8 @@ import {
     PartyScholar,
     PartySummoner,
     PartySupport,
+    PartyFakeHealer,
+    PartyFakeTank,
     PartyTank,
     PartyViper,
     PartyWarrior,
@@ -129,13 +131,15 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
 
                 <ObjectGroup>
-                    <PartyMelee />
-                    <PartyRanged />
-                    <PartyMagicRanged />
-                    <PartyPhysicalRanged />
+                    <PartyFakeHealer />
+                    <PartyWhiteMage />
+                    <PartyScholar />
+                    <PartyAstrologian />
+                    <PartySage />
                 </ObjectGroup>
 
                 <ObjectGroup>
+                    <PartyFakeTank />
                     <PartyPaladin />
                     <PartyWarrior />
                     <PartyDarkKnight />
@@ -143,10 +147,10 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
 
                 <ObjectGroup>
-                    <PartyWhiteMage />
-                    <PartyScholar />
-                    <PartyAstrologian />
-                    <PartySage />
+                    <PartyMelee />
+                    <PartyRanged />
+                    <PartyMagicRanged />
+                    <PartyPhysicalRanged />
                 </ObjectGroup>
 
                 <ObjectGroup>
