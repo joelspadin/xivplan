@@ -123,27 +123,27 @@ export const PrefabsPanel: React.FC = () => {
             </Section>
             <Section title="Party">
                 <ObjectGroup>
-                    <PartyAny />
                     <PartySupport />
                     <PartyTank />
                     <PartyHealer />
                     <PartyDps />
+                    <PartyAny />
                 </ObjectGroup>
 
                 <ObjectGroup>
-                    <PartyPaladin />
-                    <PartyWarrior />
-                    <PartyDarkKnight />
-                    <PartyGunbreaker />
-                    <PartyFakeTank />
-                </ObjectGroup>
-
-                <ObjectGroup>
+                    <PartyFakeHealer />
                     <PartyWhiteMage />
                     <PartyScholar />
                     <PartyAstrologian />
                     <PartySage />
-                    <PartyFakeHealer />
+                </ObjectGroup>
+
+                <ObjectGroup>
+                    <PartyFakeTank />
+                    <PartyPaladin />
+                    <PartyWarrior />
+                    <PartyDarkKnight />
+                    <PartyGunbreaker />
                 </ObjectGroup>
 
                 <ObjectGroup>

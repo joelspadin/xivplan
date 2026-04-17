@@ -46,7 +46,7 @@ const JOBS: Record<Job, JobProps> = {
     [Job.RoleDps]: { name: 'DPS', icon: 'dps.png' },
     [Job.RoleSupport]: { name: 'Support', icon: 'support.png' },
     [Job.RoleFakeHeal]: { name: 'Fake Healer', icon: 'fake_healer_dps.png' },
-    [Job.RoleFakeTank]: { name: 'Fake Healer', icon: 'fake_tank_dps.png' },
+    [Job.RoleFakeTank]: { name: 'Fake Tank', icon: 'fake_tank_dps.png' },
     [Job.RoleMelee]: { name: 'Melee DPS', icon: 'melee.png' },
     [Job.RoleRanged]: { name: 'Ranged DPS', icon: 'ranged.png' },
     [Job.RoleMagicRanged]: { name: 'Magic Ranged DPS', icon: 'magic_ranged.png' },
