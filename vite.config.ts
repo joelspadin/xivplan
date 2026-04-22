@@ -21,6 +21,7 @@ function getEnvOptions(mode: string): UserConfig {
 }
 
 export default defineConfig(({ mode }) => ({
+    base: '/xivplan/',
     ...getEnvOptions(mode),
     plugins: [
         react(),
@@ -94,6 +95,7 @@ export default defineConfig(({ mode }) => ({
                 cleanupOutdatedCaches: true,
                 clientsClaim: true,
                 maximumFileSizeToCacheInBytes: 4 * 1000 * 1000,
+                navigateFallback: 'index.html',
             },
             injectManifest: {
                 globPatterns: ['**/*.{js,css,html,svg,png,svg,ico}'],

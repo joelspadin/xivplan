@@ -108,6 +108,7 @@ const router = createBrowserRouter(
             <Route path="open" element={<FileOpenPage />} />
         </Route>,
     ),
+    { basename: import.meta.env.BASE_URL },
 );
 
 export const App: React.FC = () => {
