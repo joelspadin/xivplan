@@ -21,7 +21,7 @@ function getEnvOptions(mode: string): UserConfig {
 }
 
 export default defineConfig(({ mode }) => ({
-    base: '/xivplan/',
+
     ...getEnvOptions(mode),
     plugins: [
         react(),
