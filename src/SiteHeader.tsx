@@ -87,7 +87,7 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                 Help
             </Link>
             <AboutDialog className={classes.link} />
-            <ExternalLink className={classes.link} href="https://github.com/joelspadin/xivplan" noIcon>
+            <ExternalLink className={classes.link} href="https://github.com/Crosvs/xivplan" noIcon>
                 GitHub
             </ExternalLink>
             <div>

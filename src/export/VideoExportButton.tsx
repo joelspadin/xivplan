@@ -1,5 +1,5 @@
 /**
- * VideoExportButton — exports the playback animation as a 60 FPS WebM video.
+ * VideoExportButton — exports the playback animation as a WebM video.
  *
  * Rendering: frames are produced off-screen by a hidden ScenePreview driven
  * by StaticPlaybackProvider, one frame per React state tick.
@@ -23,12 +23,12 @@ import {
     Field,
     Label,
     Portal,
-    ProgressBar,
     Select,
+    ToggleButton,
     makeStyles,
     tokens,
 } from '@fluentui/react-components';
-import { VideoRegular } from '@fluentui/react-icons';
+import { AlertFilled, AlertOffRegular, AlertRegular, VideoRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { ArrayBufferTarget, Muxer } from 'webm-muxer';
@@ -43,22 +43,49 @@ import { useScene } from '../SceneProvider';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const EXPORT_FPS = 60;
-/** 200 ms hold at the beginning and end of the video. */
-const PAUSE_FRAMES = Math.round(0.2 * EXPORT_FPS); // 12 frames
+/**
+ * Flush the encoder every this many frames. Aligned with the keyframe interval so
+ * each flush completes a clean segment. Prevents unbounded queue growth on large
+ * exports, which would otherwise cause the browser to stall on the final flush.
+ */
+const ENCODER_FLUSH_INTERVAL = 60;
+
+const DEFAULT_OPTIONS = {
+    speed: 2,
+    pixelRatio: 0.6,
+    framerate: 30,
+};
 
 const SPEED_OPTIONS = [
-    { value: 0.25, label: '0.25×' },
-    { value: 0.5, label: '0.5×' },
-    { value: 0.75, label: '0.75×' },
+    { value: 0.1, label: '0.1×' },
+    { value: 0.2, label: '0.2×' },
+    { value: 0.4, label: '0.4×' },
+    { value: 0.6, label: '0.6×' },
+    { value: 0.8, label: '0.8×' },
     { value: 1, label: '1×' },
     { value: 2, label: '2×' },
+    { value: 3, label: '3×' },
     { value: 4, label: '4×' },
+    { value: 5, label: '5×' },
 ];
 
 const RESOLUTION_OPTIONS = [
-    { value: 1, label: '1× (native)' },
-    { value: 2, label: '2× (crisp)' },
+    { value: 0.1, label: '0.1×' },
+    { value: 0.2, label: '0.2×' },
+    { value: 0.4, label: '0.4×' },
+    { value: 0.6, label: '0.6×' },
+    { value: 0.8, label: '0.8×' },
+    { value: 1, label: '1×' },
+    { value: 2, label: '2×' },
+];
+
+const FRAMERATE_OPTIONS = [
+    { value: 8, label: '8 FPS' },
+    { value: 16, label: '16 FPS' },
+    { value: 24, label: '24 FPS' },
+    { value: 30, label: '30 FPS' },
+    { value: 48, label: '48 FPS' },
+    { value: 60, label: '60 FPS' },
 ];
 
 // ─── Frame timing helpers ─────────────────────────────────────────────────────
@@ -68,32 +95,42 @@ const RESOLUTION_OPTIONS = [
  * +1 so the last content frame is pinned exactly to maxStep (avoids float
  * under-shoot at the end, e.g. (160/60)*0.75 = 1.9999…).
  */
-function contentFrameCount(maxStep: number, speed: number): number {
-    return Math.ceil((maxStep / speed) * EXPORT_FPS) + 1;
+function contentFrameCount(maxStep: number, speed: number, framerate: number): number {
+    return Math.ceil((maxStep / speed) * framerate) + 1;
+}
+
+/** Number of frames to hold at the start and end of the video. */
+function pausedFrameCount(speed: number, framerate: number): number {
+    return Math.ceil(0.2 * framerate);
 }
 
 /** Total frames including the start and end pause. */
-function totalFrameCount(maxStep: number, speed: number): number {
-    return PAUSE_FRAMES + contentFrameCount(maxStep, speed) + PAUSE_FRAMES;
+function totalFrameCount(maxStep: number, speed: number, framerate: number): number {
+    return contentFrameCount(maxStep, speed, framerate) + pausedFrameCount(speed, framerate) * 2;
 }
-
 /**
  * Map a frame index to a playbackTime value (0 → maxStep).
  *
- * - Start-pause region  (frame < PAUSE_FRAMES)               → 0
+ * - Start-pause region  (frame < pausedFrames)               → 0
  * - Last content frame and end-pause region                   → maxStep (pinned)
  * - Animation region in between                               → linear ramp
  */
-function frameToPlaybackTime(frame: number, maxStep: number, speed: number): number {
-    if (frame < PAUSE_FRAMES) return 0;
+function frameToPlaybackTime(
+    frame: number,
+    maxStep: number,
+    speed: number,
+    framerate: number,
+    pausedFrames: number,
+): number {
+    if (frame < pausedFrames) return 0;
 
-    const contentFrame = frame - PAUSE_FRAMES;
-    const contentFrames = contentFrameCount(maxStep, speed);
+    const contentFrame = frame - pausedFrames;
+    const contentFrames = contentFrameCount(maxStep, speed, framerate);
 
     // Pin last content frame + all end-pause frames to maxStep
     if (contentFrame >= contentFrames - 1) return maxStep;
 
-    return (contentFrame / EXPORT_FPS) * speed;
+    return (contentFrame / framerate) * speed;
 }
 
 // ─── Capture component ────────────────────────────────────────────────────────
@@ -101,6 +138,7 @@ function frameToPlaybackTime(frame: number, maxStep: number, speed: number): num
 interface VideoCaptureProps {
     speed: number;
     pixelRatio: number;
+    framerate: number;
     onProgress: (p: number) => void;
     onComplete: (blob: Blob) => void;
     onError: (err: unknown) => void;
@@ -112,13 +150,14 @@ interface VideoCaptureProps {
  * and encodes it with VideoEncoder (WebCodecs) + webm-muxer.
  *
  * Each VideoFrame receives an explicit microsecond timestamp so the output
- * video always has the correct 60 FPS duration, independent of render speed.
+ * video always has the correct set FPS duration, independent of render speed.
  *
  * Must be wrapped in ObjectLoadingProvider.
  */
 const VideoCapture: React.FC<VideoCaptureProps> = ({
     speed,
     pixelRatio,
+    framerate,
     onProgress,
     onComplete,
     onError,
@@ -127,7 +166,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
     const { scene } = useScene();
     const size = getCanvasSize(scene);
     const maxStep = scene.steps.length - 1;
-    const totalFrames = totalFrameCount(maxStep, speed);
+    const totalFrames = totalFrameCount(maxStep, speed, framerate);
 
     const stageRef = useRef<Konva.Stage>(null);
     const { isLoading } = useContext(ObjectLoadingContext);
@@ -152,7 +191,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         const target = new ArrayBufferTarget();
         const muxer = new Muxer({
             target,
-            video: { codec: 'V_VP9', width: w, height: h, frameRate: EXPORT_FPS },
+            video: { codec: 'V_VP9', width: w, height: h, frameRate: framerate },
         });
 
         const encoder = new VideoEncoder({
@@ -165,7 +204,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
             width: w,
             height: h,
             bitrate: 12_000_000,
-            framerate: EXPORT_FPS,
+            framerate: framerate,
         });
 
         encoderRef.current = { encoder, muxer, target };
@@ -197,13 +236,20 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
                 // explicit timestamp — this is what guarantees correct video timing.
                 const frameCanvas = stageRef.current!.toCanvas({ pixelRatio });
                 const bitmap = await createImageBitmap(frameCanvas);
-                const timestamp = Math.round((frame * 1_000_000) / EXPORT_FPS); // µs
-                const duration = Math.round(1_000_000 / EXPORT_FPS);
+                const timestamp = Math.round((frame * 1_000_000) / framerate); // µs
+                const duration = Math.round(1_000_000 / framerate);
                 const videoFrame = new VideoFrame(bitmap, { timestamp, duration });
 
-                encoder.encode(videoFrame, { keyFrame: frame % 60 === 0 });
+                encoder.encode(videoFrame, { keyFrame: frame % ENCODER_FLUSH_INTERVAL === 0 });
                 videoFrame.close();
                 bitmap.close();
+
+                // Flush incrementally at keyframe boundaries to drain the encoder queue
+                // in small chunks. Without this, large exports accumulate hundreds of
+                // queued frames and the browser stalls on the final flush.
+                if (frame > 0 && frame % ENCODER_FLUSH_INTERVAL === 0) {
+                    await encoder.flush();
+                }
 
                 onProgress((frame + 1) / totalFrames);
 
@@ -225,8 +271,9 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [frame]);
 
-    const playbackTime = frame < 0 ? 0 : frameToPlaybackTime(frame, maxStep, speed);
-    const pulseTime = Math.max(0, frame / EXPORT_FPS) % 1000;
+    const playbackTime =
+        frame < 0 ? 0 : frameToPlaybackTime(frame, maxStep, speed, framerate, pausedFrameCount(speed, framerate) * 2);
+    const pulseTime = Math.max(0, frame / framerate) % 1000;
 
     return (
         <StaticPlaybackProvider playbackTime={playbackTime} pulseTime={pulseTime}>
@@ -243,21 +290,46 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
     const playback = useOptionalPlayback();
 
     const [open, setOpen] = useState(false);
-    const [speed, setSpeed] = useState(1);
-    const [pixelRatio, setPixelRatio] = useState(1);
+    const [speed, setSpeed] = useState(DEFAULT_OPTIONS.speed);
+    const [pixelRatio, setPixelRatio] = useState(DEFAULT_OPTIONS.pixelRatio);
+    const [framerate, setFramerate] = useState(DEFAULT_OPTIONS.framerate);
     const [exporting, setExporting] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [notifyWhenDone, setNotifyWhenDone] = useState(false);
     const cancelRef = useRef(false);
+    const exportStartRef = useRef(0);
 
     const { source } = useScene();
     const disabled = scene.steps.length < 2 || !playback;
     const maxStep = scene.steps.length - 1;
-    const totalFrames = disabled ? 0 : totalFrameCount(maxStep, speed);
-    const totalSecs = totalFrames / EXPORT_FPS;
+    const totalFrames = disabled ? 0 : totalFrameCount(maxStep, speed, framerate);
+    const totalSecs = totalFrames / framerate;
+
+    const supportsNotifications = 'Notification' in window;
+    const notificationsBlocked = supportsNotifications && Notification.permission === 'denied';
+
+    const handleNotifyToggle = async () => {
+        if (notifyWhenDone) {
+            setNotifyWhenDone(false);
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            setNotifyWhenDone(true);
+            return;
+        }
+        const result = await Notification.requestPermission();
+        if (result === 'granted') {
+            setNotifyWhenDone(true);
+        }
+        // 'denied' → Notification.permission is now 'denied', button shows as disabled
+        // 'default' → user dismissed Chrome's quiet chip, permission unchanged, button stays enabled
+    };
 
     const handleExport = () => {
         cancelRef.current = false;
+        exportStartRef.current = Date.now();
         setProgress(0);
+        setNotifyWhenDone(false);
         setExporting(true);
     };
 
@@ -269,12 +341,20 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
 
     const handleComplete = (blob: Blob) => {
         const baseName = source?.name
-            ? source.name.replace(/\.[^.]+$/, '')  // strip file extension
+            ? source.name.replace(/\.[^.]+$/, '') // strip file extension
             : 'animation';
-        downloadBlob(blob, `${baseName}.webm`);
+        const fileName = `${baseName}_${framerate}fps_x${speed}_r${pixelRatio}.webm`;
+        downloadBlob(blob, fileName);
         setExporting(false);
         setProgress(0);
         setOpen(false);
+        if (notifyWhenDone && Notification.permission === 'granted') {
+            const elapsed = Math.round((Date.now() - exportStartRef.current) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            const duration = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+            new Notification('Export complete', { body: `${baseName}.webm is ready · ${duration}` });
+        }
     };
 
     const handleError = (err: unknown) => {
@@ -285,15 +365,16 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
 
     return (
         <>
-            <CollapsableToolbarButton
-                icon={<VideoRegular />}
-                onClick={() => setOpen(true)}
-                disabled={disabled}
-            >
+            <CollapsableToolbarButton icon={<VideoRegular />} onClick={() => setOpen(true)} disabled={disabled}>
                 {children}
             </CollapsableToolbarButton>
 
-            <Dialog open={open} onOpenChange={(_, d) => { if (!exporting) setOpen(d.open); }}>
+            <Dialog
+                open={open}
+                onOpenChange={(_, d) => {
+                    if (!exporting) setOpen(d.open);
+                }}
+            >
                 <DialogSurface>
                     <DialogBody>
                         <DialogTitle>Export video</DialogTitle>
@@ -307,19 +388,37 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
                                         size="small"
                                     >
                                         {SPEED_OPTIONS.map((o) => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
                                         ))}
                                     </Select>
                                 </Field>
                                 <Field label="Resolution" className={classes.optionField}>
                                     <Select
                                         value={pixelRatio.toString()}
-                                        onChange={(_, d) => setPixelRatio(parseInt(d.value))}
+                                        onChange={(_, d) => setPixelRatio(parseFloat(d.value))}
                                         disabled={exporting}
                                         size="small"
                                     >
                                         {RESOLUTION_OPTIONS.map((o) => (
-                                            <option key={o.value} value={o.value}>{o.label}</option>
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </Field>
+                                <Field label="Framerate" className={classes.optionField}>
+                                    <Select
+                                        value={framerate.toString()}
+                                        onChange={(_, d) => setFramerate(parseInt(d.value))}
+                                        disabled={exporting}
+                                        size="small"
+                                    >
+                                        {FRAMERATE_OPTIONS.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
                                         ))}
                                     </Select>
                                 </Field>
@@ -327,29 +426,63 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
 
                             {!exporting && (
                                 <Label className={classes.note}>
-                                    {totalFrames} frames · {totalSecs.toFixed(1)}s · 60 FPS · WebM (VP9)
+                                    {totalFrames} frames · {totalSecs.toFixed(1)}s · {framerate} FPS · WebM (VP9)
                                 </Label>
                             )}
 
                             {exporting && (
                                 <div className={classes.progressSection}>
                                     <div className={classes.progressHeader}>
-                                        <Label>Rendering…</Label>
-                                        <Label className={classes.progressPct}>
-                                            {Math.round(progress * 100)}%
-                                        </Label>
+                                        {progress < 1 ? (
+                                            <>
+                                                <Label>Rendering…</Label>
+                                                <Label className={classes.progressPct}>
+                                                    {Math.round(progress * 100)}%
+                                                </Label>
+                                            </>
+                                        ) : (
+                                            <Label>Finalizing…</Label>
+                                        )}
                                     </div>
-                                    <ProgressBar value={progress} />
+                                    <div className={classes.progressBar}>
+                                        <div
+                                            className={classes.progressBarFill}
+                                            style={{ width: `${progress * 100}%` }}
+                                        />
+                                    </div>
                                 </div>
                             )}
                         </DialogContent>
 
-                        <DialogActions>
+                        <DialogActions className={exporting ? classes.actionsExporting : undefined}>
                             {exporting ? (
-                                <Button appearance="secondary" onClick={handleCancel}>Cancel</Button>
+                                <>
+                                    {supportsNotifications &&
+                                        (notificationsBlocked ? (
+                                            <Button
+                                                appearance="secondary"
+                                                icon={<AlertOffRegular />}
+                                                disabled
+                                                title="Notifications are blocked by your browser"
+                                            />
+                                        ) : (
+                                            <ToggleButton
+                                                appearance="secondary"
+                                                icon={notifyWhenDone ? <AlertFilled /> : <AlertRegular />}
+                                                checked={notifyWhenDone}
+                                                onClick={handleNotifyToggle}
+                                                title={notifyWhenDone ? 'Cancel notification' : 'Notify me when done'}
+                                            />
+                                        ))}
+                                    <Button appearance="secondary" onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                </>
                             ) : (
                                 <>
-                                    <Button appearance="secondary" onClick={() => setOpen(false)}>Close</Button>
+                                    <Button appearance="secondary" onClick={() => setOpen(false)}>
+                                        Close
+                                    </Button>
                                     <Button appearance="primary" onClick={handleExport} disabled={disabled}>
                                         Export
                                     </Button>
@@ -367,6 +500,7 @@ export const VideoExportButton: React.FC<PropsWithChildren> = ({ children }) => 
                         <VideoCapture
                             speed={speed}
                             pixelRatio={pixelRatio}
+                            framerate={framerate}
                             onProgress={setProgress}
                             onComplete={handleComplete}
                             onError={handleError}
@@ -405,6 +539,17 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         gap: tokens.spacingVerticalXS,
     },
+    progressBar: {
+        height: '4px',
+        backgroundColor: tokens.colorNeutralBackground3,
+        borderRadius: tokens.borderRadiusCircular,
+        overflow: 'hidden',
+    },
+    progressBarFill: {
+        height: '100%',
+        backgroundColor: tokens.colorCompoundBrandBackground,
+        borderRadius: tokens.borderRadiusCircular,
+    },
     progressHeader: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -413,6 +558,9 @@ const useStyles = makeStyles({
     progressPct: {
         fontSize: tokens.fontSizeBase200,
         color: tokens.colorNeutralForeground2,
+    },
+    actionsExporting: {
+        justifyContent: 'space-between',
     },
     hidden: {
         position: 'fixed',

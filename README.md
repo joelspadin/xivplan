@@ -1,6 +1,8 @@
 # Final Fantasy XIV Raid Planner
 
-https://xivplan.netlify.app/
+https://xivoid.netlify.app/
+
+This is a fork of [joelspadin/xivplan](https://github.com/joelspadin/xivplan) with additional features, including a playback mode with smooth step interpolation, per-object animation controls, and video export.
 
 This is a tool for quickly diagramming raid strategies for Final Fantasy XIV, inspired by [RaidPlan.io](https://raidplan.io).
 
@@ -26,7 +28,7 @@ Using local storage means I don't have to pay for servers, and I can't mess up a
 
 If you are using a Chromium-based browser and you install the site as an app, then .xivplan files can also be opened directly in the app instead of using drag and drop.
 
-You can also self-host plans. XIVPlan can fetch an .xivplan file from any public URL if you navigate to `https://xivplan.netlify.app/?url=` followed by the link to the plan. Make sure that you are serving the raw JSON file or it will fail to load.
+You can also self-host plans. XIVPlan can fetch an .xivplan file from any public URL if you navigate to `https://xvoid.netlify.app/?url=` followed by the link to the plan. Make sure that you are serving the raw JSON file or it will fail to load.
 
 ### Background Images
 
@@ -50,6 +52,8 @@ When loading an SVG file as the arena background image, XIVPlan will inject the 
 [FF14 Toolbox Gaming Space](https://ff14.toolboxgaming.space) is a more powerful tool that supports animations and much more. I find its UI cumbersome to use though, so it is not well suited to quickly diagramming during raids.
 
 ## Credits
+
+Forked from [joelspadin/xivplan](https://github.com/joelspadin/xivplan) by Joel Spadin.
 
 Undo/redo logic is based on [frontendphil/react-undo-redo](https://github.com/frontendphil/react-undo-redo)
 
