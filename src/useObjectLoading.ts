@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId } from 'react';
+import { use, useEffect, useId } from 'react';
 import useImage from 'use-image';
 import { ObjectLoadingContext } from './ObjectLoadingContext';
 
@@ -7,7 +7,7 @@ import { ObjectLoadingContext } from './ObjectLoadingContext';
  */
 export function useObjectLoading(loading: boolean) {
     const id = useId();
-    const { setLoading, clearLoading } = useContext(ObjectLoadingContext);
+    const { setLoading, clearLoading } = use(ObjectLoadingContext);
 
     useEffect(() => {
         if (loading) {

@@ -47,7 +47,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
 }) => {
     const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
-    const [isResizing, setResizing] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: StarburstObjectState) => {
@@ -68,7 +68,7 @@ export const StarburstControlContainer: React.FC<StarburstContainerProps> = ({
             <DraggableObject object={object}>
                 <StarburstControlPoints
                     object={object}
-                    onActive={setResizing}
+                    onActive={setIsResizing}
                     visible={showResizer && !isDragging}
                     onTransformEnd={updateObject}
                     minSpokeWidth={minSpokeWidth}

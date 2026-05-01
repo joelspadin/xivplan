@@ -18,7 +18,7 @@ import {
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { use, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
@@ -151,7 +151,7 @@ interface ScreenshotComponentProps {
 }
 
 const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScreenshotDone }) => {
-    const { isLoading } = useContext(ObjectLoadingContext);
+    const { isLoading } = use(ObjectLoadingContext);
     const { scene, stepIndex } = useScene();
     const [frozenScene] = useState(scene);
     const [frozenStepIndex] = useState(stepIndex);
@@ -176,18 +176,19 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
     // to load resources have reported that they are loading.
     const [firstRender, setFirstRender] = useState(true);
     useEffect(() => {
-        setTimeout(() => setFirstRender(false));
+        const timeout = setTimeout(() => setFirstRender(false));
+        return () => clearTimeout(timeout);
     }, [setFirstRender]);
 
     // Avoid double screenshot in development builds.
-    const screenshotTaken = useRef(false);
+    const screenshotTakenRef = useRef(false);
 
     useEffect(() => {
-        if (!firstRender && !isLoading && !screenshotTaken.current) {
+        if (!firstRender && !isLoading && !screenshotTakenRef.current) {
             takeScreenshot();
 
             return () => {
-                screenshotTaken.current = true;
+                screenshotTakenRef.current = true;
             };
         }
     }, [firstRender, isLoading, takeScreenshot]);

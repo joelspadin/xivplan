@@ -96,7 +96,7 @@ type OpenChangeCallback = Required<DialogProps>['onOpenChange'];
  *
  * Resolves to true if the user closes the dialog by clicking an element with the given ID, else false.
  */
-export function useAsyncModalResolveCallback(
+export function getAsyncModalResolveCallback(
     confirmId: string,
     resolve: (result: boolean) => void,
 ): OpenChangeCallback {

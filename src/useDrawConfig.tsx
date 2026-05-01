@@ -1,6 +1,6 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import { DrawConfigContext, type DrawConfigState } from './EditModeContext';
 
 export function useDrawConfig(): DrawConfigState {
-    return useContext(DrawConfigContext);
+    return use(DrawConfigContext);
 }

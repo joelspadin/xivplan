@@ -28,11 +28,11 @@ export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = (
             <div className={classes.container}>
                 {ICON_CHOICES.map((row, i) => (
                     <div key={i} className={classes.row}>
-                        {row.map((job, j) => {
+                        {row.map((job) => {
                             const icon = getJobIconUrl(job.icon);
                             return (
                                 <Button
-                                    key={j}
+                                    key={job.name}
                                     appearance="transparent"
                                     title={job.name}
                                     icon={<Image src={icon} width={32} height={32} />}

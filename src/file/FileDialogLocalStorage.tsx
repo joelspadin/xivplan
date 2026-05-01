@@ -55,7 +55,7 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
     const [confirmUnsavedChanges, renderModal1] = useConfirmUnsavedChanges();
     const [confirmDeleteFile, renderModal2] = useConfirmDeleteFile();
 
-    const [selectedRows, setSelectedRows] = useState(new Set<TableRowId>());
+    const [selectedRows, setSelectedRows] = useState(() => new Set<TableRowId>());
     const onSelectionChange: DataGridProps['onSelectionChange'] = (ev, data) => {
         setSelectedRows(data.selectedItems);
     };
@@ -194,7 +194,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
 
     const setSource = useSetSource();
     const { canonicalScene, source } = useScene();
-    const [name, setName] = useState(getInitialName(source));
+    const [name, setName] = useState(() => getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 
     const alreadyExists = files.value?.some((f) => f.name === name?.trim());

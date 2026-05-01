@@ -9,12 +9,12 @@ import {
 } from '@fluentui/react-components';
 import React, { useId } from 'react';
 import { HotkeyBlockingDialogBody } from '../HotkeyBlockingDialogBody';
-import { useAsyncModalResolveCallback } from '../useAsyncModal';
+import { getAsyncModalResolveCallback } from '../useAsyncModal';
 import { type FilePromptProps } from './FilePrompts';
 
 export const UnsavedChangesPrompt: React.FC<FilePromptProps> = ({ resolve, ...props }) => {
     const confirmId = useId();
-    const onOpenChange = useAsyncModalResolveCallback(confirmId, resolve);
+    const onOpenChange = getAsyncModalResolveCallback(confirmId, resolve);
 
     return (
         <Dialog {...props} onOpenChange={onOpenChange}>

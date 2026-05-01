@@ -1,6 +1,6 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import { TetherConfigContext, type TetherConfigState } from './EditModeContext';
 
 export function useTetherConfig(): TetherConfigState {
-    return useContext(TetherConfigContext);
+    return use(TetherConfigContext);
 }

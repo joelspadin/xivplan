@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
-import React, { type PropsWithChildren, type RefAttributes, useContext, useState } from 'react';
+import React, { type PropsWithChildren, type RefAttributes, use, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
@@ -23,9 +23,9 @@ import { LayerName } from './layers';
 
 export const SceneRenderer: React.FC = () => {
     const { scene } = useScene();
-    const [, setSelection] = useContext(SelectionContext);
+    const [, setSelection] = use(SelectionContext);
     const size = getCanvasSize(scene);
-    const [stage, stageRef] = useState<Konva.Stage | null>(null);
+    const [stage, setStage] = useState<Konva.Stage | null>(null);
     const [editMode] = useEditMode();
 
     const onClickStage = (e: KonvaEventObject<MouseEvent>) => {
@@ -45,7 +45,7 @@ export const SceneRenderer: React.FC = () => {
 
     return (
         <DropTarget stage={stage}>
-            <Stage {...size} ref={stageRef} onClick={onClickStage}>
+            <Stage {...size} ref={setStage} onClick={onClickStage}>
                 <StageContext value={stage}>
                     <DefaultCursorProvider>
                         <SceneContents />

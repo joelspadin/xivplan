@@ -1,5 +1,5 @@
 import eslint from '@eslint/js';
-import react from 'eslint-plugin-react';
+import eslintReact from '@eslint-react/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig } from 'eslint/config';
@@ -18,20 +18,22 @@ export default defineConfig(
         extends: [
             eslint.configs.recommended,
             tseslint.configs.recommended,
-            react.configs.flat.recommended,
-            react.configs.flat['jsx-runtime'],
             reactHooks.configs.flat.recommended,
+            eslintReact.configs['recommended-typescript'],
         ],
         rules: {
-            'react/prop-types': 'off',
-        },
-        settings: {
-            react: {
-                // version: 'detect',
-                // Workaround for eslint-plugin-react compatibility with eslint 10.
-                // https://github.com/jsx-eslint/eslint-plugin-react/issues/3977
-                version: '19.2.4',
-            },
+            '@eslint-react/no-array-index-key': 'off',
+            '@eslint-react/use-state': [
+                'warn',
+                {
+                    enforceAssignment: false,
+                },
+            ],
+
+            // Duplicates eslint-plugin-react-hooks
+            '@eslint-react/exhaustive-deps': 'off',
+            '@eslint-react/set-state-in-effect': 'off',
+            '@eslint-react/static-components': 'off',
         },
     },
     reactRefresh.configs.vite,

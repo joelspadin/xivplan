@@ -31,7 +31,7 @@ export function useKonvaCache(
     configOrDeps: UseKonvaCacheOptions | DependencyList,
     maybeDeps?: DependencyList,
 ) {
-    const [enabled, config, deps] = useOptions(configOrDeps, maybeDeps);
+    const [enabled, config, deps] = getOptions(configOrDeps, maybeDeps);
 
     useLayoutEffect(() => {
         if (enabled) {
@@ -42,7 +42,7 @@ export function useKonvaCache(
     }, [enabled, config, ref, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-function useOptions(
+function getOptions(
     optionsOrDeps: UseKonvaCacheOptions | DependencyList,
     deps?: DependencyList,
 ): [boolean, CacheConfig | undefined, DependencyList] {

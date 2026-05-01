@@ -1,6 +1,6 @@
 import { Stage } from 'konva/lib/Stage';
 import type { Vector2d } from 'konva/lib/types';
-import React, { type Dispatch, type SetStateAction, useContext, useState } from 'react';
+import React, { type Dispatch, type SetStateAction, use, useState } from 'react';
 import type { HotkeyCallback } from 'react-hotkeys-hook';
 import { HelpContext } from './HelpContext';
 import { HelpDialog } from './HelpDialog';
@@ -425,7 +425,7 @@ const EditActionHandler: React.FC = () => {
 };
 
 const HelpHandler: React.FC = () => {
-    const [open, setOpen] = useContext(HelpContext);
+    const [open, setOpen] = use(HelpContext);
 
     useHotkeys(
         'f1',

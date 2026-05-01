@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { use } from 'react';
 
 import { type Dispatch, type SetStateAction, createContext } from 'react';
 
@@ -31,7 +31,7 @@ export const DialogOpenContext = createContext<DialogOpenState>(() => {});
  * ```
  */
 export function useCloseDialog() {
-    const setOpen = useContext(DialogOpenContext);
+    const setOpen = use(DialogOpenContext);
 
     return () => setOpen(false);
 }

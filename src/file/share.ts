@@ -101,6 +101,6 @@ export function useSceneFromUrl(): Scene | undefined {
     return undefined;
 }
 
-export function useSceneLoadError(): Error | string | unknown | undefined {
+export function getSceneLoadError(): Error | string | unknown | undefined {
     return sceneError;
 }

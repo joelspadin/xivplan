@@ -89,10 +89,13 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
     onFileSelected,
 }) => {
     const classes = useStyles();
-    const [tree, setTree] = useState(new DirectoryTree());
+    const [tree, setTree] = useState(() => new DirectoryTree());
+    // eslint-disable-next-line @eslint-react/use-state
     const [root, setRootInner] = useState(planFolder);
+    // eslint-disable-next-line @eslint-react/use-state
     const [folder, setFolderInner] = useState(planFolder);
-    const [selectedRows, setSelectedRowsInner] = useState(new Set<TableRowId>());
+    // eslint-disable-next-line @eslint-react/use-state
+    const [selectedRows, setSelectedRowsInner] = useState(() => new Set<TableRowId>());
 
     const parents = folder ? tree.getPath(folder).split('/') : [];
 

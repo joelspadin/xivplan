@@ -1,6 +1,6 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import { ObjectContext } from './ObjectContext';
 
 export function useObject() {
-    return useContext(ObjectContext);
+    return use(ObjectContext);
 }

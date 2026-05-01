@@ -2,9 +2,9 @@ import React, { type PropsWithChildren, useState } from 'react';
 import { DragSelectionContext, type SceneSelection, SelectionContext, SpotlightContext } from './SelectionContext';
 
 export const SelectionProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const state = useState<SceneSelection>(new Set());
-    const dragState = useState<SceneSelection>(new Set());
-    const spotlightState = useState<SceneSelection>(new Set());
+    const state = useState<SceneSelection>(() => new Set());
+    const dragState = useState<SceneSelection>(() => new Set());
+    const spotlightState = useState<SceneSelection>(() => new Set());
 
     return (
         <SelectionContext value={state}>

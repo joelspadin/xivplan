@@ -1,4 +1,4 @@
-import { type Dispatch, useContext } from 'react';
+import { type Dispatch, use } from 'react';
 import { DirtyContext, SavedStateContext } from './DirtyContext';
 import type { Scene } from './scene';
 
@@ -7,12 +7,12 @@ import type { Scene } from './scene';
  */
 
 export function useIsDirty(): boolean {
-    return useContext(DirtyContext);
+    return use(DirtyContext);
 }
 /**
  * @returns a function which sets the scene against which useIsDirty() compares.
  */
 
 export function useSetSavedState(): Dispatch<Scene> {
-    return useContext(SavedStateContext);
+    return use(SavedStateContext);
 }

@@ -90,10 +90,10 @@ export const ArenaGridEdit: React.FC = () => {
     const commit = () => dispatch({ type: 'commit' });
 
     // TODO: refactor custom grids into their own components
-    const [customRows, setCustomRows] = useState(formatCustomGridRows(grid));
-    const [customCols, setCustomCols] = useState(formatCustomGridCols(grid));
-    const [customRings, setCustomRings] = useState(formatCustomGridRings(grid));
-    const [customSpokes, setCustomSpokes] = useState(formatCustomGridSpokes(grid));
+    const [customRows, setCustomRows] = useState(() => formatCustomGridRows(grid));
+    const [customCols, setCustomCols] = useState(() => formatCustomGridCols(grid));
+    const [customRings, setCustomRings] = useState(() => formatCustomGridRings(grid));
+    const [customSpokes, setCustomSpokes] = useState(() => formatCustomGridSpokes(grid));
 
     switch (grid.type) {
         case GridType.CustomRectangular:

@@ -1,10 +1,10 @@
 import { useToastController } from '@fluentui/react-components';
 import React, { useEffect } from 'react';
-import { useSceneLoadError } from './file/share';
+import { getSceneLoadError } from './file/share';
 import { MessageToast } from './MessageToast';
 
 export const SceneLoadErrorNotifier: React.FC = () => {
-    const sceneLoadError = useSceneLoadError();
+    const sceneLoadError = getSceneLoadError();
     const { dispatchToast } = useToastController();
 
     useEffect(() => {

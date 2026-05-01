@@ -1,4 +1,4 @@
-import { type RefObject, useContext, useEffect } from 'react';
+import { type RefObject, use, useEffect } from 'react';
 import { type HotkeyCallback, type Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, type HotkeyInfo } from './HotkeyHelpContext';
 import { useCancelConnectionSelection } from './useEditMode';
@@ -50,7 +50,7 @@ export function useHotkeys<T extends HTMLElement>(
 }
 
 export function useHotkeyHelp(info: HotkeyInfo): void {
-    const map = useContext(HotkeyHelpContext);
+    const map = use(HotkeyHelpContext);
     useEffect(() => {
         if (!info.keys || !info.category || !info.help) {
             return;
@@ -66,7 +66,7 @@ export function useHotkeyHelp(info: HotkeyInfo): void {
 }
 
 export function useRegisteredHotkeys(): HotkeyInfo[] {
-    const map = useContext(HotkeyHelpContext);
+    const map = use(HotkeyHelpContext);
     return [...map.values()].sort((a, b) => {
         return a.sortKey.localeCompare(b.sortKey);
     });

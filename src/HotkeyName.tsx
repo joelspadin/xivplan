@@ -19,12 +19,12 @@ export const HotkeyName: React.FC<HotkeysProps> = ({ keys, suffix }) => {
             {parts.map((k, i) => {
                 const isLast = i === parts.length - 1;
                 const item = (
-                    <kbd key={i} className={classes.key}>
+                    <kbd key={k} className={classes.key}>
                         {formatKey(k)}
                     </kbd>
                 );
 
-                return isLast ? item : <React.Fragment key={i}>{item}+</React.Fragment>;
+                return isLast ? item : <React.Fragment key={k}>{item}+</React.Fragment>;
             })}
             {suffix && <span>+ {suffix}</span>}
         </span>

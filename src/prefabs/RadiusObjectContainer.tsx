@@ -58,7 +58,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
 }) => {
     const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
-    const [isResizing, setResizing] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
     const isDragging = useIsDragging(object);
 
     const updateObject = (state: RadiusObjectState) => {
@@ -87,7 +87,7 @@ export const RadiusObjectContainer: React.FC<RadiusObjectContainerProps> = ({
             <DraggableObject object={object}>
                 <RadiusControlPoints
                     object={object}
-                    onActive={setResizing}
+                    onActive={setIsResizing}
                     visible={showResizer && !isDragging}
                     onTransformEnd={updateObject}
                     allowRotate={allowRotate}

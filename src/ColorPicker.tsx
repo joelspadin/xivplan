@@ -16,7 +16,7 @@ const BLACK: HsvaColor = { h: 0, s: 0, v: 0, a: 1 };
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({ className, value, onChange }) => {
     const classes = useStyles();
-    const [color, setColor] = useState<HsvaColor>(parseColorHsva(value) ?? BLACK);
+    const [color, setColor] = useState<HsvaColor>(() => parseColorHsva(value) ?? BLACK);
     const rgb = hsvToRgb(color);
 
     const onSaturationChange = (data: HsvaColor) => {
