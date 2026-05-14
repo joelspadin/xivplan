@@ -1,4 +1,4 @@
-import { type RefObject, use, useEffect } from 'react';
+import { type Ref, use, useEffect } from 'react';
 import { type HotkeyCallback, type Options, useHotkeys as useHotkeysBase, useHotkeysContext } from 'react-hotkeys-hook';
 import { HotkeyHelpContext, type HotkeyInfo } from './HotkeyHelpContext';
 import { useCancelConnectionSelection } from './useEditMode';
@@ -15,21 +15,21 @@ export function useHotkeys<T extends HTMLElement>(
     info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     deps?: unknown[],
-): RefObject<T | null>;
+): Ref<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     options?: Options,
     deps?: unknown[],
-): RefObject<T | null>;
+): Ref<T | null>;
 export function useHotkeys<T extends HTMLElement>(
     keys: string,
     info: Partial<HotkeyInfo>,
     callback: HotkeyCallback,
     options?: Options | unknown[],
     deps?: unknown[],
-): RefObject<T | null> {
+): Ref<T | null> {
     if (Array.isArray(options)) {
         deps = options;
         options = {};
