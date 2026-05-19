@@ -49,11 +49,35 @@ When loading an SVG file as the arena background image, XIVPlan will inject the 
 
 [FF14 Toolbox Gaming Space](https://ff14.toolboxgaming.space) is a more powerful tool that supports animations and much more. I find its UI cumbersome to use though, so it is not well suited to quickly diagramming during raids.
 
+## Development
+
+Building and testing this project requires [Node.js](https://nodejs.org/).
+
+Clone this repo, open a terminal to the folder where you cloned it, and run the following command to install dependencies:
+
+```sh
+npm install
+```
+
+To start the development version of the site, run this command:
+
+```sh
+npm run dev
+```
+
+It will print a URL such as http://127.0.0.1:5173/. Open it in your browser.
+
+### Icons from FFXIV
+
+Many of the icons are copied directly or derived from Final Fantasy XIV game assets. To make sure icons are processed consistently when they are updated, for example when new jobs are added, I made a separate tool for extracting and editing icons. See https://github.com/joelspadin/xivplan-icon-generator for more details.
+
+If you want to add a new image from a game asset, please do not use images that were extracted and possibly modified by other people. First, make a PR to add it to the icon generator. Then use the icon generator to extract it directly from the game and resize it as needed. Then you can include the result of that in a PR.
+
 ## Credits
 
 Undo/redo logic is based on [frontendphil/react-undo-redo](https://github.com/frontendphil/react-undo-redo)
 
-Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
+Job, role, marker, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.
 
 [Limit cut counter icons](https://magentalava.gumroad.com/l/limitcuticons) by yullanellis.
 
