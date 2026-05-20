@@ -24,7 +24,7 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
     const [selection, setSelection] = useSelection();
     const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
-    const { dispatch } = useScene();
+    const { step, dispatch } = useScene();
     const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
     const getUpdateConnectionIdsAction = useUpdateConnectedIdsAction();
     const isSelectable = editMode === EditMode.Normal || editMode === EditMode.SelectConnection;
@@ -37,9 +37,9 @@ export const SelectableObject: React.FC<SelectableObjectProps> = ({ object, chil
             }
             // If an object is clicked that is not a valid connection while in this mode, do nothing.
         } else if (e.evt.shiftKey) {
-            setSelection(addSelection(selection, object.id));
+            setSelection(addSelection(step, selection, object.id));
         } else if (e.evt.ctrlKey) {
-            setSelection(toggleSelection(selection, object.id));
+            setSelection(toggleSelection(step, selection, object.id));
         } else {
             setSelection(selectSingle(object.id));
         }
