@@ -97,7 +97,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
     const [selection, setSelection] = useSelection();
     const [spotlight, setSpotlight] = useSpotlight();
     const [editMode, setEditMode] = useEditMode();
-    const { dispatch } = useScene();
+    const { step, dispatch } = useScene();
     const getUpdateConnectedIdsAction = useUpdateConnectedIdsAction();
     const isAllowedConnectionTarget = useIsAllowedConnectionTarget(object.id);
     const isSelected = selection.has(object.id);
@@ -115,9 +115,9 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
             dispatch(getUpdateConnectedIdsAction(object));
             setEditMode(EditMode.Normal);
         } else if (e.shiftKey) {
-            setSelection(addSelection(selection, object.id));
+            setSelection(addSelection(step, selection, object.id));
         } else if (e.ctrlKey) {
-            setSelection(toggleSelection(selection, object.id));
+            setSelection(toggleSelection(step, selection, object.id));
         } else {
             setSelection(selectSingle(object.id));
         }
