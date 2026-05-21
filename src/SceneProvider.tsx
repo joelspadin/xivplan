@@ -6,6 +6,8 @@ import {
     getDefaultAttachmentSettings,
     getObjectToAttachToAt,
     getRelativeAttachmentPoint,
+    unlinkPosition,
+    unlinkRotation,
 } from './connections';
 import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import { copyObjects } from './copy';
@@ -284,6 +286,13 @@ export function getObjectById(scene: Scene, id: number): SceneObject | undefined
     return undefined;
 }
 
+export function getStepIndexForId(scene: Scene, id: number | undefined): number | undefined {
+    if (id === undefined) {
+        return undefined;
+    }
+    return scene.steps.findIndex((step) => step.objects.find((obj) => obj.id == id));
+}
+
 /** @returns the list of objects that have the given object as direct position parent. */
 export function getDirectPositionDescendants(scene: Scene, object: SceneObject): (SceneObject & MoveableObject)[] {
     const children: (SceneObject & MoveableObject)[] = [];
@@ -379,7 +388,7 @@ function addStep(state: Readonly<EditorState>, after: number): EditorState {
 }
 
 function removeStep(state: Readonly<EditorState>, index: number): EditorState {
-    const newSteps = state.scene.steps.slice();
+    const newSteps = prepareOtherStepsForStepDeletion(state.scene, index);
     newSteps.splice(index, 1);
 
     if (newSteps.length === 0) {
@@ -400,6 +409,36 @@ function removeStep(state: Readonly<EditorState>, index: number): EditorState {
         },
         currentStep,
     };
+}
+
+/** Updates all (other) steps to no longer have (direct) connections to the given step. */
+function prepareOtherStepsForStepDeletion(scene: Readonly<Scene>, stepToDelete: number): SceneStep[] {
+    const updatedSteps: SceneStep[] = [];
+    const objectIdsGettingDeleted = new Set<number | undefined>(
+        scene.steps[stepToDelete]!.objects.map((obj) => obj.id),
+    );
+    scene.steps.forEach((step, i) => {
+        // No need to update the indicated step. (it's getting deleted)
+        if (i == stepToDelete) {
+            updatedSteps.push(step);
+            return;
+        }
+        const updatedObjects: SceneObject[] = [];
+        step.objects.forEach((obj) => {
+            let updatedObj = obj;
+            if (isMoveable(updatedObj) && objectIdsGettingDeleted.has(updatedObj.positionParentId)) {
+                updatedObj = unlinkPosition(updatedObj, scene);
+            }
+            if (isRotateable(updatedObj) && objectIdsGettingDeleted.has(updatedObj.facingId)) {
+                updatedObj = unlinkRotation(updatedObj, scene);
+            }
+            updatedObjects.push(updatedObj);
+        });
+
+        updatedSteps.push({ ...step, objects: updatedObjects });
+    });
+
+    return updatedSteps;
 }
 
 function reoderSteps(state: Readonly<EditorState>, order: number[]): EditorState {

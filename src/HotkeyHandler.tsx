@@ -508,7 +508,6 @@ const StepHandler: React.FC = () => {
         'alt+left',
         { category: CATEGORY_STEPS, help: 'Previous step' },
         (e) => {
-            cancelConnectionSelection();
             dispatch({ type: 'previousStep' });
             e.preventDefault();
         },
@@ -519,7 +518,6 @@ const StepHandler: React.FC = () => {
         'alt+right',
         { category: CATEGORY_STEPS, help: 'Next step' },
         (e) => {
-            cancelConnectionSelection();
             dispatch({ type: 'nextStep' });
             e.preventDefault();
         },
