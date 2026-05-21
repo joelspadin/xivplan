@@ -1,6 +1,8 @@
 import { makeStyles, shorthands, tokens, typographyStyles } from '@fluentui/react-components';
 import { PANEL_PADDING } from './panel/PanelStyles';
 
+export const CONTROLS_ICON_COLUMN_WIDTH = 40;
+
 export const useControlStyles = makeStyles({
     panel: {
         padding: `${PANEL_PADDING}px`,
@@ -35,7 +37,7 @@ export const useControlStyles = makeStyles({
     },
 
     rightGap: {
-        marginRight: '40px',
+        marginRight: `${CONTROLS_ICON_COLUMN_WIDTH}px`,
     },
 
     cell: {

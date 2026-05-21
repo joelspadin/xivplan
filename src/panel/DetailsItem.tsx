@@ -71,10 +71,10 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
 function getSizeProps(size: DetailsItemSize, classes: ReturnType<typeof useStyles>) {
     switch (size) {
         case 'nested':
-            return { className: classes.nested, iconSize: 20 };
+            return { className: classes.nested, iconSize: NESTED_ICON_SIZE };
 
         case 'field':
-            return { className: classes.insideField, iconSize: 20 };
+            return { className: classes.insideField, iconSize: NESTED_ICON_SIZE };
 
         case 'default':
             return { className: undefined, iconSize: undefined };
@@ -141,6 +141,8 @@ const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ objec
     );
 };
 
+const NESTED_ICON_SIZE = 20;
+
 const useStyles = makeStyles({
     wrapper: {
         display: 'flex',
@@ -169,6 +171,7 @@ const useStyles = makeStyles({
     insideField: {
         gap: tokens.spacingHorizontalXXS,
         padding: '0',
+        width: `calc(100% - ${NESTED_ICON_SIZE}px)`,
         ...typographyStyles.caption1,
     },
 
