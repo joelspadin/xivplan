@@ -45,6 +45,9 @@ export const HIGHLIGHT_COLOR = '#ffffff';
 export const SPOTLIGHT_COLOR = '#ffc800';
 export const HIGHLIGHT_WIDTH = 1.5;
 
+export const SPOTLIGHT_LIGHT_SHADOW_COLOR = '#ffff00';
+export const SPOTLIGHT_DARK_SHADOW_COLOR = '#cccc00';
+
 const CONNECTION_HIGHLIGHT_PROPS: ShapeConfig = {
     dashEnabled: true,
     dash: [8, 15],
@@ -70,7 +73,7 @@ export const SPOTLIGHT_PROPS: ShapeConfig = {
     listening: false,
     stroke: SPOTLIGHT_COLOR,
     strokeWidth: HIGHLIGHT_WIDTH,
-    shadowColor: '#ffff00',
+    shadowColor: SPOTLIGHT_LIGHT_SHADOW_COLOR,
     shadowBlur: 4,
     opacity: 0.75,
 };
