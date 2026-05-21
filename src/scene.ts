@@ -488,6 +488,10 @@ export interface SceneStep {
     readonly customArena?: Arena;
 }
 
+export function getStepDisplayString(index: number): string {
+    return (index + 1).toString();
+}
+
 export interface Scene {
     readonly nextId: number;
     readonly arena: Arena;

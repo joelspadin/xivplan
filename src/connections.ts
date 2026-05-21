@@ -1,5 +1,5 @@
 import type { Vector2d } from 'konva/lib/types';
-import { getAbsolutePosition, isWithinBox, isWithinRadius, makeRelative } from './coord';
+import { getAbsolutePosition, getAbsoluteRotation, isWithinBox, isWithinRadius, makeRelative } from './coord';
 import { ConnectionType } from './EditModeContext';
 import { LayerName } from './render/layers';
 import { getLayerName } from './render/ObjectRegistry';
@@ -16,9 +16,16 @@ import {
     type SceneStep,
     type UnknownObject,
 } from './scene';
-import { getDirectPositionDescendants, getObjectById, type SceneAction, useScene } from './SceneProvider';
+import {
+    getDirectPositionDescendants,
+    getObjectById,
+    getStepIndexForId,
+    type SceneAction,
+    useScene,
+} from './SceneProvider';
+import { selectNone, useSpotlight } from './selection';
 import { useConnectionSelection } from './useConnectionSelection';
-import type { Enum } from './util';
+import { type Enum, omit } from './util';
 
 /**
  * Returns the ConnectionType-appropriate functions to get the current connection ID for a single object,
@@ -28,7 +35,7 @@ export function getConnectionIdFuncs(
     connectionType: ConnectionType,
 ): [
     (obj: SceneObject) => number | undefined,
-    (step: SceneStep, objectsToConnect: readonly SceneObject[]) => ReadonlySet<number>,
+    (scene: Scene, objectsToConnect: readonly SceneObject[]) => ReadonlySet<number>,
 ] {
     switch (connectionType) {
         case ConnectionType.POSITION:
@@ -52,20 +59,20 @@ export function useIsAllowedConnectionTarget(id: number): boolean {
 }
 
 export function useAllowedConnectionIds(): ReadonlySet<number> {
-    const { step } = useScene();
+    const { scene } = useScene();
     const [connectionSelection] = useConnectionSelection();
     const objectIdsToConnect = connectionSelection.objectIdsToConnect;
 
     switch (connectionSelection.connectionType) {
         case ConnectionType.POSITION:
             return getAllowedPositionParentIds(
-                step,
-                step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
+                scene,
+                scene.steps.flatMap((s) => s.objects).filter((obj) => objectIdsToConnect.has(obj.id)),
             );
         case ConnectionType.ROTATION: {
             return getAllowedRotationConnectionIds(
-                step,
-                step.objects.filter((obj) => objectIdsToConnect.has(obj.id)),
+                scene,
+                scene.steps.flatMap((s) => s.objects).filter((obj) => objectIdsToConnect.has(obj.id)),
             );
         }
     }
@@ -76,14 +83,19 @@ export function useAllowedConnectionIds(): ReadonlySet<number> {
  * position parent. This excludes the selection plus any of its position descendants.
  */
 export function getAllowedPositionParentIds(
-    step: SceneStep,
+    scene: Scene,
     objectsToConnect: readonly SceneObject[],
 ): ReadonlySet<number> {
+    if (objectsToConnect.length == 0) {
+        return new Set();
+    }
     const selectedAndChildren = new Set<number>(objectsToConnect.map((obj) => obj.id));
     let addedObjects = objectsToConnect.length;
+    const allObjects = scene.steps.flatMap((s) => s.objects);
+
     while (addedObjects > 0) {
         addedObjects = 0;
-        step.objects.forEach((obj) => {
+        allObjects.forEach((obj) => {
             if (selectedAndChildren.has(obj.id)) {
                 return;
             }
@@ -99,7 +111,7 @@ export function getAllowedPositionParentIds(
     }
 
     const isAllowed = (obj: SceneObject) => isMoveable(obj) && !selectedAndChildren.has(obj.id);
-    return new Set(step.objects.filter(isAllowed).map((obj) => obj.id));
+    return new Set(allObjects.filter(isAllowed).map((obj) => obj.id));
 }
 
 /**
@@ -107,13 +119,21 @@ export function getAllowedPositionParentIds(
  * This only excludes the selection -- it's OK to face an attached object or objects that face the selection.
  */
 export function getAllowedRotationConnectionIds(
-    step: SceneStep,
+    scene: Scene,
     objectsToConnect: readonly SceneObject[],
 ): ReadonlySet<number> {
+    if (objectsToConnect.length == 0) {
+        return new Set();
+    }
     const selectedIds = new Set<number>(objectsToConnect.map((obj) => obj.id));
 
     const isAllowed = (obj: SceneObject) => isMoveable(obj) && !selectedIds.has(obj.id);
-    return new Set(step.objects.filter(isAllowed).map((obj) => obj.id));
+    return new Set(
+        scene.steps
+            .flatMap((s) => s.objects)
+            .filter(isAllowed)
+            .map((obj) => obj.id),
+    );
 }
 
 /**
@@ -139,24 +159,46 @@ export function omitInterconnectedObjects(
 }
 
 /**
- * Returns a function that yields a SceneAction to update the given object as the chosen connected ID,
- * determined by the values in the ConnectionSelectionContext
+ * Returns a function that yields SceneActions to update the given object as the chosen connected ID,
+ * determined by the values in the ConnectionSelectionContext. The actions must be dispatched in the provided order.
  */
-export function useUpdateConnectedIdsAction(): (newParent: SceneObject & MoveableObject) => SceneAction {
+export function useUpdateConnectedIdsActions(): (newParent: SceneObject & MoveableObject) => SceneAction[] {
+    const { scene, stepIndex } = useScene();
     const [{ objectIdsToConnect, connectionType }] = useConnectionSelection();
+    const [, setSpotlight] = useSpotlight();
 
-    switch (connectionType) {
-        case ConnectionType.POSITION: {
-            return (newParent: SceneObject & MoveableObject) => {
-                return createUpdatePositionParentIdsAction(objectIdsToConnect, newParent);
-            };
-        }
-        case ConnectionType.ROTATION: {
-            return (newParent: SceneObject & MoveableObject) => {
-                return createUpdateRotationParentIdsAction(objectIdsToConnect, newParent);
-            };
-        }
+    if (objectIdsToConnect.size == 0) {
+        return () => [];
     }
+
+    return (newParent: SceneObject & MoveableObject) => {
+        const actions: SceneAction[] = [];
+
+        // If necessary, switch back to the step that has the objects to connect so that the
+        // update action can take hold and the effect of the connection is visible.
+        const connectingStepIndex = getStepIndexForId(scene, objectIdsToConnect.values().next().value);
+        if (connectingStepIndex === undefined) {
+            // Shouldn't happen, but just move on without doing anything instead of crashing.
+            return [];
+        }
+        if (connectingStepIndex != stepIndex) {
+            actions.push({ type: 'setStep', index: connectingStepIndex });
+            // there will be no onMouseLeave when switching steps, so clear the spotlight manually.
+            setSpotlight(selectNone());
+        }
+        switch (connectionType) {
+            case ConnectionType.POSITION: {
+                actions.push(createUpdatePositionParentIdsAction(objectIdsToConnect, newParent));
+                break;
+            }
+            case ConnectionType.ROTATION: {
+                actions.push(createUpdateRotationParentIdsAction(objectIdsToConnect, newParent));
+                break;
+            }
+        }
+
+        return actions;
+    };
 }
 
 function createUpdateRotationParentIdsAction(
@@ -472,5 +514,45 @@ function getAttachBottomRightPoint(scene: Scene, objectToAttach: SceneObject, pa
     return {
         x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
         y: parentAttachmentPoint.y - objectAttatchmentPoint.y,
+    };
+}
+
+export function unlinkAction(connectionType: ConnectionType, objectIds: readonly number[]): SceneAction {
+    switch (connectionType) {
+        case ConnectionType.POSITION:
+            return {
+                type: 'transform',
+                ids: objectIds,
+                transformFn: unlinkPosition,
+            };
+        case ConnectionType.ROTATION:
+            return {
+                type: 'transform',
+                ids: objectIds,
+                transformFn: unlinkRotation,
+            };
+    }
+}
+
+export function unlinkPosition(object: SceneObject, scene: Scene): SceneObject {
+    if (!isMoveable(object)) {
+        return object;
+    }
+    const absolutePos = getAbsolutePosition(scene, object);
+    return {
+        ...omit(object, 'positionParentId'),
+        // Always unpin objects upon detaching them
+        pinned: false,
+        ...absolutePos,
+    };
+}
+
+export function unlinkRotation(object: SceneObject, scene: Scene): SceneObject {
+    if (!isRotateable(object)) {
+        return object;
+    }
+    return {
+        ...omit(object, 'facingId'),
+        rotation: isMoveable(object) ? getAbsoluteRotation(scene, object) : 0,
     };
 }
