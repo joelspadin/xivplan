@@ -132,7 +132,7 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
     const highlightColor = getHighlightColor(object.color);
 
     // Cache so overlapping shapes with opacity appear as one object.
-    useKonvaCache(groupRef, [object.color, object.opacity, radius, highlightProps]);
+    useKonvaCache(groupRef, [object.color, object.opacity, object.invert, radius, highlightProps]);
 
     return (
         <>
