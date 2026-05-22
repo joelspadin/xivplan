@@ -33,7 +33,7 @@ const PartyIconList: React.FC<PartyIconListProps> = ({ onClick }) => {
                                 key={job.name}
                                 appearance="transparent"
                                 title={job.name}
-                                icon={<Image src={icon} width={32} height={32} />}
+                                icon={<Image src={icon} width={32} height={32} draggable={false} />}
                                 onClick={() => onClick(job.name, icon)}
                             />
                         );
