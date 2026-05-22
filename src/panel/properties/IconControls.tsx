@@ -6,18 +6,17 @@ import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const IconTimeControl: React.FC<PropertiesControlProps<IconObject>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const time = commonValue(objects, (obj) => obj.time ?? 0);
 
-    const onChange = useSpinChanged((time: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, time })) }),
-    );
+    const onChange = useSpinChanged((time: number) => update({ props: { time } }));
 
     return (
         <Field label="Duration" className={classes.cell}>

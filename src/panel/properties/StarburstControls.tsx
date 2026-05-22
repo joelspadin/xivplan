@@ -1,11 +1,11 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
-import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { StarburstZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
@@ -14,13 +14,11 @@ const MAX_SPOKE_COUNT = 16;
 
 export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const spokeWidth = commonValue(objects, (obj) => obj.spokeWidth);
 
-    const onSpokeWidthChanged = useSpinChanged((spokeWidth: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokeWidth })) }),
-    );
+    const onSpokeWidthChanged = useSpinChanged((spokeWidth: number) => update({ props: { spokeWidth } }));
 
     return (
         <Field label="Spoke width" className={classes.cell}>
@@ -31,13 +29,11 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
 
 export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<StarburstZone>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const spokes = commonValue(objects, (obj) => obj.spokes);
 
-    const onSpokesChanged = useSpinChanged((spokes: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spokes })) }),
-    );
+    const onSpokesChanged = useSpinChanged((spokes: number) => update({ props: { spokes } }));
 
     return (
         <Field label="Spokes" className={classes.cell}>

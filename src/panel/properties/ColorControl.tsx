@@ -11,16 +11,17 @@ import {
     makeColorSwatch,
     useColorSwatches,
 } from '../../theme';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ColorControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
     const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const color = commonValue(objects, (obj) => obj.color);
 
-    const onColorChanged = (color: string, transient: boolean) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })), transient });
+    const onColorChanged = (color: string, transient: boolean) => update({ props: { color }, transient });
 
     return (
         <CompactColorPicker
@@ -40,13 +41,13 @@ const MARKER_SWATCHES = [
 ];
 
 export const ColorSwatchControl: React.FC<PropertiesControlProps<ColoredObject>> = ({ objects }) => {
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
     const colorSwatches = useColorSwatches();
 
     const color = commonValue(objects, (obj) => obj.color);
     const swatches = objects.every(isMarker) ? MARKER_SWATCHES : colorSwatches;
 
-    const setColor = (color: string) => dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, color })) });
+    const setColor = (color: string) => update({ props: { color } });
 
     return (
         <CompactSwatchColorPicker

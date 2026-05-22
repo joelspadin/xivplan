@@ -1,6 +1,5 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
-import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
@@ -12,18 +11,17 @@ import {
 } from '../../prefabs/zone/constants';
 import type { ExaflareZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const length = commonValue(objects, (obj) => obj.length);
 
-    const onLengthChanged = useSpinChanged((length: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
-    );
+    const onLengthChanged = useSpinChanged((length: number) => update({ props: { length } }));
 
     return (
         <Field label="Length" className={classes.cell}>
@@ -40,13 +38,11 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
 
 export const ExaflareSpacingControl: React.FC<PropertiesControlProps<ExaflareZone>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const spacing = commonValue(objects, (obj) => obj.spacing);
 
-    const onSpacingChanged = useSpinChanged((spacing: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, spacing })) }),
-    );
+    const onSpacingChanged = useSpinChanged((spacing: number) => update({ props: { spacing } }));
 
     return (
         <Field label="Spacing" className={classes.cell}>

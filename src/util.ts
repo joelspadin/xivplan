@@ -6,6 +6,20 @@ import type { Vector2d } from 'konva/lib/types';
  */
 export type Enum<T> = T[keyof T];
 
+/**
+ * Gets the keys of fields that can be omitted from an object.
+ */
+export type OptionalKeys<T> = keyof {
+    [K in keyof T as Omit<T, K> extends T ? K : never]: T[K];
+};
+
+/**
+ * Gets keys of "boolean?" fields of an object.
+ */
+export type OptionalBooleanKeys<T> = {
+    [K in keyof T]: K extends OptionalKeys<T> ? (T[K] extends boolean | undefined ? K : never) : never;
+}[keyof T];
+
 export function asArray<T>(x: Readonly<T> | readonly T[]): readonly T[] {
     return Array.isArray(x) ? x : [x as Readonly<T>];
 }
@@ -72,8 +86,10 @@ export function mapSet<T, U>(set: ReadonlySet<T>, func: (item: T) => U): Set<U> 
     return new Set(mapIter(set, func));
 }
 
-export function omit<T extends object, K extends keyof T>(obj: T, omitKey: K): Omit<T, K> {
-    return Object.fromEntries(Object.entries(obj).filter(([key]) => key !== omitKey)) as Omit<T, K>;
+export function omit<T extends object, K extends keyof T>(obj: Readonly<T>, omitKey: K): Omit<T, K> {
+    const result = { ...obj };
+    delete result[omitKey];
+    return result;
 }
 
 type ObjectMapResult<T, V> = {
@@ -89,13 +105,11 @@ export function objectMap<V, T extends object, K extends keyof T>(
     ) as ObjectMapResult<T, V>;
 }
 
-type HasOptionalBool<T, K extends keyof T> = T[K] extends boolean | undefined ? T : never;
-
-export function setOrOmit<T extends object, K extends keyof T>(obj: HasOptionalBool<T, K>, key: K, value: boolean): T {
+export function setOrOmit<T extends object, K extends OptionalBooleanKeys<T>>(obj: T, key: K, value: boolean): T {
     if (value) {
-        return { ...obj, [key]: value };
+        return { ...obj, [key]: true };
     }
-    return omit(obj, key) as HasOptionalBool<T, K>;
+    return omit(obj, key) as T;
 }
 
 export function commonValue<T, U>(objects: readonly T[], value: (object: T) => U): U | undefined {

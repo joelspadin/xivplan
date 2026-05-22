@@ -1,8 +1,8 @@
 import { Button, Image, Label, makeStyles, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { useScene } from '../../SceneProvider';
 import { Job, getJob, getJobIconUrl } from '../../jobs';
 import type { PartyObject } from '../../scene';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 const ICON_CHOICES = [
@@ -15,34 +15,45 @@ const ICON_CHOICES = [
     [Job.Bard, Job.Machinist, Job.Dancer],
 ].map((row) => row.map((job) => getJob(job)));
 
+interface PartyIconListProps {
+    onClick: (name: string, image: string) => void;
+}
+
+const PartyIconList: React.FC<PartyIconListProps> = ({ onClick }) => {
+    const classes = useStyles();
+
+    return (
+        <div className={classes.container}>
+            {ICON_CHOICES.map((row, i) => (
+                <div key={i} className={classes.row}>
+                    {row.map((job) => {
+                        const icon = getJobIconUrl(job.icon);
+                        return (
+                            <Button
+                                key={job.name}
+                                appearance="transparent"
+                                title={job.name}
+                                icon={<Image src={icon} width={32} height={32} />}
+                                onClick={() => onClick(job.name, icon)}
+                            />
+                        );
+                    })}
+                </div>
+            ))}
+        </div>
+    );
+};
+
 export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = ({ objects }) => {
     const classes = useStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
-    const onClick = (name: string, image: string) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, name, image })) });
+    const onClick = (name: string, image: string) => update({ props: { name, image } });
 
     return (
         <div>
             <Label className={classes.label}>Variant</Label>
-            <div className={classes.container}>
-                {ICON_CHOICES.map((row, i) => (
-                    <div key={i} className={classes.row}>
-                        {row.map((job) => {
-                            const icon = getJobIconUrl(job.icon);
-                            return (
-                                <Button
-                                    key={job.name}
-                                    appearance="transparent"
-                                    title={job.name}
-                                    icon={<Image src={icon} width={32} height={32} />}
-                                    onClick={() => onClick(job.name, icon)}
-                                />
-                            );
-                        })}
-                    </div>
-                ))}
-            </div>
+            <PartyIconList onClick={onClick} />
         </div>
     );
 };

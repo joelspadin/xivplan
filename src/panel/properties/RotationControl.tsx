@@ -2,26 +2,24 @@ import { Field, mergeClasses, Tooltip } from '@fluentui/react-components';
 import { LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
-import { useScene } from '../../SceneProvider';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { type EnemyObject, EnemyRingStyle, isEnemy, type RotateableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 import { ConnectedObjectSelector } from './ConnectedObjectSelector';
 
 export const RotationControl: React.FC<PropertiesControlProps<RotateableObject | EnemyObject>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const rotation = commonValue(objects, (obj) => obj.rotation);
     const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
     const currentlyLinked = commonValue(objects, (obj) => obj.facingId !== undefined) || false;
 
-    const onRotationChanged = useSpinChanged((rotation: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, rotation })) }),
-    );
+    const onRotationChanged = useSpinChanged((rotation: number) => update({ props: { rotation } }));
 
     return (
         <>

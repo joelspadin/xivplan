@@ -7,11 +7,11 @@ import {
     bundleIcon,
 } from '@fluentui/react-icons';
 import React from 'react';
-import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { ThreeQuarterCircleFilled, ThreeQuarterCircleRegular } from '../../icon/ThreeQuarterCircle';
 import { type EnemyObject, EnemyRingStyle } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
@@ -26,13 +26,11 @@ const DirectionalIcon: React.FC = () => {
 
 export const EnemyRingControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const ring = commonValue(objects, (obj) => obj.ring);
 
-    const onDirectionalChanged = (ring: EnemyRingStyle) => {
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, ring })) });
-    };
+    const onDirectionalChanged = (ring: EnemyRingStyle) => update({ props: { ring } });
 
     return (
         <Field label="Ring style" className={classes.cell}>

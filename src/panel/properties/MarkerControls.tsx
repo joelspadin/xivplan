@@ -1,9 +1,9 @@
 import { Field } from '@fluentui/react-components';
 import { CircleFilled, CircleRegular, SquareFilled, SquareRegular, bundleIcon } from '@fluentui/react-icons';
 import React from 'react';
-import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import type { MarkerObject } from '../../scene';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
@@ -11,13 +11,11 @@ const CircleIcon = bundleIcon(CircleFilled, CircleRegular);
 const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
 
 export const MarkerShapeControl: React.FC<PropertiesControlProps<MarkerObject>> = ({ objects }) => {
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const shape = commonValue(objects, (obj) => obj.shape);
 
-    const onShapeChanged = (shape: string) => {
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, shape })) });
-    };
+    const onShapeChanged = (shape: string) => update({ props: { shape: shape as MarkerObject['shape'] } });
 
     return (
         <Field label="Shape">

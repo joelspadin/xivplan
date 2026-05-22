@@ -2,25 +2,21 @@ import { Field, mergeClasses } from '@fluentui/react-components';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../../prefabs/bounds';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { LineZone } from '../../scene';
-import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const LineSizeControl: React.FC<PropertiesControlProps<LineZone>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const width = commonValue(objects, (obj) => obj.width);
     const length = commonValue(objects, (obj) => obj.length);
 
-    const onWidthChanged = useSpinChanged((width: number) => {
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, width })) });
-    });
-    const onLengthChanged = useSpinChanged((length: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, length })) }),
-    );
+    const onWidthChanged = useSpinChanged((width: number) => update({ props: { width } }));
+    const onLengthChanged = useSpinChanged((length: number) => update({ props: { length } }));
 
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>

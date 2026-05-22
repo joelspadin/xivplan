@@ -86,9 +86,32 @@ export type ArenaAction =
     | SetArenaBackgroundAction
     | SetArenaBackgroundOpacityAction;
 
+/**
+ * Action which replaces existing objects with the given ones. Objects to replace are matched by ID.
+ */
 export interface ObjectUpdateAction {
     type: 'update';
     value: SceneObject | readonly SceneObject[];
+}
+
+/**
+ * Action which adds properties to and/or removes them from objects with the given IDs.
+ *
+ * The same change is made to every object. This does not enforce types very strongly.
+ * useObjectUpdater() provides a way to send this action with stronger type checks.
+ */
+export interface ObjectUpdatePropsAction {
+    type: 'updateProps';
+    /** IDs of the objects to update */
+    ids: readonly number[];
+    /** Collection of props to set on each object */
+    props?: Readonly<Partial<SceneObject>>;
+    /**
+     * List of keys to delete from each object.
+     * (Ideally this would use "keyof", but we don't know which type(s) of SceneObject(s) are being updated,
+     * so we don't know which keys are valid.)
+     */
+    omit?: readonly string[];
 }
 
 export interface ObjectAddAction {
@@ -117,7 +140,8 @@ export type ObjectAction =
     | ObjectRemoveAction
     | ObjectMoveAction
     | GroupMoveAction
-    | ObjectUpdateAction;
+    | ObjectUpdateAction
+    | ObjectUpdatePropsAction;
 
 export interface SetStepAction {
     type: 'setStep';
@@ -145,13 +169,7 @@ export interface ReorderStepsAction {
 
 export type StepAction = SetStepAction | IncrementStepAction | AddStepAction | RemoveStepAction | ReorderStepsAction;
 
-// TODO: the source should be separate from the undo history
-export interface SetSourceAction {
-    type: 'setSource';
-    source: FileSource | undefined;
-}
-
-export type SceneAction = (ArenaAction | ObjectAction | StepAction | SetSourceAction) & StateActionBase;
+export type SceneAction = (ArenaAction | ObjectAction | StepAction) & StateActionBase;
 
 export interface LocalStorageFileSource {
     type: 'local';
@@ -623,6 +641,32 @@ function updateObjects(state: Readonly<EditorState>, values: readonly SceneObjec
     return updateCurrentStep(state, { objects });
 }
 
+function updateObjectProps(
+    state: Readonly<EditorState>,
+    ids: readonly number[],
+    props?: Readonly<Partial<SceneObject>>,
+    omitProps?: readonly string[],
+) {
+    const currentStep = getCurrentStep(state);
+    const objects = currentStep.objects.map((obj) => {
+        if (!ids.includes(obj.id)) {
+            return obj;
+        }
+
+        const newObject = { ...obj, ...props };
+
+        if (omitProps) {
+            for (const key of omitProps) {
+                delete newObject[key as keyof SceneObject];
+            }
+        }
+
+        return newObject;
+    });
+
+    return updateCurrentStep(state, { objects });
+}
+
 function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
     return {
         scene: { ...state.scene, arena },
@@ -706,6 +750,9 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'update':
             return updateObjects(state, asArray(action.value));
+
+        case 'updateProps':
+            return updateObjectProps(state, action.ids, action.props, action.omit);
     }
 
     return state;

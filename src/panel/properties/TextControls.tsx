@@ -35,6 +35,7 @@ import {
     useSceneTheme,
 } from '../../theme';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
@@ -50,15 +51,13 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
     const theme = useSceneTheme();
     const classes = useControlStyles();
     const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const stroke = commonValue(objects, (obj) => obj.stroke);
     const style = commonValue(objects, (obj) => obj.style);
 
-    const handleStrokeChanged = (stroke: string, transient: boolean) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, stroke })), transient });
-
-    const handleStyleChanged = (style: TextStyle) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, style })) });
+    const handleStrokeChanged = (stroke: string, transient: boolean) => update({ props: { stroke }, transient });
+    const handleStyleChanged = (style: TextStyle) => update({ props: { style } });
 
     const swatches = [
         makeColorSwatch(COLOR_RED, 'red'),
@@ -111,17 +110,13 @@ export const TextOutlineControl: React.FC<PropertiesControlProps<TextObject>> = 
 
 export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = ({ objects }) => {
     const classes = useControlStyles();
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const fontSize = commonValue(objects, (obj) => obj.fontSize);
     const align = commonValue(objects, (obj) => obj.align);
 
-    const onFontSizeChanged = useSpinChanged((fontSize: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, fontSize })) }),
-    );
-
-    const onAlignChanged = (align: string) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, align })) });
+    const onFontSizeChanged = useSpinChanged((fontSize: number) => update({ props: { fontSize } }));
+    const onAlignChanged = (align: string) => update({ props: { align } });
 
     return (
         <div className={classes.row}>
@@ -141,11 +136,11 @@ export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = (
 
 export const TextValueControl: React.FC<PropertiesControlProps<TextObject>> = ({ objects }) => {
     const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const text = commonValue(objects, (obj) => obj.text);
 
-    const setText = (text: string) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, text })), transient: true });
+    const setText = (text: string) => update({ props: { text }, transient: true });
 
     // TODO: add autoAdjustHeight once implemented
     return (

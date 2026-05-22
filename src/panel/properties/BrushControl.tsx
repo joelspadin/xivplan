@@ -1,19 +1,18 @@
 import React from 'react';
 import { BrushSizeControl } from '../../BrushSizeControl';
-import { useScene } from '../../SceneProvider';
 import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { DrawObject } from '../../scene';
+import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 export const DrawObjectBrushControl: React.FC<PropertiesControlProps<DrawObject>> = ({ objects }) => {
-    const { dispatch } = useScene();
+    const update = useObjectUpdater(objects);
 
     const brushSize = commonValue(objects, (obj) => obj.brushSize);
 
-    const onSizeChanged = useSpinChanged((brushSize: number) =>
-        dispatch({ type: 'update', value: objects.map((obj) => ({ ...obj, brushSize })) }),
-    );
+    const onSizeChanged = useSpinChanged((brushSize: number) => update({ props: { brushSize } }));
+
     return (
         <BrushSizeControl
             value={brushSize}
