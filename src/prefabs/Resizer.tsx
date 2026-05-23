@@ -106,6 +106,7 @@ export const Resizer: React.FC<ResizerProps> = ({
                         rotationSnapTolerance={2}
                         boundBoxFunc={boundBoxFunc}
                         anchorSize={anchorSize}
+                        ignoreStroke
                         {...transformerProps}
                     />
                 </ControlsPortal>
