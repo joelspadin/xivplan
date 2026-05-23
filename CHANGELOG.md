@@ -2,6 +2,19 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## May 22
+
+- On supported browsers (just Chromium-based browsers I think), objects can now be copied from one tab and pasted into another.
+- Fixed an issue where eye objects didn't redraw when hiding/unhiding or toggling look toward/away.
+
+## May 18
+
+- Switched party icons to new images based on the strategy board.
+
+## April 6
+
+- Added another arena preset for Arcadion M12.
+
 ## March 14
 
 - Added arena preset for Arcadion M12.
