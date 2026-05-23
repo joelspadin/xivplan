@@ -67,6 +67,10 @@ function pasteObjects(
     objects: readonly SceneObject[],
     centerOnMouse = true,
 ): void {
+    if (objects.length === 0) {
+        return;
+    }
+
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
     const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
     const { objects: newObjects } = copyObjects(scene, step, objects, newCenter);
@@ -94,8 +98,51 @@ function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
     dispatch({ type: 'update', value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)) });
 }
 
+const CLIPBOARD_MIME_TYPE = 'web application/vnd.xivplan+json';
+
+async function setClipboard(
+    step: SceneStep,
+    selection: SceneSelection,
+    setClipboardFallback: Dispatch<SetStateAction<readonly SceneObject[]>>,
+) {
+    const objects = getSelectedObjects(step, selection);
+
+    if (!ClipboardItem.supports(CLIPBOARD_MIME_TYPE)) {
+        setClipboardFallback(objects);
+        return;
+    }
+
+    const item = new ClipboardItem({
+        [CLIPBOARD_MIME_TYPE]: JSON.stringify(objects),
+    });
+    await navigator.clipboard.write([item]);
+}
+
+async function getClipboard(clipboardFallback: readonly SceneObject[]): Promise<readonly SceneObject[]> {
+    if (!ClipboardItem.supports(CLIPBOARD_MIME_TYPE)) {
+        return clipboardFallback;
+    }
+
+    const items = await navigator.clipboard.read();
+    const item = items.find((item) => item.types.includes(CLIPBOARD_MIME_TYPE));
+
+    if (!item) {
+        return [];
+    }
+
+    const blob = await item.getType(CLIPBOARD_MIME_TYPE);
+    const json = await blob.text();
+    const objects = JSON.parse(json);
+
+    if (!Array.isArray(objects)) {
+        return [];
+    }
+
+    return objects as SceneObject[];
+}
+
 const SelectionActionHandler: React.FC = () => {
-    const [clipboard, setClipboard] = useState<readonly SceneObject[]>([]);
+    const [clipboardFallback, setClipboardFallback] = useState<readonly SceneObject[]>([]);
     const [selection, setSelection] = useSelection();
     const [editMode, setEditMode] = useEditMode();
     const [tetherConfig, setTetherConfig] = useTetherConfig();
@@ -149,55 +196,61 @@ const SelectionActionHandler: React.FC = () => {
     useHotkeys(
         'ctrl+c',
         { category: CATEGORY_SELECTION, help: 'Copy selected objects' },
-        (e) => {
+        async (e) => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
-            setClipboard(getSelectedObjects(step, selection));
+
             e.preventDefault();
+            await setClipboard(step, selection, setClipboardFallback);
         },
-        [step, selection, editMode],
+        [step, selection, editMode, setClipboardFallback],
     );
     useHotkeys(
         'ctrl+x',
         { category: CATEGORY_SELECTION, help: 'Cut selected objects' },
-        (e) => {
+        async (e) => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
-            setClipboard(getSelectedObjects(step, selection));
+            e.preventDefault();
 
             dispatch({ type: 'remove', ids: [...selection] });
             setSelection(selectNone());
 
-            e.preventDefault();
+            await setClipboard(step, selection, setClipboardFallback);
         },
-        [step, dispatch, setSelection, selection, editMode],
+        [step, dispatch, setSelection, selection, editMode, setClipboardFallback],
     );
     useHotkeys(
         'ctrl+v',
         { category: CATEGORY_SELECTION, help: 'Paste objects at mouse' },
-        (e) => {
-            if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
+        async (e) => {
+            if (!stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard);
+
             e.preventDefault();
+
+            const clipboard = await getClipboard(clipboardFallback);
+            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard);
         },
-        [stage, scene, step, dispatch, setSelection, clipboard, editMode],
+        [stage, scene, step, dispatch, setSelection, editMode, clipboardFallback],
     );
 
     useHotkeys(
         'ctrl+shift+v',
         { category: CATEGORY_SELECTION, help: 'Paste objects at original location' },
-        (e) => {
-            if (!clipboard.length || !stage || editMode !== EditMode.Normal) {
+        async (e) => {
+            if (!stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, false);
             e.preventDefault();
+
+            const clipboard = await getClipboard(clipboardFallback);
+            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, false);
         },
-        [stage, scene, step, dispatch, setSelection, clipboard, editMode],
+        [stage, scene, step, dispatch, setSelection, editMode, clipboardFallback],
     );
 
     useHotkeys(
