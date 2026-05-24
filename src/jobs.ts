@@ -51,6 +51,7 @@ export const Job = {
     RoleMelee2: 42,
     RoleRanged1: 43,
     RoleRanged2: 44,
+    Beastmaster: 45,
 } as const;
 export type Job = Enum<typeof Job>;
 
@@ -100,6 +101,7 @@ const JOBS: Record<Job, JobProps> = {
     [Job.RedMage]: { name: 'Red Mage', icon: 'RDM.png' },
     [Job.Pictomancer]: { name: 'Pictomancer', icon: 'PCT.png' },
     [Job.BlueMage]: { name: 'Blue Mage', icon: 'BLU.png' },
+    [Job.Beastmaster]: { name: 'Beastmaster', icon: 'BST.png' },
 };
 
 export function getJob(job: Job): JobProps {

@@ -17,7 +17,7 @@ const JOB_ICON_CHOICES = [
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
     [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
-    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer, Job.BlueMage],
+    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer, Job.BlueMage, Job.Beastmaster],
     [Job.Bard, Job.Machinist, Job.Dancer],
 ].map((row) => row.map((job) => getJob(job)));
 

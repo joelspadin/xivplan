@@ -9,6 +9,7 @@ import {
     PartyAstrologian,
     PartyBard,
     PartyBarrierHealer,
+    PartyBeastmaster,
     PartyBlackMage,
     PartyBlueMage,
     PartyDancer,
@@ -206,6 +207,7 @@ export const PrefabsPanel: React.FC = () => {
                     </ObjectGroup>
 
                     <ObjectGroup>
+                        <PartyBeastmaster />
                         <PartyBlueMage />
                         <PartyBlackMage />
                         <PartySummoner />
