@@ -11,7 +11,6 @@ import {
     isRotateable,
     type MoveableObject,
     ObjectType,
-    type RotateableObject,
     type Scene,
     type SceneObject,
     type SceneStep,
@@ -144,80 +143,51 @@ export function omitInterconnectedObjects(
  * determined by the values in the ConnectionSelectionContext
  */
 export function useUpdateConnectedIdsAction(): (newParent: SceneObject & MoveableObject) => SceneAction {
-    const { scene } = useScene();
     const [{ objectIdsToConnect, connectionType }] = useConnectionSelection();
 
     switch (connectionType) {
         case ConnectionType.POSITION: {
             return (newParent: SceneObject & MoveableObject) => {
-                return createUpdatePositionParentIdsAction(scene, objectIdsToConnect, newParent);
+                return createUpdatePositionParentIdsAction(objectIdsToConnect, newParent);
             };
         }
         case ConnectionType.ROTATION: {
             return (newParent: SceneObject & MoveableObject) => {
-                return createUpdateRotationParentIdsAction(scene, objectIdsToConnect, newParent);
+                return createUpdateRotationParentIdsAction(objectIdsToConnect, newParent);
             };
         }
     }
 }
 
 function createUpdateRotationParentIdsAction(
-    scene: Scene,
     objectIdsToConnect: ReadonlySet<number>,
     newParent: SceneObject & MoveableObject,
 ): SceneAction {
-    const objectsToConnect: (SceneObject & RotateableObject)[] = [];
-    objectIdsToConnect.forEach((id) => {
-        const object = getObjectById(scene, id);
-        if (isRotateable(object)) {
-            objectsToConnect.push(object);
-        }
-    });
     return {
-        type: 'update',
-        value: objectsToConnect.map((obj) => {
+        type: 'transform',
+        ids: [...objectIdsToConnect],
+        transformFn: (obj) => {
+            if (!isRotateable(obj)) {
+                return obj;
+            }
             // always face the newly-connected target object by default.
             return { ...obj, facingId: newParent.id, rotation: 0 };
-        }),
+        },
     };
 }
 
 function createUpdatePositionParentIdsAction(
-    scene: Scene,
     objectIdsToConnect: ReadonlySet<number>,
     newParent: SceneObject & MoveableObject,
 ): SceneAction {
-    const objectsToConnect: (SceneObject & MoveableObject)[] = [];
-    objectIdsToConnect.forEach((id) => {
-        const object = getObjectById(scene, id);
-        if (isMoveable(object)) {
-            objectsToConnect.push(object);
-        }
-    });
-
-    const attachPositionCounts: Record<DefaultAttachPosition, number> = {
-        [DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT]: 0,
-        [DefaultAttachPosition.ANYWHERE]: 0,
-        [DefaultAttachPosition.CENTER]: 0,
-        [DefaultAttachPosition.TOP]: 0,
-        [DefaultAttachPosition.BOTTOM_RIGHT]: 0,
-    };
-    objectsToConnect.forEach((obj) => {
-        attachPositionCounts[getDefaultAttachmentSettings(obj).location]++;
-    });
     return {
-        type: 'update',
-        value: objectsToConnect.map((obj) => {
-            const attachmentSettings = getDefaultAttachmentSettings(obj);
-            // If more than one object would get moved to the same spot, just leave them where they are to avoid full overlaps
-            // and ambiguous orderings. Center-attachments are fine to overlap.
-            // TODO: figure out what the expected behavior is for top & bottom-right. is arbitrary ordering fine?
-            if (
-                attachPositionCounts[attachmentSettings.location] > 1 &&
-                attachmentSettings.location != DefaultAttachPosition.CENTER
-            ) {
-                attachmentSettings.location = DefaultAttachPosition.ANYWHERE;
+        type: 'transform',
+        ids: [...objectIdsToConnect.values()],
+        transformFn: (obj, scene) => {
+            if (!isMoveable(obj)) {
+                return obj;
             }
+            const attachmentSettings = getAttachmentSettings(obj, scene, objectIdsToConnect);
             const newRelativePos = getRelativeAttachmentPoint(
                 scene,
                 { ...obj, ...getAbsolutePosition(scene, obj) },
@@ -233,10 +203,36 @@ function createUpdatePositionParentIdsAction(
                     attachmentSettings.location == DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT ||
                     attachmentSettings.location == DefaultAttachPosition.ANYWHERE
                         ? obj.pinned
-                        : attachmentSettings.pinByDefault,
+                        : obj.pinned || attachmentSettings.pinByDefault,
             };
-        }),
+        },
     };
+}
+
+function getAttachmentSettings(
+    obj: SceneObject,
+    scene: Scene,
+    objectIdsToConnect: ReadonlySet<number>,
+): AttachmentSettings {
+    const attachmentSettings = getDefaultAttachmentSettings(obj);
+    // If more than one object would get moved to the same spot, just leave them where they are to
+    // avoid full overlaps and ambiguous orderings. Center-attachments are fine to overlap.
+    // TODO: figure out what the expected behavior is for top & bottom-right. is arbitrary ordering fine?
+    if (attachmentSettings.location != DefaultAttachPosition.CENTER) {
+        for (const otherConnectingId of objectIdsToConnect) {
+            if (otherConnectingId != obj.id) {
+                const otherConnectingObj = getObjectById(scene, otherConnectingId);
+                if (
+                    otherConnectingObj &&
+                    getDefaultAttachmentSettings(otherConnectingObj).location === attachmentSettings.location
+                ) {
+                    attachmentSettings.location = DefaultAttachPosition.ANYWHERE;
+                    break;
+                }
+            }
+        }
+    }
+    return attachmentSettings;
 }
 
 export const DefaultAttachPosition = {
@@ -248,11 +244,13 @@ export const DefaultAttachPosition = {
 } as const;
 export type DefaultAttachPosition = Enum<typeof DefaultAttachPosition>;
 
-/** @returns Where the given object 'prefers' to be attached to a positional parent. */
-export function getDefaultAttachmentSettings(object: UnknownObject): {
+export type AttachmentSettings = {
     location: DefaultAttachPosition;
     pinByDefault: boolean;
-} {
+};
+
+/** @returns Where the given object 'prefers' to be attached to a positional parent. */
+export function getDefaultAttachmentSettings(object: UnknownObject): AttachmentSettings {
     switch (object.type) {
         case ObjectType.Arc:
         case ObjectType.Cone:

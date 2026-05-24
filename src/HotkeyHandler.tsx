@@ -86,7 +86,10 @@ function toggleHide(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
 
     const newValue = hide === undefined ? false : !hide;
 
-    dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)) });
+    dispatch({
+        type: 'update',
+        value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)),
+    });
 }
 
 function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAction>) {
@@ -95,7 +98,10 @@ function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
 
     const newValue = pinned === undefined ? false : !pinned;
 
-    dispatch({ type: 'update', value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)) });
+    dispatch({
+        type: 'update',
+        value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)),
+    });
 }
 
 const CLIPBOARD_MIME_TYPE = 'web application/vnd.xivplan+json';
@@ -370,7 +376,7 @@ const SMALL_MOVE_OFFSET = 1;
 const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
-function rotateObject<T extends MoveableObject>(
+function rotateObject<T extends MoveableObject & SceneObject>(
     scene: Readonly<Scene>,
     object: T,
     center: Vector2d,
@@ -404,9 +410,11 @@ const EditActionHandler: React.FC = () => {
             scene,
             getSelectedObjects(step, selection).filter(isMoveable),
         );
-        const value = moveObjectsBy(selectedObjects, offset);
 
-        dispatch({ type: 'update', value });
+        dispatch({
+            type: 'update',
+            value: moveObjectsBy(selectedObjects, offset),
+        });
         e.preventDefault();
     };
 
@@ -434,7 +442,6 @@ const EditActionHandler: React.FC = () => {
             return;
         }
 
-        const value: SceneObject[] = [];
         const selectedObjects = getSelectedObjects(step, selection)
             .filter(isMoveable)
             // TODO: figure out the expected behavior of rotating a selection of >1 items that includes
@@ -442,11 +449,10 @@ const EditActionHandler: React.FC = () => {
             .filter((obj) => selection.size == 1 || obj.positionParentId == undefined);
         const center = getGroupCenter(scene, selectedObjects);
 
-        selectedObjects.forEach((object) => {
-            value.push(rotateObject(scene, object, center, offset));
+        dispatch({
+            type: 'update',
+            value: selectedObjects.map((obj) => rotateObject(scene, obj, center, offset)),
         });
-
-        dispatch({ type: 'update', value });
         e.preventDefault();
     };
 

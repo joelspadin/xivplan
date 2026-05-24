@@ -1,10 +1,11 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
-import type { IconObject } from '../../scene';
+import { type IconObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { useControlStyles } from '../../useControlStyles';
+import { useObjectIds } from '../../useObjectIds';
 import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
@@ -27,12 +28,17 @@ export const IconTimeControl: React.FC<PropertiesControlProps<IconObject>> = ({ 
 export const IconStacksControl: React.FC<PropertiesControlProps<IconObject>> = ({ objects }) => {
     const classes = useControlStyles();
     const { dispatch } = useScene();
+    const objectIds = useObjectIds(objects);
 
     const stacks = commonValue(objects, getStackCount);
     const maxStacks = Math.min(...objects.map((obj) => obj.maxStacks ?? 0));
 
     const onChange = (value: number) => {
-        dispatch({ type: 'update', value: objects.map((obj) => setStacks(obj, value)) });
+        dispatch({
+            type: 'transform',
+            ids: objectIds,
+            transformFn: (obj) => setStacks(obj as IconObject, value),
+        });
     };
 
     if (maxStacks === 0) {

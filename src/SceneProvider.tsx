@@ -95,6 +95,17 @@ export interface ObjectUpdateAction {
 }
 
 /**
+ * Action which applies the given transformation to objects with the given ID(s).
+ */
+export interface ObjectTransformAction {
+    type: 'transform';
+    // The ID(s) of the objects to update
+    ids: number | readonly number[];
+    // The transformation to apply to each object
+    transformFn: (object: SceneObject, scene: Scene) => SceneObject;
+}
+
+/**
  * Action which adds properties to and/or removes them from objects with the given IDs.
  *
  * The same change is made to every object. This does not enforce types very strongly.
@@ -141,6 +152,7 @@ export type ObjectAction =
     | ObjectMoveAction
     | GroupMoveAction
     | ObjectUpdateAction
+    | ObjectTransformAction
     | ObjectUpdatePropsAction;
 
 export interface SetStepAction {
@@ -750,6 +762,15 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
 
         case 'update':
             return updateObjects(state, asArray(action.value));
+
+        case 'transform':
+            return updateObjects(
+                state,
+                asArray(action.ids)
+                    .map((id) => getObjectById(state.scene, id))
+                    .filter((obj) => obj !== undefined)
+                    .map((obj) => action.transformFn(obj, state.scene)),
+            );
 
         case 'updateProps':
             return updateObjectProps(state, action.ids, action.props, action.omit);

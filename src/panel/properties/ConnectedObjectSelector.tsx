@@ -5,11 +5,12 @@ import { getConnectionIdFuncs } from '../../connections';
 import { getAbsolutePosition, getAbsoluteRotation } from '../../coord';
 import { EditMode } from '../../editMode';
 import { ConnectionType } from '../../EditModeContext';
-import { isMoveable, isRotateable, type Scene, type SceneObject } from '../../scene';
-import { getObjectById, type SceneAction, useScene } from '../../SceneProvider';
+import { isMoveable, isRotateable, type SceneObject } from '../../scene';
+import { getObjectById, useScene, type SceneAction } from '../../SceneProvider';
 import { selectNone, selectSingle, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
 import { useEditMode } from '../../useEditMode';
+import { useObjectIds } from '../../useObjectIds';
 import { commonValue, omit } from '../../util';
 import { getListComponent } from '../ListComponentRegistry';
 
@@ -23,6 +24,7 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
     const [, setSpotlight] = useSpotlight();
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
+    const objectIds = useObjectIds(objects);
 
     const [getConnectionId, getAllowedConnectionIds] = getConnectionIdFuncs(connectionType);
     const commonConnectionId = commonValue(objects, getConnectionId);
@@ -47,7 +49,7 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
         }
         setEditMode(EditMode.SelectConnection);
         setConnectionSelection({
-            objectIdsToConnect: new Set(objects.map((obj) => obj.id)),
+            objectIdsToConnect: new Set(objectIds),
             connectionType,
         });
         // The list component disappears, so there's no onMouseLeave to clear the spotlight.
@@ -55,7 +57,7 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
     }
     function onClickUnlink(): void {
         if (haveAnyLink) {
-            dispatch(unlinkAction(connectionType, objects, scene));
+            dispatch(unlinkAction(connectionType, objectIds));
         }
     }
 
@@ -153,12 +155,16 @@ const UnlinkButton: React.FC = () => {
     return <UnlinkIcon />;
 };
 
-function unlinkAction(connectionType: ConnectionType, objects: readonly SceneObject[], scene: Scene): SceneAction {
+function unlinkAction(connectionType: ConnectionType, objectIds: readonly number[]): SceneAction {
     switch (connectionType) {
         case ConnectionType.POSITION:
             return {
-                type: 'update',
-                value: objects.filter(isMoveable).map((obj) => {
+                type: 'transform',
+                ids: objectIds,
+                transformFn: (obj, scene) => {
+                    if (!isMoveable(obj)) {
+                        return obj;
+                    }
                     const absolutePos = getAbsolutePosition(scene, obj);
                     return {
                         ...omit(obj, 'positionParentId'),
@@ -166,17 +172,21 @@ function unlinkAction(connectionType: ConnectionType, objects: readonly SceneObj
                         pinned: false,
                         ...absolutePos,
                     };
-                }),
+                },
             };
         case ConnectionType.ROTATION:
             return {
-                type: 'update',
-                value: objects.filter(isRotateable).map((obj) => {
+                type: 'transform',
+                ids: objectIds,
+                transformFn: (obj, scene) => {
+                    if (!isRotateable(obj)) {
+                        return obj;
+                    }
                     return {
                         ...omit(obj, 'facingId'),
                         rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0,
                     };
-                }),
+                },
             };
     }
 }
