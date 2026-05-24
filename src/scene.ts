@@ -374,7 +374,8 @@ export function isZone(object: UnknownObject): object is Zone {
         isRectangleZone(object) ||
         isExaflareZone(object) ||
         isStarburstZone(object) ||
-        isTowerZone(object)
+        isTowerZone(object) ||
+        isPolygonZone(object)
     );
 }
 
