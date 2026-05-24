@@ -49,7 +49,7 @@ export const StatusMarkers: React.FC = () => {
 
     return (
         <div className={classes.panel}>
-            <Section title="General">
+            <Section header="General">
                 <ObjectGroup>
                     <StatusAttack1 />
                     <StatusAttack2 />
@@ -76,7 +76,7 @@ export const StatusMarkers: React.FC = () => {
                     <StatusSquare />
                 </ObjectGroup>
             </Section>
-            <Section title="Counters">
+            <Section header="Counters">
                 <ObjectGroup>
                     <StatusCounter1 />
                     <StatusCounter2 />
@@ -88,7 +88,7 @@ export const StatusMarkers: React.FC = () => {
                     <StatusCounter8 />
                 </ObjectGroup>
             </Section>
-            <Section title="Target indicators">
+            <Section header="Target indicators">
                 <ObjectGroup>
                     <StatusBlueCircleTarget />
                     <StatusGreenCircleTarget />
@@ -108,7 +108,7 @@ export const StatusMarkers: React.FC = () => {
                     <StatusEdenBlue />
                 </ObjectGroup>
             </Section>
-            <Section title="Status effects">
+            <Section header="Status effects">
                 <ObjectGroup>
                     <StatusDice1 />
                     <StatusDice2 />

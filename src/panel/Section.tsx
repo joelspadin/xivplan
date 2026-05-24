@@ -5,17 +5,19 @@ import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING } from './PanelStyles';
 
 export interface SectionProps extends HTMLAttributes<HTMLElement> {
-    title?: string;
+    header?: React.ReactNode;
+    dividerClassName?: string;
+    contentClassName?: string;
 }
 
-export const Section: React.FC<SectionProps> = ({ title, children, ...props }) => {
+export const Section: React.FC<SectionProps> = ({ header, children, dividerClassName, contentClassName, ...props }) => {
     const controlClasses = useControlStyles();
     const classes = useStyles();
 
     return (
         <section {...props}>
-            <Divider className={controlClasses.divider}>{title}</Divider>
-            <div className={classes.sectionChildren}>{children}</div>
+            <Divider className={mergeClasses(controlClasses.divider, dividerClassName)}>{header}</Divider>
+            <div className={mergeClasses(classes.content, contentClassName)}>{children}</div>
         </section>
     );
 };
@@ -37,7 +39,7 @@ const useStyles = makeStyles({
         justifyContent: 'end',
         gap: `${PANEL_PADDING}px`,
     },
-    sectionChildren: {
+    content: {
         display: 'flex',
         flexFlow: 'column',
         gap: `${PANEL_PADDING}px`,

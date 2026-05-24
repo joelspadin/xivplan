@@ -67,6 +67,14 @@ export const useControlStyles = makeStyles({
         },
     },
 
+    dividerWithTabs: {
+        marginBottom: tokens.spacingVerticalM,
+    },
+
+    nestedTabs: {
+        justifyContent: 'center',
+    },
+
     noSelect: {
         userSelect: 'none',
     },

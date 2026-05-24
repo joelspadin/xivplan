@@ -83,17 +83,16 @@ import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
 import { TabActivity } from '../TabActivity';
 import { useControlStyles } from '../useControlStyles';
+import type { PartyTabs } from './PartyTabContext';
 import { ObjectGroup, Section } from './Section';
-
-type PlayerTabs = 'roles' | 'jobs';
 
 export const PrefabsPanel: React.FC = () => {
     const controlClasses = useControlStyles();
-    const [tab, setTab] = useState<PlayerTabs>('roles');
+    const [tab, setTab] = useState<PartyTabs>('roles');
 
     return (
         <div className={controlClasses.panel}>
-            <Section title="Zones">
+            <Section header="Zones">
                 <ObjectGroup>
                     <ZoneRightTriangle />
                     <ZoneTriangle />
@@ -122,7 +121,7 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
             </Section>
 
-            <Section title="Waymarks">
+            <Section header="Waymarks">
                 <ObjectGroup>
                     <TextLabel />
                     <MarkerArrow />
@@ -138,11 +137,19 @@ export const PrefabsPanel: React.FC = () => {
                     <Waymark4 />
                 </ObjectGroup>
             </Section>
-            <Section title="Party">
-                <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as PlayerTabs)}>
-                    <Tab value="roles">Roles</Tab>
-                    <Tab value="jobs">Jobs</Tab>
-                </TabList>
+            <Section
+                header={
+                    <TabList
+                        size="small"
+                        selectedValue={tab}
+                        onTabSelect={(ev, data) => setTab(data.value as PartyTabs)}
+                    >
+                        <Tab value="roles">Roles</Tab>
+                        <Tab value="jobs">Jobs</Tab>
+                    </TabList>
+                }
+                dividerClassName={controlClasses.dividerWithTabs}
+            >
                 <TabActivity value="roles" activeTab={tab}>
                     <ObjectGroup>
                         <PartyAny />
@@ -223,7 +230,7 @@ export const PrefabsPanel: React.FC = () => {
                 </TabActivity>
             </Section>
 
-            <Section title="Enemies">
+            <Section header="Enemies">
                 <ObjectGroup>
                     <EnemyCircle />
                     <EnemySmall />
@@ -232,7 +239,7 @@ export const PrefabsPanel: React.FC = () => {
                     <EnemyHuge />
                 </ObjectGroup>
             </Section>
-            <Section title="Tethers">
+            <Section header="Tethers">
                 <ObjectGroup>
                     <TetherLine />
                     <TetherClose />

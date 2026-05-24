@@ -1,9 +1,10 @@
-import { Button, Image, Label, Tab, TabList, makeStyles, tokens } from '@fluentui/react-components';
-import React, { useState } from 'react';
-import { Job, type JobProps, getJob, getJobIconUrl } from '../../jobs';
+import { Button, Image, Tab, TabList, makeStyles, tokens } from '@fluentui/react-components';
+import React, { use } from 'react';
+import { Job, getJob, getJobIconUrl, type JobProps } from '../../jobs';
 import type { PartyObject } from '../../scene';
 import { TabActivity } from '../../TabActivity';
 import { useObjectUpdater } from '../../useObjectUpdater';
+import { PartyTabContext, type PartyTabs } from '../PartyTabContext';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
 const ROLE_ICON_CHOICES = [
@@ -21,87 +22,96 @@ const JOB_ICON_CHOICES = [
     [Job.Bard, Job.Machinist, Job.Dancer],
 ].map((row) => row.map((job) => getJob(job)));
 
-type PlayerTabs = 'roles' | 'jobs';
+type JobClickHandler = (name: string, image: string) => void;
 
 interface PartyIconListProps {
-    onClick: (name: string, image: string) => void;
+    onClick: JobClickHandler;
 }
+
+interface JobGridProps {
+    jobs: JobProps[][];
+    onClick: JobClickHandler;
+}
+
+const JobGrid: React.FC<JobGridProps> = ({ jobs, onClick }) => {
+    const classes = useStyles();
+
+    return jobs.map((row, i) => (
+        <div key={i} className={classes.row}>
+            {row.map((job) => {
+                const icon = getJobIconUrl(job.icon);
+
+                return (
+                    <Button
+                        key={job.name}
+                        className={classes.button}
+                        appearance="transparent"
+                        title={job.name}
+                        icon={<Image src={icon} width={32} height={32} draggable={false} />}
+                        onClick={() => onClick(job.name, icon)}
+                    />
+                );
+            })}
+        </div>
+    ));
+};
 
 const PartyIconList: React.FC<PartyIconListProps> = ({ onClick }) => {
     const classes = useStyles();
-    const [tab, setTab] = useState<PlayerTabs>('roles');
-
-    const jobButton = (job: JobProps) => {
-        const icon = getJobIconUrl(job.icon);
-        return (
-            <Button
-                key={job.name}
-                appearance="transparent"
-                title={job.name}
-                icon={<Image src={icon} width={32} height={32} draggable={false} />}
-                onClick={() => onClick(job.name, icon)}
-            />
-        );
-    };
+    const [tab, setTab] = use(PartyTabContext);
 
     return (
-        <>
-            <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as PlayerTabs)}>
+        <div>
+            <TabList
+                className={classes.tabs}
+                size="small"
+                selectedValue={tab}
+                onTabSelect={(ev, data) => setTab(data.value as PartyTabs)}
+            >
                 <Tab value="roles">Roles</Tab>
                 <Tab value="jobs">Jobs</Tab>
             </TabList>
             <div className={classes.container}>
                 <TabActivity value="roles" activeTab={tab}>
-                    {ROLE_ICON_CHOICES.map((row, i) => (
-                        <div key={i} className={classes.row}>
-                            {row.map(jobButton)}
-                        </div>
-                    ))}
+                    <JobGrid jobs={ROLE_ICON_CHOICES} onClick={onClick} />
                 </TabActivity>
                 <TabActivity value="jobs" activeTab={tab}>
-                    {JOB_ICON_CHOICES.map((row, i) => (
-                        <div key={i} className={classes.row}>
-                            {row.map(jobButton)}
-                        </div>
-                    ))}
+                    <JobGrid jobs={JOB_ICON_CHOICES} onClick={onClick} />
                 </TabActivity>
             </div>
-        </>
-    );
-};
-
-export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = ({ objects }) => {
-    const classes = useStyles();
-    const update = useObjectUpdater(objects);
-
-    const onClick = (name: string, image: string) => update({ props: { name, image } });
-
-    return (
-        <div>
-            <Label className={classes.label}>Variant</Label>
-            <PartyIconList onClick={onClick} />
         </div>
     );
 };
 
+export const PartyIconControl: React.FC<PropertiesControlProps<PartyObject>> = ({ objects }) => {
+    const update = useObjectUpdater(objects);
+
+    const onClick = (name: string, image: string) => update({ props: { name, image } });
+
+    return <PartyIconList onClick={onClick} />;
+};
+
 const useStyles = makeStyles({
-    label: {
-        display: 'block',
-        paddingTop: tokens.spacingVerticalXXS,
-        paddingBottom: tokens.spacingVerticalXXS,
-        marginBottom: tokens.spacingVerticalXXS,
+    tabs: {
+        marginLeft: `calc(-1 * ${tokens.spacingHorizontalXS})`,
     },
 
     container: {
         display: 'flex',
         flexFlow: 'column',
         gap: tokens.spacingVerticalXS,
-        paddingTop: tokens.spacingVerticalS,
+        paddingTop: tokens.spacingVerticalM,
     },
 
     row: {
         display: 'flex',
         flexFlow: 'row',
         gap: tokens.spacingHorizontalXS,
+    },
+
+    button: {
+        border: 'none',
+        width: '32px',
+        height: '32px',
     },
 });
