@@ -2,6 +2,11 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## May 23
+
+- Added numbered role icons, the pure/barrier healer icons, & the Beastmaster icon.
+- Split the icons UI into two tabs to support the new icons.
+
 ## May 22
 
 - On supported browsers (just Chromium-based browsers I think), objects can now be copied from one tab and pasted into another.

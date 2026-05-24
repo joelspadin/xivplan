@@ -1,5 +1,5 @@
-import { Text } from '@fluentui/react-components';
-import React from 'react';
+import { Tab, TabList, Text } from '@fluentui/react-components';
+import React, { useState } from 'react';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
@@ -8,23 +8,36 @@ import {
     PartyAny,
     PartyAstrologian,
     PartyBard,
+    PartyBarrierHealer,
+    PartyBeastmaster,
     PartyBlackMage,
     PartyBlueMage,
     PartyDancer,
     PartyDarkKnight,
     PartyDps,
+    PartyDps1,
+    PartyDps2,
+    PartyDps3,
+    PartyDps4,
     PartyDragoon,
     PartyGunbreaker,
     PartyHealer,
+    PartyHealer1,
+    PartyHealer2,
     PartyMachinist,
     PartyMagicRanged,
     PartyMelee,
+    PartyMelee1,
+    PartyMelee2,
     PartyMonk,
     PartyNinja,
     PartyPaladin,
     PartyPhysicalRanged,
     PartyPictomancer,
+    PartyPureHealer,
     PartyRanged,
+    PartyRanged1,
+    PartyRanged2,
     PartyReaper,
     PartyRedMage,
     PartySage,
@@ -33,6 +46,8 @@ import {
     PartySummoner,
     PartySupport,
     PartyTank,
+    PartyTank1,
+    PartyTank2,
     PartyViper,
     PartyWarrior,
     PartyWhiteMage,
@@ -66,11 +81,15 @@ import { ZoneStack } from '../prefabs/zone/ZoneStack';
 import { ZoneStarburst } from '../prefabs/zone/ZoneStarburst';
 import { ZoneTower } from '../prefabs/zone/ZoneTower';
 import { ZoneTriangle } from '../prefabs/zone/ZoneTriangle';
+import { TabActivity } from '../TabActivity';
 import { useControlStyles } from '../useControlStyles';
 import { ObjectGroup, Section } from './Section';
 
+type PlayerTabs = 'roles' | 'jobs';
+
 export const PrefabsPanel: React.FC = () => {
     const controlClasses = useControlStyles();
+    const [tab, setTab] = useState<PlayerTabs>('roles');
 
     return (
         <div className={controlClasses.panel}>
@@ -120,57 +139,88 @@ export const PrefabsPanel: React.FC = () => {
                 </ObjectGroup>
             </Section>
             <Section title="Party">
-                <ObjectGroup>
-                    <PartySupport />
-                    <PartyTank />
-                    <PartyHealer />
-                    <PartyDps />
-                    <PartyAny />
-                </ObjectGroup>
+                <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as PlayerTabs)}>
+                    <Tab value="roles">Roles</Tab>
+                    <Tab value="jobs">Jobs</Tab>
+                </TabList>
+                <TabActivity value="roles" activeTab={tab}>
+                    <ObjectGroup>
+                        <PartyAny />
+                        <PartySupport />
+                        <PartyTank1 />
+                        <PartyTank2 />
+                        <PartyTank />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyMelee />
-                    <PartyRanged />
-                    <PartyMagicRanged />
-                    <PartyPhysicalRanged />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyPureHealer />
+                        <PartyBarrierHealer />
+                        <PartyHealer1 />
+                        <PartyHealer2 />
+                        <PartyHealer />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyPaladin />
-                    <PartyWarrior />
-                    <PartyDarkKnight />
-                    <PartyGunbreaker />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyMelee1 />
+                        <PartyMelee2 />
+                        <PartyMelee />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyWhiteMage />
-                    <PartyScholar />
-                    <PartyAstrologian />
-                    <PartySage />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyPhysicalRanged />
+                        <PartyMagicRanged />
+                        <PartyRanged1 />
+                        <PartyRanged2 />
+                        <PartyRanged />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyMonk />
-                    <PartyDragoon />
-                    <PartySamurai />
-                    <PartyReaper />
-                    <PartyNinja />
-                    <PartyViper />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyDps1 />
+                        <PartyDps2 />
+                        <PartyDps3 />
+                        <PartyDps4 />
+                        <PartyDps />
+                    </ObjectGroup>
+                </TabActivity>
+                <TabActivity value="jobs" activeTab={tab}>
+                    <ObjectGroup>
+                        <PartyPaladin />
+                        <PartyWarrior />
+                        <PartyDarkKnight />
+                        <PartyGunbreaker />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyBlueMage />
-                    <PartyBlackMage />
-                    <PartySummoner />
-                    <PartyRedMage />
-                    <PartyPictomancer />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyWhiteMage />
+                        <PartyScholar />
+                        <PartyAstrologian />
+                        <PartySage />
+                    </ObjectGroup>
 
-                <ObjectGroup>
-                    <PartyBard />
-                    <PartyMachinist />
-                    <PartyDancer />
-                </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyMonk />
+                        <PartyDragoon />
+                        <PartySamurai />
+                        <PartyReaper />
+                        <PartyNinja />
+                        <PartyViper />
+                    </ObjectGroup>
+
+                    <ObjectGroup>
+                        <PartyBeastmaster />
+                        <PartyBlueMage />
+                        <PartyBlackMage />
+                        <PartySummoner />
+                        <PartyRedMage />
+                        <PartyPictomancer />
+                    </ObjectGroup>
+
+                    <ObjectGroup>
+                        <PartyBard />
+                        <PartyMachinist />
+                        <PartyDancer />
+                    </ObjectGroup>
+                </TabActivity>
             </Section>
 
             <Section title="Enemies">
