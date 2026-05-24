@@ -105,9 +105,13 @@ export function objectMap<V, T extends object, K extends keyof T>(
     ) as ObjectMapResult<T, V>;
 }
 
-export function setOrOmit<T extends object, K extends OptionalBooleanKeys<T>>(obj: T, key: K, value: boolean): T {
-    if (value) {
-        return { ...obj, [key]: true };
+/**
+ * Returns a copy of an object with an field set to the given value or omitted
+ * if that value is either false or undefined.
+ */
+export function setOrOmit<T extends object, K extends OptionalKeys<T>>(obj: T, key: K, value: T[K]): T {
+    if (value === false || value === undefined) {
+        return { ...obj, [key]: value };
     }
     return omit(obj, key) as T;
 }
