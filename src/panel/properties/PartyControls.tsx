@@ -7,20 +7,27 @@ import { useObjectUpdater } from '../../useObjectUpdater';
 import { PartyTabContext, type PartyTabs } from '../PartyTabContext';
 import type { PropertiesControlProps } from '../PropertiesControl';
 
-const ROLE_ICON_CHOICES = [
-    [Job.RoleTank, Job.RoleTank1, Job.RoleTank2, Job.RoleSupport, Job.RoleAny],
+function jobGrid(rows: Job[][]): JobProps[][] {
+    return rows.map((row) => row.map(getJob));
+}
+
+const ROLE_ICON_CHOICES = jobGrid([
+    [Job.RoleAny, Job.RoleSupport],
+    [Job.RoleTank, Job.RoleTank1, Job.RoleTank2],
     [Job.RoleHealer, Job.RoleHealer1, Job.RoleHealer2, Job.RolePureHealer, Job.RoleBarrierHealer],
+    [Job.RoleDps, Job.RoleDps1, Job.RoleDps2, Job.RoleDps3, Job.RoleDps4],
     [Job.RoleMelee, Job.RoleMelee1, Job.RoleMelee2],
     [Job.RoleRanged, Job.RoleRanged1, Job.RoleRanged2, Job.RolePhysicalRanged, Job.RoleMagicRanged],
-    [Job.RoleDps, Job.RoleDps1, Job.RoleDps2, Job.RoleDps3, Job.RoleDps4],
-].map((row) => row.map((job) => getJob(job)));
-const JOB_ICON_CHOICES = [
+]);
+
+const JOB_ICON_CHOICES = jobGrid([
     [Job.Paladin, Job.Warrior, Job.DarkKnight, Job.Gunbreaker],
     [Job.WhiteMage, Job.Scholar, Job.Astrologian, Job.Sage],
     [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
-    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer, Job.BlueMage, Job.Beastmaster],
+    [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer],
     [Job.Bard, Job.Machinist, Job.Dancer],
-].map((row) => row.map((job) => getJob(job)));
+    [Job.BlueMage, Job.Beastmaster],
+]);
 
 type JobClickHandler = (name: string, image: string) => void;
 
