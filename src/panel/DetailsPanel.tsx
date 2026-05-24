@@ -6,9 +6,11 @@ import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING, PANEL_WIDTH, WIDE_PANEL_WIDTH } from './PanelStyles';
 import { PropertiesPanel } from './PropertiesPanel';
 import { SceneObjectsPanel } from './SceneObjectsPanel';
+import { ToolsPanel } from './ToolsPanel';
 
 const PROPERTIES_TITLE = 'Properties';
 const OBJECTS_TITLE = 'Scene';
+const TOOLS_TITLE = 'Tools';
 
 export const DetailsPanel: React.FC = () => {
     const isWide = useMedia(`(min-width: 1700px)`);
@@ -41,6 +43,15 @@ const WideDetailsPanel: React.FC = () => {
                     <SceneObjectsPanel />
                 </div>
             </section>
+
+            <Divider inset vertical className={controlClasses.divider} />
+
+            <section className={mergeClasses(classes.section, classes.wideSection)}>
+                <header className={classes.header}>{TOOLS_TITLE}</header>
+                <div className={classes.scrollable}>
+                    <ToolsPanel />
+                </div>
+            </section>
         </div>
     );
 };
@@ -56,12 +67,16 @@ const ShortDetailsPanel: React.FC = () => {
             <TabList selectedValue={tab} onTabSelect={(ev, data) => setTab(data.value as Tabs)}>
                 <Tab value="properties">{PROPERTIES_TITLE}</Tab>
                 <Tab value="objects">{OBJECTS_TITLE}</Tab>
+                <Tab value="tools">{TOOLS_TITLE}</Tab>
             </TabList>
             <TabActivity value="properties" activeTab={tab}>
                 <PropertiesPanel className={classes.shortPanelContent} />
             </TabActivity>
             <TabActivity value="objects" activeTab={tab}>
                 <SceneObjectsPanel className={classes.shortPanelContent} />
+            </TabActivity>
+            <TabActivity value="tools" activeTab={tab}>
+                <ToolsPanel className={classes.shortPanelContent} />
             </TabActivity>
         </div>
     );
