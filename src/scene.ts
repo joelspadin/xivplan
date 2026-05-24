@@ -152,8 +152,9 @@ export interface ColoredObject {
     readonly color: string;
 }
 
-export interface HollowObject {
-    readonly hollow?: boolean;
+export type ZoneStyle = 'fill' | 'stroke' | 'gradient';
+export interface StyledZone {
+    readonly style?: ZoneStyle;
 }
 
 export interface MoveableObject extends Position {
@@ -252,7 +253,7 @@ export function isActor(object: UnknownObject): object is Actor {
     return isParty(object) || isEnemy(object);
 }
 
-export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface CircleZone extends RadiusObject, ColoredObject, StyledZone, BaseObject {
     readonly type:
         | typeof ObjectType.Circle
         | typeof ObjectType.Proximity
@@ -268,23 +269,23 @@ export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.RotateCCW,
 );
 
-export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, StyledZone, BaseObject {
     readonly type: typeof ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
 
-export interface EyeObject extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface EyeObject extends RadiusObject, ColoredObject, StyledZone, BaseObject {
     readonly type: typeof ObjectType.Eye;
     readonly invert?: boolean;
 }
 export const isEye = makeObjectTest<EyeObject>(ObjectType.Eye);
 
-export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObject, BaseObject {
+export interface DonutZone extends RadiusObject, InnerRadiusObject, ColoredObject, StyledZone, BaseObject {
     readonly type: typeof ObjectType.Donut;
 }
 export const isDonutZone = makeObjectTest<DonutZone>(ObjectType.Donut);
 
-export interface LineProps extends MoveableObject, ColoredObject, HollowObject, RotateableObject {
+export interface LineProps extends MoveableObject, ColoredObject, StyledZone, RotateableObject {
     readonly length: number;
     readonly width: number;
 }
@@ -294,7 +295,7 @@ export interface LineZone extends LineProps, BaseObject {
 }
 export const isLineZone = makeObjectTest<LineZone>(ObjectType.Line);
 
-export interface ConeProps extends RadiusObject, ColoredObject, HollowObject, RotateableObject {
+export interface ConeProps extends RadiusObject, ColoredObject, StyledZone, RotateableObject {
     readonly coneAngle: number;
 }
 
@@ -308,7 +309,7 @@ export interface ArcZone extends ConeProps, InnerRadiusObject, BaseObject {
 }
 export const isArcZone = makeObjectTest<ArcZone>(ObjectType.Arc);
 
-export interface RectangleZone extends ResizeableObject, ColoredObject, HollowObject, BaseObject {
+export interface RectangleZone extends ResizeableObject, ColoredObject, StyledZone, BaseObject {
     readonly type:
         | typeof ObjectType.Rect
         | typeof ObjectType.LineStack
@@ -328,7 +329,7 @@ export const isRectangleZone = makeObjectTest<RectangleZone>(
 
 export type PolygonOrientation = 'point' | 'side';
 
-export interface PolygonZone extends RadiusObject, ColoredObject, HollowObject, RotateableObject, BaseObject {
+export interface PolygonZone extends RadiusObject, ColoredObject, StyledZone, RotateableObject, BaseObject {
     readonly type: typeof ObjectType.Polygon;
     readonly sides: number;
     readonly orient: PolygonOrientation;
@@ -456,8 +457,15 @@ export function isImageObject<T>(object: T): object is ImageObject & T {
     return obj && typeof obj.image === 'string';
 }
 
-export const supportsHollow = makeObjectTest<HollowObject & UnknownObject>(
+export const supportsGradient = makeObjectTest<StyledZone & UnknownObject>(
     ObjectType.Circle,
+    ObjectType.RotateCW,
+    ObjectType.RotateCCW,
+);
+
+export const supportsZoneStyle = makeObjectTest<StyledZone & UnknownObject>(
+    ObjectType.Circle,
+    ObjectType.Donut,
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
     ObjectType.Cone,

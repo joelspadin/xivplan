@@ -190,7 +190,7 @@ interface LineRendererProps extends RendererProps<LineZone> {
 const LineRenderer: React.FC<LineRendererProps> = ({ object, length, width, rotation, isDragging }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, Math.min(length, width), object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, Math.min(length, width), object.style);
 
     const x = -width / 2;
     const y = -length;

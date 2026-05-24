@@ -60,7 +60,7 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
 
-    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.style);
 
     const highlightOffset = style.strokeWidth;
     const highlightWidth = object.width + highlightOffset;
