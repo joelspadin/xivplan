@@ -142,85 +142,83 @@ export const PrefabsPanel: React.FC = () => {
                     <Tab value="roles">Roles</Tab>
                     <Tab value="jobs">Jobs</Tab>
                 </TabList>
-                <div>
-                    <TabActivity value="roles" activeTab={tab}>
-                        <ObjectGroup>
-                            <PartyAny />
-                            <PartySupport />
-                            <PartyTank1 />
-                            <PartyTank2 />
-                            <PartyTank />
-                        </ObjectGroup>
+                <TabActivity value="roles" activeTab={tab}>
+                    <ObjectGroup>
+                        <PartyAny />
+                        <PartySupport />
+                        <PartyTank1 />
+                        <PartyTank2 />
+                        <PartyTank />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyPureHealer />
-                            <PartyBarrierHealer />
-                            <PartyHealer1 />
-                            <PartyHealer2 />
-                            <PartyHealer />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyPureHealer />
+                        <PartyBarrierHealer />
+                        <PartyHealer1 />
+                        <PartyHealer2 />
+                        <PartyHealer />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyMelee1 />
-                            <PartyMelee2 />
-                            <PartyMelee />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyMelee1 />
+                        <PartyMelee2 />
+                        <PartyMelee />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyPhysicalRanged />
-                            <PartyMagicRanged />
-                            <PartyRanged1 />
-                            <PartyRanged2 />
-                            <PartyRanged />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyPhysicalRanged />
+                        <PartyMagicRanged />
+                        <PartyRanged1 />
+                        <PartyRanged2 />
+                        <PartyRanged />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyDps1 />
-                            <PartyDps2 />
-                            <PartyDps3 />
-                            <PartyDps4 />
-                            <PartyDps />
-                        </ObjectGroup>
-                    </TabActivity>
-                    <TabActivity value="jobs" activeTab={tab}>
-                        <ObjectGroup>
-                            <PartyPaladin />
-                            <PartyWarrior />
-                            <PartyDarkKnight />
-                            <PartyGunbreaker />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyDps1 />
+                        <PartyDps2 />
+                        <PartyDps3 />
+                        <PartyDps4 />
+                        <PartyDps />
+                    </ObjectGroup>
+                </TabActivity>
+                <TabActivity value="jobs" activeTab={tab}>
+                    <ObjectGroup>
+                        <PartyPaladin />
+                        <PartyWarrior />
+                        <PartyDarkKnight />
+                        <PartyGunbreaker />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyWhiteMage />
-                            <PartyScholar />
-                            <PartyAstrologian />
-                            <PartySage />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyWhiteMage />
+                        <PartyScholar />
+                        <PartyAstrologian />
+                        <PartySage />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyMonk />
-                            <PartyDragoon />
-                            <PartySamurai />
-                            <PartyReaper />
-                            <PartyNinja />
-                            <PartyViper />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyMonk />
+                        <PartyDragoon />
+                        <PartySamurai />
+                        <PartyReaper />
+                        <PartyNinja />
+                        <PartyViper />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyBlueMage />
-                            <PartyBlackMage />
-                            <PartySummoner />
-                            <PartyRedMage />
-                            <PartyPictomancer />
-                        </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyBlueMage />
+                        <PartyBlackMage />
+                        <PartySummoner />
+                        <PartyRedMage />
+                        <PartyPictomancer />
+                    </ObjectGroup>
 
-                        <ObjectGroup>
-                            <PartyBard />
-                            <PartyMachinist />
-                            <PartyDancer />
-                        </ObjectGroup>
-                    </TabActivity>
-                </div>
+                    <ObjectGroup>
+                        <PartyBard />
+                        <PartyMachinist />
+                        <PartyDancer />
+                    </ObjectGroup>
+                </TabActivity>
             </Section>
 
             <Section title="Enemies">
