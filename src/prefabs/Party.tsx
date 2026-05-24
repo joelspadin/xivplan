@@ -108,13 +108,31 @@ const PartyDetails: React.FC<ListComponentProps<PartyObject>> = ({ object, ...pr
 registerListComponent<PartyObject>(ObjectType.Party, PartyDetails);
 
 export const PartyAny = makeIcon(Job.RoleAny);
-export const PartyTank = makeIcon(Job.RoleTank);
-export const PartyHealer = makeIcon(Job.RoleHealer);
 export const PartySupport = makeIcon(Job.RoleSupport);
+
+export const PartyTank = makeIcon(Job.RoleTank);
+export const PartyTank1 = makeIcon(Job.RoleTank1);
+export const PartyTank2 = makeIcon(Job.RoleTank2);
+
+export const PartyHealer = makeIcon(Job.RoleHealer);
+export const PartyHealer1 = makeIcon(Job.RoleHealer1);
+export const PartyHealer2 = makeIcon(Job.RoleHealer2);
+export const PartyPureHealer = makeIcon(Job.RolePureHealer);
+export const PartyBarrierHealer = makeIcon(Job.RoleBarrierHealer);
+
 export const PartyDps = makeIcon(Job.RoleDps);
+export const PartyDps1 = makeIcon(Job.RoleDps1);
+export const PartyDps2 = makeIcon(Job.RoleDps2);
+export const PartyDps3 = makeIcon(Job.RoleDps3);
+export const PartyDps4 = makeIcon(Job.RoleDps4);
 
 export const PartyMelee = makeIcon(Job.RoleMelee);
+export const PartyMelee1 = makeIcon(Job.RoleMelee1);
+export const PartyMelee2 = makeIcon(Job.RoleMelee2);
+
 export const PartyRanged = makeIcon(Job.RoleRanged);
+export const PartyRanged1 = makeIcon(Job.RoleRanged1);
+export const PartyRanged2 = makeIcon(Job.RoleRanged2);
 export const PartyMagicRanged = makeIcon(Job.RoleMagicRanged);
 export const PartyPhysicalRanged = makeIcon(Job.RolePhysicalRanged);
 
