@@ -1,6 +1,5 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { IconObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { SpinButton } from '../../SpinButton';
@@ -16,11 +15,11 @@ export const IconTimeControl: React.FC<PropertiesControlProps<IconObject>> = ({ 
 
     const time = commonValue(objects, (obj) => obj.time ?? 0);
 
-    const onChange = useSpinChanged((time: number) => update({ props: { time } }));
+    const onChange = (time: number) => update({ props: { time } });
 
     return (
         <Field label="Duration" className={classes.cell}>
-            <SpinButtonUnits value={time} min={0} suffix=" s" onChange={onChange} />
+            <SpinButtonUnits value={time} min={0} suffix=" s" onValueChange={onChange} />
         </Field>
     );
 };
@@ -32,9 +31,9 @@ export const IconStacksControl: React.FC<PropertiesControlProps<IconObject>> = (
     const stacks = commonValue(objects, getStackCount);
     const maxStacks = Math.min(...objects.map((obj) => obj.maxStacks ?? 0));
 
-    const onChange = useSpinChanged((value: number) => {
+    const onChange = (value: number) => {
         dispatch({ type: 'update', value: objects.map((obj) => setStacks(obj, value)) });
-    });
+    };
 
     if (maxStacks === 0) {
         return null;
@@ -42,7 +41,7 @@ export const IconStacksControl: React.FC<PropertiesControlProps<IconObject>> = (
 
     return (
         <Field label="Stacks" className={classes.cell}>
-            <SpinButton value={stacks} min={1} max={maxStacks} onChange={onChange} />
+            <SpinButton value={stacks} min={1} max={maxStacks} onValueChange={onChange} />
         </Field>
     );
 };

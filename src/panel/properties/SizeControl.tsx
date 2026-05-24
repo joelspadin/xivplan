@@ -2,7 +2,6 @@ import { Field, mergeClasses } from '@fluentui/react-components';
 import React from 'react';
 import { SpinButton } from '../../SpinButton';
 import { MIN_SIZE } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { ResizeableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -16,16 +15,16 @@ export const SizeControl: React.FC<PropertiesControlProps<ResizeableObject>> = (
     const width = commonValue(objects, (obj) => obj.width);
     const height = commonValue(objects, (obj) => obj.height);
 
-    const onWidthChanged = useSpinChanged((width: number) => update({ props: { width } }));
-    const onHeightChanged = useSpinChanged((height: number) => update({ props: { height } }));
+    const onWidthChanged = (width: number) => update({ props: { width } });
+    const onHeightChanged = (height: number) => update({ props: { height } });
 
     return (
         <div className={mergeClasses(classes.row, classes.rightGap)}>
             <Field label="Width">
-                <SpinButton value={width} onChange={onWidthChanged} min={MIN_SIZE} step={5} />
+                <SpinButton value={width} onValueChange={onWidthChanged} min={MIN_SIZE} step={5} />
             </Field>
             <Field label="Height">
-                <SpinButton value={height} onChange={onHeightChanged} min={MIN_SIZE} step={5} />
+                <SpinButton value={height} onValueChange={onHeightChanged} min={MIN_SIZE} step={5} />
             </Field>
         </div>
     );

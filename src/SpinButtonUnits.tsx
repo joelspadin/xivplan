@@ -5,6 +5,7 @@ import { formatNumber, fractionDigitsToStep, round } from './util';
 
 export interface SpinButtonUnitsProps extends CustomSpinButtonProps {
     suffix?: string;
+    onValueChange?: (newValue: number) => void;
 }
 
 const VALUE_REGEX = /^(-?\d+(\.\d+)?).*/;
@@ -27,6 +28,7 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({
     suffix,
     fractionDigits,
     onChange,
+    onValueChange,
     ...props
 }) => {
     const nonNullFractionDigits = fractionDigits ?? 0;
@@ -52,6 +54,9 @@ export const SpinButtonUnits: React.FC<SpinButtonUnitsProps> = ({
         }
 
         onChange?.(event, data);
+        if (onValueChange && typeof data.value === 'number') {
+            onValueChange(data.value);
+        }
     };
 
     return <SpinButton {...props} value={value ?? 0} displayValue={displayValue} onChange={wrappedOnChange} />;

@@ -21,7 +21,6 @@ import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
 import { OpacitySlider } from '../OpacitySlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
-import { useSpinChanged } from '../prefabs/useSpinChanged';
 import { useColorSwatches } from '../theme';
 import { useControlStyles } from '../useControlStyles';
 import { useDrawConfig } from '../useDrawConfig';
@@ -48,7 +47,7 @@ export const DrawPanel: React.FC = () => {
         }
     };
 
-    const onSizeChanged = useSpinChanged((brushSize: number) => setConfig({ ...config, brushSize }));
+    const onSizeChanged = (brushSize: number) => setConfig({ ...config, brushSize });
 
     const modeHotkey = (mode: EditMode) => (e: KeyboardEvent) => {
         setEditMode(mode);
@@ -90,7 +89,7 @@ export const DrawPanel: React.FC = () => {
                 value={config.brushSize}
                 color={config.color}
                 opacity={config.opacity}
-                onChange={onSizeChanged}
+                onValueChange={onSizeChanged}
             />
         </div>
     );
