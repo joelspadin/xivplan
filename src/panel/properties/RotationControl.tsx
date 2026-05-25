@@ -3,7 +3,6 @@ import { LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { type EnemyObject, EnemyRingStyle, isEnemy, type RotateableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -19,7 +18,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
     const currentlyLinked = commonValue(objects, (obj) => obj.facingId !== undefined) || false;
 
-    const onRotationChanged = useSpinChanged((rotation: number) => update({ props: { rotation } }));
+    const onRotationChanged = (rotation: number) => update({ props: { rotation } });
 
     return (
         <>
@@ -28,7 +27,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
                     <SpinButtonUnits
                         disabled={noDirection}
                         value={rotation}
-                        onChange={onRotationChanged}
+                        onValueChange={onRotationChanged}
                         step={5}
                         fractionDigits={1}
                         suffix="°"

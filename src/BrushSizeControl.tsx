@@ -1,12 +1,12 @@
-import { Field, makeStyles, mergeClasses, type SpinButtonProps, tokens } from '@fluentui/react-components';
+import { Field, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
 import React from 'react';
-import { SpinButton } from './SpinButton';
+import { SpinButton, type CustomSpinButtonProps } from './SpinButton';
 import { sceneTokens } from './theme';
 import { useControlStyles } from './useControlStyles';
 
 const BOX_SIZE = 30;
 
-export interface BrushSizeControlProps extends SpinButtonProps {
+export interface BrushSizeControlProps extends CustomSpinButtonProps {
     color: string;
     opacity: number;
 }

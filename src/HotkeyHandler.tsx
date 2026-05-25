@@ -404,9 +404,11 @@ const EditActionHandler: React.FC = () => {
             scene,
             getSelectedObjects(step, selection).filter(isMoveable),
         );
-        const value = moveObjectsBy(selectedObjects, offset);
 
-        dispatch({ type: 'update', value });
+        dispatch({
+            type: 'update',
+            value: moveObjectsBy(selectedObjects, offset),
+        });
         e.preventDefault();
     };
 
@@ -434,7 +436,6 @@ const EditActionHandler: React.FC = () => {
             return;
         }
 
-        const value: SceneObject[] = [];
         const selectedObjects = getSelectedObjects(step, selection)
             .filter(isMoveable)
             // TODO: figure out the expected behavior of rotating a selection of >1 items that includes
@@ -442,11 +443,10 @@ const EditActionHandler: React.FC = () => {
             .filter((obj) => selection.size == 1 || obj.positionParentId == undefined);
         const center = getGroupCenter(scene, selectedObjects);
 
-        selectedObjects.forEach((object) => {
-            value.push(rotateObject(scene, object, center, offset));
+        dispatch({
+            type: 'update',
+            value: selectedObjects.map((obj) => rotateObject(scene, obj, center, offset)),
         });
-
-        dispatch({ type: 'update', value });
         e.preventDefault();
     };
 

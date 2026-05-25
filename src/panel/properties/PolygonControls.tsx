@@ -4,7 +4,6 @@ import React from 'react';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
 import { MAX_POLYGON_SIDES, MIN_POLYGON_SIDES } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { PolygonOrientation, PolygonZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -19,13 +18,13 @@ export const PolygonSidesControl: React.FC<PropertiesControlProps<PolygonZone>> 
 
     const spokes = commonValue(objects, (obj) => obj.sides);
 
-    const onSidesChanged = useSpinChanged((sides: number) => update({ props: { sides } }));
+    const onSidesChanged = (sides: number) => update({ props: { sides } });
 
     return (
         <Field label="Sides" className={classes.cell}>
             <SpinButton
                 value={spokes}
-                onChange={onSidesChanged}
+                onValueChange={onSidesChanged}
                 min={MIN_POLYGON_SIDES}
                 max={MAX_POLYGON_SIDES}
                 step={1}

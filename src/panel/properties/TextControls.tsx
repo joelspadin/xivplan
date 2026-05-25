@@ -22,7 +22,6 @@ import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
 import { SpinButton } from '../../SpinButton';
 import { MIN_FONT_SIZE } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { TextObject, TextStyle } from '../../scene';
 import {
     COLOR_BLACK,
@@ -115,13 +114,13 @@ export const TextLayoutControl: React.FC<PropertiesControlProps<TextObject>> = (
     const fontSize = commonValue(objects, (obj) => obj.fontSize);
     const align = commonValue(objects, (obj) => obj.align);
 
-    const onFontSizeChanged = useSpinChanged((fontSize: number) => update({ props: { fontSize } }));
+    const onFontSizeChanged = (fontSize: number) => update({ props: { fontSize } });
     const onAlignChanged = (align: string) => update({ props: { align } });
 
     return (
         <div className={classes.row}>
             <Field label="Font size">
-                <SpinButton value={fontSize} onChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
+                <SpinButton value={fontSize} onValueChange={onFontSizeChanged} min={MIN_FONT_SIZE} step={5} />
             </Field>
             <Field label="Align">
                 <SegmentedGroup name="text-align" value={align} onChange={(ev, data) => onAlignChanged(data.value)}>

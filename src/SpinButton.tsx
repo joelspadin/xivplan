@@ -9,13 +9,20 @@ import { formatNumber, fractionDigitsToStep, round } from './util';
 
 export interface CustomSpinButtonProps extends Omit<SpinButtonProps, 'displayValue'> {
     fractionDigits?: number;
+    onValueChange?: (newValue: number) => void;
 }
 
 /**
  * Wrapper around SpinButton which displays nothing instead of NaN if value == undefined
  * and properly handles direct data entry.
  */
-export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, fractionDigits, ...props }) => {
+export const SpinButton: React.FC<CustomSpinButtonProps> = ({
+    value,
+    onChange,
+    onValueChange,
+    fractionDigits,
+    ...props
+}) => {
     const nonNullFractionDigits = fractionDigits ?? 0;
 
     const wrappedOnChange = (event: SpinButtonChangeEvent, data: SpinButtonOnChangeData) => {
@@ -42,6 +49,9 @@ export const SpinButton: React.FC<CustomSpinButtonProps> = ({ value, onChange, f
         }
 
         onChange?.(event, data);
+        if (onValueChange && typeof data.value === 'number') {
+            onValueChange(data.value);
+        }
     };
 
     return (

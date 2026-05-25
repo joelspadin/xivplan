@@ -3,7 +3,6 @@ import { LinkRegular, LockClosedRegular, LockMultipleRegular, LockOpenRegular } 
 import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
 import { SpinButton } from '../../SpinButton';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { MoveableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { setOrOmitAction, useObjectUpdater } from '../../useObjectUpdater';
@@ -22,8 +21,8 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
 
     const onTogglePinned = () => update(setOrOmitAction<MoveableObject>('pinned', !pinned));
 
-    const onXChanged = useSpinChanged((x: number) => update({ props: { x } }));
-    const onYChanged = useSpinChanged((y: number) => update({ props: { y } }));
+    const onXChanged = (x: number) => update({ props: { x } });
+    const onYChanged = (y: number) => update({ props: { y } });
 
     const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
     const tooltip = pinned ? 'Unlock position' : 'Lock position';
@@ -32,10 +31,10 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         <>
             <div className={classes.row}>
                 <Field label={<PositionLabel coordinate="X" currentlyLinked={currentlyLinked} />}>
-                    <SpinButton value={x} onChange={onXChanged} step={1} />
+                    <SpinButton value={x} onValueChange={onXChanged} step={1} />
                 </Field>
                 <Field label={<PositionLabel coordinate="Y" currentlyLinked={currentlyLinked} />}>
-                    <SpinButton value={y} onChange={onYChanged} step={1} />
+                    <SpinButton value={y} onValueChange={onYChanged} step={1} />
                 </Field>
                 <Tooltip content={tooltip} relationship="label" withArrow>
                     <ToggleButton checked={pinned || false} onClick={onTogglePinned} icon={icon} />

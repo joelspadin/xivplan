@@ -5,7 +5,6 @@ import { SpinButton } from '../../SpinButton';
 import { getTetherName } from '../../prefabs/TetherConfig';
 import { TetherIcon } from '../../prefabs/TetherIcon';
 import { MIN_TETHER_WIDTH } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import { type Tether, TetherType } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -55,11 +54,11 @@ export const TetherWidthControl: React.FC<PropertiesControlProps<Tether>> = ({ o
 
     const width = commonValue(objects, (obj) => obj.width);
 
-    const onWidthChanged = useSpinChanged((width: number) => update({ props: { width } }));
+    const onWidthChanged = (width: number) => update({ props: { width } });
 
     return (
         <Field label="Width" className={classes.cell}>
-            <SpinButton value={width} onChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
+            <SpinButton value={width} onValueChange={onWidthChanged} min={MIN_TETHER_WIDTH} step={2} />
         </Field>
     );
 };

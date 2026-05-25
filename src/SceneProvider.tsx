@@ -95,23 +95,14 @@ export interface ObjectUpdateAction {
 }
 
 /**
- * Action which adds properties to and/or removes them from objects with the given IDs.
- *
- * The same change is made to every object. This does not enforce types very strongly.
- * useObjectUpdater() provides a way to send this action with stronger type checks.
+ * Action which applies the given transformation to objects with the given ID(s).
  */
-export interface ObjectUpdatePropsAction {
-    type: 'updateProps';
-    /** IDs of the objects to update */
-    ids: readonly number[];
-    /** Collection of props to set on each object */
-    props?: Readonly<Partial<SceneObject>>;
-    /**
-     * List of keys to delete from each object.
-     * (Ideally this would use "keyof", but we don't know which type(s) of SceneObject(s) are being updated,
-     * so we don't know which keys are valid.)
-     */
-    omit?: readonly string[];
+export interface ObjectTransformAction {
+    type: 'transform';
+    /** The ID(s) of the objects to update */
+    ids: number | readonly number[];
+    /** The transformation to apply to each object */
+    transformFn: (object: SceneObject, scene: Scene) => SceneObject;
 }
 
 export interface ObjectAddAction {
@@ -141,7 +132,7 @@ export type ObjectAction =
     | ObjectMoveAction
     | GroupMoveAction
     | ObjectUpdateAction
-    | ObjectUpdatePropsAction;
+    | ObjectTransformAction;
 
 export interface SetStepAction {
     type: 'setStep';
@@ -641,32 +632,6 @@ function updateObjects(state: Readonly<EditorState>, values: readonly SceneObjec
     return updateCurrentStep(state, { objects });
 }
 
-function updateObjectProps(
-    state: Readonly<EditorState>,
-    ids: readonly number[],
-    props?: Readonly<Partial<SceneObject>>,
-    omitProps?: readonly string[],
-) {
-    const currentStep = getCurrentStep(state);
-    const objects = currentStep.objects.map((obj) => {
-        if (!ids.includes(obj.id)) {
-            return obj;
-        }
-
-        const newObject = { ...obj, ...props };
-
-        if (omitProps) {
-            for (const key of omitProps) {
-                delete newObject[key as keyof SceneObject];
-            }
-        }
-
-        return newObject;
-    });
-
-    return updateCurrentStep(state, { objects });
-}
-
 function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
     return {
         scene: { ...state.scene, arena },
@@ -751,8 +716,14 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
         case 'update':
             return updateObjects(state, asArray(action.value));
 
-        case 'updateProps':
-            return updateObjectProps(state, action.ids, action.props, action.omit);
+        case 'transform':
+            return updateObjects(
+                state,
+                asArray(action.ids)
+                    .map((id) => getObjectById(state.scene, id))
+                    .filter((obj) => obj !== undefined)
+                    .map((obj) => action.transformFn(obj, state.scene)),
+            );
     }
 
     return state;

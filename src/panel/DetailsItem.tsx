@@ -54,7 +54,8 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
             {showControls && (
                 <div className={classes.buttons}>
                     <DetailsItemHideButton
-                        object={object}
+                        objectId={object.id}
+                        isHidden={!!object.hide}
                         className={mergeClasses(isSelected && classes.selectedButton, isDragging && classes.visible)}
                     />
                     {editMode != EditMode.SelectConnection && (
@@ -83,23 +84,24 @@ function getSizeProps(size: DetailsItemSize, classes: ReturnType<typeof useStyle
 }
 
 interface DetailsItemHideButtonProps {
-    object: SceneObject;
+    objectId: number;
+    isHidden: boolean;
     className?: string;
 }
 
 const EyeOffIcon = bundleIcon(EyeOffFilled, EyeOffRegular);
 const EyeIcon = bundleIcon(EyeFilled, EyeRegular);
 
-const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ object, className }) => {
+const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ objectId, isHidden, className }) => {
     const classes = useStyles();
     const { dispatch } = useScene();
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        dispatch({ type: 'update', value: setOrOmit(object, 'hide', !object.hide) });
+        dispatch({ type: 'transform', ids: objectId, transformFn: (obj) => setOrOmit(obj, 'hide', !isHidden) });
         e.stopPropagation();
     };
 
-    const Icon = object.hide ? EyeOffIcon : EyeIcon;
-    const tooltip = object.hide ? 'Show' : 'Hide';
+    const Icon = isHidden ? EyeOffIcon : EyeIcon;
+    const tooltip = isHidden ? 'Show' : 'Hide';
 
     return (
         <Button
@@ -107,7 +109,7 @@ const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ object, c
             className={mergeClasses(
                 detailsItemClassNames.hideButton,
                 classes.hideButton,
-                object.hide && classes.visible,
+                isHidden && classes.visible,
                 className,
             )}
             icon={<Icon />}

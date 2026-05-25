@@ -2,7 +2,6 @@ import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { SpinButton } from '../../SpinButton';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import {
     EXAFLARE_LENGTH_MAX,
     EXAFLARE_LENGTH_MIN,
@@ -21,13 +20,13 @@ export const ExaflareLengthControl: React.FC<PropertiesControlProps<ExaflareZone
 
     const length = commonValue(objects, (obj) => obj.length);
 
-    const onLengthChanged = useSpinChanged((length: number) => update({ props: { length } }));
+    const onLengthChanged = (length: number) => update({ props: { length } });
 
     return (
         <Field label="Length" className={classes.cell}>
             <SpinButton
                 value={length}
-                onChange={onLengthChanged}
+                onValueChange={onLengthChanged}
                 min={EXAFLARE_LENGTH_MIN}
                 max={EXAFLARE_LENGTH_MAX}
                 step={1}
@@ -42,14 +41,14 @@ export const ExaflareSpacingControl: React.FC<PropertiesControlProps<ExaflareZon
 
     const spacing = commonValue(objects, (obj) => obj.spacing);
 
-    const onSpacingChanged = useSpinChanged((spacing: number) => update({ props: { spacing } }));
+    const onSpacingChanged = (spacing: number) => update({ props: { spacing } });
 
     return (
         <Field label="Spacing" className={classes.cell}>
             <SpinButtonUnits
                 value={spacing}
                 suffix="%"
-                onChange={onSpacingChanged}
+                onValueChange={onSpacingChanged}
                 min={EXAFLARE_SPACING_MIN}
                 max={EXAFLARE_SPACING_MAX}
                 step={10}

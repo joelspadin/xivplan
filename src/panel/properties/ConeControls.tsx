@@ -2,7 +2,6 @@ import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { ArcZone, ConeZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -15,13 +14,13 @@ export const ConeAngleControl: React.FC<PropertiesControlProps<ArcZone | ConeZon
 
     const coneAngle = commonValue(objects, (obj) => obj.coneAngle);
 
-    const onAngleChanged = useSpinChanged((coneAngle: number) => update({ props: { coneAngle } }));
+    const onAngleChanged = (coneAngle: number) => update({ props: { coneAngle } });
 
     return (
         <Field label="Angle" className={classes.cell}>
             <SpinButtonUnits
                 value={coneAngle}
-                onChange={onAngleChanged}
+                onValueChange={onAngleChanged}
                 min={MIN_CONE_ANGLE}
                 max={MAX_CONE_ANGLE}
                 step={5}

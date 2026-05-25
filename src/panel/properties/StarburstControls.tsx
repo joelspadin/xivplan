@@ -2,7 +2,6 @@ import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { SpinButton } from '../../SpinButton';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../../prefabs/bounds';
-import { useSpinChanged } from '../../prefabs/useSpinChanged';
 import type { StarburstZone } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
@@ -18,11 +17,16 @@ export const StarburstSpokeWidthControl: React.FC<PropertiesControlProps<Starbur
 
     const spokeWidth = commonValue(objects, (obj) => obj.spokeWidth);
 
-    const onSpokeWidthChanged = useSpinChanged((spokeWidth: number) => update({ props: { spokeWidth } }));
+    const onSpokeWidthChanged = (spokeWidth: number) => update({ props: { spokeWidth } });
 
     return (
         <Field label="Spoke width" className={classes.cell}>
-            <SpinButton value={spokeWidth} onChange={onSpokeWidthChanged} min={MIN_STARBURST_SPOKE_WIDTH} step={5} />
+            <SpinButton
+                value={spokeWidth}
+                onValueChange={onSpokeWidthChanged}
+                min={MIN_STARBURST_SPOKE_WIDTH}
+                step={5}
+            />
         </Field>
     );
 };
@@ -33,13 +37,13 @@ export const StarburstSpokeCountControl: React.FC<PropertiesControlProps<Starbur
 
     const spokes = commonValue(objects, (obj) => obj.spokes);
 
-    const onSpokesChanged = useSpinChanged((spokes: number) => update({ props: { spokes } }));
+    const onSpokesChanged = (spokes: number) => update({ props: { spokes } });
 
     return (
         <Field label="Spokes" className={classes.cell}>
             <SpinButton
                 value={spokes}
-                onChange={onSpokesChanged}
+                onValueChange={onSpokesChanged}
                 min={MIN_SPOKE_COUNT}
                 max={MAX_SPOKE_COUNT}
                 step={1}
