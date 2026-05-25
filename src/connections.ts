@@ -199,14 +199,26 @@ function createUpdatePositionParentIdsAction(
                 positionParentId: newParent.id,
                 ...newRelativePos,
                 // Pin objects that got moved to a default position
-                pinned:
-                    attachmentSettings.location == DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT ||
-                    attachmentSettings.location == DefaultAttachPosition.ANYWHERE
-                        ? obj.pinned
-                        : obj.pinned || attachmentSettings.pinByDefault,
+                pinned: getNewPinnedState(obj, attachmentSettings),
             };
         },
     };
+}
+
+/**
+ * Calculates the new 'pinned' state after attaching an object. If the object didn't move
+ * during the attachment, keep the current state. Otherwise potentially pin it based on
+ * the default attachment settings.
+ */
+function getNewPinnedState(obj: MoveableObject, attachmentSettings: AttachmentSettings): boolean | undefined {
+    switch (attachmentSettings.location) {
+        case DefaultAttachPosition.ANYWHERE:
+        case DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT:
+            return obj.pinned;
+        default:
+            // Make sure to keep pinned objects pinned, even if the default settings don't pin it.
+            return obj.pinned || attachmentSettings.pinByDefault;
+    }
 }
 
 function getAttachmentSettings(

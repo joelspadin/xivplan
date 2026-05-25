@@ -86,10 +86,7 @@ function toggleHide(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
 
     const newValue = hide === undefined ? false : !hide;
 
-    dispatch({
-        type: 'update',
-        value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)),
-    });
+    dispatch({ type: 'update', value: objects.map((obj) => setOrOmit(obj, 'hide', newValue)) });
 }
 
 function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAction>) {
@@ -98,10 +95,7 @@ function toggleLock(objects: readonly SceneObject[], dispatch: Dispatch<SceneAct
 
     const newValue = pinned === undefined ? false : !pinned;
 
-    dispatch({
-        type: 'update',
-        value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)),
-    });
+    dispatch({ type: 'update', value: moveable.map((obj) => setOrOmit(obj, 'pinned', newValue)) });
 }
 
 const CLIPBOARD_MIME_TYPE = 'web application/vnd.xivplan+json';
@@ -376,7 +370,7 @@ const SMALL_MOVE_OFFSET = 1;
 const DEFAULT_MOVE_OFFSET = 10;
 const LARGE_MOVE_OFFSET = 25;
 
-function rotateObject<T extends MoveableObject & SceneObject>(
+function rotateObject<T extends MoveableObject>(
     scene: Readonly<Scene>,
     object: T,
     center: Vector2d,
