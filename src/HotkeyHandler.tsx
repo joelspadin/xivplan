@@ -22,7 +22,7 @@ import {
     isMoveable,
     isRotateable,
 } from './scene';
-import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
+import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection, useSpotlight } from './selection';
 import { useCancelConnectionSelection, useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
@@ -502,12 +502,14 @@ const DrawModeHandler: React.FC = () => {
 
 const StepHandler: React.FC = () => {
     const { dispatch } = useScene();
+    const [, setSpotlight] = useSpotlight();
     const cancelConnectionSelection = useCancelConnectionSelection();
 
     useHotkeys(
         'alt+left',
         { category: CATEGORY_STEPS, help: 'Previous step' },
         (e) => {
+            setSpotlight(selectNone());
             dispatch({ type: 'previousStep' });
             e.preventDefault();
         },
@@ -518,6 +520,7 @@ const StepHandler: React.FC = () => {
         'alt+right',
         { category: CATEGORY_STEPS, help: 'Next step' },
         (e) => {
+            setSpotlight(selectNone());
             dispatch({ type: 'nextStep' });
             e.preventDefault();
         },
@@ -528,6 +531,7 @@ const StepHandler: React.FC = () => {
         'ctrl+enter',
         { category: CATEGORY_STEPS, help: 'Add step' },
         (e) => {
+            setSpotlight(selectNone());
             cancelConnectionSelection();
             dispatch({ type: 'addStep' });
             e.preventDefault();

@@ -426,11 +426,14 @@ function prepareOtherStepsForStepDeletion(scene: Readonly<Scene>, stepToDelete: 
         const updatedObjects: SceneObject[] = [];
         step.objects.forEach((obj) => {
             let updatedObj = obj;
-            if (isMoveable(updatedObj) && objectIdsGettingDeleted.has(updatedObj.positionParentId)) {
-                updatedObj = unlinkPosition(updatedObj, scene);
-            }
+            // Rotation connection cleanup must happen before position connection cleanup. The current
+            // rotation may depend on the position connection parent if they're set up to face the same
+            // direction.
             if (isRotateable(updatedObj) && objectIdsGettingDeleted.has(updatedObj.facingId)) {
                 updatedObj = unlinkRotation(updatedObj, scene);
+            }
+            if (isMoveable(updatedObj) && objectIdsGettingDeleted.has(updatedObj.positionParentId)) {
+                updatedObj = unlinkPosition(updatedObj, scene);
             }
             updatedObjects.push(updatedObj);
         });
