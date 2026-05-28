@@ -4,6 +4,7 @@ import { ARENA_PRESETS_GENERAL } from './General';
 import { ARENA_PRESETS_TRIALS } from './Trials';
 import { ARENA_PRESETS_RAID_ARCADION } from './raid/Arcadion';
 import { ARENA_PRESETS_RAID_EDEN } from './raid/Eden';
+import { ARENA_PRESETS_RAID_OMEGA } from './raid/Omega';
 import { ARENA_PRESETS_RAID_PANDAEMONIUM } from './raid/Pandaemonium';
 import { ARENA_PRESETS_ULTIMATE_DSU } from './ultimate/DSU';
 import { ARENA_PRESETS_ULTIMATE_FRU } from './ultimate/FRU';
@@ -19,6 +20,7 @@ export const ARENA_PRESETS: Record<string, Record<string, ArenaPreset[]>> = {
         Trials: ARENA_PRESETS_TRIALS,
     },
     Raids: {
+        Omega: ARENA_PRESETS_RAID_OMEGA,
         Eden: ARENA_PRESETS_RAID_EDEN,
         Pandæmonium: ARENA_PRESETS_RAID_PANDAEMONIUM,
         Arcadion: ARENA_PRESETS_RAID_ARCADION,
