@@ -2,7 +2,7 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type CSSProperties, type RefObject, useRef } from 'react';
 import { Circle, Path } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import CounterClockwiseIcon from '../../assets/zone/rotate_ccw.svg?react';
 import ClockwiseIcon from '../../assets/zone/rotate_cw.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
@@ -12,7 +12,6 @@ import { LayerName } from '../../render/layers';
 import { type CircleZone, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -25,40 +24,26 @@ const CLOCKWISE_COLOR = '#fc972b';
 const COUNTER_CLOCKWISE_COLOR = '#0066ff';
 
 export const ZoneRotateClockwise: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name="Rotating clockwise"
             icon={<ClockwiseIcon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.RotateCW,
-                        color: CLOCKWISE_COLOR,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.RotateCW,
+                color: CLOCKWISE_COLOR,
             }}
         />
     );
 };
 
 export const ZoneRotateCounterClockwise: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name="Rotating counter-clockwise"
             icon={<CounterClockwiseIcon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.RotateCCW,
-                        color: COUNTER_CLOCKWISE_COLOR,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.RotateCCW,
+                color: COUNTER_CLOCKWISE_COLOR,
             }}
         />
     );

@@ -2,7 +2,7 @@ import type { ShapeConfig } from 'konva/lib/Shape';
 import type { EllipseConfig } from 'konva/lib/shapes/Ellipse';
 import * as React from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -17,7 +17,6 @@ import {
     DEFAULT_MARKER_OPACITY,
 } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
-import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
@@ -32,25 +31,18 @@ const ICON_RATIO = 32 / DEFAULT_SIZE;
 
 function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color: string) {
     const Component: React.FC = () => {
-        const [, setDragObject] = usePanelDrag();
         const iconUrl = `/marker/${icon}`;
 
         return (
             <PrefabIcon
-                draggable
                 name={name}
                 icon={iconUrl}
-                onDragStart={(e) => {
-                    setDragObject({
-                        object: {
-                            type: ObjectType.Marker,
-                            image: iconUrl,
-                            name,
-                            color,
-                            shape,
-                        },
-                        offset: getDragOffset(e),
-                    });
+                object={{
+                    type: ObjectType.Marker,
+                    image: iconUrl,
+                    name,
+                    color,
+                    shape,
                 }}
             />
         );

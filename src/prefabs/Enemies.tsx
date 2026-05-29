@@ -4,7 +4,7 @@ import type { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
 import { type RefObject, useRef } from 'react';
 import { Arc, Circle, Path, Text } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
@@ -18,7 +18,6 @@ import {
     useSceneTheme,
 } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
-import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
@@ -47,25 +46,18 @@ const SHADOW_BLUR_MIN = 2;
 
 function makeIcon(name: string, icon: string, radius: number, hasDirection = true) {
     const Component: React.FC = () => {
-        const [, setDragObject] = usePanelDrag();
         const iconUrl = `/actor/${icon}`;
 
         return (
             <PrefabIcon
-                draggable
                 name={name}
                 icon={iconUrl}
-                onDragStart={(e) => {
-                    setDragObject({
-                        object: {
-                            type: ObjectType.Enemy,
-                            icon: iconUrl,
-                            radius: radius,
-                            rotation: 0,
-                            ring: hasDirection ? EnemyRingStyle.Directional : EnemyRingStyle.NoDirection,
-                        },
-                        offset: getDragOffset(e),
-                    });
+                object={{
+                    type: ObjectType.Enemy,
+                    icon: iconUrl,
+                    radius: radius,
+                    rotation: 0,
+                    ring: hasDirection ? EnemyRingStyle.Directional : EnemyRingStyle.NoDirection,
                 }}
             />
         );

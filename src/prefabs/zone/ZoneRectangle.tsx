@@ -1,6 +1,6 @@
 import React from 'react';
 import { Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/square.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -8,7 +8,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { ObjectType, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
@@ -20,21 +19,14 @@ const NAME = 'Rectangle';
 const DEFAULT_SIZE = 150;
 
 export const ZoneSquare: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Rect,
-                        width: DEFAULT_SIZE,
-                        height: DEFAULT_SIZE,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Rect,
+                width: DEFAULT_SIZE,
+                height: DEFAULT_SIZE,
             }}
         />
     );

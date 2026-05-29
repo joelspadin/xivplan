@@ -3,7 +3,7 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type RefObject, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/eye.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -12,7 +12,6 @@ import { LayerName } from '../../render/layers';
 import { type EyeObject, ObjectType } from '../../scene';
 import { panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -23,19 +22,12 @@ const DEFAULT_OPACITY = 100;
 const DEFAULT_COLOR = '#ff0000';
 
 export const ZoneEye: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name="Look away"
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Eye,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Eye,
             }}
         />
     );

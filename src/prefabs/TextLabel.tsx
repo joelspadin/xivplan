@@ -3,7 +3,7 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group, Text, Transformer } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -15,7 +15,6 @@ import { ObjectType, type TextObject } from '../scene';
 import { useIsDragging } from '../selection';
 import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
-import { usePanelDrag } from '../usePanelDrag';
 import { clamp, clampRotation, mod360 } from '../util';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
@@ -33,23 +32,16 @@ const DEFAULT_FONT_SIZE = 25;
 const Icon = DrawTextRegular;
 
 export const TextLabel: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     const theme = useSceneTheme();
 
     return (
         <PrefabIcon
-            draggable
             name="Text"
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Text,
-                        text: DEFAULT_TEXT,
-                        stroke: theme.colorArena,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Text,
+                text: DEFAULT_TEXT,
+                stroke: theme.colorArena,
             }}
         />
     );

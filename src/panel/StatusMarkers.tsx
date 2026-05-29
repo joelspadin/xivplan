@@ -1,3 +1,4 @@
+import { useArrowNavigationGroup } from '@fluentui/react-components';
 import React from 'react';
 import {
     StatusAttack1,
@@ -46,9 +47,10 @@ import { ObjectGroup, Section } from './Section';
 
 export const StatusMarkers: React.FC = () => {
     const classes = useControlStyles();
+    const attributes = useArrowNavigationGroup({ axis: 'grid-linear' });
 
     return (
-        <div className={classes.panel}>
+        <div className={classes.panel} {...attributes}>
             <Section header="General">
                 <ObjectGroup>
                     <StatusAttack1 />

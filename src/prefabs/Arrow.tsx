@@ -2,7 +2,7 @@ import { ArrowUpRegular } from '@fluentui/react-icons';
 import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import * as React from 'react';
 import { Arrow, Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { getArrowStrokeExtent } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -10,7 +10,6 @@ import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import { type ArrowObject, ObjectType } from '../scene';
 import { COLOR_RED } from '../theme';
-import { usePanelDrag } from '../usePanelDrag';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
@@ -30,23 +29,15 @@ const DEFAULT_ARROW_OPACITY = 100;
 const Icon = ArrowUpRegular;
 
 export const MarkerArrow: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Arrow,
-                        width: DEFAULT_ARROW_WIDTH,
-                        height: DEFAULT_ARROW_HEIGHT,
-                        arrowEnd: true,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Arrow,
+                width: DEFAULT_ARROW_WIDTH,
+                height: DEFAULT_ARROW_HEIGHT,
+                arrowEnd: true,
             }}
         />
     );

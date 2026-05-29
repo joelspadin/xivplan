@@ -1,5 +1,5 @@
 import { VirtualizerScrollView } from '@fluentui-contrib/react-virtualizer';
-import { makeStyles, mergeClasses } from '@fluentui/react-components';
+import { makeStyles, mergeClasses, useArrowNavigationGroup } from '@fluentui/react-components';
 import React from 'react';
 import { StatusIcon } from '../prefabs/StatusIcon';
 
@@ -26,6 +26,7 @@ export interface StatusGridProps {
 
 export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, items }) => {
     const classes = useStyles();
+    const attributes = useArrowNavigationGroup({ axis: 'grid-linear' });
 
     const rows = chunked(items, columns);
 
@@ -36,6 +37,7 @@ export const StatusGrid: React.FC<StatusGridProps> = ({ className, columns, item
             container={{
                 role: 'list',
                 className: mergeClasses(classes.container, className),
+                ...attributes,
             }}
         >
             {(index) => {

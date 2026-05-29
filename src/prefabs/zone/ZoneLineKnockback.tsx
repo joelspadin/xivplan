@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knockback.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -9,7 +9,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { ObjectType, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
@@ -20,22 +19,14 @@ import { getArrowStyle, getZoneStyle } from './style';
 const DEFAULT_SIZE = 150;
 
 export const ZoneLineKnockback: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name="Line knockback"
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.LineKnockback,
-                        width: DEFAULT_SIZE,
-                        height: DEFAULT_SIZE,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.LineKnockback,
+                width: DEFAULT_SIZE,
+                height: DEFAULT_SIZE,
             }}
         />
     );

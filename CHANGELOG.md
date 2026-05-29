@@ -2,6 +2,11 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## May 29
+
+- Made the objects and icons panels fully keyboard accessible. Objects can now be focused, and pressing `Enter` now creates the focused object in the center of the arena.
+- Double clicking an object now creates it in the center of the arena.
+
 ## May 23
 
 - Added numbered role icons, the pure/barrier healer icons, & the Beastmaster icon.

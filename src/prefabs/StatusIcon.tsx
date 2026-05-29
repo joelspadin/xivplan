@@ -2,7 +2,7 @@ import Konva from 'konva';
 import React, { useLayoutEffect, useState } from 'react';
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
@@ -10,7 +10,6 @@ import { LayerName } from '../render/layers';
 import { type IconObject, ObjectType } from '../scene';
 import { DEFAULT_IMAGE_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
-import { usePanelDrag } from '../usePanelDrag';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
@@ -131,7 +130,6 @@ export interface StatusIconProps {
 }
 
 export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxStacks, scale }) => {
-    const [, setDragObject] = usePanelDrag();
     const [image] = useImage(icon);
 
     scale = scale ?? 1;
@@ -146,25 +144,19 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxS
 
     return (
         <PrefabIcon
-            draggable
             name={name}
             title={getTitle(name, maxStacks)}
             icon={icon}
             width={width}
             height={height}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Icon,
-                        image: icon,
-                        name,
-                        width,
-                        height,
-                        iconId,
-                        maxStacks,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Icon,
+                image: icon,
+                name,
+                width,
+                height,
+                iconId,
+                maxStacks,
             }}
         />
     );

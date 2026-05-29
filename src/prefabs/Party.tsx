@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Group, Image, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { registerDropHandler } from '../DropHandler';
 import { getJob, getJobIconUrl, Job } from '../jobs';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -9,7 +9,6 @@ import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
 import { ObjectType, type PartyObject } from '../scene';
 import { DEFAULT_PARTY_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
-import { usePanelDrag } from '../usePanelDrag';
 import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { useHighlightProps, useOverrideProps } from './highlight';
@@ -25,23 +24,16 @@ function makeIcon(job: Job) {
     const { icon, name } = getJob(job);
 
     const Component: React.FC = () => {
-        const [, setDragObject] = usePanelDrag();
         const iconUrl = getJobIconUrl(icon);
 
         return (
             <PrefabIcon
-                draggable
                 name={name}
                 icon={iconUrl}
-                onDragStart={(e) => {
-                    setDragObject({
-                        object: {
-                            type: ObjectType.Party,
-                            image: iconUrl,
-                            name,
-                        },
-                        offset: getDragOffset(e),
-                    });
+                object={{
+                    type: ObjectType.Party,
+                    image: iconUrl,
+                    name,
                 }}
             />
         );

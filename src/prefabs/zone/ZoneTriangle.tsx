@@ -1,7 +1,7 @@
 import type { RectConfig } from 'konva/lib/shapes/Rect';
 import React from 'react';
 import { Group, Line } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/triangle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -9,7 +9,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { ObjectType, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
@@ -22,21 +21,14 @@ const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
 export const ZoneTriangle: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Triangle,
-                        width: DEFAULT_TRIANGLE_WIDTH,
-                        height: DEFAULT_TRIANGLE_HEIGHT,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Triangle,
+                width: DEFAULT_TRIANGLE_WIDTH,
+                height: DEFAULT_TRIANGLE_HEIGHT,
             }}
         />
     );

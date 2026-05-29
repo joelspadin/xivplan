@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_stack.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -9,7 +9,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { ObjectType, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
@@ -23,22 +22,14 @@ const DEFAULT_WIDTH = 100;
 const DEFAULT_HEIGHT = 150;
 
 export const ZoneLineStack: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.LineStack,
-                        width: DEFAULT_WIDTH,
-                        height: DEFAULT_HEIGHT,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.LineStack,
+                width: DEFAULT_WIDTH,
+                height: DEFAULT_HEIGHT,
             }}
         />
     );

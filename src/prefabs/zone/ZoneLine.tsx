@@ -13,7 +13,6 @@ import { type LineZone, ObjectType, type Scene } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { clampRotation, type Enum, mod360 } from '../../util';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../../vector';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
@@ -37,23 +36,19 @@ const DEFAULT_LENGTH = 250;
 const ICON_SIZE = 32;
 
 export const ZoneLine: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
+            object={{
+                type: ObjectType.Line,
+            }}
+            getOffset={(e) => {
                 const offset = getDragOffset(e);
-                setDragObject({
-                    object: {
-                        type: ObjectType.Line,
-                    },
-                    offset: {
-                        x: offset.x,
-                        y: offset.y - ICON_SIZE / 2,
-                    },
-                });
+                return {
+                    x: offset.x,
+                    y: offset.y - ICON_SIZE / 2,
+                };
             }}
         />
     );

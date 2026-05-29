@@ -13,6 +13,7 @@ export interface SectionProps extends HTMLAttributes<HTMLElement> {
 export const Section: React.FC<SectionProps> = ({ header, children, dividerClassName, contentClassName, ...props }) => {
     const controlClasses = useControlStyles();
     const classes = useStyles();
+    // const attributes = useArrowNavigationGroup({ axis: 'grid-linear' });
 
     return (
         <section {...props}>

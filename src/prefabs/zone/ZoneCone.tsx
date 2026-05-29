@@ -14,7 +14,6 @@ import { LayerName } from '../../render/layers';
 import { type ConeZone, ObjectType, type Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { type Enum, clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
 import {
@@ -38,24 +37,19 @@ const DEFAULT_ANGLE = 90;
 const ICON_SIZE = 32;
 
 export const ZoneCone: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
+            object={{
+                type: ObjectType.Cone,
+            }}
+            getOffset={(e) => {
                 const offset = getDragOffset(e);
-                setDragObject({
-                    object: {
-                        type: ObjectType.Cone,
-                    },
-                    offset: {
-                        x: offset.x,
-                        y: offset.y - ICON_SIZE / 2,
-                    },
-                });
+                return {
+                    x: offset.x,
+                    y: offset.y - ICON_SIZE / 2,
+                };
             }}
         />
     );

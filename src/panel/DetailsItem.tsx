@@ -11,7 +11,7 @@ import {
 import React, { type ReactNode } from 'react';
 import { useScene } from '../SceneProvider';
 import { EditMode } from '../editMode';
-import { PrefabIcon } from '../prefabs/PrefabIcon';
+import { PrefabIconBase } from '../prefabs/PrefabIcon';
 import type { SceneObject } from '../scene';
 import { useEditMode } from '../useEditMode';
 import { setOrOmit } from '../util';
@@ -30,8 +30,6 @@ export interface DetailsItemProps {
     size?: DetailsItemSize;
 }
 
-// TODO: only show hide button if hidden or hovered/selected
-
 export const DetailsItem: React.FC<DetailsItemProps> = ({
     object,
     icon,
@@ -49,7 +47,7 @@ export const DetailsItem: React.FC<DetailsItemProps> = ({
 
     return (
         <div className={mergeClasses(classes.wrapper, className)}>
-            <div>{icon && <PrefabIcon icon={icon} name={name} width={iconSize} height={iconSize} />}</div>
+            <div>{icon && <PrefabIconBase icon={icon} name={name} width={iconSize} height={iconSize} />}</div>
             {children ? children : <div className={classes.name}>{name}</div>}
             {showControls && (
                 <div className={classes.buttons}>
@@ -103,6 +101,7 @@ const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ objectId,
     const Icon = isHidden ? EyeOffIcon : EyeIcon;
     const tooltip = isHidden ? 'Show' : 'Hide';
 
+    // TODO: When trying to activate this button with the keyboard, the parent drag-and-drop wrapper steals the event.
     return (
         <Button
             appearance="transparent"
@@ -130,6 +129,7 @@ const DetailsItemDeleteButton: React.FC<DetailsItemDeleteButtonProps> = ({ objec
     const { dispatch } = useScene();
     const deleteObject = () => dispatch({ type: 'remove', ids: object.id });
 
+    // TODO: When trying to activate this button with the keyboard, the parent drag-and-drop wrapper steals the event.
     return (
         <Button
             appearance="transparent"

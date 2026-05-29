@@ -2,7 +2,7 @@ import Konva from 'konva';
 import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useRef } from 'react';
 import { Circle, Group } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/stack.svg?react';
 import { getCanvasCoord } from '../../coord';
@@ -14,7 +14,6 @@ import { LayerName } from '../../render/layers';
 import { ObjectType, type StackZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
@@ -29,20 +28,12 @@ const NAME = 'Stack';
 const DEFAULT_RADIUS = 75;
 
 export const ZoneStack: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Stack,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Stack,
             }}
         />
     );

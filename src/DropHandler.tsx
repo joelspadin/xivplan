@@ -26,7 +26,7 @@ export function getDropAction(object: PanelDragObject, position: Vector2d): Scen
     return undefined;
 }
 
-export function getDragOffset(e: React.DragEvent<HTMLElement>): Vector2d {
+export function getDragOffset(e: React.MouseEvent<HTMLElement>): Vector2d {
     const target = e.target as HTMLElement;
     const rect = target.getBoundingClientRect();
     const centerX = rect.x + rect.width / 2;

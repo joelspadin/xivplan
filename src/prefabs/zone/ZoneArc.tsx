@@ -14,7 +14,6 @@ import { LayerName } from '../../render/layers';
 import { type ArcZone, ObjectType, type Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { type Enum, clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { VEC_ZERO, distance, getIntersectionDistance, vecAtAngle, vecNormal } from '../../vector';
 import {
@@ -39,24 +38,19 @@ const DEFAULT_ANGLE = 90;
 const ICON_SIZE = 32;
 
 export const ZoneArc: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
+            object={{
+                type: ObjectType.Arc,
+            }}
+            getOffset={(e) => {
                 const offset = getDragOffset(e);
-                setDragObject({
-                    object: {
-                        type: ObjectType.Arc,
-                    },
-                    offset: {
-                        x: offset.x,
-                        y: offset.y - ICON_SIZE / 2,
-                    },
-                });
+                return {
+                    x: offset.x,
+                    y: offset.y - ICON_SIZE / 2,
+                };
             }}
         />
     );

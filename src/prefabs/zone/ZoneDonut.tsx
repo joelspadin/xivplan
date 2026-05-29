@@ -1,14 +1,13 @@
 import React from 'react';
 import { Circle, Ring } from 'react-konva';
 import Icon from '../../assets/zone/donut.svg?react';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { type DonutZone, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { PrefabIcon } from '../PrefabIcon';
@@ -21,20 +20,12 @@ const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
 
 export const ZoneDonut: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
-
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Donut,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Donut,
             }}
         />
     );

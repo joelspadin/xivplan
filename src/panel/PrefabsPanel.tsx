@@ -1,4 +1,4 @@
-import { Tab, TabList, Text } from '@fluentui/react-components';
+import { Tab, TabList, Text, useArrowNavigationGroup, useFocusableGroup } from '@fluentui/react-components';
 import React, { useState } from 'react';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
@@ -89,9 +89,11 @@ import { ObjectGroup, Section } from './Section';
 export const PrefabsPanel: React.FC = () => {
     const controlClasses = useControlStyles();
     const [tab, setTab] = useState<PartyTabs>('roles');
+    const attributes = useArrowNavigationGroup({ axis: 'grid-linear' });
+    const tabGroup = useFocusableGroup();
 
     return (
-        <div className={controlClasses.panel}>
+        <div className={controlClasses.panel} {...attributes}>
             <Section header="Zones">
                 <ObjectGroup>
                     <ZoneRightTriangle />
@@ -143,6 +145,7 @@ export const PrefabsPanel: React.FC = () => {
                         size="small"
                         selectedValue={tab}
                         onTabSelect={(ev, data) => setTab(data.value as PartyTabs)}
+                        {...tabGroup}
                     >
                         <Tab value="roles">Roles</Tab>
                         <Tab value="jobs">Jobs</Tab>

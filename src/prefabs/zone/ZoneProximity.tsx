@@ -2,7 +2,7 @@ import Color from 'colorjs.io';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/falloff.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -10,7 +10,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { type CircleZone, ObjectType } from '../../scene';
 import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -21,19 +20,12 @@ import { getArrowStyle, getShadowColor } from './style';
 const DEFAULT_RADIUS = 200;
 
 export const ZoneProximity: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name="Proximity AOE"
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Proximity,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Proximity,
             }}
         />
     );

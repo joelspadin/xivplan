@@ -2,7 +2,7 @@ import type { ShapeConfig } from 'konva/lib/Shape';
 import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle, Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/starburst.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
@@ -10,7 +10,6 @@ import { registerRenderer, type RendererProps } from '../../render/ObjectRegistr
 import { LayerName } from '../../render/layers';
 import { ObjectType, type StarburstZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
-import { usePanelDrag } from '../../usePanelDrag';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MIN_STARBURST_SPOKE_WIDTH } from '../bounds';
@@ -25,19 +24,12 @@ const DEFAULT_SPOKE_WIDTH = 40;
 const DEFAULT_SPOKE_COUNT = 8;
 
 export const ZoneStarburst: React.FC = () => {
-    const [, setDragObject] = usePanelDrag();
     return (
         <PrefabIcon
-            draggable
             name={NAME}
             icon={<Icon />}
-            onDragStart={(e) => {
-                setDragObject({
-                    object: {
-                        type: ObjectType.Starburst,
-                    },
-                    offset: getDragOffset(e),
-                });
+            object={{
+                type: ObjectType.Starburst,
             }}
         />
     );
