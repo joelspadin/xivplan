@@ -265,6 +265,7 @@ export type AttachmentSettings = {
 export function getDefaultAttachmentSettings(object: UnknownObject): AttachmentSettings {
     switch (object.type) {
         case ObjectType.Arc:
+        case ObjectType.Arrow:
         case ObjectType.Cone:
         case ObjectType.Donut:
         case ObjectType.Line:
