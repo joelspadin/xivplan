@@ -6,6 +6,7 @@ import { EditMode } from '../editMode';
 import {
     type SceneObject,
     type UnknownObject,
+    hasLineProperties,
     isArcZone,
     isArrow,
     isColored,
@@ -17,7 +18,6 @@ import {
     isIcon,
     isImageObject,
     isInnerRadiusObject,
-    isLineZone,
     isMarker,
     isMoveable,
     isNamed,
@@ -172,7 +172,7 @@ const Controls: React.FC = () => {
             {/* Position/Size */}
             <ControlCondition objects={objects} test={isMoveable} control={PositionControl} />
             <ControlCondition objects={objects} test={isResizable} control={SizeControl} />
-            <ControlCondition objects={objects} test={isLineZone} control={LineSizeControl} />
+            <ControlCondition objects={objects} test={hasLineProperties} control={LineSizeControl} />
 
             {/* TODO: change this to a two-column grid? */}
             <div className={mergeClasses(classes.row, classes.rightGap)}>

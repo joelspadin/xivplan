@@ -1,20 +1,25 @@
 import type { Vector2d } from 'konva/lib/types';
+import { getAbsoluteRotation, getBaseFacingRotation, rotateCoord } from '../coord';
 import {
+    type ArrowObject,
     type DrawObject,
     type EnemyObject,
     EnemyRingStyle,
     type ExaflareZone,
     type ImageObject,
     type MarkerObject,
+    type MoveableObject,
     type PartyObject,
     type PolygonOrientation,
     type PolygonZone,
+    type RotateableObject,
     type Scene,
     type SceneObject,
     type SceneStep,
     type StackZone,
     type TextObject,
     type TextStyle,
+    isArrow,
     isDrawObject,
     isEnemy,
     isExaflareZone,
@@ -26,22 +31,23 @@ import {
     isText,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
+import { omit } from '../util';
 
 export function upgradeScene(scene: Scene): Scene {
     return {
         ...scene,
-        steps: scene.steps.map(upgradeStep),
+        steps: scene.steps.map((step) => upgradeStep(scene, step)),
     };
 }
 
-function upgradeStep(step: SceneStep): SceneStep {
+function upgradeStep(scene: Scene, step: SceneStep): SceneStep {
     return {
         ...step,
-        objects: step.objects.map(upgradeObject),
+        objects: step.objects.map((obj) => upgradeObject(scene, obj)),
     };
 }
 
-function upgradeObject(object: SceneObject): SceneObject {
+function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
     if (isEnemy(object)) {
         object = upgradeEnemy(object);
     }
@@ -76,6 +82,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isStackZone(object)) {
         object = upgradeStackZone(object);
+    }
+
+    if (isArrow(object)) {
+        object = upgradeArrow(scene, object);
     }
 
     return object;
@@ -233,4 +243,47 @@ function upgradeStackZone(object: LegacyStackZone): StackZone {
         count: 1,
         ...object,
     };
+}
+
+// Arrow used to be a fancy ZoneRectangle, but is now a fancy ZoneLine
+type LegacyArrow = Omit<ArrowObject, 'length'> & {
+    height?: number;
+};
+
+function upgradeArrow(scene: Scene, object: LegacyArrow): ArrowObject {
+    if (object.height === undefined) {
+        return object as ArrowObject;
+    }
+    const absoluteRotation = getAbsoluteRotation(scene, object);
+    // The old arrow was scaled from the default-length arrow including "extent" measures that used
+    // the static stroke width, resulting in more deviation from the configured length the more it
+    // was different from the default length. However since we're changing how arrows render anyway,
+    // keeping the coordinates and length value intact is more likely to yield the desired (or
+    // most-expected) outcome for users.
+    // const length = object.height + ((object.height - DEFAULT_ARROW_LENGTH) / DEFAULT_ARROW_LENGTH) * ARROW_STROKE_WIDTH;
+    const length = object.height;
+    const offset = rotateCoord({ x: 0, y: -length / 2 }, absoluteRotation);
+
+    return {
+        // Omit the unused height to avoid doubled-up size property controls
+        ...omit(object, 'height'),
+
+        length,
+        x: object.x + offset.x,
+        y: object.y + offset.y,
+        rotation: updateRotation(scene, object, offset),
+    };
+}
+
+/**
+ * Calculate the new rotation an object should have to retain the same absolute rotation, after its origin
+ * has been moved by the given offset.
+ */
+function updateRotation(scene: Scene, object: MoveableObject & RotateableObject, offset: Vector2d): number {
+    if (object.facingId === undefined) {
+        return object.rotation;
+    }
+    const originalBaseRotation = getBaseFacingRotation(scene, object);
+    const newBaseRotation = getBaseFacingRotation(scene, { ...object, x: object.x + offset.x, y: object.y + offset.y });
+    return object.rotation + (originalBaseRotation - newBaseRotation);
 }

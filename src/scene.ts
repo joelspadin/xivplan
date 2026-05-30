@@ -199,7 +199,7 @@ export interface MarkerObject extends NamedObject, ImageObject, ColoredObject, B
 }
 export const isMarker = makeObjectTest<MarkerObject>(ObjectType.Marker);
 
-export interface ArrowObject extends ResizeableObject, ColoredObject, BaseObject {
+export interface ArrowObject extends LineProps, ColoredObject, BaseObject {
     readonly type: typeof ObjectType.Arrow;
     readonly arrowBegin?: boolean;
     readonly arrowEnd?: boolean;
@@ -293,6 +293,8 @@ export interface LineZone extends LineProps, BaseObject {
     readonly type: typeof ObjectType.Line;
 }
 export const isLineZone = makeObjectTest<LineZone>(ObjectType.Line);
+
+export const hasLineProperties = makeObjectTest<LineProps & UnknownObject>(ObjectType.Line, ObjectType.Arrow);
 
 export interface ConeProps extends RadiusObject, ColoredObject, HollowObject, RotateableObject {
     readonly coneAngle: number;
