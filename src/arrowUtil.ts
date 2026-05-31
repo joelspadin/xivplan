@@ -23,7 +23,7 @@ export function getArrowStrokeExtent(length: number, width: number, strokeWidth:
     }
 
     //           +
-    //          /| A
+    //          /| C
     //         / +
     //        / /|
     //       / / |
@@ -42,22 +42,21 @@ export function getArrowStrokeExtent(length: number, width: number, strokeWidth:
     // theta = atan(L / W)
     //
     // Then
-    // A = S / sin(theta)
-    // B = S / tan(theta)
+    // cos(theta) = S / C
+    // L / W = (C + L + S) / (A + B + W)
     //
-    // Top extension = A = S / sin(theta)
+    // Top extension = C = S / cos(theta)
     // Bottom extension = S
-    // Side extension = A + B = S * (1 / sin(theta) + 1 / tan(theta))
+    // Side extension = A + B = ((C + L + S) / (L/W)) - W
 
-    const halfStroke = strokeWidth / 2;
-    const tangent = length / (width / 2);
-    const cotangent = 1 / tangent;
-    const cosecant = 1 / Math.sin(Math.atan(tangent));
-
+    const halfStroke = strokeWidth / 2; // S
+    const halfWidth = width / 2; // W
+    const tangent = length / halfWidth;
+    const topExtent = halfStroke / Math.cos(Math.atan(tangent)); // C
     return {
-        top: halfStroke * cosecant,
+        top: topExtent,
         bottom: halfStroke,
-        side: halfStroke * (cotangent + cosecant),
+        side: (topExtent + length + halfStroke) / tangent - halfWidth, // A + B
     };
 }
 
