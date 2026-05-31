@@ -180,9 +180,10 @@ const POINTER_LENGTH = 10;
 const POINTER_WIDTH = 10;
 
 const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
+    const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
     const [start, end] = getTetherPoints(scene, startObject, endObject);
     const center = vecMult(vecAdd(start, end), 0.5);
-    const offset = vecMult(vecUnit(vecSub(end, start)), object.width * 1.25);
+    const offset = vecMult(vecUnit(vecSub(end, start)), extent.top);
 
     const c1 = vecSub(center, offset);
     const c2 = vecAdd(center, offset);
@@ -226,7 +227,7 @@ const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProp
     // Shrink the tether by the amount that the stroke extends past the tips of the arrows.
     const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
 
-    const [start, end] = getTetherPoints(scene, startObject, endObject, extent.top * 2);
+    const [start, end] = getTetherPoints(scene, startObject, endObject, extent.top);
 
     const arrowProps: ArrowConfig = {
         points: [start.x, start.y, end.x, end.y],
