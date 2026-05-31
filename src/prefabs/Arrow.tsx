@@ -1,7 +1,7 @@
 import { ArrowUpRegular } from '@fluentui/react-icons';
 import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { Arrow, Group, Rect } from 'react-konva';
-import { registerDropHandler } from '../DropHandler';
+import { getDragOffset, registerDropHandler } from '../DropHandler';
 import { getArrowPointerDimensions } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -12,6 +12,7 @@ import { COLOR_RED } from '../theme';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
+import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 import { useHighlightProps, useOverrideProps } from './highlight';
 import { createLineShapeContainer, type LineShapeRendererProps } from './lines';
 
@@ -38,6 +39,13 @@ export const MarkerArrow: React.FC = () => {
                 width: DEFAULT_ARROW_WIDTH,
                 length: DEFAULT_ARROW_LENGTH,
                 arrowEnd: true,
+            }}
+            getOffset={(e) => {
+                const offset = getDragOffset(e);
+                return {
+                    x: offset.x,
+                    y: offset.y - PREFAB_ICON_SIZE / 2,
+                };
             }}
         />
     );
