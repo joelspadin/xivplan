@@ -52,7 +52,7 @@ interface CircleRendererProps extends RendererProps<CircleZone> {
 const CircleRenderer: React.FC<CircleRendererProps> = ({ object, radius, isDragging }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.style, true);
 
     return (
         <>

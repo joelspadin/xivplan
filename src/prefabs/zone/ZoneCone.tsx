@@ -125,7 +125,7 @@ interface ConeRendererProps extends RendererProps<ConeZone> {
 const ConeRenderer: React.FC<ConeRendererProps> = ({ object, radius, rotation, coneAngle }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.style);
 
     return (
         <Group rotation={rotation - 90 - coneAngle / 2} {...overrideProps}>

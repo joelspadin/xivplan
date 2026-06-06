@@ -61,7 +61,7 @@ interface PolygonRendererProps extends RendererProps<PolygonZone> {
 const PolygonRenderer: React.FC<PolygonRendererProps> = ({ object, radius, rotation }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, radius * 2, object.style);
 
     const orientRotation = object.orient === 'side' ? 180 / object.sides : 0;
 

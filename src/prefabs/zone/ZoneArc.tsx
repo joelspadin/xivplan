@@ -140,7 +140,7 @@ const ArcRenderer: React.FC<ArcRendererProps> = ({
 }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, outerRadius * 2, object.hollow);
+    const style = getZoneStyle(object.color, object.opacity, outerRadius * 2, object.style);
 
     const highlightInnerRadius = Math.min(outerRadius, innerRadius);
     const highlightOuterRadius = Math.max(outerRadius, innerRadius);

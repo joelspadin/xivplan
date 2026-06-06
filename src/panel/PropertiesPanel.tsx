@@ -29,8 +29,8 @@ import {
     isStarburstZone,
     isTether,
     isText,
-    supportsHollow,
     supportsStackCount,
+    supportsZoneStyle,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
 import { useConnectionSelection } from '../useConnectionSelection';
@@ -46,7 +46,6 @@ import { EnemyRingControl } from './properties/EnemyControls';
 import { ExaflareLengthControl, ExaflareSpacingControl } from './properties/ExaflareControls';
 import { EyeInvertControl } from './properties/EyeControls';
 import { HideControl } from './properties/HideControl';
-import { HollowControl } from './properties/HollowControl';
 import { IconStacksControl, IconTimeControl } from './properties/IconControls';
 import { ImageControl } from './properties/ImageControl';
 import { LineSizeControl } from './properties/LineControls';
@@ -63,6 +62,7 @@ import { StackCountControl } from './properties/StackCountControl';
 import { StarburstSpokeCountControl, StarburstSpokeWidthControl } from './properties/StarburstControls';
 import { TetherTypeControl, TetherWidthControl } from './properties/TetherControls';
 import { TextLayoutControl, TextOutlineControl, TextValueControl } from './properties/TextControls';
+import { ZoneStyleControl } from './properties/ZoneStyleControl';
 
 export interface PropertiesPanelProps {
     className?: string;
@@ -157,7 +157,7 @@ const Controls: React.FC = () => {
             <div className={mergeClasses(classes.row, classes.alignTop)}>
                 <ControlCondition objects={objects} test={isColored} control={ColorControl} className={classes.grow} />
                 <ControlCondition objects={objects} test={isArrow} control={ArrowPointersControl} />
-                <ControlCondition objects={objects} test={supportsHollow} control={HollowControl} />
+                <ControlCondition objects={objects} test={supportsZoneStyle} control={ZoneStyleControl} />
                 <ControlCondition objects={objects} test={isMarker} control={MarkerShapeControl} />
             </div>
             <ControlCondition objects={objects} test={isColored} control={ColorSwatchControl} />

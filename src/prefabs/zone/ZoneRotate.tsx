@@ -57,6 +57,7 @@ registerDropHandler<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], (ob
             color: CLOCKWISE_COLOR,
             opacity: DEFAULT_OPACITY,
             radius: DEFAULT_RADIUS,
+            style: 'stroke' as const,
             ...object,
             ...position,
         },
@@ -81,7 +82,7 @@ const RotateRenderer: React.FC<RotateRendererProps> = ({ object, radius, groupRe
     const overrideProps = useOverrideProps(object);
     const isClockwise = object.type === ObjectType.RotateCW;
 
-    const style = getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.hollow);
+    const style = getZoneStyle(object.color, Math.max(50, object.opacity), radius * 2, object.style, true);
 
     const scale = radius * ARROW_SCALE;
 

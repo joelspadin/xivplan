@@ -24,6 +24,7 @@ import {
     isPolygonZone,
     isStackZone,
     isText,
+    supportsZoneStyle,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
 
@@ -39,6 +40,16 @@ function upgradeStep(step: SceneStep): SceneStep {
         ...step,
         objects: step.objects.map(upgradeObject),
     };
+}
+
+function upgradeZoneStyle(object: SceneObject): SceneObject {
+    const legacy = object as unknown as Record<string, unknown>;
+    if (!('hollow' in legacy)) return object;
+    const { hollow, ...rest } = legacy;
+    if (hollow === true && !rest['style']) {
+        return { ...rest, style: 'stroke' } as unknown as SceneObject;
+    }
+    return rest as unknown as SceneObject;
 }
 
 function upgradeObject(object: SceneObject): SceneObject {
@@ -76,6 +87,10 @@ function upgradeObject(object: SceneObject): SceneObject {
 
     if (isStackZone(object)) {
         object = upgradeStackZone(object);
+    }
+
+    if (supportsZoneStyle(object)) {
+        object = upgradeZoneStyle(object);
     }
 
     return object;
