@@ -13,6 +13,7 @@ import {
     StatusBind2,
     StatusBind3,
     StatusBlueCircleTarget,
+    StatusBlueCircleTargetOld,
     StatusCircle,
     StatusCounter1,
     StatusCounter2,
@@ -30,12 +31,16 @@ import {
     StatusEdenBlue,
     StatusEdenOrange,
     StatusEdenYellow,
-    StatusGreenCircleTarget,
+    StatusGreenCircleTargetOld,
     StatusGreenTarget,
+    StatusGreenTargetOld,
     StatusIgnore1,
     StatusIgnore2,
+    StatusPurpleTarget,
     StatusRedTarget,
+    StatusRedTargetOld,
     StatusSquare,
+    StatusTankbuster,
     StatusTriangle,
     StatusUltimateCircle,
     StatusUltimateCross,
@@ -43,7 +48,7 @@ import {
     StatusUltimateTriangle,
 } from '../prefabs/Status';
 import { useControlStyles } from '../useControlStyles';
-import { ObjectGroup, Section } from './Section';
+import { ObjectGroup, ObjectGroupGrid, Section } from './Section';
 
 export const StatusMarkers: React.FC = () => {
     const classes = useControlStyles();
@@ -91,31 +96,40 @@ export const StatusMarkers: React.FC = () => {
                 </ObjectGroup>
             </Section>
             <Section header="Target indicators">
-                <ObjectGroup>
+                <ObjectGroupGrid size={48}>
                     <StatusBlueCircleTarget />
-                    <StatusGreenCircleTarget />
+                    <StatusTankbuster />
+                </ObjectGroupGrid>
+                <ObjectGroupGrid size={40}>
                     <StatusCrosshairs />
-                    <StatusRedTarget />
                     <StatusGreenTarget />
-                </ObjectGroup>
-                <ObjectGroup>
+                    <StatusPurpleTarget />
+                    <StatusRedTarget />
+                </ObjectGroupGrid>
+                <ObjectGroupGrid size={40}>
+                    <StatusBlueCircleTargetOld />
+                    <StatusGreenCircleTargetOld />
+                    <StatusGreenTargetOld />
+                    <StatusRedTargetOld />
+                </ObjectGroupGrid>
+                <ObjectGroupGrid size={40}>
                     <StatusUltimateTriangle />
                     <StatusUltimateCircle />
                     <StatusUltimateCross />
                     <StatusUltimateSquare />
-                </ObjectGroup>
-                <ObjectGroup>
+                </ObjectGroupGrid>
+                <ObjectGroupGrid size={40}>
                     <StatusEdenYellow />
                     <StatusEdenOrange />
                     <StatusEdenBlue />
-                </ObjectGroup>
+                </ObjectGroupGrid>
             </Section>
             <Section header="Status effects">
-                <ObjectGroup>
+                <ObjectGroupGrid size={40}>
                     <StatusDice1 />
                     <StatusDice2 />
                     <StatusDice3 />
-                </ObjectGroup>
+                </ObjectGroupGrid>
             </Section>
         </div>
     );

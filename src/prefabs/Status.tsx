@@ -37,11 +37,17 @@ export const StatusCross = makeIcon('Cross', 'cross.png', 2);
 export const StatusSquare = makeIcon('Square', 'square.png', 2);
 export const StatusTriangle = makeIcon('Triangle', 'triangle.png', 2);
 
-export const StatusRedTarget = makeIcon('Target', 'red_target.png');
-export const StatusGreenTarget = makeIcon('Target', 'green_target.png');
-export const StatusBlueCircleTarget = makeIcon('Target', 'blue_circle.png');
-export const StatusGreenCircleTarget = makeIcon('Target', 'green_circle.png');
-export const StatusCrosshairs = makeIcon('Target', 'crosshairs.png');
+export const StatusRedTarget = makeIcon('Target', 'target_red.png', 2);
+export const StatusGreenTarget = makeIcon('Target', 'target_green.png', 2);
+export const StatusPurpleTarget = makeIcon('Target', 'target_purple.png', 2);
+export const StatusBlueCircleTarget = makeIcon('Target', 'target_blue.png', 2);
+export const StatusCrosshairs = makeIcon('Crosshairs', 'target_crosshairs.png', 2);
+export const StatusTankbuster = makeIcon('Tankbuster', 'tankbuster.png', 2);
+
+export const StatusRedTargetOld = makeIcon('Target', 'red_target.png');
+export const StatusGreenTargetOld = makeIcon('Target', 'green_target.png');
+export const StatusBlueCircleTargetOld = makeIcon('Target', 'blue_circle.png');
+export const StatusGreenCircleTargetOld = makeIcon('Target', 'green_circle.png');
 
 export const StatusDice1 = makeIcon('Acceleration Bomb 1', 'dice1.png');
 export const StatusDice2 = makeIcon('Acceleration Bomb 2', 'dice2.png');
@@ -51,7 +57,7 @@ export const StatusEdenYellow = makeIcon('Yellow marker', 'eden/yellow.png');
 export const StatusEdenOrange = makeIcon('Orange marker', 'eden/orange.png');
 export const StatusEdenBlue = makeIcon('Blue marker', 'eden/blue.png');
 
-export const StatusUltimateCircle = makeIcon('Circle', 'ultimate/circle.png');
-export const StatusUltimateCross = makeIcon('Cross', 'ultimate/cross.png');
-export const StatusUltimateSquare = makeIcon('Square', 'ultimate/square.png');
-export const StatusUltimateTriangle = makeIcon('Triangle', 'ultimate/triangle.png');
+export const StatusUltimateCircle = makeIcon('Circle', 'shape_circle.png', 2);
+export const StatusUltimateCross = makeIcon('Cross', 'shape_cross.png', 2);
+export const StatusUltimateSquare = makeIcon('Square', 'shape_square.png', 2);
+export const StatusUltimateTriangle = makeIcon('Triangle', 'shape_triangle.png', 2);
