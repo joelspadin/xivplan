@@ -1,6 +1,6 @@
 import { Divider, makeStyles, mergeClasses, Tab, TabList, typographyStyles } from '@fluentui/react-components';
+import { useMediaQuery } from '@react-hookz/web';
 import React, { useState } from 'react';
-import { useMedia } from 'react-use';
 import { TabActivity } from '../TabActivity';
 import { useControlStyles } from '../useControlStyles';
 import { PANEL_PADDING, PANEL_WIDTH, WIDE_PANEL_WIDTH } from './PanelStyles';
@@ -11,7 +11,7 @@ const PROPERTIES_TITLE = 'Properties';
 const OBJECTS_TITLE = 'Scene';
 
 export const DetailsPanel: React.FC = () => {
-    const isWide = useMedia(`(min-width: 1700px)`);
+    const isWide = useMediaQuery(`(min-width: 1700px)`);
 
     if (isWide) {
         return <WideDetailsPanel />;

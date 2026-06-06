@@ -17,9 +17,9 @@ import {
     useToastController,
 } from '@fluentui/react-components';
 import { ScreenshotRegular } from '@fluentui/react-icons';
+import { useLocalStorageValue, useTimeoutEffect } from '@react-hookz/web';
 import Konva from 'konva';
 import React, { use, useCallback, useEffect, useRef, useState } from 'react';
-import { useLocalStorage, useTimeoutFn } from 'react-use';
 import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { getCanvasSize } from './coord';
 import { MessageToast } from './MessageToast';
@@ -37,7 +37,7 @@ export type StepScreenshotButtonProps = SplitButtonProps;
 
 export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props) => {
     const classes = useStyles();
-    const [scale, setScale] = useLocalStorage('screenshotPixelRatio', 1);
+    const { value: scale, set: setScale } = useLocalStorageValue('screenshotPixelRatio', { defaultValue: 2 });
     const [takingScreenshot, setTakingScreenshot] = useState(false);
     const { dispatchToast } = useToastController();
     const cancelConnectionSelection = useCancelConnectionSelection();
@@ -72,12 +72,11 @@ export const StepScreenshotButton: React.FC<StepScreenshotButtonProps> = (props)
         dispatchToast(<MessageToast title="Error" message="Screenshot timed out" />, { intent: 'error' });
     };
 
-    const [, , startTimeout] = useTimeoutFn(handleTimeout, SCREENSHOT_TIMEOUT);
+    useTimeoutEffect(handleTimeout, takingScreenshot ? SCREENSHOT_TIMEOUT : undefined);
 
     const startScreenshot = () => {
         cancelConnectionSelection();
         setTakingScreenshot(true);
-        startTimeout();
     };
 
     useHotkeys(

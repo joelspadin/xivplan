@@ -38,8 +38,8 @@ import {
     MoreHorizontalRegular,
     bundleIcon,
 } from '@fluentui/react-icons';
-import React, { useState } from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, useMountEffect } from '@react-hookz/web';
+import React, { useEffect, useState } from 'react';
 import { getPlanFolder, showOpenPlanPicker, showPlanFolderPicker } from './filesystem';
 
 const MoreHorizontal = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
@@ -71,11 +71,13 @@ export interface FileBrowserProps {
 }
 
 export const FileBrowser: React.FC<FileBrowserProps> = (props) => {
-    const folder = useAsync(getPlanFolder);
+    const [folder, { execute }] = useAsync(getPlanFolder);
+
+    useMountEffect(execute);
 
     // Render an empty browser until folder.value resolves, then replace the
     // whole component to avoid needing to handl changes to "planFolder" inside.
-    return <FileBrowserInner key={folder.value ? 0 : 1} planFolder={folder.value} {...props} />;
+    return <FileBrowserInner key={folder.result ? 0 : 1} planFolder={folder.result} {...props} />;
 };
 
 interface FileBrowserInnerProps extends FileBrowserProps {
@@ -99,14 +101,22 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
 
     const parents = folder ? tree.getPath(folder).split('/') : [];
 
-    const items = useAsync(async () => {
-        return root && folder ? await tree.getEntries(root, folder) : [];
-    }, [tree, root, folder]);
+    const [items, { execute }] = useAsync(
+        async (
+            tree: DirectoryTree,
+            root: FileSystemDirectoryHandle | undefined,
+            folder: FileSystemDirectoryHandle | undefined,
+        ) => (root && folder ? await tree.getEntries(root, folder) : []),
+    );
+
+    useEffect(() => {
+        execute(tree, root, folder);
+    }, [execute, tree, root, folder]);
 
     // Fire selection changed event whenever the list of items changes, or the
     // selected item changes.
     const fireSelectionChanged = (selection: Set<TableRowId>) => {
-        const selectedFile = findSelectedFile(items.value ?? [], selection);
+        const selectedFile = findSelectedFile(items.result ?? [], selection);
         onSelectionChanged?.(selectedFile);
     };
 
@@ -177,7 +187,7 @@ const FileBrowserInner: React.FC<FileBrowserInnerProps> = ({
             <ParentBreadcrumb parents={parents} navigateToParent={navigateToParent} />
 
             <DataGrid
-                items={items.value ?? []}
+                items={items.result ?? []}
                 columns={columns}
                 getRowId={(item: Item) => item.handle.name}
                 size="small"

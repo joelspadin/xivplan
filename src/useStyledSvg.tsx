@@ -1,10 +1,11 @@
-import { useAsync } from 'react-use';
+import { useAsyncAbortable } from '@react-hookz/web';
+import { useEffect } from 'react';
 import { useImageTracked, useObjectLoading } from './useObjectLoading';
 
 type Status = 'loaded' | 'loading' | 'failed';
 
-async function getStyledSvg(url: string, style: string) {
-    const r = await fetch(url);
+async function getStyledSvg(signal: AbortSignal, url: string, style: string) {
+    const r = await fetch(url, { signal });
     const text = await r.text();
 
     const styled = text.replace(/(<svg(?:.|\n)*?>)/, `$1<style>${style}</style>`);
@@ -17,9 +18,13 @@ async function getStyledSvg(url: string, style: string) {
  * inserts the given text as a new stylesheet in the SVG image.
  */
 export function useStyledSvg(url: string, style = ''): [undefined | HTMLImageElement, Status] {
-    const result = useAsync(() => getStyledSvg(url, style), [url, style]);
+    const [result, { execute }] = useAsyncAbortable(getStyledSvg);
 
-    useObjectLoading(result.loading);
+    useEffect(() => {
+        execute(url, style);
+    }, [execute, url, style]);
 
-    return useImageTracked(result.value ?? '');
+    useObjectLoading(result.status === 'loading' || result.status === 'not-executed');
+
+    return useImageTracked(result.result ?? '');
 }

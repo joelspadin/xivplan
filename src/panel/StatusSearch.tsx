@@ -9,8 +9,8 @@ import {
     tokens,
     useToastController,
 } from '@fluentui/react-components';
-import { useState } from 'react';
-import { useAsync, useDebounce, useLocalStorage } from 'react-use';
+import { useAsync, useDebouncedState, useLocalStorageValue } from '@react-hookz/web';
+import { useEffect, useRef } from 'react';
 import { MessageToast } from '../MessageToast';
 import { PANEL_PADDING } from './PanelStyles';
 import { StatusGrid, type StatusItem } from './StatusGrid';
@@ -50,47 +50,44 @@ const LANGUAGE_OPTIONS: Record<Language, string> = {
     de: 'Deutch',
 };
 
+const DEFAULT_LANGUAGE: Language = 'en';
+
 export const StatusSearch: React.FC = () => {
     const classes = useStyles();
-    const [controller, setController] = useState<AbortController>();
-    const [debouncedFilter, setDebouncedFilter] = useState('');
-    const [language, setLanguage] = useLocalStorage<Language>('language', 'en');
+    const controllerRef = useRef<AbortController>(undefined);
+    const { value: language, set: setLanguage } = useLocalStorageValue<Language>('language');
     const { dispatchToast } = useToastController();
 
-    const [filter, setFilter] = useState('');
+    const [filter, setFilter] = useDebouncedState('', DEBOUNCE_TIME);
 
-    const handleFilterChanged = (text?: string) => {
-        controller?.abort();
-        setFilter(text ?? '');
-    };
-
-    useDebounce(() => setDebouncedFilter(filter), DEBOUNCE_TIME, [filter]);
-
-    const items = useAsync(async () => {
-        if (!debouncedFilter) {
+    const [items, { execute: fetchItems }] = useAsync(async (filter: string, language: Language) => {
+        if (!filter) {
             return [];
         }
 
         const controller = new AbortController();
-        setController(controller);
+        controllerRef.current = controller;
 
         try {
-            return fetchStatuses(debouncedFilter, controller.signal, language);
+            return fetchStatuses(filter, controller.signal, language);
         } catch (ex) {
             console.warn(ex);
             dispatchToast(<MessageToast title="Error" message={ex} />, { intent: 'error' });
             return [];
         }
-    }, [debouncedFilter, language, dispatchToast]);
+    });
+
+    useEffect(() => {
+        controllerRef.current?.abort();
+        fetchItems(filter, language ?? DEFAULT_LANGUAGE);
+    }, [fetchItems, filter, language]);
 
     return (
-        // TODO: replace with tabster? https://tabster.io/docs/mover
-        // <FocusZone direction={FocusZoneDirection.vertical}>
         <div className={classes.statusSearch}>
             <Field label="Language">
                 <Dropdown
                     appearance="underline"
-                    value={LANGUAGE_OPTIONS[language ?? 'en']}
+                    value={LANGUAGE_OPTIONS[language ?? DEFAULT_LANGUAGE]}
                     selectedOptions={[language as string]}
                     onOptionSelect={(ev, data) => setLanguage(data.optionValue as Language)}
                 >
@@ -106,22 +103,21 @@ export const StatusSearch: React.FC = () => {
                 appearance="underline"
                 type="text"
                 placeholder="Status name"
-                value={filter}
-                onChange={(ev, data) => handleFilterChanged(data.value)}
+                onChange={(ev, data) => setFilter(data.value)}
             />
 
-            {items.loading && <Spinner />}
+            {items.status === 'loading' && <Spinner />}
 
-            {!items.loading && items.value && items.value.length > 0 && (
-                <StatusGrid items={items.value} columns={6} className={classes.list} />
+            {items.status !== 'loading' && items.result && items.result.length > 0 && (
+                <StatusGrid items={items.result} columns={6} className={classes.list} />
             )}
 
-            {!items.loading && debouncedFilter && items.value?.length === 0 && <p>No results.</p>}
+            {items.status !== 'loading' && items.result?.length === 0 && <p>No results.</p>}
         </div>
     );
 };
 
-async function fetchStatuses(search: string, signal: AbortSignal, language: Language = 'en') {
+async function fetchStatuses(search: string, signal: AbortSignal, language: Language) {
     const items: StatusItem[] = [];
     let cursor: string | undefined = undefined;
 

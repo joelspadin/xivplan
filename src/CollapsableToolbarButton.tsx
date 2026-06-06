@@ -5,13 +5,13 @@ import {
     type ToolbarButtonProps,
     Tooltip,
 } from '@fluentui/react-components';
+import { useMediaQuery } from '@react-hookz/web';
 import React from 'react';
-import { useMedia } from 'react-use';
 
 const WIDE_MEDIA_QUERY = '(min-width: 1250px)';
 
 export const CollapsableToolbarButton: React.FC<ToolbarButtonProps> = ({ children, ...props }) => {
-    const isWide = useMedia(WIDE_MEDIA_QUERY);
+    const isWide = useMediaQuery(WIDE_MEDIA_QUERY);
 
     if (isWide) {
         return <ToolbarButton {...props}>{children}</ToolbarButton>;
@@ -25,7 +25,7 @@ export const CollapsableToolbarButton: React.FC<ToolbarButtonProps> = ({ childre
 };
 
 export const CollapsableSplitButton: React.FC<SplitButtonProps> = ({ children, ...props }) => {
-    const isWide = useMedia(WIDE_MEDIA_QUERY);
+    const isWide = useMediaQuery(WIDE_MEDIA_QUERY);
 
     if (isWide) {
         return <SplitButton {...props}>{children}</SplitButton>;

@@ -20,9 +20,9 @@ import {
     makeStyles,
 } from '@fluentui/react-components';
 import { DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import React, { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import { type HtmlPortalNode, InPortal } from 'react-reverse-portal';
-import { useAsync, useAsyncFn, useCounter } from 'react-use';
 import { type FileSource, useLoadScene, useScene, useSetSource } from '../SceneProvider';
 import { openFile, saveFile } from '../file';
 import { useCloseDialog } from '../useCloseDialog';
@@ -60,8 +60,8 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
         setSelectedRows(data.selectedItems);
     };
 
-    const [counter, { inc: reloadFiles }] = useCounter();
-    const files = useAsync(listLocalStorageFiles, [counter]);
+    const [files, { execute: reloadFiles }] = useAsync(listLocalStorageFiles);
+    useMountEffect(reloadFiles);
 
     const loadSceneFromStorage = async (event: MouseEvent<HTMLElement>, name: string) => {
         if (isDirty && !(await confirmUnsavedChanges())) {
@@ -131,7 +131,7 @@ export const OpenLocalStorage: React.FC<OpenLocalStorageProps> = ({ actions }) =
     return (
         <>
             <DataGrid
-                items={files.value ?? []}
+                items={files.result ?? []}
                 columns={columns}
                 getRowId={(item: LocalStorageFileInfo) => item.name}
                 size="small"
@@ -190,17 +190,19 @@ export interface SaveLocalStorageProps {
 export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) => {
     const setSavedState = useSetSavedState();
     const dismissDialog = useCloseDialog();
-    const files = useAsync(listLocalStorageFiles);
+
+    const [files, { execute: loadFiles }] = useAsync(listLocalStorageFiles);
+    useMountEffect(loadFiles);
 
     const setSource = useSetSource();
     const { canonicalScene, source } = useScene();
     const [name, setName] = useState(() => getInitialName(source));
     const [confirmOverwriteFile, renderModal] = useConfirmOverwriteFile();
 
-    const alreadyExists = files.value?.some((f) => f.name === name?.trim());
-    const canSave = !!name?.trim() && !files.loading;
+    const alreadyExists = files.result?.some((f) => f.name === name?.trim());
+    const canSave = !!name?.trim() && files.status !== 'loading';
 
-    const [, save] = useAsyncFn(async () => {
+    const save = async () => {
         if (!canSave) {
             return;
         }
@@ -216,7 +218,7 @@ export const SaveLocalStorage: React.FC<SaveLocalStorageProps> = ({ actions }) =
         setSource(source);
         setSavedState(canonicalScene);
         dismissDialog();
-    }, [canonicalScene, name, canSave, alreadyExists, dismissDialog, setSavedState, setSource, confirmOverwriteFile]);
+    };
 
     const onKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {

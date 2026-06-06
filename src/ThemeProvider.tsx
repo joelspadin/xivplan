@@ -1,12 +1,12 @@
 import { FluentProvider, makeStyles } from '@fluentui/react-components';
+import { useLocalStorageValue, useMediaQuery } from '@react-hookz/web';
 import React, { type PropsWithChildren, useEffect } from 'react';
-import { useLocalStorage, useMedia } from 'react-use';
 import { getFluentTheme, usePanelThemeStyle, useSceneThemeStyle } from './theme';
 import { DarkModeContext } from './ThemeContext';
 
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
-    const prefersDarkMode = useMedia('(prefers-color-scheme: dark)');
-    const [darkMode, setDarkMode] = useLocalStorage('darkmode', prefersDarkMode);
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const { value: darkMode, set: setDarkMode } = useLocalStorageValue('darkmode', { defaultValue: prefersDarkMode });
     const classes = useStyles();
 
     // TODO: remove this hack once https://github.com/microsoft/fluentui/issues/31211 is implemented.
