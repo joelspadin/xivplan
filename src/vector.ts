@@ -34,6 +34,10 @@ export function vecUnit(v: Vector2d): Vector2d {
 }
 
 export function vecAngle(v: Vector2d): number {
+    if (v.x === 0 && v.y === 0) {
+        return 0;
+    }
+
     return 90 - radtodeg(Math.atan2(v.y, v.x));
 }
 

@@ -49,9 +49,9 @@ export const StatusGreenTargetOld = makeIcon('Target', 'green_target.png');
 export const StatusBlueCircleTargetOld = makeIcon('Target', 'blue_circle.png');
 export const StatusGreenCircleTargetOld = makeIcon('Target', 'green_circle.png');
 
-export const StatusDice1 = makeIcon('Acceleration Bomb 1', 'dice1.png');
-export const StatusDice2 = makeIcon('Acceleration Bomb 2', 'dice2.png');
-export const StatusDice3 = makeIcon('Acceleration Bomb 3', 'dice3.png');
+export const StatusDice1 = makeIcon('Acceleration bomb 1', 'dice1.png');
+export const StatusDice2 = makeIcon('Acceleration bomb 2', 'dice2.png');
+export const StatusDice3 = makeIcon('Acceleration bomb 3', 'dice3.png');
 
 export const StatusEdenYellow = makeIcon('Yellow marker', 'eden/yellow.png');
 export const StatusEdenOrange = makeIcon('Orange marker', 'eden/orange.png');
