@@ -2,30 +2,35 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
-## May 29
+## June 6, 2026
+
+- Added some new target indicator icons.
+- Updated the share dialog to provide some other workarounds for very large share links.
+
+## May 29, 2026
 
 - Made the objects and icons panels fully keyboard accessible. Objects can now be focused, and pressing `Enter` now creates the focused object in the center of the arena.
 - Double clicking an object now creates it in the center of the arena.
 
-## May 23
+## May 23, 2026
 
 - Added numbered role icons, the pure/barrier healer icons, & the Beastmaster icon.
 - Split the icons UI into two tabs to support the new icons.
 
-## May 22
+## May 22, 2026
 
 - On supported browsers (just Chromium-based browsers I think), objects can now be copied from one tab and pasted into another.
 - Fixed an issue where eye objects didn't redraw when hiding/unhiding or toggling look toward/away.
 
-## May 18
+## May 18, 2026
 
 - Switched party icons to new images based on the strategy board.
 
-## April 6
+## April 6, 2026
 
 - Added another arena preset for Arcadion M12.
 
-## March 14
+## March 14, 2026
 
 - Added arena preset for Arcadion M12.
 
