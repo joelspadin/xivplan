@@ -26,7 +26,7 @@ const JOB_ICON_CHOICES = jobGrid([
     [Job.Monk, Job.Dragoon, Job.Samurai, Job.Reaper, Job.Ninja, Job.Viper],
     [Job.BlackMage, Job.Summoner, Job.RedMage, Job.Pictomancer],
     [Job.Bard, Job.Machinist, Job.Dancer],
-    [Job.BlueMage, Job.Beastmaster],
+    [Job.Beastmaster, Job.BlueMage],
 ]);
 
 type JobClickHandler = (name: string, image: string) => void;
