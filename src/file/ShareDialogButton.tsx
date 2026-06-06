@@ -59,9 +59,14 @@ const ShareDialogBody: React.FC = () => {
                     <Textarea value={url} contentEditable={false} appearance="filled-darker" rows={6} />
                 </Field>
                 <p>
-                    If your browser won&apos;t open the link, paste the text into{' '}
-                    <strong>Open &gt; Import Plan Link</strong> instead, or download the plan and drag and drop the file
-                    onto the page to open it.
+                    This link contains the entire plan data. If it is too large, you can download the plan as a file and
+                    share that instead. Drag and drop a .xivplan file onto the page to open it. If your browser supports
+                    installing this site as an app, you can also open the file directly.
+                </p>
+                <p>
+                    If you host a .xivplan file on a public web server, you can share a link to{' '}
+                    <a href="https://xivplan.netlify.app/?url=">https://xivplan.netlify.app/?url=</a> followed by the
+                    URL of the file.
                 </p>
             </DialogContent>
             <DialogActions fluid className={classes.actions}>
