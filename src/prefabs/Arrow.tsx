@@ -8,7 +8,7 @@ import { type ListComponentProps, registerListComponent } from '../panel/ListCom
 import { registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
 import { type ArrowObject, ObjectType } from '../scene';
-import { COLOR_RED } from '../theme';
+import { COLOR_WHITE } from '../theme';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
@@ -20,9 +20,9 @@ const NAME = 'Arrow';
 
 const DEFAULT_ARROW_WIDTH = 30;
 const MIN_ARROW_WIDTH = 20;
-const DEFAULT_ARROW_LENGTH = 150;
+const DEFAULT_ARROW_LENGTH = 100;
 const MIN_ARROW_LENGTH = 20;
-const DEFAULT_ARROW_COLOR = COLOR_RED;
+const DEFAULT_ARROW_COLOR = COLOR_WHITE;
 const DEFAULT_ARROW_OPACITY = 100;
 const ARROW_POINTER_BASE_ANGLE = 60;
 const ARROW_SHAFT_WIDTH_FRACTION = 0.2;
@@ -36,9 +36,6 @@ export const MarkerArrow: React.FC = () => {
             icon={<Icon />}
             object={{
                 type: ObjectType.Arrow,
-                width: DEFAULT_ARROW_WIDTH,
-                length: DEFAULT_ARROW_LENGTH,
-                arrowEnd: true,
             }}
             getOffset={(e) => {
                 const offset = getDragOffset(e);
@@ -60,6 +57,7 @@ registerDropHandler<ArrowObject>(ObjectType.Arrow, (object, position) => {
             opacity: DEFAULT_ARROW_OPACITY,
             width: DEFAULT_ARROW_WIDTH,
             length: DEFAULT_ARROW_LENGTH,
+            arrowEnd: true,
             rotation: 0,
             ...object,
             ...position,
