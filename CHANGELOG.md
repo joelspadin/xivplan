@@ -2,6 +2,12 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## June 7, 2026
+
+- Changed arrow, line stack, and line knock away objects to have an origin position, direction, length, and width instead of being a rectangle centered on the position.
+- Changed line stack, line knockback, and line knock away objects to have an option to show or hide the background fill.
+- Adjusted the default appearance for arrows from red to white and with shorter length.
+
 ## June 6, 2026
 
 - Added some new target indicator icons.
