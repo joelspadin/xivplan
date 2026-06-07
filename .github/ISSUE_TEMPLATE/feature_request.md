@@ -14,12 +14,11 @@ You may discuss the following content:
 
 - ✅ All content from Endwalker and earlier
 - ✅ All ultimates (if I do these, I usually don't do them blind)
-- ✅ Dawntrail extreme trials 1-4
+- ✅ Dawntrail extreme trials
+- ✅ Arcadion normal and savage
 - ✅ The Final Verse (Quantum)
-- ✅ Arcadion: Light-heavyweight Division normal and savage
-- ✅ Arcadion: Cruiserweight Division normal and savage
-- ✅ Arcadion: Heavyweight Division normal M1-4 and savage M1-3
 - ✅ Forked Tower
+- ✅ The Merchant's Tale normal and advanced only
 
 Please do not discuss the following content:
 
