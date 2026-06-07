@@ -15,7 +15,6 @@ export const DeferredTextarea: React.FC<DeferredTextareaProps> = ({ value, onBlu
     const handleBlur: BlurHandler = (ev) => {
         onBlur?.(ev);
         onCommit?.();
-        console.log('blur');
     };
 
     return <Textarea value={value ?? ''} onBlur={handleBlur} {...props} />;
