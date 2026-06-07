@@ -7,11 +7,15 @@ import {
     EnemyRingStyle,
     type ExaflareZone,
     type ImageObject,
+    type LineZone,
     type MarkerObject,
     type MoveableObject,
+    ObjectType,
     type PartyObject,
     type PolygonOrientation,
     type PolygonZone,
+    type RectangleZone,
+    type ResizeableObject,
     type RotateableObject,
     type Scene,
     type SceneObject,
@@ -24,6 +28,7 @@ import {
     isEnemy,
     isExaflareZone,
     isImageObject,
+    isLineZone,
     isMarker,
     isParty,
     isPolygonZone,
@@ -31,7 +36,8 @@ import {
     isText,
 } from '../scene';
 import { DEFAULT_ENEMY_OPACITY, DEFAULT_IMAGE_OPACITY, DEFAULT_MARKER_OPACITY, DEFAULT_PARTY_OPACITY } from '../theme';
-import { omit } from '../util';
+import { omit, setOrOmit } from '../util';
+import { vecAdd } from '../vector';
 
 export function upgradeScene(scene: Scene): Scene {
     return {
@@ -82,6 +88,10 @@ function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
 
     if (isStackZone(object)) {
         object = upgradeStackZone(object);
+    }
+
+    if (isLineZone(object)) {
+        object = upgradeLineZone(scene, object);
     }
 
     if (isArrow(object)) {
@@ -245,34 +255,42 @@ function upgradeStackZone(object: LegacyStackZone): StackZone {
     };
 }
 
-// Arrow used to be a fancy ZoneRectangle, but is now a fancy ZoneLine
-type LegacyArrow = Omit<ArrowObject, 'length'> & {
-    height?: number;
+// ObjectType.LineStack and ObjectType.LineKnockAway were changed from RectangleZone to LineZone
+// Added support for changing hollow property, with ObjectType.LineStack's original rendering appearing as hollow.
+type LegacyLineZone = Omit<RectangleZone, 'type'> & {
+    type: typeof ObjectType.LineStack | typeof ObjectType.LineKnockAway;
 };
 
-function upgradeArrow(scene: Scene, object: LegacyArrow): ArrowObject {
-    if (object.height === undefined) {
+function upgradeLineZone(scene: Scene, object: LineZone | LegacyLineZone): LineZone {
+    if (!('height' in object)) {
+        return object as LineZone;
+    }
+
+    const isHollow = object.type === ObjectType.LineStack;
+
+    return setOrOmit(convertResizableToLine(scene, object), 'hollow', isHollow);
+}
+
+// Arrow used to be a fancy ZoneRectangle, but is now a fancy ZoneLine
+type LegacyArrow = Omit<ArrowObject, 'length'> & {
+    height: number;
+};
+
+function upgradeArrow(scene: Scene, object: ArrowObject | LegacyArrow): ArrowObject {
+    if (!('height' in object)) {
         return object as ArrowObject;
     }
-    const absoluteRotation = getAbsoluteRotation(scene, object);
+
     // The old arrow was scaled from the default-length arrow including "extent" measures that used
     // the static stroke width, resulting in more deviation from the configured length the more it
     // was different from the default length. However since we're changing how arrows render anyway,
     // keeping the coordinates and length value intact is more likely to yield the desired (or
     // most-expected) outcome for users.
+
+    // Alternative, more accurate to original appearance calculation:
     // const length = object.height + ((object.height - DEFAULT_ARROW_LENGTH) / DEFAULT_ARROW_LENGTH) * ARROW_STROKE_WIDTH;
-    const length = object.height;
-    const offset = rotateCoord({ x: 0, y: -length / 2 }, absoluteRotation);
 
-    return {
-        // Omit the unused height to avoid doubled-up size property controls
-        ...omit(object, 'height'),
-
-        length,
-        x: object.x + offset.x,
-        y: object.y + offset.y,
-        rotation: updateRotation(scene, object, offset),
-    };
+    return convertResizableToLine(scene, object);
 }
 
 /**
@@ -286,4 +304,21 @@ function updateRotation(scene: Scene, object: MoveableObject & RotateableObject,
     const originalBaseRotation = getBaseFacingRotation(scene, object);
     const newBaseRotation = getBaseFacingRotation(scene, { ...object, x: object.x + offset.x, y: object.y + offset.y });
     return object.rotation + (originalBaseRotation - newBaseRotation);
+}
+
+function convertResizableToLine<T extends ResizeableObject>(
+    scene: Scene,
+    object: T,
+): Omit<T, 'height'> & { length: number } {
+    const absoluteRotation = getAbsoluteRotation(scene, object);
+    const length = object.height;
+    const offset = rotateCoord({ x: 0, y: -length / 2 }, absoluteRotation);
+    const pos = vecAdd(object, offset);
+
+    return {
+        ...omit(object, 'height'),
+        ...pos,
+        length,
+        rotation: updateRotation(scene, object, offset),
+    } as Omit<T, 'height'> & { length: number };
 }

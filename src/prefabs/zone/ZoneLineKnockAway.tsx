@@ -1,23 +1,26 @@
+import { useDebouncedEffect } from '@react-hookz/web';
 import Konva from 'konva';
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { Group, Rect } from 'react-konva';
+import type { RectConfig } from 'konva/lib/shapes/Rect';
+import React, { useRef, useState } from 'react';
+import { Circle, Group, Rect } from 'react-konva';
 import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knock_away.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
-import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
+import { registerRenderer } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type RectangleZone } from '../../scene';
-import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
+import { type LineZone, ObjectType } from '../../scene';
+import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
-import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
+import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { useHighlightProps, useOverrideProps } from '../highlight';
+import { createLineShapeContainer, type LineShapeRendererProps } from '../lines';
 import { type ChevronConfig, ChevronTail } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
-const DEFAULT_WIDTH = 80;
-const DEFAULT_HEIGHT = 250;
+const DEFAULT_WIDTH = 100;
+const DEFAULT_LENGTH = 250;
 
 export const ZoneLineKnockAway: React.FC = () => {
     return (
@@ -26,22 +29,20 @@ export const ZoneLineKnockAway: React.FC = () => {
             icon={<Icon />}
             object={{
                 type: ObjectType.LineKnockAway,
-                width: DEFAULT_WIDTH,
-                height: DEFAULT_HEIGHT,
             }}
         />
     );
 };
 
-registerDropHandler<RectangleZone>(ObjectType.LineKnockAway, (object, position) => {
+registerDropHandler<LineZone>(ObjectType.LineKnockAway, (object, position) => {
     return {
         type: 'add',
         object: {
-            type: ObjectType.Rect,
+            type: ObjectType.LineKnockAway,
             color: DEFAULT_AOE_COLOR,
             opacity: DEFAULT_AOE_OPACITY,
             width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
+            length: DEFAULT_LENGTH,
             rotation: 0,
             ...object,
             ...position,
@@ -51,91 +52,117 @@ registerDropHandler<RectangleZone>(ObjectType.LineKnockAway, (object, position) 
 
 const OFFSCREEN_X = -10000;
 const OFFSCREEN_Y = -10000;
+const MIN_REDRAW_MS = 20;
+const MAX_REDRAW_MS = 250;
 
 const ARROW_SIZE_FRAC = 0.3;
 const ARROW_HEIGHT_FRAC = 3 / 5;
 const ARROW_PAD = 0.08;
 
-const LineKnockAwayRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
+const LineKnockAwayRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
+    object,
+    length,
+    width,
+    rotation,
+    isDragging,
+}) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const [pattern, setPattern] = useState<HTMLImageElement>();
-    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height));
-    const { fill, ...stroke } = style;
+    const style = getZoneStyle(object.color, object.opacity, Math.min(width, length), object.hollow);
 
-    const patternWidth = object.width;
-    const patternHeight = object.width / 2;
+    const x = -width / 2;
+    const y = -length;
+    const highlightOffset = style.strokeWidth;
+    const highlightWidth = width + highlightOffset;
+    const highlightLength = length + highlightOffset;
 
-    const width = patternWidth * ARROW_SIZE_FRAC;
-    const height = width * ARROW_HEIGHT_FRAC;
+    const patternWidth = width;
+    const patternHeight = Math.round(width / 2);
+
+    const arrowWidth = patternWidth * ARROW_SIZE_FRAC;
+    const arrowHeight = arrowWidth * ARROW_HEIGHT_FRAC;
 
     const arrow: ChevronConfig = {
         ...getArrowStyle(object.color, object.opacity * 3),
-        width,
-        height,
+        opacity: (object.opacity * 2) / 100,
+        width: arrowWidth,
+        height: arrowHeight,
         y: patternHeight / 2,
         chevronAngle: 40,
-        opacity: (object.opacity * 2) / 100,
     };
+    const arrowX1 = patternWidth * ARROW_PAD;
+    const arrowX2 = patternWidth - arrowX1;
+
+    const backgroundProps: RectConfig = object.hollow ? { stroke: undefined } : {};
 
     const arrowRef = useRef<Konva.Group>(null);
-    useLayoutEffect(() => {
-        arrowRef.current?.toImage({
-            // This seems like a hack. Is there a better way to draw offscreen?
-            x: OFFSCREEN_X,
-            y: OFFSCREEN_Y,
-            width: patternWidth,
-            height: patternHeight,
-            callback: setPattern,
-        });
-    }, [patternWidth, patternHeight, object.color, object.opacity, arrowRef]);
+    const [pattern, setPattern] = useState<HTMLImageElement>();
+    const [cachedPatternWidth, setCachedPatternWidth] = useState<number>(patternWidth);
+    const [cachedPatternHeight, setCachedPatternHeight] = useState<number>(patternHeight);
 
-    const highlightOffset = style.strokeWidth;
-    const highlightWidth = object.width + highlightOffset;
-    const highlightHeight = object.height + highlightOffset;
+    useDebouncedEffect(
+        () => {
+            arrowRef.current?.toImage({
+                callback: (img) => {
+                    setPattern(img);
+                    setCachedPatternWidth(img.width);
+                    setCachedPatternHeight(img.height);
+                },
+            });
+        },
+        [patternWidth, patternHeight, object.color, object.opacity, arrowRef],
+        MIN_REDRAW_MS,
+        MAX_REDRAW_MS,
+    );
 
     return (
         <>
-            <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
-                {(groupProps) => (
-                    <Group {...groupProps} {...overrideProps}>
-                        {highlightProps && (
-                            <Rect
-                                offsetX={highlightOffset / 2}
-                                offsetY={highlightOffset / 2}
-                                width={highlightWidth}
-                                height={highlightHeight}
-                                {...highlightProps}
-                            />
-                        )}
-                        <HideGroup>
-                            <Rect
-                                width={object.width}
-                                height={object.height}
-                                fillPatternImage={pattern}
-                                fillPatternOffsetX={patternWidth / 2}
-                                fillPatternOffsetY={patternHeight / 2}
-                                fillPatternX={object.width / 2}
-                                fillPatternY={object.height / 2}
-                                fillPatternRepeat="repeat-y"
-                                {...stroke}
-                            />
-                        </HideGroup>
-                    </Group>
+            <Group rotation={rotation} {...overrideProps}>
+                {highlightProps && (
+                    <Rect
+                        x={x}
+                        y={y}
+                        width={highlightWidth}
+                        height={highlightLength}
+                        offsetX={highlightOffset / 2}
+                        offsetY={highlightOffset / 2}
+                        {...highlightProps}
+                    />
                 )}
-            </ResizeableObjectContainer>
+                <HideGroup>
+                    <Rect x={x} y={y} width={width} height={length} {...style} {...backgroundProps} />
+                    <Rect
+                        x={x}
+                        y={y}
+                        width={width}
+                        height={length}
+                        fillPatternImage={pattern}
+                        fillPatternOffsetX={cachedPatternWidth / 2}
+                        fillPatternOffsetY={0}
+                        fillPatternX={width / 2}
+                        fillPatternY={length}
+                        fillPatternScaleX={patternWidth / cachedPatternWidth}
+                        fillPatternScaleY={patternHeight / cachedPatternHeight}
+                        fillPatternRepeat="repeat-y"
+                    />
+                    {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
+                </HideGroup>
+            </Group>
+
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
-                <Rect width={patternWidth} height={patternHeight} fill={fill} />
-                <ChevronTail x={patternWidth * ARROW_PAD} rotation={-90} {...arrow} />
-                <ChevronTail x={patternWidth * (1 - ARROW_PAD)} rotation={90} {...arrow} />
+                <Rect width={patternWidth} height={patternHeight} />
+                <ChevronTail x={arrowX1} rotation={-90} {...arrow} />
+                <ChevronTail x={arrowX2} rotation={90} {...arrow} />
             </Group>
         </>
     );
 };
 
-registerRenderer<RectangleZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayRenderer);
+const LineKnockAwayContainer = createLineShapeContainer(LineKnockAwayRenderer, MIN_LINE_WIDTH, MIN_LINE_LENGTH);
 
-const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ object, ...props }) => {
+registerRenderer<LineZone>(ObjectType.LineKnockAway, LayerName.Ground, LineKnockAwayContainer);
+
+const LineKnockAwayDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
@@ -146,4 +173,4 @@ const LineKnockAwayDetails: React.FC<ListComponentProps<RectangleZone>> = ({ obj
     );
 };
 
-registerListComponent<RectangleZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);
+registerListComponent<LineZone>(ObjectType.LineKnockAway, LineKnockAwayDetails);
