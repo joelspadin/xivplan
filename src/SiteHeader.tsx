@@ -64,21 +64,13 @@ const useStyles = makeStyles({
 
 export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, ...props }) => {
     const classes = useStyles();
-    const { source } = useScene();
     const toolbarNode = use(ToolbarContext);
     const [, setHelpOpen] = use(HelpContext);
     const [darkMode, setDarkMode] = use(DarkModeContext);
 
-    const titleSize = source ? 400 : 500;
-
     return (
         <header className={mergeClasses(classes.root, className)} {...props}>
-            <div className={classes.title}>
-                <Text size={titleSize} weight="semibold">
-                    XIVPlan
-                </Text>
-                {source && <SourceIndicator source={source} />}
-            </div>
+            <TitleArea className={classes.title} />
             <div className={classes.commandBar}>
                 <OutPortal node={toolbarNode} />
             </div>
@@ -101,6 +93,25 @@ export const SiteHeader: React.FC<HTMLAttributes<HTMLElement>> = ({ className, .
                 </Button>
             </div>
         </header>
+    );
+};
+
+interface TitleAreaProps {
+    className?: string;
+}
+
+const TitleArea: React.FC<TitleAreaProps> = ({ className }) => {
+    const { source } = useScene();
+
+    const titleSize = source ? 400 : 500;
+
+    return (
+        <div className={className}>
+            <Text size={titleSize} weight="semibold">
+                XIVPlan
+            </Text>
+            {source && <SourceIndicator source={source} />}
+        </div>
     );
 };
 
