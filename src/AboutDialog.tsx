@@ -54,7 +54,10 @@ const AboutDialogBody: React.FC = () => {
                 </p>
                 <h2>Credits</h2>
                 <p>XIVPlan is © 2021 Joel Spadin and contributors.</p>
-                <p>Job, role, waymark, and enemy icons are © SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+                <p>
+                    Site icon, job, role, marker, status, and enemy images are © SQUARE ENIX CO., LTD. All Rights
+                    Reserved.
+                </p>
                 <p>
                     <ExternalLink href="https://magentalava.gumroad.com/l/limitcuticons">
                         Limit cut counter icons
