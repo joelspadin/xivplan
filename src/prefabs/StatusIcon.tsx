@@ -103,7 +103,7 @@ const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
                             {...highlightProps}
                         />
                     )}
-                    <HideGroup>
+                    <HideGroup opacity={object.opacity / 100}>
                         <KonvaImage image={image} width={object.width} height={object.height} />
                         <IconTimer time={object.time ?? 0} width={object.width} height={object.height} />
                     </HideGroup>
