@@ -131,7 +131,7 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
     });
 
     const applyPreset = (preset: ArenaPreset) => {
-        dispatch({ type: 'arena', value: preset.arena });
+        dispatch({ type: 'setArena', value: preset.arena });
         setOpen(false);
     };
 

@@ -24,9 +24,9 @@ export const ArenaShapeEdit: React.FC = () => {
     const { scene, dispatch } = useScene();
     const { shape, width, height, padding } = scene.arena;
 
-    const onWidthChanged = (value: number) => dispatch({ type: 'arenaWidth', value });
-    const onHeightChanged = (value: number) => dispatch({ type: 'arenaHeight', value });
-    const onPaddingChanged = (value: number) => dispatch({ type: 'arenaPadding', value });
+    const onWidthChanged = (value: number) => dispatch({ type: 'updateArena', value: { width: value } });
+    const onHeightChanged = (value: number) => dispatch({ type: 'updateArena', value: { height: value } });
+    const onPaddingChanged = (value: number) => dispatch({ type: 'updateArena', value: { padding: value } });
 
     return (
         <div className={classes.column}>
@@ -35,7 +35,9 @@ export const ArenaShapeEdit: React.FC = () => {
                     <SegmentedGroup
                         name="arena-shape"
                         value={shape}
-                        onChange={(ev, data) => dispatch({ type: 'arenaShape', value: data.value as ArenaShape })}
+                        onChange={(ev, data) =>
+                            dispatch({ type: 'updateArena', value: { shape: data.value as ArenaShape } })
+                        }
                     >
                         <Segment value={ArenaShape.None} icon={<BorderNoneIcon />} title="None" />
                         <Segment value={ArenaShape.Circle} icon={<CircleIcon />} title="Circle" />

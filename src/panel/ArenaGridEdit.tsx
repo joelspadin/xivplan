@@ -84,7 +84,7 @@ export const ArenaGridEdit: React.FC = () => {
     const grid = scene.arena.grid;
 
     const setGrid = (grid: Grid, transient = false) => {
-        dispatch({ type: 'arenaGrid', value: grid, transient });
+        dispatch({ type: 'updateArena', value: { grid }, transient });
     };
 
     const commit = () => dispatch({ type: 'commit' });

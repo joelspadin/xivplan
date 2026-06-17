@@ -11,9 +11,7 @@ import { getAbsolutePosition, getAbsoluteRotation } from './coord';
 import { copyObjects } from './copy';
 import {
     type Arena,
-    ArenaShape,
     DEFAULT_SCENE,
-    type Grid,
     isMoveable,
     isRotateable,
     isTether,
@@ -23,7 +21,6 @@ import {
     type SceneObjectWithoutId,
     type SceneStep,
     type Tether,
-    type Ticks,
 } from './scene';
 import { createUndoContext } from './undo/undoContext';
 import type { StateActionBase, UndoRedoAction } from './undo/undoReducer';
@@ -31,60 +28,16 @@ import { useSetSavedState } from './useIsDirty';
 import { asArray, clamp, omit } from './util';
 
 export interface SetArenaAction {
-    type: 'arena';
+    type: 'setArena';
     value: Arena;
 }
 
-export interface SetArenaShapeAction {
-    type: 'arenaShape';
-    value: ArenaShape;
+export interface UpdateArenaAction {
+    type: 'updateArena';
+    value: Partial<Arena>;
 }
 
-export interface SetArenaWidthAction {
-    type: 'arenaWidth';
-    value: number;
-}
-
-export interface SetArenaHeightAction {
-    type: 'arenaHeight';
-    value: number;
-}
-
-export interface SetArenaPaddingAction {
-    type: 'arenaPadding';
-    value: number;
-}
-
-export interface SetArenaGridAction {
-    type: 'arenaGrid';
-    value: Grid;
-}
-
-export interface SetArenaTicksActions {
-    type: 'arenaTicks';
-    value: Ticks;
-}
-
-export interface SetArenaBackgroundAction {
-    type: 'arenaBackground';
-    value: string | undefined;
-}
-
-export interface SetArenaBackgroundOpacityAction {
-    type: 'arenaBackgroundOpacity';
-    value: number;
-}
-
-export type ArenaAction =
-    | SetArenaAction
-    | SetArenaShapeAction
-    | SetArenaWidthAction
-    | SetArenaHeightAction
-    | SetArenaPaddingAction
-    | SetArenaGridAction
-    | SetArenaTicksActions
-    | SetArenaBackgroundAction
-    | SetArenaBackgroundOpacityAction;
+export type ArenaAction = SetArenaAction | UpdateArenaAction;
 
 /**
  * Action which replaces existing objects with the given ones. Objects to replace are matched by ID.
@@ -632,9 +585,16 @@ function updateObjects(state: Readonly<EditorState>, values: readonly SceneObjec
     return updateCurrentStep(state, { objects });
 }
 
-function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {
+function setArena(state: Readonly<EditorState>, arena: Arena): EditorState {
     return {
         scene: { ...state.scene, arena },
+        currentStep: state.currentStep,
+    };
+}
+
+function updateArena(state: Readonly<EditorState>, arena: Partial<Arena>): EditorState {
+    return {
+        scene: { ...state.scene, arena: { ...state.scene.arena, ...arena } },
         currentStep: state.currentStep,
     };
 }
@@ -665,32 +625,11 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
         case 'reoderSteps':
             return reoderSteps(state, action.order);
 
-        case 'arena':
+        case 'setArena':
+            return setArena(state, action.value);
+
+        case 'updateArena':
             return updateArena(state, action.value);
-
-        case 'arenaShape':
-            return updateArena(state, { ...state.scene.arena, shape: action.value });
-
-        case 'arenaWidth':
-            return updateArena(state, { ...state.scene.arena, width: action.value });
-
-        case 'arenaHeight':
-            return updateArena(state, { ...state.scene.arena, height: action.value });
-
-        case 'arenaPadding':
-            return updateArena(state, { ...state.scene.arena, padding: action.value });
-
-        case 'arenaGrid':
-            return updateArena(state, { ...state.scene.arena, grid: action.value });
-
-        case 'arenaTicks':
-            return updateArena(state, { ...state.scene.arena, ticks: action.value });
-
-        case 'arenaBackground':
-            return updateArena(state, { ...state.scene.arena, backgroundImage: action.value });
-
-        case 'arenaBackgroundOpacity':
-            return updateArena(state, { ...state.scene.arena, backgroundOpacity: action.value });
 
         case 'add':
             return addObjects(state, action.object);
