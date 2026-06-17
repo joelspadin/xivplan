@@ -26,7 +26,7 @@ export const ArenaTickEdit: React.FC = () => {
     const ticks = scene.arena.ticks;
 
     const setTicks = (ticks: Ticks) => {
-        dispatch({ type: 'arenaTicks', value: ticks });
+        dispatch({ type: 'updateArena', value: { ticks } });
     };
 
     const onTypeChange = (option?: TickType) => {

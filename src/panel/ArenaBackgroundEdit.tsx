@@ -12,7 +12,7 @@ export const ArenaBackgroundEdit: React.FC = () => {
                 <DeferredInput
                     value={scene.arena.backgroundImage}
                     onChange={(ev, data) => {
-                        dispatch({ type: 'arenaBackground', value: data.value, transient: true });
+                        dispatch({ type: 'updateArena', value: { backgroundImage: data.value }, transient: true });
                     }}
                     onCommit={() => dispatch({ type: 'commit' })}
                 />
@@ -22,7 +22,11 @@ export const ArenaBackgroundEdit: React.FC = () => {
                     label="Background image opacity"
                     value={scene.arena.backgroundOpacity ?? 100}
                     onChange={(ev, data) => {
-                        dispatch({ type: 'arenaBackgroundOpacity', value: data.value, transient: data.transient });
+                        dispatch({
+                            type: 'updateArena',
+                            value: { backgroundOpacity: data.value },
+                            transient: data.transient,
+                        });
                     }}
                     onCommit={() => dispatch({ type: 'commit' })}
                 />
