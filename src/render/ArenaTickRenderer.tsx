@@ -1,7 +1,7 @@
 import React from 'react';
 import { Rect } from 'react-konva';
 import { getCanvasArenaEllipse, getCanvasArenaRect } from '../coord';
-import { type RadialTicks, type RectangularTicks, type Scene, type Ticks, TickType } from '../scene';
+import { type Arena, type RadialTicks, type RectangularTicks, type Scene, type Ticks, TickType } from '../scene';
 import { useScene } from '../SceneProvider';
 import { useSceneTheme } from '../theme';
 import { degtorad, getLinearGridDivs } from '../util';
@@ -11,31 +11,32 @@ const MINOR_TICK_SIZE = 5;
 const TICK_MARGIN = 2;
 
 export const ArenaTickRenderer: React.FC = () => {
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    if (!scene.arena.ticks) {
+    if (!arena.ticks) {
         return null;
     }
 
-    switch (scene.arena.ticks.type) {
+    switch (arena.ticks.type) {
         case TickType.None:
             return null;
 
         case TickType.Rectangular:
-            return <RectangularTickRenderer scene={scene} ticks={scene.arena.ticks} />;
+            return <RectangularTickRenderer scene={scene} arena={arena} ticks={arena.ticks} />;
 
         case TickType.Radial:
-            return <RadialTickRenderer scene={scene} ticks={scene.arena.ticks} />;
+            return <RadialTickRenderer scene={scene} arena={arena} ticks={arena.ticks} />;
     }
 };
 
 interface TickRendererProps<T extends Ticks> {
     scene: Scene;
+    arena: Arena;
     ticks: T;
 }
 
-const RectangularTickRenderer: React.FC<TickRendererProps<RectangularTicks>> = ({ scene, ticks }) => {
-    const rect = getCanvasArenaRect(scene);
+const RectangularTickRenderer: React.FC<TickRendererProps<RectangularTicks>> = ({ scene, arena, ticks }) => {
+    const rect = getCanvasArenaRect(scene, arena);
 
     const minorProps = getRectangularTicks(ticks, rect, MINOR_TICK_SIZE);
     const majorProps = getCornerTicks(rect, MINOR_TICK_SIZE);
@@ -52,8 +53,8 @@ const RectangularTickRenderer: React.FC<TickRendererProps<RectangularTicks>> = (
     );
 };
 
-const RadialTickRenderer: React.FC<TickRendererProps<RadialTicks>> = ({ scene, ticks }) => {
-    const ellipse = getCanvasArenaEllipse(scene);
+const RadialTickRenderer: React.FC<TickRendererProps<RadialTicks>> = ({ scene, arena, ticks }) => {
+    const ellipse = getCanvasArenaEllipse(scene, arena);
 
     const majorAngles = getRadialAngles(ticks.majorCount, ticks.majorStart);
     const minorAngles = getRadialAngles(ticks.minorCount, ticks.minorStart).filter(

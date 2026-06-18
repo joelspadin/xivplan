@@ -21,8 +21,8 @@ const BorderNoneIcon = bundleIcon(BorderNoneFilled, BorderNoneRegular);
 
 export const ArenaShapeEdit: React.FC = () => {
     const classes = useControlStyles();
-    const { scene, dispatch } = useScene();
-    const { shape, width, height, padding } = scene.arena;
+    const { arena, dispatch } = useScene();
+    const { shape, width, height, padding } = arena;
 
     const onWidthChanged = (value: number) => dispatch({ type: 'updateArena', value: { width: value } });
     const onHeightChanged = (value: number) => dispatch({ type: 'updateArena', value: { height: value } });

@@ -16,6 +16,7 @@ import {
     NavItem,
     NavSectionHeader,
     shorthands,
+    Switch,
     tokens,
     typographyStyles,
     useArrowNavigationGroup,
@@ -77,9 +78,28 @@ export const ArenaPanel: React.FC = () => {
             <ArenaGridEdit />
             <ArenaTickEdit />
             <ArenaBackgroundEdit />
+            <CustomArenaToggle />
             <Divider />
             <SelectPresetButton />
         </div>
+    );
+};
+
+const CustomArenaToggle: React.FC = () => {
+    const { scene, stepIndex, dispatch } = useScene();
+    const hasCustomArena = scene.steps[stepIndex]?.customArena !== undefined;
+
+    const toggleCustomArena = () => {
+        dispatch({ type: 'customArena', stepIndex, enable: !hasCustomArena });
+    };
+
+    return (
+        <Switch
+            size="small"
+            label={'Use a custom arena on this step'}
+            onChange={toggleCustomArena}
+            checked={hasCustomArena}
+        />
     );
 };
 
@@ -289,6 +309,7 @@ const PresetItem: React.FC<PresetItemProps> = ({
                 <div className={mergeClasses(classes.arenaPreview, isSpoiler && classes.blur)}>
                     <ScenePreview
                         scene={scene}
+                        arena={preset.arena}
                         width={PREVIEW_SIZE}
                         height={PREVIEW_SIZE}
                         backgroundColor="transparent"

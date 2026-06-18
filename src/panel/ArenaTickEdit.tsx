@@ -22,8 +22,8 @@ const SquareIcon = bundleIcon(SquareFilled, SquareRegular);
 
 export const ArenaTickEdit: React.FC = () => {
     const classes = useControlStyles();
-    const { scene, dispatch } = useScene();
-    const ticks = scene.arena.ticks;
+    const { arena, dispatch } = useScene();
+    const ticks = arena.ticks;
 
     const setTicks = (ticks: Ticks) => {
         dispatch({ type: 'updateArena', value: { ticks } });

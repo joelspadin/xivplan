@@ -5,8 +5,8 @@ import { getCanvasCoord, getSceneCoord, makeRelative } from '../coord';
 import { CursorGroup } from '../CursorGroup';
 import { EditMode } from '../editMode';
 import { moveObjectsBy } from '../groupOperations';
-import { isMoveable, type MoveableObject, type Scene, type SceneStep, type UnknownObject } from '../scene';
-import { type SceneAction, useScene } from '../SceneProvider';
+import { isMoveable, type Arena, type MoveableObject, type Scene, type SceneStep, type UnknownObject } from '../scene';
+import { useScene, type SceneAction } from '../SceneProvider';
 import {
     getNewDragSelection,
     getSelectedObjects,
@@ -28,10 +28,10 @@ export interface DraggableObjectProps {
 
 export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, children }) => {
     const [editMode] = useEditMode();
-    const { scene, step, dispatch } = useScene();
+    const { scene, step, arena, dispatch } = useScene();
     const [selection, setSelection] = useSelection();
     const [dragSelection, setDragSelection] = useDragSelection();
-    const center = getCanvasCoord(scene, object);
+    const center = getCanvasCoord(scene, arena, object);
 
     const isDraggable = !object.pinned && editMode === EditMode.Normal;
 
@@ -52,15 +52,15 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
 
         setDragSelection(newSelection);
 
-        updatePosition(scene, step, object, dragSelection, e, dispatch);
+        updatePosition(scene, arena, step, object, dragSelection, e, dispatch);
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
-        updatePosition(scene, step, object, dragSelection, e, dispatch);
+        updatePosition(scene, arena, step, object, dragSelection, e, dispatch);
     };
 
     const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
-        updatePosition(scene, step, object, dragSelection, e, dispatch);
+        updatePosition(scene, arena, step, object, dragSelection, e, dispatch);
         dispatch({ type: 'commit' });
 
         setDragSelection(selectNone());
@@ -90,6 +90,7 @@ export const DraggableObject: React.FC<DraggableObjectProps> = ({ object, childr
 
 function updatePosition(
     scene: Scene,
+    arena: Arena,
     step: SceneStep,
     targetObject: MoveableObject & UnknownObject,
     dragSelection: SceneSelection,
@@ -99,7 +100,7 @@ function updatePosition(
     // Konva automatically moves the object to e.target.position() in canvas
     // coordinates. Subtracting the object's original position gives the offset
     // that needs to be applied to all objects being dragged.
-    const pos = makeRelative(scene, getSceneCoord(scene, e.target.position()), targetObject.positionParentId);
+    const pos = makeRelative(scene, getSceneCoord(scene, arena, e.target.position()), targetObject.positionParentId);
     const offset = vecSub(pos, targetObject);
 
     if (offset.x === 0 && offset.y === 0) {

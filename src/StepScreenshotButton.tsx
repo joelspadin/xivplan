@@ -151,9 +151,10 @@ interface ScreenshotComponentProps {
 
 const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScreenshotDone }) => {
     const { isLoading } = use(ObjectLoadingContext);
-    const { scene, stepIndex } = useScene();
+    const { scene, arena, stepIndex } = useScene();
     const [frozenScene] = useState(scene);
     const [frozenStepIndex] = useState(stepIndex);
+    const [frozenArena] = useState(arena);
     const ref = useRef<Konva.Stage>(null);
 
     // https://github.com/reactwg/react-compiler/discussions/18
@@ -192,12 +193,13 @@ const ScreenshotComponent: React.FC<ScreenshotComponentProps> = ({ scale, onScre
         }
     }, [firstRender, isLoading, takeScreenshot]);
 
-    const size = getCanvasSize(frozenScene);
+    const size = getCanvasSize(frozenArena);
 
     return (
         <ScenePreview
             ref={ref}
             scene={frozenScene}
+            arena={frozenArena}
             stepIndex={frozenStepIndex}
             width={size.width}
             height={size.height}
