@@ -26,26 +26,26 @@ import {
     Tooltip,
     makeStyles,
     mergeClasses,
+    shorthands,
     tokens,
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { type HTMLAttributes, type RefAttributes, useState } from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
-import { useScene } from './SceneProvider';
+import { getObjectById, useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
-import type { Scene } from './scene';
-import { MIN_STAGE_WIDTH } from './theme';
+import { type Scene, getStepDisplayString, isMoveable } from './scene';
+import { useSelection, useSpotlight } from './selection';
+import { MIN_STAGE_WIDTH, SPOTLIGHT_COLOR, SPOTLIGHT_DARK_SHADOW_COLOR } from './theme';
 import { useCancelConnectionSelection } from './useEditMode';
 
 export const StepSelect: React.FC = () => {
     const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
-    const cancelConnectionSelection = useCancelConnectionSelection();
     const steps = scene.steps.map((_, i) => i);
 
     const handleTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
-        cancelConnectionSelection();
         const index = data.value as number;
         dispatch({ type: 'setStep', index });
     };
@@ -78,22 +78,63 @@ export const StepSelect: React.FC = () => {
 
 const PREVIEW_SIZE = 180;
 
-function getStepText(index: number) {
-    return (index + 1).toString();
-}
-
 interface StepButtonProps {
     index: number;
 }
 
+/**
+ * Determines the border styling for step tab buttons based on the current
+ * selection and spotlight.
+ *
+ * If the step contains the current selection, selection styling is applied.
+ * If the step contains the current spotlight object and is _not_ the current
+ * step, spotlight styling is applied. Otherwise, if the step contains objects
+ * connected to the current selection, connection styling is applied.
+ */
+function useStepButtonHighlightClass(stepIndexOfButton: number): string | undefined {
+    const [selection] = useSelection();
+    const [spotlight] = useSpotlight();
+    const { scene, stepIndex } = useScene();
+    const classes = useStyles();
+
+    let hasObjectConnectedToSelection = false;
+    let hasSpotlightObject = false;
+    for (const obj of scene.steps[stepIndexOfButton]!.objects) {
+        if (selection.has(obj.id)) {
+            // Selection styling always takes precendence. The other two cases
+            // can only be resolved after going through all objects in the step.
+            return classes.tabWithSelection;
+        }
+        if (spotlight.has(obj.id)) {
+            hasSpotlightObject = true;
+        }
+        let parentId = isMoveable(obj) ? obj.positionParentId : undefined;
+        while (parentId !== undefined) {
+            if (selection.has(parentId)) {
+                hasObjectConnectedToSelection = true;
+                break;
+            }
+            const parent = getObjectById(scene, parentId);
+            parentId = isMoveable(parent) ? parent.positionParentId : undefined;
+        }
+    }
+    if (stepIndexOfButton != stepIndex && hasSpotlightObject) {
+        return classes.tabWithSpotlight;
+    }
+    if (hasObjectConnectedToSelection) {
+        return classes.tabWithSelectionConnections;
+    }
+}
+
 const StepButton: React.FC<StepButtonProps> = ({ index }) => {
     const classes = useStyles();
-    const stepText = getStepText(index);
+    const highlightClass = useStepButtonHighlightClass(index);
+    const stepText = getStepDisplayString(index);
 
     return (
         <Tooltip content={`Step ${stepText}`} relationship="label" withArrow>
             <Tab value={index}>
-                <div className={classes.tab}>{stepText}</div>
+                <div className={mergeClasses(classes.tab, highlightClass)}>{stepText}</div>
             </Tab>
         </Tooltip>
     );
@@ -120,7 +161,7 @@ const DeleteIcon = bundleIcon(DeleteFilled, DeleteRegular);
 const RemoveStepButton: React.FC = () => {
     const { scene, stepIndex, dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
-    const stepText = getStepText(stepIndex);
+    const stepText = getStepDisplayString(stepIndex);
 
     const handleDeleteStep = () => {
         cancelConnectionSelection();
@@ -283,7 +324,7 @@ const ReorderableStepItem: React.FC<StepItemProps> = ({ scene, step }) => {
 
 const StepItem: React.FC<StepItemProps> = ({ ref, scene, step, className, ...props }) => {
     const classes = useStyles();
-    const stepText = `Step ${getStepText(step.index)}`;
+    const stepText = `Step ${getStepDisplayString(step.index)}`;
 
     return (
         <div ref={ref} className={mergeClasses(classes.stepItem, className)} {...props}>
@@ -329,6 +370,21 @@ const useStyles = makeStyles({
     },
     tab: {
         minWidth: '16px',
+        border: '1px solid transparent',
+    },
+    tabWithSelection: {
+        border: '1px solid',
+        borderRadius: '3px',
+    },
+    tabWithSelectionConnections: {
+        border: '1px solid',
+        ...shorthands.borderStyle('dashed'),
+        borderRadius: '3px',
+    },
+    tabWithSpotlight: {
+        border: '1px solid ' + SPOTLIGHT_COLOR,
+        boxShadow: '0px 0px 3px ' + SPOTLIGHT_DARK_SHADOW_COLOR,
+        borderRadius: '3px',
     },
 
     dialogSurface: {
