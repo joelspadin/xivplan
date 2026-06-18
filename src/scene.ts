@@ -485,6 +485,7 @@ export type SceneObjectWithoutId = Omit<SceneObject, 'id'> & { id?: number };
 
 export interface SceneStep {
     readonly objects: readonly SceneObject[];
+    readonly customArena?: Arena;
 }
 
 export interface Scene {

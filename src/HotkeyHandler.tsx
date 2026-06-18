@@ -14,6 +14,7 @@ import { moveObjectsBy } from './groupOperations';
 import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import {
+    type Arena,
     type MoveableObject,
     type Scene,
     type SceneObject,
@@ -61,6 +62,7 @@ const UndoRedoHandler: React.FC = () => {
 function pasteObjects(
     stage: Stage,
     scene: Scene,
+    arena: Arena,
     step: SceneStep,
     dispatch: Dispatch<SceneAction>,
     setSelection: Dispatch<SetStateAction<SceneSelection>>,
@@ -72,7 +74,7 @@ function pasteObjects(
     }
 
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
-    const newCenter = centerOnMouse ? getSceneCoord(scene, pointerPosition) : undefined;
+    const newCenter = centerOnMouse ? getSceneCoord(scene, arena, pointerPosition) : undefined;
     const { objects: newObjects } = copyObjects(scene, step, objects, newCenter);
 
     if (newObjects.length) {
@@ -146,7 +148,7 @@ const SelectionActionHandler: React.FC = () => {
     const [selection, setSelection] = useSelection();
     const [editMode, setEditMode] = useEditMode();
     const [tetherConfig, setTetherConfig] = useTetherConfig();
-    const { scene, step, dispatch } = useScene();
+    const { scene, step, arena, dispatch } = useScene();
     const stage = useStage();
 
     useHotkeys(
@@ -233,7 +235,7 @@ const SelectionActionHandler: React.FC = () => {
             e.preventDefault();
 
             const clipboard = await getClipboard(clipboardFallback);
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard);
+            pasteObjects(stage, scene, arena, step, dispatch, setSelection, clipboard);
         },
         [stage, scene, step, dispatch, setSelection, editMode, clipboardFallback],
     );
@@ -248,7 +250,7 @@ const SelectionActionHandler: React.FC = () => {
             e.preventDefault();
 
             const clipboard = await getClipboard(clipboardFallback);
-            pasteObjects(stage, scene, step, dispatch, setSelection, clipboard, false);
+            pasteObjects(stage, scene, arena, step, dispatch, setSelection, clipboard, false);
         },
         [stage, scene, step, dispatch, setSelection, editMode, clipboardFallback],
     );
@@ -260,7 +262,7 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || !stage || editMode !== EditMode.Normal) {
                 return;
             }
-            pasteObjects(stage, scene, step, dispatch, setSelection, getSelectedObjects(step, selection), false);
+            pasteObjects(stage, scene, arena, step, dispatch, setSelection, getSelectedObjects(step, selection), false);
             e.preventDefault();
         },
         [stage, scene, step, dispatch, selection, setSelection, editMode],

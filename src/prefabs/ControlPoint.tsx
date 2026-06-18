@@ -98,7 +98,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
     const ControlPointManager: React.FC<ControlPointManagerProps<T, S, P>> = (props) => {
         const { children, onActive, onTransformEnd, object, visible } = props;
 
-        const { scene } = useScene();
+        const { scene, arena } = useScene();
         const stage = useStage();
         const [transform, setTransform] = useState<TransformState>();
         const groupRef = useRef<Konva.Group>(null);
@@ -192,7 +192,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
             }
         };
 
-        const center = getCanvasCoord(scene, object);
+        const center = getCanvasCoord(scene, arena, object);
 
         return (
             <>

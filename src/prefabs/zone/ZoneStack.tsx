@@ -114,8 +114,8 @@ interface StackOrbsProps extends StackRendererProps {
 }
 
 const StackOrbs: React.FC<StackOrbsProps> = ({ object, radius, ring }) => {
-    const { scene } = useScene();
-    const center = getCanvasCoord(scene, object);
+    const { scene, arena } = useScene();
+    const center = getCanvasCoord(scene, arena, object);
 
     const orbRadius = Math.min(radius * 0.25, 40);
     const orbs = getStackCircleProps(orbRadius, object.count);

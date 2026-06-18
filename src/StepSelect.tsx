@@ -40,7 +40,7 @@ import { useCancelConnectionSelection } from './useEditMode';
 
 export const StepSelect: React.FC = () => {
     const classes = useStyles();
-    const { scene, stepIndex, dispatch } = useScene();
+    const { scene, arena, stepIndex, dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
     const steps = scene.steps.map((_, i) => i);
 
@@ -50,7 +50,7 @@ export const StepSelect: React.FC = () => {
         dispatch({ type: 'setStep', index });
     };
 
-    const maxWidth = scene.arena.width + scene.arena.padding * 2;
+    const maxWidth = arena.width + arena.padding * 2;
 
     return (
         <div className={classes.root} style={{ maxWidth }}>
@@ -290,6 +290,7 @@ const StepItem: React.FC<StepItemProps> = ({ ref, scene, step, className, ...pro
             <div className={classes.stepHeader}>{stepText}</div>
             <ScenePreview
                 scene={scene}
+                arena={scene.steps[step.index]?.customArena ?? scene.arena}
                 stepIndex={step.index}
                 width={PREVIEW_SIZE}
                 height={PREVIEW_SIZE}

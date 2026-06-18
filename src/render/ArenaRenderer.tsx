@@ -16,6 +16,7 @@ import {
     useCanvasArenaRect,
 } from '../coord';
 import {
+    type Arena,
     ArenaShape,
     type CustomRadialGrid,
     type CustomRectangularGrid,
@@ -58,17 +59,17 @@ interface BackdropProps {
 }
 
 const Backdrop: React.FC<BackdropProps> = ({ color }) => {
-    const { scene } = useScene();
-    const size = getCanvasSize(scene);
+    const { arena } = useScene();
+    const size = getCanvasSize(arena);
 
     return <Rect fill={color} x={0} y={0} {...size} />;
 };
 
-function getArenaClip(scene: Scene): ((context: KonvaContext) => void) | undefined {
-    const rect = getCanvasArenaRect(scene);
-    const center = getCanvasCoord(scene, { x: 0, y: 0 });
+function getArenaClip(scene: Scene, arena: Arena): ((context: KonvaContext) => void) | undefined {
+    const rect = getCanvasArenaRect(scene, arena);
+    const center = getCanvasCoord(scene, arena, { x: 0, y: 0 });
 
-    switch (scene.arena.shape) {
+    switch (arena.shape) {
         case ArenaShape.Circle:
             return (ctx) => {
                 ctx.beginPath();
@@ -91,26 +92,26 @@ function getArenaClip(scene: Scene): ((context: KonvaContext) => void) | undefin
 }
 
 const ArenaClip: React.FC<PropsWithChildren> = ({ children }) => {
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const clip = getArenaClip(scene);
+    const clip = getArenaClip(scene, arena);
 
     return <Group clipFunc={clip}>{children}</Group>;
 };
 
 const BackgroundImage: React.FC = () => {
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const url = scene.arena.backgroundImage ?? '';
+    const url = arena.backgroundImage ?? '';
     const ext = getUrlFileExtension(url);
 
     if (!url) {
         return null;
     }
 
-    const opacity = (scene.arena.backgroundOpacity ?? 100) / 100;
-    const position = getCanvasArenaRect(scene);
-    const shadow = scene.arena.shape === ArenaShape.None ? SHADOW : {};
+    const opacity = (arena.backgroundOpacity ?? 100) / 100;
+    const position = getCanvasArenaRect(scene, arena);
+    const shadow = arena.shape === ArenaShape.None ? SHADOW : {};
 
     switch (ext) {
         case '.svg':
@@ -147,9 +148,9 @@ const BackgroundImageSvg: React.FC<BackgroundImageProps> = ({ url, ...props }) =
 };
 
 const BackgroundRenderer: React.FC = () => {
-    const { scene } = useScene();
+    const { arena } = useScene();
 
-    switch (scene.arena.shape) {
+    switch (arena.shape) {
         case ArenaShape.Circle:
             return <CircularBackground />;
 
@@ -193,23 +194,23 @@ const RectangularBackground: React.FC = () => {
 };
 
 const GridRenderer: React.FC = () => {
-    const { scene } = useScene();
+    const { arena } = useScene();
 
-    switch (scene.arena.grid.type) {
+    switch (arena.grid.type) {
         case GridType.None:
             return null;
 
         case GridType.Radial:
-            return <RadialGridRenderer grid={scene.arena.grid} />;
+            return <RadialGridRenderer grid={arena.grid} />;
 
         case GridType.Rectangular:
-            return <RectangularGridRenderer grid={scene.arena.grid} />;
+            return <RectangularGridRenderer grid={arena.grid} />;
 
         case GridType.CustomRectangular:
-            return <CustomRectangularGridRenderer grid={scene.arena.grid} />;
+            return <CustomRectangularGridRenderer grid={arena.grid} />;
 
         case GridType.CustomRadial:
-            return <CustomRadialGridRenderer grid={scene.arena.grid} />;
+            return <CustomRadialGridRenderer grid={arena.grid} />;
     }
 };
 
@@ -256,10 +257,10 @@ function getSpokeGridDivs(divs: number, startAngle: number | undefined, radiusX:
 
 const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const clip = getArenaClip(scene);
-    const position = getCanvasArenaEllipse(scene);
+    const clip = getArenaClip(scene, arena);
+    const position = getCanvasArenaEllipse(scene, arena);
     const shapeConfig = getGridShapeConfig(theme);
 
     const rings = getRingGridDivs(grid.radialDivs, position.radiusX, position.radiusY);
@@ -295,9 +296,9 @@ const RadialGridRenderer: React.FC<GridProps<RadialGrid>> = ({ grid }) => {
 
 const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const position = getCanvasArenaRect(scene);
+    const position = getCanvasArenaRect(scene, arena);
     const shapeConfig = getGridShapeConfig(theme);
 
     const rows = getLinearGridDivs(grid.rows, position.y, position.height);
@@ -329,10 +330,10 @@ const RectangularGridRenderer: React.FC<GridProps<RectangularGrid>> = ({ grid })
 
 const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const clip = getArenaClip(scene);
-    const position = getCanvasArenaRect(scene);
+    const clip = getArenaClip(scene, arena);
+    const position = getCanvasArenaRect(scene, arena);
     const shapeConfig = getGridShapeConfig(theme);
 
     return (
@@ -343,13 +344,13 @@ const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> 
                 context.beginPath();
 
                 for (const column of grid.columns) {
-                    const x = getCanvasX(scene, column);
+                    const x = getCanvasX(arena, column);
                     context.moveTo(x, position.y);
                     context.lineTo(x, position.y + position.height);
                 }
 
                 for (const row of grid.rows) {
-                    const y = getCanvasY(scene, row);
+                    const y = getCanvasY(arena, row);
                     context.moveTo(position.x, y);
                     context.lineTo(position.x + position.width, y);
                 }
@@ -365,10 +366,10 @@ const CustomRectangularGridRenderer: React.FC<GridProps<CustomRectangularGrid>> 
 
 const CustomRadialGridRenderer: React.FC<GridProps<CustomRadialGrid>> = ({ grid }) => {
     const theme = useSceneTheme();
-    const { scene } = useScene();
+    const { scene, arena } = useScene();
 
-    const clip = getArenaClip(scene);
-    const position = getCanvasArenaEllipse(scene);
+    const clip = getArenaClip(scene, arena);
+    const position = getCanvasArenaEllipse(scene, arena);
     const shapeConfig = getGridShapeConfig(theme);
 
     const spokes = grid.spokes.map((angle) => circlePointAtAngle(degtorad(angle), position.radiusX, position.radiusY));

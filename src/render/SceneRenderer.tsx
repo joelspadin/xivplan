@@ -9,7 +9,7 @@ import { type EditorState, type SceneAction, SceneContext, useCurrentStep, useSc
 import { SelectionContext, type SelectionState, SpotlightContext } from '../SelectionContext';
 import { getCanvasSize, getSceneCoord } from '../coord';
 import { EditMode } from '../editMode';
-import type { Scene } from '../scene';
+import type { Arena, Scene } from '../scene';
 import { selectNewObjects, selectNone, useSelection } from '../selection';
 import type { UndoContext } from '../undo/undoContext';
 import { useEditMode } from '../useEditMode';
@@ -22,9 +22,9 @@ import { TetherEditRenderer } from './TetherEditRenderer';
 import { LayerName } from './layers';
 
 export const SceneRenderer: React.FC = () => {
-    const { scene } = useScene();
+    const { arena } = useScene();
     const [, setSelection] = use(SelectionContext);
-    const size = getCanvasSize(scene);
+    const size = getCanvasSize(arena);
     const [stage, setStage] = useState<Konva.Stage | null>(null);
     const [editMode] = useEditMode();
 
@@ -58,6 +58,7 @@ export const SceneRenderer: React.FC = () => {
 
 export interface ScenePreviewProps extends RefAttributes<Konva.Stage> {
     scene: Scene;
+    arena: Arena;
     stepIndex?: number;
     width?: number;
     height?: number;
@@ -69,13 +70,14 @@ export interface ScenePreviewProps extends RefAttributes<Konva.Stage> {
 export const ScenePreview: React.FC<ScenePreviewProps> = ({
     ref,
     scene,
+    arena,
     stepIndex,
     width,
     height,
     backgroundColor,
     simple,
 }) => {
-    const size = getCanvasSize(scene);
+    const size = getCanvasSize(arena);
     let scale = 1;
     let x = 0;
     let y = 0;
@@ -170,7 +172,7 @@ interface DropTargetProps extends PropsWithChildren {
 }
 
 const DropTarget: React.FC<DropTargetProps> = ({ stage, children }) => {
-    const { scene, dispatch } = useScene();
+    const { scene, arena, dispatch } = useScene();
     const [, setSelection] = useSelection();
     const [dragObject, setDragObject] = usePanelDrag();
 
@@ -192,7 +194,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ stage, children }) => {
         position.x -= dragObject.offset.x;
         position.y -= dragObject.offset.y;
 
-        const action = getDropAction(dragObject, getSceneCoord(scene, position));
+        const action = getDropAction(dragObject, getSceneCoord(scene, arena, position));
         if (action) {
             dispatch(action);
             setSelection(selectNewObjects(scene, 1));
