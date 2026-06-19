@@ -12,6 +12,7 @@ import {
     CONTROL_POINT_BORDER_COLOR,
     HandleStyle,
     createControlPointManager,
+    shouldSnapAngle,
     type HandleFuncProps,
 } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
@@ -131,11 +132,19 @@ function getSpokeWidth(
     return object.spokeWidth;
 }
 
-function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(
+    scene: Readonly<Scene>,
+    object: StarburstZone,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
         const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        if (shouldSnapAngle(modifierKeys)) {
+            return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        } else {
+            return angle;
+        }
     }
 
     return getAbsoluteRotation(scene, object);

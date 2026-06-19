@@ -28,9 +28,20 @@ export interface Handle extends Vector2d {
     readonly style?: HandleStyle;
 }
 
+export interface EventWithModifierKeys {
+    ctrlKey: boolean;
+    altKey: boolean;
+    shiftKey: boolean;
+}
+
 export interface HandleFuncProps {
     pointerPos?: Vector2d;
+    modifierKeys?: EventWithModifierKeys;
     activeHandleId?: number;
+}
+
+export function shouldSnapAngle(modifierKeys: EventWithModifierKeys | undefined) {
+    return !modifierKeys?.ctrlKey;
 }
 
 export interface ControlPointConfig<T extends Vector2d, S, P> {
@@ -74,6 +85,7 @@ interface TransformState {
     /** Offset of pointer relative to handle */
     handleOffset: Vector2d;
     pointerPos: Vector2d;
+    modifierKeys: EventWithModifierKeys;
 }
 
 function getHandleCenter(transform: TransformState) {
@@ -106,7 +118,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
         const pointerPos = transform ? getHandleCenter(transform) : undefined;
 
         const activeHandleId = transform?.handleId ?? 0;
-        const handleProps = { pointerPos, activeHandleId };
+        const handleProps: HandleFuncProps = { pointerPos, activeHandleId, modifierKeys: transform?.modifierKeys };
 
         const handles = config.handleFunc(scene, object, handleProps, props);
         const state = config.stateFunc(scene, object, handleProps, props);
@@ -123,7 +135,7 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
         }, []);
 
         const getTransformStart = (i: number) => {
-            return (e: KonvaEventObject<Event>) => {
+            return (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
                 e.evt.stopPropagation();
 
                 const pointerPos = getPointerPos();
@@ -139,10 +151,10 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
                     -rotation,
                 );
 
-                const handleId = getHandleId(config.handleFunc(scene, object, {}, props), i);
+                const handleId = getHandleId(config.handleFunc(scene, object, { modifierKeys: e.evt }, props), i);
 
                 onActive?.(true);
-                setTransform({ pointerPos, handleOffset, handleId });
+                setTransform({ pointerPos, handleOffset, handleId, modifierKeys: e.evt });
             };
         };
 
@@ -151,12 +163,16 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
                 return;
             }
 
-            const handleMove = () => {
+            const handleMove = (e: MouseEvent | TouchEvent) => {
                 const pointerPos = getPointerPos();
-                setTransform({ ...transform, pointerPos });
+                setTransform({ ...transform, pointerPos, modifierKeys: e });
             };
 
-            const handleEnd = (e: Event) => {
+            const handleUpdatedModifier = (e: KeyboardEvent) => {
+                setTransform({ ...transform, modifierKeys: e });
+            };
+
+            const handleEnd = (e: MouseEvent | TouchEvent) => {
                 e.stopPropagation();
 
                 onActive?.(false);
@@ -165,24 +181,28 @@ export function createControlPointManager<T extends Vector2d, S, P = unknown>(
                 const pointerPos = getHandleCenter({ ...transform, pointerPos: getPointerPos() });
 
                 const activeHandleId = transform?.handleId ?? 0;
-                const handleProps = { pointerPos, activeHandleId };
+                const handleProps: HandleFuncProps = { pointerPos, activeHandleId, modifierKeys: e };
                 const state = config.stateFunc(scene, object, handleProps, props);
                 onTransformEnd?.(state);
             };
 
-            // As long as we are transforming, handle mouse events on the whole screen.
+            // As long as we are transforming, handle mouse and keyboard events on the whole screen.
             // Capture mouse up events so we can prevent other Konva nodes from handling
             // them and preventing the transform from ever ending.
             window.addEventListener('mousemove', handleMove);
             window.addEventListener('touchmove', handleMove);
             window.addEventListener('mouseup', handleEnd, true);
             window.addEventListener('touchend', handleEnd, true);
+            window.addEventListener('keydown', handleUpdatedModifier, true);
+            window.addEventListener('keyup', handleUpdatedModifier, true);
 
             return () => {
                 window.removeEventListener('mousemove', handleMove);
                 window.removeEventListener('touchmove', handleMove);
                 window.removeEventListener('mouseup', handleEnd, true);
                 window.removeEventListener('touchend', handleEnd, true);
+                window.removeEventListener('keydown', handleUpdatedModifier, true);
+                window.removeEventListener('keyup', handleUpdatedModifier, true);
             };
         }, [scene, transform, object, onActive, setTransform, onTransformEnd, getPointerPos, props]);
 

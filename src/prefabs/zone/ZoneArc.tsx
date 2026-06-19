@@ -21,6 +21,7 @@ import {
     type HandleFuncProps,
     HandleStyle,
     createControlPointManager,
+    shouldSnapAngle,
 } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
@@ -253,8 +254,8 @@ const OUTSET = 2;
 const ROTATE_SNAP_DIVISION = 15;
 const ROTATE_SNAP_TOLERANCE = 2;
 
-function getRadius(object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
-    if (pointerPos && activeHandleId === HandleId.Radius) {
+function getRadius(object: ArcZone, { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps) {
+    if (pointerPos && activeHandleId === HandleId.Radius && !modifierKeys?.altKey) {
         return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - OUTSET));
     }
 
@@ -276,35 +277,49 @@ function getInnerRadius(scene: Readonly<Scene>, object: ArcZone, { pointerPos, a
     return object.innerRadius;
 }
 
-function getRotation(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
-    if (pointerPos && activeHandleId === HandleId.Radius) {
+function getRotation(
+    scene: Readonly<Scene>,
+    object: ArcZone,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
+    if (pointerPos && activeHandleId === HandleId.Radius && !modifierKeys?.shiftKey) {
         const angle = getPointerAngle(pointerPos);
         const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        if (shouldSnapAngle(modifierKeys)) {
+            return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        } else {
+            return angle;
+        }
     }
 
     return getAbsoluteRotation(scene, object);
 }
 
-function getConeAngle(scene: Readonly<Scene>, object: ArcZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getConeAngle(
+    scene: Readonly<Scene>,
+    object: ArcZone,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
     if (pointerPos) {
         const objectRotation = getAbsoluteRotation(scene, object);
         const angle = getPointerAngle(pointerPos);
 
         if (activeHandleId === HandleId.Angle1) {
-            const coneAngle = snapAngle(
-                mod360(angle - objectRotation + 90) - 90,
-                ROTATE_SNAP_DIVISION,
-                ROTATE_SNAP_TOLERANCE,
-            );
+            let coneAngle = angle - objectRotation;
+            if (shouldSnapAngle(modifierKeys)) {
+                coneAngle = snapAngle(mod360(coneAngle + 90) - 90, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE);
+            }
             return clamp(coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }
         if (activeHandleId === HandleId.Angle2) {
-            const coneAngle = snapAngle(
-                mod360(angle - objectRotation + 270) - 270,
-                ROTATE_SNAP_DIVISION,
-                ROTATE_SNAP_TOLERANCE,
-            );
+            let coneAngle = angle - objectRotation;
+            if (shouldSnapAngle(modifierKeys)) {
+                coneAngle = snapAngle(
+                    mod360(angle - objectRotation + 270) - 270,
+                    ROTATE_SNAP_DIVISION,
+                    ROTATE_SNAP_TOLERANCE,
+                );
+            }
 
             return clamp(-coneAngle * 2, MIN_CONE_ANGLE, MAX_CONE_ANGLE);
         }

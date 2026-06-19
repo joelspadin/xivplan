@@ -14,6 +14,7 @@ import {
     CONTROL_POINT_BORDER_COLOR,
     createControlPointManager,
     HandleStyle,
+    shouldSnapAngle,
     type HandleFuncProps,
 } from './ControlPoint';
 import { DraggableObject } from './DraggableObject';
@@ -44,19 +45,31 @@ const ROTATE_SNAP_TOLERANCE = 2;
 
 const OUTSET = 2;
 
-function getLength(object: LineProps, { pointerPos, activeHandleId }: HandleFuncProps, minLength: number) {
-    if (pointerPos && activeHandleId === HandleId.Length) {
+function getLength(
+    object: LineProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+    minLength: number,
+) {
+    if (pointerPos && activeHandleId === HandleId.Length && !modifierKeys?.altKey) {
         return Math.max(minLength, Math.round(distance(pointerPos) - OUTSET));
     }
 
     return object.length;
 }
 
-function getRotation(scene: Readonly<Scene>, object: LineProps, { pointerPos, activeHandleId }: HandleFuncProps) {
-    if (pointerPos && activeHandleId === HandleId.Length) {
+function getRotation(
+    scene: Readonly<Scene>,
+    object: LineProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
+    if (pointerPos && activeHandleId === HandleId.Length && !modifierKeys?.shiftKey) {
         const angle = getPointerAngle(pointerPos);
         const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        if (shouldSnapAngle(modifierKeys)) {
+            return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        } else {
+            return angle;
+        }
     }
 
     return getAbsoluteRotation(scene, object);

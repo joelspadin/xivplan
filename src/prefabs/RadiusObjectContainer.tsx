@@ -22,6 +22,7 @@ import {
     type HandleFuncProps,
     HandleStyle,
     createControlPointManager,
+    shouldSnapAngle,
 } from './ControlPoint';
 import { DraggableObject } from './DraggableObject';
 import { MIN_RADIUS } from './bounds';
@@ -161,7 +162,7 @@ function getInnerRadius(
 function getRotation(
     scene: Readonly<Scene>,
     object: RadiusObject,
-    { pointerPos, activeHandleId }: HandleFuncProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
     { allowRotate }: ControlPointProps,
 ) {
     if (!allowRotate || !isRotateable(object)) {
@@ -171,7 +172,11 @@ function getRotation(
     if (pointerPos && activeHandleId === HandleId.Rotate) {
         const angle = getPointerAngle(pointerPos);
         const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        if (shouldSnapAngle(modifierKeys)) {
+            return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        } else {
+            return angle;
+        }
     }
 
     return getAbsoluteRotation(scene, object);
