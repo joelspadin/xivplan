@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../SceneProvider';
-import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../coord';
+import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import {
@@ -26,8 +26,7 @@ import {
     type HandleFuncProps,
     HandleStyle,
     ROTATE_HANDLE_OFFSET,
-    ROTATE_SNAP_DIVISION,
-    ROTATE_SNAP_TOLERANCE,
+    getNewRotationFromPointer,
 } from './controlpoints';
 import { useShowResizer } from './highlight';
 
@@ -159,7 +158,7 @@ function getInnerRadius(
 function getRotation(
     scene: Readonly<Scene>,
     object: RadiusObject,
-    { pointerPos, activeHandleId }: HandleFuncProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
     { allowRotate }: ControlPointProps,
 ) {
     if (!allowRotate || !isRotateable(object)) {
@@ -167,9 +166,7 @@ function getRotation(
     }
 
     if (pointerPos && activeHandleId === HandleId.Rotate) {
-        const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        return getNewRotationFromPointer(scene, object, pointerPos, modifierKeys);
     }
 
     return getAbsoluteRotation(scene, object);

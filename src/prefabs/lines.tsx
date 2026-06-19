@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Circle, Rect } from 'react-konva';
-import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, snapAngle } from '../coord';
+import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { getResizeCursor } from '../cursor';
 import type { RendererProps } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
@@ -11,7 +11,12 @@ import { CENTER_DOT_RADIUS } from '../theme';
 import { clampRotation, mod360, type Enum } from '../util';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../vector';
 import { createControlPointManager, type ControlledObjectStateBase } from './ControlPoint';
-import { CONTROL_POINT_BORDER_COLOR, HandleStyle, type HandleFuncProps } from './controlpoints';
+import {
+    CONTROL_POINT_BORDER_COLOR,
+    getNewRotationFromPointer,
+    HandleStyle,
+    type HandleFuncProps,
+} from './controlpoints';
 import { DraggableObject } from './DraggableObject';
 import { useShowResizer } from './highlight';
 
@@ -35,24 +40,27 @@ const HandleId = {
 } as const;
 type HandleId = Enum<typeof HandleId>;
 
-const ROTATE_SNAP_DIVISION = 15;
-const ROTATE_SNAP_TOLERANCE = 2;
-
 const OUTSET = 2;
 
-function getLength(object: LineProps, { pointerPos, activeHandleId }: HandleFuncProps, minLength: number) {
-    if (pointerPos && activeHandleId === HandleId.Length) {
+function getLength(
+    object: LineProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+    minLength: number,
+) {
+    if (pointerPos && activeHandleId === HandleId.Length && !modifierKeys?.ctrlKey) {
         return Math.max(minLength, Math.round(distance(pointerPos) - OUTSET));
     }
 
     return object.length;
 }
 
-function getRotation(scene: Readonly<Scene>, object: LineProps, { pointerPos, activeHandleId }: HandleFuncProps) {
-    if (pointerPos && activeHandleId === HandleId.Length) {
-        const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+function getRotation(
+    scene: Readonly<Scene>,
+    object: LineProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
+    if (pointerPos && activeHandleId === HandleId.Length && !modifierKeys?.shiftKey) {
+        return getNewRotationFromPointer(scene, object, pointerPos, modifierKeys);
     }
 
     return getAbsoluteRotation(scene, object);

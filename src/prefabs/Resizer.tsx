@@ -1,14 +1,7 @@
 import type { Vector2d } from 'konva/lib/types';
 import React, { useState } from 'react';
 import { Line, Rect } from 'react-konva';
-import {
-    getAbsolutePosition,
-    getAbsoluteRotation,
-    getBaseFacingRotation,
-    getPointerAngle,
-    rotateCoord,
-    snapAngle,
-} from '../coord';
+import { getAbsolutePosition, getAbsoluteRotation, getBaseFacingRotation, rotateCoord } from '../coord';
 import { getResizeCursor } from '../cursor';
 import { ActivePortal } from '../render/Portals';
 import { type ResizeableObject, type Scene, type SceneObject, type UnknownObject } from '../scene';
@@ -20,11 +13,10 @@ import { createControlPointManager, type ControlledObjectStateBase } from './Con
 import {
     CONTROL_POINT_BORDER_COLOR,
     CONTROL_POINT_BORDER_OUTSET,
+    getNewRotationFromPointer,
     HandleStyle,
     ModifierKeyBehavior,
     ROTATE_HANDLE_OFFSET,
-    ROTATE_SNAP_DIVISION,
-    ROTATE_SNAP_TOLERANCE,
     shouldApplyModifier,
     type EventWithModifierKeys,
     type HandleFuncProps,
@@ -85,12 +77,10 @@ interface ResizableObjectState extends ControlledObjectStateBase {
 function getRotation(
     scene: Readonly<Scene>,
     object: ResizeableObject,
-    { pointerPos, activeHandleId }: HandleFuncProps,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
 ) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
-        const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        return getNewRotationFromPointer(scene, object, pointerPos, modifierKeys);
     }
 
     return getAbsoluteRotation(scene, object);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Circle, Line } from 'react-konva';
 import { useScene } from '../../SceneProvider';
-import { getAbsoluteRotation, getBaseFacingRotation, getPointerAngle, rotateCoord, snapAngle } from '../../coord';
+import { getAbsoluteRotation, getBaseFacingRotation, rotateCoord } from '../../coord';
 import { getResizeCursor } from '../../cursor';
 import { ActivePortal } from '../../render/Portals';
 import type { Scene, StarburstZone, UnknownObject } from '../../scene';
@@ -11,7 +11,12 @@ import { distance } from '../../vector';
 import { createControlPointManager, type ControlledObjectStateBase } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { MIN_RADIUS } from '../bounds';
-import { CONTROL_POINT_BORDER_COLOR, HandleStyle, type HandleFuncProps } from '../controlpoints';
+import {
+    CONTROL_POINT_BORDER_COLOR,
+    getNewRotationFromPointer,
+    HandleStyle,
+    type HandleFuncProps,
+} from '../controlpoints';
 import { useShowResizer } from '../highlight';
 
 interface StarburstControlProps {
@@ -102,9 +107,6 @@ type HandleId = Enum<typeof HandleId>;
 const OUTSET = 2;
 const ROTATE_HANDLE_OFFSET = 50;
 
-const ROTATE_SNAP_DIVISION = 15;
-const ROTATE_SNAP_TOLERANCE = 2;
-
 function getRadius(object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Radius) {
         return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - OUTSET));
@@ -127,11 +129,13 @@ function getSpokeWidth(
     return object.spokeWidth;
 }
 
-function getRotation(scene: Readonly<Scene>, object: StarburstZone, { pointerPos, activeHandleId }: HandleFuncProps) {
+function getRotation(
+    scene: Readonly<Scene>,
+    object: StarburstZone,
+    { pointerPos, activeHandleId, modifierKeys }: HandleFuncProps,
+) {
     if (pointerPos && activeHandleId === HandleId.Rotate) {
-        const angle = getPointerAngle(pointerPos);
-        const baseRotation = getBaseFacingRotation(scene, object);
-        return snapAngle(angle - baseRotation, ROTATE_SNAP_DIVISION, ROTATE_SNAP_TOLERANCE) + baseRotation;
+        return getNewRotationFromPointer(scene, object, pointerPos, modifierKeys);
     }
 
     return getAbsoluteRotation(scene, object);
