@@ -10,7 +10,7 @@ import {
     tokens,
     typographyStyles,
 } from '@fluentui/react-components';
-import { Dismiss24Regular } from '@fluentui/react-icons';
+import { Cone16Regular, Dismiss24Regular, Square16Regular } from '@fluentui/react-icons';
 import React from 'react';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { HotkeyName } from './HotkeyName';
@@ -84,7 +84,33 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
                                 <dt>
                                     <HotkeyName keys="shift" suffix="left click + drag" />
                                 </dt>
-                                <dd>Proportional resize</dd>
+                                <dd>
+                                    <Square16Regular /> Proportional resize
+                                </dd>
+                                <dt>
+                                    <HotkeyName keys="alt" suffix="left click + drag" />
+                                </dt>
+                                <dd>
+                                    <Square16Regular /> Resize symmetrically
+                                </dd>
+
+                                <dt>
+                                    <HotkeyName keys="shift" suffix="left click + drag" />
+                                </dt>
+                                <dd>
+                                    <Cone16Regular /> Keep rotation constant
+                                </dd>
+                                <dt>
+                                    <HotkeyName keys="alt" suffix="left click + drag" />
+                                </dt>
+                                <dd>
+                                    <Cone16Regular /> Keep size constant
+                                </dd>
+
+                                <dt>
+                                    <HotkeyName keys="ctrl" suffix="left click + drag" />
+                                </dt>
+                                <dd>Do not snap to specific angles</dd>
                             </dl>
                         </section>
                     </DialogContent>
