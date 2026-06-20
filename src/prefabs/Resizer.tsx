@@ -1,12 +1,14 @@
 import Konva from 'konva';
+import type { KonvaEventObject } from 'konva/lib/Node';
 import type { Box } from 'konva/lib/shapes/Transformer';
-import React, { type RefObject, useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { type RefObject, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getBaseFacingRotation } from '../coord';
 import { ControlsPortal } from '../render/Portals';
 import type { ResizeableObject, SceneObject, UnknownObject } from '../scene';
 import { clamp, clampRotation } from '../util';
+import { type EventWithModifierKeys, shouldSnapAngle } from './ControlPoint';
 import { useShowResizer } from './highlight';
 
 const DEFAULT_MIN_SIZE = 20;
@@ -27,6 +29,10 @@ export interface ResizerProps {
     children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
 }
 
+interface TransformState {
+    readonly modifierKeys?: EventWithModifierKeys;
+}
+
 export const Resizer: React.FC<ResizerProps> = ({
     object,
     nodeRef,
@@ -39,6 +45,7 @@ export const Resizer: React.FC<ResizerProps> = ({
     const { dispatch, scene } = useScene();
     const showResizer = useShowResizer(object);
     const trRef = useRef<Konva.Transformer>(null);
+    const [transform, setTransform] = useState<TransformState>();
 
     const minWidthRequired = minWidth ?? DEFAULT_MIN_SIZE;
     const minHeightRequired = minHeight ?? DEFAULT_MIN_SIZE;
@@ -55,6 +62,8 @@ export const Resizer: React.FC<ResizerProps> = ({
     // Manual memoization because React Compiler thinks handleTransformEnd being passed to
     // children() means it is used during render, and it uses a ref's .current property.
     const handleTransformEnd = useCallback(() => {
+        setTransform(undefined);
+
         const node = nodeRef.current;
         if (!node) {
             return;
@@ -76,7 +85,32 @@ export const Resizer: React.FC<ResizerProps> = ({
         node.clearCache();
 
         dispatch({ type: 'update', value: { ...object, ...newProps } as SceneObject });
-    }, [dispatch, minHeightRequired, minWidthRequired, nodeRef, object, scene]);
+    }, [dispatch, minHeightRequired, minWidthRequired, nodeRef, object, scene, setTransform]);
+
+    const handleTransformStart = useCallback(
+        (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+            setTransform({ modifierKeys: e.evt });
+        },
+        [setTransform],
+    );
+
+    useLayoutEffect(() => {
+        if (!transform) {
+            return;
+        }
+        const handleUpdatedModifier = (e: KeyboardEvent) => {
+            setTransform({ ...transform, modifierKeys: e });
+        };
+
+        // As long as we are transforming, look for key presses to support modifier keys.
+        window.addEventListener('keydown', handleUpdatedModifier, true);
+        window.addEventListener('keyup', handleUpdatedModifier, true);
+
+        return () => {
+            window.removeEventListener('keydown', handleUpdatedModifier, true);
+            window.removeEventListener('keyup', handleUpdatedModifier, true);
+        };
+    }, [transform, setTransform]);
 
     const boundBoxFunc = useCallback(
         (oldBox: Box, newBox: Box) => {
@@ -89,7 +123,10 @@ export const Resizer: React.FC<ResizerProps> = ({
     );
 
     const baseRotation = useMemo(() => getBaseFacingRotation(scene, object), [scene, object]);
-    const rotationSnaps = useMemo(() => ROTATION_SNAPS.map((r) => r + baseRotation), [baseRotation]);
+    const rotationSnaps = useMemo(
+        () => (shouldSnapAngle(transform?.modifierKeys) ? ROTATION_SNAPS.map((r) => r + baseRotation) : []),
+        [baseRotation, transform],
+    );
 
     return (
         <>
@@ -107,6 +144,7 @@ export const Resizer: React.FC<ResizerProps> = ({
                         boundBoxFunc={boundBoxFunc}
                         anchorSize={anchorSize}
                         ignoreStroke
+                        onTransformStart={handleTransformStart}
                         {...transformerProps}
                     />
                 </ControlsPortal>
