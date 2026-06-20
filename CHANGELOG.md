@@ -2,6 +2,11 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## June 20, 2026
+
+- Added a way to override the arena settings for individual steps, making it easier to make plans for mechanics where the arena changes.
+- Added a new arena preset for Arcadion M12. Updated an existing M12 preset to have more horizontal padding so it lines up with the new preset if you use both in one plan.
+
 ## June 7, 2026
 
 - Changed arrow, line stack, and line knock away objects to have an origin position, direction, length, and width instead of being a rectangle centered on the position.
