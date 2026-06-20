@@ -375,11 +375,10 @@ const useStyles = makeStyles({
         padding: `${tokens.spacingVerticalL} ${tokens.spacingHorizontalL}`,
 
         overflowY: 'auto',
-        display: 'flex',
-        flexFlow: 'row wrap',
-        alignItems: 'start',
-        alignContent: 'start',
-        justifyContent: 'start',
+        display: 'grid',
+        gridAutoFlow: 'row',
+        gridTemplateColumns: 'repeat(auto-fit, 240px)',
+        gridAutoRows: 'max-content',
 
         width: '100%',
         gap: '20px',
@@ -391,6 +390,7 @@ const useStyles = makeStyles({
     presetItem: {
         display: 'flex',
         flexFlow: 'column',
+        justifyContent: 'space-between',
 
         margin: 0,
         padding: 0,
