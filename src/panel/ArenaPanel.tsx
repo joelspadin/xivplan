@@ -22,7 +22,7 @@ import {
     useArrowNavigationGroup,
 } from '@fluentui/react-components';
 import { OptionsFilled } from '@fluentui/react-icons';
-import { useAsync, useLocalStorageValue, useSessionStorageValue } from '@react-hookz/web';
+import { useAsync, useLocalStorageValue, useMountEffect, useSessionStorageValue } from '@react-hookz/web';
 import React, {
     type ButtonHTMLAttributes,
     type Dispatch,
@@ -142,6 +142,8 @@ const PresetsDialogBody: React.FC<PresetsDialogBodyProps> = ({ setOpen }) => {
 
     const [selectedPreset, setSelectedPreset] = useState<ArenaPreset>();
     const [revealedPresets, { execute: reloadRevealedPresets }] = useAsync(getRevealedArenaPresets);
+
+    useMountEffect(reloadRevealedPresets);
 
     const { value: revealAll, set: setRevealAll } = useLocalStorageValue<boolean>('revealArenaPresets', {
         defaultValue: false,
