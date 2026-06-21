@@ -41,6 +41,7 @@ registerDropHandler<EyeObject>(ObjectType.Eye, (object, position) => {
             color: DEFAULT_COLOR,
             opacity: DEFAULT_OPACITY,
             radius: DEFAULT_RADIUS,
+            rotation: 0,
             ...object,
             ...position,
         } as EyeObject,
@@ -102,10 +103,11 @@ const INNER_EYE_PATH = 'M20 0Q10-9 0-9T-20 0Q-10 9 0 9T20 0Z';
 
 interface EyeRendererProps extends RendererProps<EyeObject> {
     radius: number;
+    rotation: number;
     groupRef: RefObject<Konva.Group | null>;
 }
 
-const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) => {
+const EyeRenderer: React.FC<EyeRendererProps> = ({ object, rotation, radius, groupRef }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
     const scale = radius / 20;
@@ -128,7 +130,7 @@ const EyeRenderer: React.FC<EyeRendererProps> = ({ object, radius, groupRef }) =
 
     return (
         <>
-            <Group ref={groupRef} {...overrideProps}>
+            <Group rotation={rotation} ref={groupRef} {...overrideProps}>
                 <Group scaleX={scale} scaleY={scale}>
                     {highlightProps && (
                         <Path data={OUTER_EYE_PATH} scaleX={21 / 20} scaleY={22 / 20} {...highlightProps} />
@@ -187,8 +189,10 @@ const EyeContainer: React.FC<RendererProps<EyeObject>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
 
     return (
-        <RadiusObjectContainer object={object} onTransformEnd={() => groupRef.current?.clearCache()}>
-            {({ radius }) => <EyeRenderer object={object} radius={radius} groupRef={groupRef} />}
+        <RadiusObjectContainer object={object} onTransformEnd={() => groupRef.current?.clearCache()} allowRotate>
+            {({ radius, rotation }) => (
+                <EyeRenderer rotation={rotation} object={object} radius={radius} groupRef={groupRef} />
+            )}
         </RadiusObjectContainer>
     );
 };
