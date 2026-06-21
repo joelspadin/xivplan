@@ -7,6 +7,7 @@ import {
     type EnemyObject,
     EnemyRingStyle,
     type ExaflareZone,
+    type EyeObject,
     type ImageObject,
     type LineZone,
     type MarkerObject,
@@ -28,6 +29,7 @@ import {
     isDrawObject,
     isEnemy,
     isExaflareZone,
+    isEye,
     isImageObject,
     isLineZone,
     isMarker,
@@ -97,6 +99,10 @@ function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
 
     if (isArrow(object)) {
         object = upgradeArrow(scene, object);
+    }
+
+    if (isEye(object)) {
+        object = upgradeEye(object);
     }
 
     return object;
@@ -339,4 +345,16 @@ function convertResizableToLine<T extends ResizeableObject>(
         length,
         rotation: updateRotation(scene, object, offset),
     } as Omit<T, 'height'> & { length: number };
+}
+
+// rotation property was added to EyeObject
+type LegacyEyeObject = Omit<EyeObject, 'rotation'> & {
+    readonly rotation?: number;
+};
+
+function upgradeEye(object: LegacyEyeObject): EyeObject {
+    return {
+        rotation: 0,
+        ...object,
+    };
 }

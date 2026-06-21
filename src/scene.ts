@@ -297,7 +297,7 @@ export interface StackZone extends StackCountObject, RadiusObject, ColoredObject
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
 
-export interface EyeObject extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface EyeObject extends RadiusObject, RotateableObject, ColoredObject, HollowObject, BaseObject {
     readonly type: typeof ObjectType.Eye;
     readonly invert?: boolean;
 }
