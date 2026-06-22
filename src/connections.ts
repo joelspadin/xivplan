@@ -4,6 +4,8 @@ import { ConnectionType } from './EditModeContext';
 import { LayerName } from './render/layers';
 import { getLayerName } from './render/ObjectRegistry';
 import {
+    EnemyIconStyle,
+    isEnemy,
     isIcon,
     isMoveable,
     isRadiusObject,
@@ -11,6 +13,7 @@ import {
     isRotateable,
     type MoveableObject,
     ObjectType,
+    type RadiusObject,
     type Scene,
     type SceneObject,
     type SceneStep,
@@ -422,7 +425,7 @@ function getAttachTopPoint(scene: Scene, objectToAttach: SceneObject, parent: Sc
     if (isResizable(parent)) {
         parentAttachmentPoint = { x: 0, y: parent.height / 2 + addedHeight };
     } else if (isRadiusObject(parent)) {
-        parentAttachmentPoint = { x: 0, y: parent.radius + addedHeight };
+        parentAttachmentPoint = { x: 0, y: getParentRadius(parent) + addedHeight };
     }
     return {
         x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
@@ -465,7 +468,7 @@ function getAttachBottomRightPoint(scene: Scene, objectToAttach: SceneObject, pa
         };
     } else if (isRadiusObject(parent)) {
         const overlap = 0.4;
-        const offset = Math.sqrt((parent.radius * (1 - overlap)) ** 2 / 2);
+        const offset = Math.sqrt((getParentRadius(parent) * (1 - overlap)) ** 2 / 2);
         parentAttachmentPoint = { x: offset + addedOffset, y: -offset };
     }
 
@@ -473,4 +476,15 @@ function getAttachBottomRightPoint(scene: Scene, objectToAttach: SceneObject, pa
         x: parentAttachmentPoint.x - objectAttatchmentPoint.x,
         y: parentAttachmentPoint.y - objectAttatchmentPoint.y,
     };
+}
+
+function getParentRadius(object: RadiusObject & UnknownObject): number {
+    // If the enemy object has an icon, approximately attach things to the icon
+    // instead of the ring. (the icon is technically a square, but since the
+    // non-transparent part is more akin to a circle it's OK to just take half
+    // the icon width as radius even for bottom-right attachments)
+    if (isEnemy(object) && object.icon !== EnemyIconStyle.NoIcon) {
+        return object.radius / 2;
+    }
+    return object.radius;
 }
