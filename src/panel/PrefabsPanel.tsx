@@ -2,7 +2,7 @@ import { Tab, TabList, Text, useArrowNavigationGroup, useFocusableGroup } from '
 import React, { useState } from 'react';
 import { HotkeyName } from '../HotkeyName';
 import { MarkerArrow } from '../prefabs/Arrow';
-import { EnemyCircle, EnemyHuge, EnemyLarge, EnemyMedium, EnemySmall } from '../prefabs/Enemies';
+import { EnemyLarge, EnemyMedium, EnemySmall, EnemyUnremarkable } from '../prefabs/Enemies';
 import { Waymark1, Waymark2, Waymark3, Waymark4, WaymarkA, WaymarkB, WaymarkC, WaymarkD } from '../prefabs/Markers';
 import {
     PartyAny,
@@ -240,11 +240,10 @@ export const PrefabsPanel: React.FC = () => {
 
             <Section header="Enemies">
                 <ObjectGroup>
-                    <EnemyCircle />
+                    <EnemyUnremarkable />
                     <EnemySmall />
                     <EnemyMedium />
                     <EnemyLarge />
-                    <EnemyHuge />
                 </ObjectGroup>
             </Section>
             <Section header="Tethers">
