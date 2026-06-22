@@ -237,13 +237,37 @@ export const EnemyRingStyle = {
     NoDirection: 'none',
     Directional: 'dir',
     Omnidirectional: 'omni',
+    NoRing: 'empty',
 } as const;
 export type EnemyRingStyle = Enum<typeof EnemyRingStyle>;
 
+export const EnemyIconStyle = {
+    NoIcon: 'none',
+    Small: 'small',
+    Medium: 'medium',
+    Large: 'large',
+} as const;
+export type EnemyIconStyle = Enum<typeof EnemyIconStyle>;
+
+export function getEnemyIconUrl(style: EnemyIconStyle): string {
+    switch (style) {
+        case EnemyIconStyle.NoIcon:
+            return '/actor/enemy_circle.png';
+        case EnemyIconStyle.Small:
+            return '/actor/enemy1.png';
+        case EnemyIconStyle.Medium:
+            return '/actor/enemy2.png';
+        case EnemyIconStyle.Large:
+            return '/actor/enemy3.png';
+    }
+}
+
 export interface EnemyObject extends RadiusObject, RotateableObject, NamedObject, ColoredObject, BaseObject {
     readonly type: typeof ObjectType.Enemy;
-    readonly icon: string;
+    readonly icon: EnemyIconStyle;
     readonly ring: EnemyRingStyle;
+    /** Whether the icon should rotate with the ring, or stay upright. */
+    readonly rotateIcon?: boolean;
 }
 export const isEnemy = makeObjectTest<EnemyObject>(ObjectType.Enemy);
 
