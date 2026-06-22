@@ -3,7 +3,7 @@ import type { ShapeConfig } from 'konva/lib/Shape';
 import type { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
 import { type RefObject, useRef } from 'react';
-import { Arc, Circle, Image, Path, Text } from 'react-konva';
+import { Arc, Circle, Group, Image, Line, Path, Text } from 'react-konva';
 import { registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -39,7 +39,7 @@ const RING_ANGLE = 270;
 const RING_ROTATION = 135;
 const OUTER_STROKE_RATIO = 1 / 32;
 const OUTER_STROKE_MIN = 2;
-const INNER_RADIUS_RATIO = 0.85;
+const INNER_RADIUS_RATIO = 0.8;
 const INNER_STROKE_MIN = 1;
 const INNER_STROKE_RATIO = 1 / 64;
 const SHADOW_BLUR_RATIO = 1 / 10;
@@ -232,6 +232,14 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
                     strokeEnabled={false}
                     fill={color}
                 />
+                <SideArrows
+                    innerRadius={innerRadius}
+                    outerRadius={outerRadius}
+                    innerStrokeWidth={innerProps.strokeWidth}
+                    outerStrokeWidth={outerProps.strokeWidth}
+                    color={color}
+                    {...innerProps}
+                />
             </HideGroup>
         </>
     );
@@ -273,7 +281,54 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
                     strokeEnabled={false}
                     fill={color}
                 />
+
+                <SideArrows
+                    {...innerProps}
+                    innerRadius={innerRadius}
+                    outerRadius={outerRadius}
+                    innerStrokeWidth={innerProps.strokeWidth}
+                    outerStrokeWidth={outerProps.strokeWidth}
+                    color={color}
+                />
             </HideGroup>
+        </>
+    );
+};
+
+interface SideArrowProps {
+    innerRadius: number;
+    outerRadius: number;
+    outerStrokeWidth: number;
+    innerStrokeWidth: number;
+    color: string;
+}
+
+const SideArrows: React.FC<SideArrowProps> = ({
+    innerRadius,
+    outerRadius,
+    outerStrokeWidth,
+    innerStrokeWidth,
+    color,
+    ...innerProps
+}) => {
+    if (outerRadius < 20) {
+        return null;
+    }
+    const sideArrowDistance = (innerRadius + innerStrokeWidth / 2 + outerRadius - outerStrokeWidth / 2) / 2;
+    const sideArrowWidth = outerRadius - sideArrowDistance - outerStrokeWidth / 2;
+
+    const largerArrowPoints = [-sideArrowWidth, 0, 0, -sideArrowWidth * 1.5, sideArrowWidth, 0];
+    const smallerArrowPoints = [-sideArrowWidth / 2, sideArrowWidth / 2, 0, 0, sideArrowWidth / 2, sideArrowWidth / 2];
+    return (
+        <>
+            <Group offsetX={sideArrowDistance}>
+                <Line {...innerProps} points={largerArrowPoints} fill={color} />
+                <Line {...innerProps} points={smallerArrowPoints} fill={color} />
+            </Group>
+            <Group offsetX={-sideArrowDistance}>
+                <Line {...innerProps} points={largerArrowPoints} fill={color} />
+                <Line {...innerProps} points={smallerArrowPoints} fill={color} />
+            </Group>
         </>
     );
 };
