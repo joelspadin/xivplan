@@ -9,7 +9,7 @@ import {
     HandleStyle,
     SQUARE_FILL_COLOR,
     SQUARE_STROKE_COLOR,
-} from './ControlPoint';
+} from './controlpoints';
 
 interface HandleProps extends Konva.NodeConfig, KonvaNodeEvents {
     style: HandleStyle;

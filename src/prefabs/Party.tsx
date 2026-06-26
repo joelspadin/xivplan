@@ -10,6 +10,7 @@ import { ObjectType, type PartyObject } from '../scene';
 import { DEFAULT_PARTY_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { makeDisplayName } from '../util';
+import { ModifierKeyBehavior } from './controlpoints';
 import { HideGroup } from './HideGroup';
 import { useHighlightProps, useOverrideProps } from './highlight';
 import { PrefabIcon } from './PrefabIcon';
@@ -66,24 +67,25 @@ const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
     const [image] = useImageTracked(object.image);
 
     return (
-        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
-            {(groupProps) => (
-                <Group {...groupProps} {...overrideProps}>
+        <ResizeableObjectContainer
+            object={object}
+            transformationProps={{
+                centerScalingBehavior: ModifierKeyBehavior.ForceEnabled,
+                keepRatioBehavior: ModifierKeyBehavior.Inverted,
+            }}
+        >
+            {(state) => (
+                <Group {...state} {...overrideProps}>
                     {highlightProps && (
                         <Rect
-                            width={object.width}
-                            height={object.height}
-                            cornerRadius={(object.width + object.height) / 2 / 5}
+                            width={state.width}
+                            height={state.height}
+                            cornerRadius={(state.width + state.height) / 2 / 5}
                             {...highlightProps}
                         />
                     )}
                     <HideGroup>
-                        <Image
-                            image={image}
-                            width={object.width}
-                            height={object.height}
-                            opacity={object.opacity / 100}
-                        />
+                        <Image image={image} width={state.width} height={state.height} opacity={object.opacity / 100} />
                     </HideGroup>
                 </Group>
             )}

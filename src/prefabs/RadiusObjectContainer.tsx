@@ -16,15 +16,19 @@ import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
 import { type Enum, clampRotation, mod360 } from '../util';
 import { distance } from '../vector';
+import { type ControlledObjectStateBase, createControlPointManager } from './ControlPoint';
+import { DraggableObject } from './DraggableObject';
+import { MIN_RADIUS } from './bounds';
 import {
     CONTROL_POINT_BORDER_COLOR,
+    CONTROL_POINT_BORDER_OUTSET,
     type Handle,
     type HandleFuncProps,
     HandleStyle,
-    createControlPointManager,
-} from './ControlPoint';
-import { DraggableObject } from './DraggableObject';
-import { MIN_RADIUS } from './bounds';
+    ROTATE_HANDLE_OFFSET,
+    ROTATE_SNAP_DIVISION,
+    ROTATE_SNAP_TOLERANCE,
+} from './controlpoints';
 import { useShowResizer } from './highlight';
 
 interface ControlPointProps {
@@ -32,7 +36,7 @@ interface ControlPointProps {
     allowInnerRadius?: boolean;
 }
 
-export interface RadiusObjectState {
+export interface RadiusObjectState extends ControlledObjectStateBase {
     radius: number;
     rotation: number;
     innerRadius: number;
@@ -123,15 +127,9 @@ const HandleId = {
 } as const;
 type HandleId = Enum<typeof HandleId>;
 
-const OUTSET = 2;
-const ROTATE_HANDLE_OFFSET = 50;
-
-const ROTATE_SNAP_DIVISION = 15;
-const ROTATE_SNAP_TOLERANCE = 2;
-
 function getRadius(object: RadiusObject, { pointerPos, activeHandleId }: HandleFuncProps) {
     if (pointerPos && activeHandleId === HandleId.Radius) {
-        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - OUTSET));
+        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) - CONTROL_POINT_BORDER_OUTSET));
     }
 
     return object.radius;
@@ -152,7 +150,7 @@ function getInnerRadius(
     }
 
     if (pointerPos && activeHandleId === HandleId.InnerRadius) {
-        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) + OUTSET));
+        return Math.max(MIN_RADIUS, Math.round(distance(pointerPos) + CONTROL_POINT_BORDER_OUTSET));
     }
 
     return object.innerRadius;
@@ -202,7 +200,7 @@ function getInnerRadiusHandles(r: number): Handle[] {
 
 const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObjectState, ControlPointProps>({
     handleFunc: (scene, object, handle, props) => {
-        const radius = getRadius(object, handle) + OUTSET;
+        const radius = getRadius(object, handle) + CONTROL_POINT_BORDER_OUTSET;
         const rotation = isRotateable(object) ? getAbsoluteRotation(scene, object) : 0;
         const handles = getNormalHandles(radius, rotation);
 
@@ -211,7 +209,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
         }
 
         if (props.allowInnerRadius) {
-            const innerRadius = getInnerRadius(object, handle, props) - OUTSET;
+            const innerRadius = getInnerRadius(object, handle, props) - CONTROL_POINT_BORDER_OUTSET;
             handles.push(...getInnerRadiusHandles(innerRadius));
         }
 
@@ -240,7 +238,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                 )}
                 {allowInnerRadius && (
                     <Circle
-                        radius={innerRadius - OUTSET}
+                        radius={innerRadius - CONTROL_POINT_BORDER_OUTSET}
                         stroke={CONTROL_POINT_BORDER_COLOR}
                         strokeWidth={1}
                         fillEnabled={false}
@@ -248,7 +246,7 @@ const RadiusControlPoints = createControlPointManager<RadiusObject, RadiusObject
                 )}
                 <Circle radius={CENTER_DOT_RADIUS} fill={CONTROL_POINT_BORDER_COLOR} />
                 <Circle
-                    radius={outerRadius + OUTSET}
+                    radius={outerRadius + CONTROL_POINT_BORDER_OUTSET}
                     stroke={CONTROL_POINT_BORDER_COLOR}
                     strokeWidth={1}
                     fillEnabled={false}

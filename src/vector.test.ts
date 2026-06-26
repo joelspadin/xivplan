@@ -8,9 +8,11 @@ import {
     vecAdd,
     vecAngle,
     vecAtAngle,
+    vecDot,
     vecEqual,
     vecMult,
     vecNormal,
+    vecProject,
     vecSub,
     vecUnit,
 } from './vector';
@@ -52,6 +54,16 @@ describe('vecMult', () => {
         expect(vecMult(v(1, 2), 2)).toEqual(v(2, 4));
         expect(vecMult(v(1, 2), 0.5)).toEqual(v(0.5, 1));
         expect(vecMult(v(1, 2), -1)).toEqual(v(-1, -2));
+    });
+});
+
+describe('vecDot', () => {
+    test('returns dot product between two vectors', () => {
+        expect(vecDot(v(0, 0), v(0, 0))).toEqual(0);
+        expect(vecDot(v(0, 0), v(1, 2))).toEqual(0);
+        expect(vecDot(v(1, 2), v(0, 0))).toEqual(0);
+        expect(vecDot(v(1, 2), v(2, 3))).toEqual(8);
+        expect(vecDot(v(-2, 3), v(4, -1))).toEqual(-11);
     });
 });
 
@@ -199,5 +211,29 @@ describe('getDistanceFromLine', () => {
 
     test('returns NaN if start and end are equal', () => {
         expect(getDistanceFromLine(v(0, 0), v(0, 0), v(1, 1))).toBeNaN();
+    });
+});
+
+describe('vecProject', () => {
+    test('returns the projection of a onto b', () => {
+        // Parallel vectors
+        expect(vecProject(v(1, 1), v(1, 1))).toEqual(v(1, 1));
+        expect(vecProject(v(1, 1), v(2, 2))).toEqual(v(1, 1));
+        expect(vecProject(v(2, 2), v(1, 1))).toEqual(v(2, 2));
+        expect(vecProject(v(1, 1), v(-1, -1))).toEqual(v(1, 1));
+        expect(vecProject(v(-3, -3), v(1, 1))).toEqual(v(-3, -3));
+
+        // Perpendicular vectors
+        expect(vecProject(v(-1, 1), v(1, 1))).toEqual(v(0, 0));
+
+        // ~arbitrary vectors
+        expect(vecProject(v(-1, 5), v(4, 6))).toEqual(v(2, 3));
+        expect(vecProject(v(0, 6), v(6, 2))).toSatisfy(vecCloseTo(1.8, 0.6));
+    });
+
+    test('returns (0,0) if the target vector is of length 0', () => {
+        expect(vecProject(v(1, 2), v(0, 0))).toEqual(v(0, 0));
+        expect(vecProject(v(-2, 3), v(0, 0))).toEqual(v(0, 0));
+        expect(vecProject(v(-3, -1), v(0, 0))).toEqual(v(0, 0));
     });
 });

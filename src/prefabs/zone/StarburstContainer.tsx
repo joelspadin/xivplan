@@ -8,21 +8,17 @@ import type { Scene, StarburstZone, UnknownObject } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { clampRotation, mod360, type Enum } from '../../util';
 import { distance } from '../../vector';
-import {
-    CONTROL_POINT_BORDER_COLOR,
-    HandleStyle,
-    createControlPointManager,
-    type HandleFuncProps,
-} from '../ControlPoint';
+import { createControlPointManager, type ControlledObjectStateBase } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { MIN_RADIUS } from '../bounds';
+import { CONTROL_POINT_BORDER_COLOR, HandleStyle, type HandleFuncProps } from '../controlpoints';
 import { useShowResizer } from '../highlight';
 
 interface StarburstControlProps {
     minSpokeWidth: number;
 }
 
-export interface StarburstObjectState {
+export interface StarburstObjectState extends ControlledObjectStateBase {
     radius: number;
     rotation: number;
     spokeWidth: number;
