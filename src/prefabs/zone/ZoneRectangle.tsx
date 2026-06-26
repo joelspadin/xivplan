@@ -52,30 +52,37 @@ const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) =
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
 
-    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
-
-    const highlightOffset = style.strokeWidth;
-    const highlightWidth = object.width + highlightOffset;
-    const highlightHeight = object.height + highlightOffset;
-
     return (
-        <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
-            {(groupProps) => (
-                <Group {...groupProps} {...overrideProps}>
-                    {highlightProps && (
-                        <Rect
-                            offsetX={highlightOffset / 2}
-                            offsetY={highlightOffset / 2}
-                            width={highlightWidth}
-                            height={highlightHeight}
-                            {...highlightProps}
-                        />
-                    )}
-                    <HideGroup>
-                        <Rect width={object.width} height={object.height} {...style} />
-                    </HideGroup>
-                </Group>
-            )}
+        <ResizeableObjectContainer object={object}>
+            {(state) => {
+                const style = getZoneStyle(
+                    object.color,
+                    object.opacity,
+                    Math.min(state.width, state.height),
+                    object.hollow,
+                );
+
+                const highlightOffset = style.strokeWidth;
+                const highlightWidth = state.width + highlightOffset;
+                const highlightHeight = state.height + highlightOffset;
+
+                return (
+                    <Group {...state} {...overrideProps}>
+                        {highlightProps && (
+                            <Rect
+                                offsetX={highlightOffset / 2}
+                                offsetY={highlightOffset / 2}
+                                width={highlightWidth}
+                                height={highlightHeight}
+                                {...highlightProps}
+                            />
+                        )}
+                        <HideGroup>
+                            <Rect width={state.width} height={state.height} {...style} />
+                        </HideGroup>
+                    </Group>
+                );
+            }}
         </ResizeableObjectContainer>
     );
 };

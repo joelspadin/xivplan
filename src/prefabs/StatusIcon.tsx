@@ -13,6 +13,7 @@ import { useImageTracked } from '../useObjectLoading';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
 import { ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { ModifierKeyBehavior } from './controlpoints';
 import { useHighlightProps, useOverrideProps } from './highlight';
 
 const DEFAULT_SIZE = 32;
@@ -92,20 +93,26 @@ const IconRenderer: React.FC<RendererProps<IconObject>> = ({ object }) => {
     const [image] = useImageTracked(object.image);
 
     return (
-        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
-            {(groupProps) => (
-                <Group {...groupProps} {...overrideProps}>
+        <ResizeableObjectContainer
+            object={object}
+            transformationProps={{
+                centerScalingBehavior: ModifierKeyBehavior.ForceEnabled,
+                keepRatioBehavior: ModifierKeyBehavior.Inverted,
+            }}
+        >
+            {(state) => (
+                <Group {...state} {...overrideProps}>
                     {highlightProps && (
                         <Rect
-                            width={object.width}
-                            height={object.height}
-                            cornerRadius={(object.width + object.height) / 2 / 5}
+                            width={state.width}
+                            height={state.height}
+                            cornerRadius={(state.width + state.height) / 2 / 5}
                             {...highlightProps}
                         />
                     )}
                     <HideGroup opacity={object.opacity / 100}>
-                        <KonvaImage image={image} width={object.width} height={object.height} />
-                        <IconTimer time={object.time ?? 0} width={object.width} height={object.height} />
+                        <KonvaImage image={image} width={state.width} height={state.height} />
+                        <IconTimer time={object.time ?? 0} width={state.width} height={state.height} />
                     </HideGroup>
                 </Group>
             )}

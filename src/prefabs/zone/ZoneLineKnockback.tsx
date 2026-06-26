@@ -80,39 +80,41 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
         });
     }, [fill, arrow, object.opacity, arrowRef]);
 
-    const highlightOffset = style.strokeWidth;
-    const highlightWidth = object.width + highlightOffset;
-    const highlightHeight = object.height + highlightOffset;
-
     return (
         <>
-            <ResizeableObjectContainer object={object} transformerProps={{ keepRatio: false }}>
-                {(groupProps) => (
-                    <Group {...groupProps} {...overrideProps}>
-                        {highlightProps && (
-                            <Rect
-                                offsetX={highlightOffset / 2}
-                                offsetY={highlightOffset / 2}
-                                width={highlightWidth}
-                                height={highlightHeight}
-                                {...highlightProps}
-                            />
-                        )}
-                        <HideGroup>
-                            <Rect
-                                width={object.width}
-                                height={object.height}
-                                fillPatternImage={pattern}
-                                fillPatternOffsetX={PATTERN_W / 2}
-                                fillPatternOffsetY={PATTERN_H / 2}
-                                fillPatternX={object.width / 2}
-                                fillPatternY={object.height / 2}
-                                fillPatternRepeat="repeat"
-                                {...backgroundProps}
-                            />
-                        </HideGroup>
-                    </Group>
-                )}
+            <ResizeableObjectContainer object={object}>
+                {(state) => {
+                    const highlightOffset = style.strokeWidth;
+                    const highlightWidth = state.width + highlightOffset;
+                    const highlightHeight = state.height + highlightOffset;
+
+                    return (
+                        <Group {...state} {...overrideProps}>
+                            {highlightProps && (
+                                <Rect
+                                    offsetX={highlightOffset / 2}
+                                    offsetY={highlightOffset / 2}
+                                    width={highlightWidth}
+                                    height={highlightHeight}
+                                    {...highlightProps}
+                                />
+                            )}
+                            <HideGroup>
+                                <Rect
+                                    width={state.width}
+                                    height={state.height}
+                                    fillPatternImage={pattern}
+                                    fillPatternOffsetX={PATTERN_W / 2}
+                                    fillPatternOffsetY={PATTERN_H / 2}
+                                    fillPatternX={state.width / 2}
+                                    fillPatternY={state.height / 2}
+                                    fillPatternRepeat="repeat"
+                                    {...backgroundProps}
+                                />
+                            </HideGroup>
+                        </Group>
+                    );
+                }}
             </ResizeableObjectContainer>
 
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>

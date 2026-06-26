@@ -20,7 +20,8 @@ import { useImageTracked } from '../useObjectLoading';
 import { makeDisplayName } from '../util';
 import { HideGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
-import { ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { type ResizeableGroupState, ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { ModifierKeyBehavior } from './controlpoints';
 import { useHighlightProps, useOverrideProps } from './highlight';
 
 // https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
@@ -70,14 +71,14 @@ registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
     };
 });
 
-function getDashSize(object: MarkerObject) {
+function getDashSize(object: MarkerObject, state: ResizeableGroupState) {
     switch (object.shape) {
         case 'square':
-            return (object.width + object.height) / 2 / 8;
+            return (state.width + state.height) / 2 / 8;
 
         case 'circle': {
-            const a = object.width / 2;
-            const b = object.height / 2;
+            const a = state.width / 2;
+            const b = state.height / 2;
             const perimiter = 2 * Math.PI * Math.sqrt((a * a + b * b) / 2);
             return perimiter / 24;
         }
@@ -174,68 +175,75 @@ const MarkerRenderer: React.FC<RendererProps<MarkerObject>> = ({ object }) => {
     const overrideProps = useOverrideProps(object);
     const [image] = useImageTracked(object.image);
 
-    const iconWidth = object.width * ICON_RATIO;
-    const iconHeight = object.height * ICON_RATIO;
-    const iconX = (object.width - iconWidth) / 2;
-    const iconY = (object.height - iconHeight) / 2;
-
-    const strokeWidth = 1;
-
-    const dashSize = getDashSize(object);
-    const strokeProps: Partial<EllipseConfig> = {
-        stroke: object.color,
-        strokeWidth,
-        shadowColor: object.color,
-        shadowBlur: 1,
-        dash: [dashSize, dashSize],
-    };
-
-    const highlightOffset = strokeWidth * 4;
-    const highlightWidth = object.width + highlightOffset;
-    const highlightHeight = object.height + highlightOffset;
-
     return (
-        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
-            {(groupProps) => (
-                <Group {...groupProps} {...overrideProps}>
-                    {object.shape === 'circle' && (
-                        <EllipseOutline
-                            width={object.width}
-                            height={object.height}
-                            highlightProps={highlightProps}
-                            highlightWidth={highlightWidth}
-                            highlightHeight={highlightHeight}
-                            highlightOffset={highlightOffset}
-                            strokeProps={strokeProps}
-                            dashSize={dashSize}
-                            opacity={object.opacity / 100}
-                        />
-                    )}
-                    {object.shape === 'square' && (
-                        <RectangleOutline
-                            width={object.width}
-                            height={object.height}
-                            highlightProps={highlightProps}
-                            highlightWidth={highlightWidth}
-                            highlightHeight={highlightHeight}
-                            highlightOffset={highlightOffset}
-                            strokeProps={strokeProps}
-                            dashSize={dashSize}
-                            opacity={object.opacity / 100}
-                        />
-                    )}
-                    <HideGroup>
-                        <Image
-                            image={image}
-                            x={iconX}
-                            y={iconY}
-                            width={iconWidth}
-                            height={iconHeight}
-                            opacity={object.opacity / 100}
-                        />
-                    </HideGroup>
-                </Group>
-            )}
+        <ResizeableObjectContainer
+            object={object}
+            transformationProps={{
+                centerScalingBehavior: ModifierKeyBehavior.ForceEnabled,
+                keepRatioBehavior: ModifierKeyBehavior.Inverted,
+            }}
+        >
+            {(state) => {
+                const iconWidth = state.width * ICON_RATIO;
+                const iconHeight = state.height * ICON_RATIO;
+                const iconX = (state.width - iconWidth) / 2;
+                const iconY = (state.height - iconHeight) / 2;
+
+                const strokeWidth = 1;
+
+                const dashSize = getDashSize(object, state);
+                const strokeProps: Partial<EllipseConfig> = {
+                    stroke: object.color,
+                    strokeWidth,
+                    shadowColor: object.color,
+                    shadowBlur: 1,
+                    dash: [dashSize, dashSize],
+                };
+
+                const highlightOffset = strokeWidth * 4;
+                const highlightWidth = state.width + highlightOffset;
+                const highlightHeight = state.height + highlightOffset;
+                return (
+                    <Group {...state} {...overrideProps}>
+                        {object.shape === 'circle' && (
+                            <EllipseOutline
+                                width={state.width}
+                                height={state.height}
+                                highlightProps={highlightProps}
+                                highlightWidth={highlightWidth}
+                                highlightHeight={highlightHeight}
+                                highlightOffset={highlightOffset}
+                                strokeProps={strokeProps}
+                                dashSize={dashSize}
+                                opacity={object.opacity / 100}
+                            />
+                        )}
+                        {object.shape === 'square' && (
+                            <RectangleOutline
+                                width={state.width}
+                                height={state.height}
+                                highlightProps={highlightProps}
+                                highlightWidth={highlightWidth}
+                                highlightHeight={highlightHeight}
+                                highlightOffset={highlightOffset}
+                                strokeProps={strokeProps}
+                                dashSize={dashSize}
+                                opacity={object.opacity / 100}
+                            />
+                        )}
+                        <HideGroup>
+                            <Image
+                                image={image}
+                                x={iconX}
+                                y={iconY}
+                                width={iconWidth}
+                                height={iconHeight}
+                                opacity={object.opacity / 100}
+                            />
+                        </HideGroup>
+                    </Group>
+                );
+            }}
         </ResizeableObjectContainer>
     );
 };

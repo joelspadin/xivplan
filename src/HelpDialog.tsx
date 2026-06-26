@@ -84,7 +84,11 @@ export const HelpDialog: React.FC<HelpDialogProps> = (props) => {
                                 <dt>
                                     <HotkeyName keys="shift" suffix="left click + drag" />
                                 </dt>
-                                <dd>Proportional resize</dd>
+                                <dd>
+                                    Lock/unlock proportions
+                                    <br />
+                                    during transformation
+                                </dd>
                             </dl>
                         </section>
                     </DialogContent>

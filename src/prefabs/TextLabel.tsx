@@ -2,7 +2,7 @@ import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { Group, Text, Transformer } from 'react-konva';
+import { Group, type KonvaNodeEvents, Text, Transformer } from 'react-konva';
 import { registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
@@ -20,7 +20,6 @@ import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { DraggableObject } from './DraggableObject';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
-import type { GroupProps } from './ResizeableObjectContainer';
 import { useHighlightProps, useOverrideProps, useShowResizer } from './highlight';
 
 const DEFAULT_TEXT = 'Text';
@@ -140,6 +139,8 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
         </>
     );
 };
+
+export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
 
 interface TextContainerProps {
     object: TextObject;

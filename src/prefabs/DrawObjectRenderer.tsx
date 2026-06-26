@@ -9,45 +9,46 @@ import { type DrawObject, ObjectType } from '../scene';
 import { HIGHLIGHT_WIDTH } from '../theme';
 import { DRAW_LINE_PROPS } from './DrawObjectStyles';
 import { HideCutoutGroup } from './HideGroup';
-import { ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { type ResizeableGroupState, ResizeableObjectContainer } from './ResizeableObjectContainer';
+import { ModifierKeyBehavior } from './controlpoints';
 import { useHighlightProps, useOverrideProps } from './highlight';
 
-function getLinePoints(object: DrawObject) {
-    return object.points.map((v, i) => v * (i % 2 === 0 ? object.width : -object.height));
+function getLinePoints(object: DrawObject, state: ResizeableGroupState) {
+    return object.points.map((v, i) => v * (i % 2 === 0 ? state.width : -state.height));
 }
 
 export const DrawObjectRenderer: React.FC<RendererProps<DrawObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const points = getLinePoints(object);
 
     return (
         <ResizeableObjectContainer
             object={object}
-            cache
-            cacheKey={highlightProps}
-            transformerProps={{ centeredScaling: true }}
+            transformationProps={{ centerScalingBehavior: ModifierKeyBehavior.ForceEnabled }}
         >
-            {(groupProps) => (
-                <Group {...groupProps} offsetX={0} offsetY={0} opacity={object.opacity / 100} {...overrideProps}>
-                    {highlightProps && (
-                        <Line
-                            {...DRAW_LINE_PROPS}
-                            {...highlightProps}
-                            points={points}
-                            strokeWidth={object.brushSize + HIGHLIGHT_WIDTH}
-                        />
-                    )}
-                    <HideCutoutGroup>
-                        <Line
-                            {...DRAW_LINE_PROPS}
-                            points={points}
-                            stroke={object.color}
-                            strokeWidth={object.brushSize}
-                        />
-                    </HideCutoutGroup>
-                </Group>
-            )}
+            {(state) => {
+                const points = getLinePoints(object, state);
+                return (
+                    <Group {...state} offsetX={0} offsetY={0} opacity={object.opacity / 100} {...overrideProps}>
+                        {highlightProps && (
+                            <Line
+                                {...DRAW_LINE_PROPS}
+                                {...highlightProps}
+                                points={points}
+                                strokeWidth={object.brushSize + HIGHLIGHT_WIDTH}
+                            />
+                        )}
+                        <HideCutoutGroup>
+                            <Line
+                                {...DRAW_LINE_PROPS}
+                                points={points}
+                                stroke={object.color}
+                                strokeWidth={object.brushSize}
+                            />
+                        </HideCutoutGroup>
+                    </Group>
+                );
+            }}
         </ResizeableObjectContainer>
     );
 };

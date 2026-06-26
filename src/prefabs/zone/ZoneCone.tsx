@@ -16,16 +16,12 @@ import { useIsDragging } from '../../selection';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { type Enum, clamp, clampRotation, degtorad, mod360 } from '../../util';
 import { distance } from '../../vector';
-import {
-    CONTROL_POINT_BORDER_COLOR,
-    type HandleFuncProps,
-    HandleStyle,
-    createControlPointManager,
-} from '../ControlPoint';
+import { type ControlledObjectStateBase, createControlPointManager } from '../ControlPoint';
 import { DraggableObject } from '../DraggableObject';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MAX_CONE_ANGLE, MIN_CONE_ANGLE, MIN_RADIUS } from '../bounds';
+import { CONTROL_POINT_BORDER_COLOR, type HandleFuncProps, HandleStyle } from '../controlpoints';
 import { useHighlightProps, useOverrideProps, useShowResizer } from '../highlight';
 import { getZoneStyle } from './style';
 
@@ -208,7 +204,7 @@ const HandleId = {
 } as const;
 type HandleId = Enum<typeof HandleId>;
 
-interface ConeState {
+interface ConeState extends ControlledObjectStateBase {
     radius: number;
     rotation: number;
     coneAngle: number;
