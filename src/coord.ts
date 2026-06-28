@@ -60,6 +60,11 @@ export function getCanvasCoord(scene: Scene, p: Position): Vector2d {
     return { x: getCanvasX(scene, absolutePos.x), y: getCanvasY(scene, absolutePos.y) };
 }
 
+export function getCanvasCoordInStep(scene: Scene, step: SceneStep, p: Position): Vector2d {
+    const absolutePos = getAbsolutePositionInStep(step, p);
+    return { x: getCanvasX(scene, absolutePos.x), y: getCanvasY(scene, absolutePos.y) };
+}
+
 export function getCanvasSize(scene: Scene): { width: number; height: number } {
     return {
         width: scene.arena.width + scene.arena.padding * 2,

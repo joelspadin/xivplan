@@ -109,6 +109,9 @@ export function lerpObject(
 ): SceneObject {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: any = { ...b, id: a.id };
+    // Store step-B id so tethers (whose startId/endId reference step-B object ids) can
+    // find this lerped object even though it lives under step-A id for Konva node reuse.
+    result._bId = (b as BaseObject).id;
 
     // Apply easing to t so all property lerps respect the animation curve.
     // Use b's enterEase (the "incoming" state's easing); fall back to linear.

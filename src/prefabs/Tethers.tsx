@@ -9,8 +9,9 @@ import * as React from 'react';
 import { Arrow, Circle, Group, Line } from 'react-konva';
 import { CursorGroup } from '../CursorGroup';
 import { getObjectById, useScene } from '../SceneProvider';
+import { useDisplayObjectsList } from '../render/DisplayObjectsContext';
 import { getArrowStrokeExtent } from '../arrowUtil';
-import { getCanvasCoord } from '../coord';
+import { getCanvasCoordInStep } from '../coord';
 import { EditMode } from '../editMode';
 import { DetailsItem } from '../panel/DetailsItem';
 import { ListComponentProps, getListComponent, registerListComponent } from '../panel/ListComponentRegistry';
@@ -22,6 +23,7 @@ import {
     ObjectType,
     Scene,
     SceneObject,
+    SceneStep,
     Tether,
     TetherType,
     isEnemy,
@@ -85,13 +87,14 @@ const INVALID_END_POS: Vector2d = { x: 20, y: 0 };
 
 function getTargetPoints(
     scene: Scene,
+    step: SceneStep,
     startObject: SceneObject | undefined,
     endObject: SceneObject | undefined,
 ): [Vector2d, Vector2d] {
     const startPos = isMoveable(startObject) ? startObject : INVALID_START_POS;
     const endPos = isMoveable(endObject) ? endObject : INVALID_END_POS;
 
-    return [getCanvasCoord(scene, startPos), getCanvasCoord(scene, endPos)];
+    return [getCanvasCoordInStep(scene, step, startPos), getCanvasCoordInStep(scene, step, endPos)];
 }
 
 function isGroundObject(object: SceneObject) {
@@ -124,11 +127,12 @@ function getTargetOffset(object: SceneObject | undefined): number {
 
 function getTetherPoints(
     scene: Scene,
+    step: SceneStep,
     startObject: SceneObject | undefined,
     endObject: SceneObject | undefined,
     addOffset = 0,
 ): [Vector2d, Vector2d] {
-    const [start, end] = getTargetPoints(scene, startObject, endObject);
+    const [start, end] = getTargetPoints(scene, step, startObject, endObject);
 
     const unit = vecUnit(vecSub(end, start));
     const dist = distance(start, end);
@@ -149,14 +153,15 @@ function getHighlightProps(object: Tether, baseHighlightProps: ShapeConfig): Nod
 
 interface TetherProps extends RendererProps<Tether> {
     scene: Scene;
+    step: SceneStep;
     highlightProps?: ShapeConfig;
     magnetOverrideProps?: ShapeConfig;
     startObject: SceneObject | undefined;
     endObject: SceneObject | undefined;
 }
 
-const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
-    const [start, end] = getTetherPoints(scene, startObject, endObject);
+const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, step, highlightProps, startObject, endObject }) => {
+    const [start, end] = getTetherPoints(scene, step, startObject, endObject);
     const lineProps: LineConfig = {
         points: [start.x, start.y, end.x, end.y],
         fill: object.color,
@@ -179,8 +184,8 @@ const LineTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightPro
 const POINTER_LENGTH = 10;
 const POINTER_WIDTH = 10;
 
-const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
-    const [start, end] = getTetherPoints(scene, startObject, endObject);
+const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, step, highlightProps, startObject, endObject }) => {
+    const [start, end] = getTetherPoints(scene, step, startObject, endObject);
     const center = vecMult(vecAdd(start, end), 0.5);
     const offset = vecMult(vecUnit(vecSub(end, start)), object.width * 1.25);
 
@@ -222,11 +227,11 @@ const CloseTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightPr
     );
 };
 
-const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, highlightProps, startObject, endObject }) => {
+const FarTetherRenderer: React.FC<TetherProps> = ({ object, scene, step, highlightProps, startObject, endObject }) => {
     // Shrink the tether by the amount that the stroke extends past the tips of the arrows.
     const extent = getArrowStrokeExtent(POINTER_LENGTH, POINTER_WIDTH, object.width);
 
-    const [start, end] = getTetherPoints(scene, startObject, endObject, extent.top * 2);
+    const [start, end] = getTetherPoints(scene, step, startObject, endObject, extent.top * 2);
 
     const arrowProps: ArrowConfig = {
         points: [start.x, start.y, end.x, end.y],
@@ -264,6 +269,7 @@ interface MagnetTetherProps extends TetherProps {
 const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
     object,
     scene,
+    step,
     highlightProps,
     magnetOverrideProps,
     startObject,
@@ -271,7 +277,7 @@ const MagnetTetherRenderer: React.FC<MagnetTetherProps> = ({
     startType,
     endType,
 }) => {
-    const [start, end] = getTetherPoints(scene, startObject, endObject, object.width);
+    const [start, end] = getTetherPoints(scene, step, startObject, endObject, object.width);
 
     const lineProps: LineConfig = {
         points: [start.x, start.y, end.x, end.y],
@@ -371,10 +377,17 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
     const overrideProps = useOverrideProps(object);
     const groupRef = React.useRef<Konva.Group>(null);
     const [editMode] = useEditMode();
-    const { scene } = useScene();
+    const { scene, step } = useScene();
+    const displayObjects = useDisplayObjectsList();
 
-    const startObject = getObjectById(scene, object.startId);
-    const endObject = getObjectById(scene, object.endId);
+    const startObject = displayObjects.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (o) => o.id === object.startId || (o as any)._bId === object.startId,
+    );
+    const endObject = displayObjects.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (o) => o.id === object.endId || (o as any)._bId === object.endId,
+    );
 
     const cacheConfig = getCacheConfig(object);
     const Renderer = getRenderer(object.tether);
@@ -394,6 +407,7 @@ const TetherRenderer: React.FC<RendererProps<Tether>> = ({ object }) => {
                         <Renderer
                             object={object}
                             scene={scene}
+                            step={step}
                             highlightProps={highlightProps}
                             magnetOverrideProps={overrideProps}
                             startObject={startObject}
@@ -416,7 +430,7 @@ export interface TetherToCursorProps {
 
 export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cursorPos, tether }) => {
     const groupRef = React.useRef<Konva.Group>(null);
-    const { scene } = useScene();
+    const { scene, step } = useScene();
 
     const fakeTetherObject: Tether = {
         id: -1,
@@ -443,6 +457,7 @@ export const TetherToCursor: React.FC<TetherToCursorProps> = ({ startObject, cur
                 <Renderer
                     object={fakeTetherObject}
                     scene={scene}
+                    step={step}
                     startObject={startObject}
                     endObject={fakeCursorObject}
                 />

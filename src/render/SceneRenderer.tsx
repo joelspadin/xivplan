@@ -16,6 +16,7 @@ import { useEditMode } from '../useEditMode';
 import { usePanelDrag } from '../usePanelDrag';
 import { useDisplayObjects } from '../playback/PlaybackContext';
 import { ArenaRenderer } from './ArenaRenderer';
+import { DisplayObjectsContext } from './DisplayObjectsContext';
 import { DrawTarget } from './DrawTarget';
 import { ObjectRenderer } from './ObjectRenderer';
 import { StageContext } from './StageContext';
@@ -147,7 +148,7 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgr
     const objects = useDisplayObjects(scene, step.objects);
 
     return (
-        <>
+        <DisplayObjectsContext value={objects}>
             {listening && <SceneHotkeyHandler />}
 
             <Layer name={LayerName.Ground} listening={listening}>
@@ -166,7 +167,7 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgr
                 <DrawTarget />
             </Layer>
             <Layer name={LayerName.Controls} listening={listening} />
-        </>
+        </DisplayObjectsContext>
     );
 };
 
