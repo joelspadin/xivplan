@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
 import { CrossStepContext, CrossStepSelection, DEFAULT_FILTERS, SimilarityFilters } from './CrossStepContext';
 import { DragSelectionContext, SceneSelection, SelectionContext, SpotlightContext } from './SelectionContext';
 
@@ -10,20 +10,23 @@ export const SelectionProvider: React.FC<PropsWithChildren> = ({ children }) => 
     const [filters, setFilters] = useState<SimilarityFilters>(DEFAULT_FILTERS);
     const [positionTolerance, setPositionTolerance] = useState(0);
 
+    const crossStepContextValue = useMemo(
+        () => ({
+            selection: crossStepSelection,
+            setSelection: setCrossStepSelection,
+            filters,
+            setFilters,
+            positionTolerance,
+            setPositionTolerance,
+        }),
+        [crossStepSelection, setCrossStepSelection, filters, setFilters, positionTolerance, setPositionTolerance],
+    );
+
     return (
         <SelectionContext value={state}>
             <SpotlightContext value={spotlightState}>
                 <DragSelectionContext value={dragState}>
-                    <CrossStepContext
-                        value={{
-                            selection: crossStepSelection,
-                            setSelection: setCrossStepSelection,
-                            filters,
-                            setFilters,
-                            positionTolerance,
-                            setPositionTolerance,
-                        }}
-                    >
+                    <CrossStepContext value={crossStepContextValue}>
                         {children}
                     </CrossStepContext>
                 </DragSelectionContext>

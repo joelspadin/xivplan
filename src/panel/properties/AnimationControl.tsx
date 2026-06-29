@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useScene } from '../../SceneProvider';
 import { AnimationProps, EasingStyle, PulseStyle, SceneObject } from '../../scene';
 import { commonValue } from '../../util';
-import { useOptionalPlayback } from '../../playback/PlaybackContext';
+import { useOptionalPlaybackDispatch } from '../../playback/PlaybackContext';
 import { PropertiesControlProps } from '../PropertiesControl';
 
 // ─── Easing options ───────────────────────────────────────────────────────────
@@ -195,7 +195,9 @@ function CombinedCurve({ enterEase, exitEase, enterStart, exitEnd }: CombinedCur
 // ─── Preview hook ─────────────────────────────────────────────────────────────
 
 function useEasingPreview(active: boolean, baseStep: number, stepsCount: number) {
-    const playback = useOptionalPlayback();
+    // Use stable dispatch context so this effect never re-runs due to playbackTime
+    // advancing — only re-runs when active/baseStep/stepsCount actually change.
+    const dispatch = useOptionalPlaybackDispatch();
     const rafRef   = useRef<number>(0);
     const startRef = useRef<number | null>(null);
     const PERIOD_MS = 2000;
@@ -206,7 +208,7 @@ function useEasingPreview(active: boolean, baseStep: number, stepsCount: number)
     }, []);
 
     useEffect(() => {
-        if (!active || !playback || stepsCount < 2) {
+        if (!active || !dispatch || stepsCount < 2) {
             stop();
             return;
         }
@@ -216,15 +218,16 @@ function useEasingPreview(active: boolean, baseStep: number, stepsCount: number)
         const tick = (now: number) => {
             if (startRef.current === null) startRef.current = now;
             const frac = ((now - startRef.current) % PERIOD_MS) / PERIOD_MS;
-            playback.setPlaybackTime(fromStep + frac);
+            dispatch.setPlaybackTime(fromStep + frac);
             rafRef.current = requestAnimationFrame(tick);
         };
         rafRef.current = requestAnimationFrame(tick);
         return () => {
             stop();
-            playback.setPlaybackTime(Math.round(playback.state.playbackTime));
+            // Read current time via ref to avoid stale closure.
+            dispatch.setPlaybackTime(Math.round(dispatch.playbackTimeRef.current));
         };
-    }, [active, baseStep, stepsCount, playback, stop]);
+    }, [active, baseStep, stepsCount, dispatch, stop]);
 }
 
 // ─── Main control ─────────────────────────────────────────────────────────────
@@ -232,14 +235,15 @@ function useEasingPreview(active: boolean, baseStep: number, stepsCount: number)
 export const AnimationControl: React.FC<PropertiesControlProps<SceneObject>> = ({ objects }) => {
     const classes  = useStyles();
     const { dispatch, scene } = useScene();
-    const playback = useOptionalPlayback();
+    const playbackDispatch = useOptionalPlaybackDispatch();
 
     // Keyed to current selection so preview auto-stops when selection changes
     const [previewForIds, setPreviewForIds] = useState<string | null>(null);
     const objectIds  = objects.map((o) => o.id).join(',');
     const showPreview = previewForIds === objectIds;
 
-    const baseStep   = playback ? Math.floor(playback.state.playbackTime) : 0;
+    // Read current playback time from ref (no subscription — won't re-render on every frame).
+    const baseStep   = playbackDispatch ? Math.floor(playbackDispatch.playbackTimeRef.current) : 0;
     const stepsCount = scene.steps.length;
     useEasingPreview(showPreview, baseStep, stepsCount);
 
@@ -365,7 +369,7 @@ export const AnimationControl: React.FC<PropertiesControlProps<SceneObject>> = (
             </Field>
 
             {/* ── Preview ── */}
-            {playback && stepsCount >= 2 && (
+            {playbackDispatch && stepsCount >= 2 && (
                 <Checkbox
                     label="Show preview"
                     checked={showPreview}

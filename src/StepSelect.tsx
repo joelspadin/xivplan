@@ -30,12 +30,13 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
-import React, { HTMLAttributes, RefAttributes, useState } from 'react';
+import Konva from 'konva';
+import React, { HTMLAttributes, RefAttributes, memo, useCallback, useRef, useState } from 'react';
 import { CrossStepSelection } from './CrossStepContext';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
 import { useCrossStepSelection, useSelection, useSimilarObjects } from './selection';
-import { useOptionalPlayback } from './playback/PlaybackContext';
+import { useOptionalPlaybackDispatch } from './playback/PlaybackContext';
 import { interpolateStep } from './playback/interpolate';
 import { ScenePreview } from './render/SceneRenderer';
 import { Scene, SceneObject } from './scene';
@@ -46,7 +47,7 @@ export const StepSelect: React.FC = () => {
     const classes = useStyles();
     const { scene, stepIndex, dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
-    const playback = useOptionalPlayback();
+    const playbackDispatch = useOptionalPlaybackDispatch();
     const steps = scene.steps.map((_, i) => i);
 
     const { filters, positionTolerance, selection: crossStep, setSelection: setCrossStep } = useCrossStepSelection();
@@ -83,7 +84,7 @@ export const StepSelect: React.FC = () => {
 
         cancelConnectionSelection();
         dispatch({ type: 'setStep', index });
-        playback?.setPlaybackTime(index);
+        playbackDispatch?.setPlaybackTime(index);
 
         const stepCrossSelection = crossStep.get(index);
         if (stepCrossSelection) {
@@ -160,15 +161,15 @@ export const AddStepButton: React.FC<ButtonProps> = (props) => {
     const { scene } = useScene();
     const { dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
-    const playback = useOptionalPlayback();
+    const playbackDispatch = useOptionalPlaybackDispatch();
 
     const handleAddStep = () => {
         cancelConnectionSelection();
         // If scrubbed to a fractional position, snapshot tracked objects at their
         // interpolated state. Ceil-only entering objects are excluded.
         let snapshotObjects: readonly SceneObject[] | undefined;
-        if (playback) {
-            const t = playback.state.playbackTime;
+        if (playbackDispatch) {
+            const t = playbackDispatch.playbackTimeRef.current;
             const frac = t - Math.floor(t);
             if (frac !== 0) {
                 const maxStep = scene.steps.length - 1;
@@ -359,6 +360,50 @@ const ReorderableStepItem: React.FC<StepItemProps> = ({ scene, step }) => {
     );
 };
 
+interface StepPreviewImageProps {
+    scene: Scene;
+    stepIndex: number;
+}
+
+const StepPreviewImage = memo(function StepPreviewImage({ scene, stepIndex }: StepPreviewImageProps) {
+    const [dataUrl, setDataUrl] = useState<string | null>(null);
+    const capturedRef = useRef(false);
+
+    const captureStage = useCallback((stage: Konva.Stage | null) => {
+        if (!stage || capturedRef.current) return;
+        capturedRef.current = true;
+        requestAnimationFrame(() => {
+            const url = stage.toDataURL();
+            if (url) setDataUrl(url);
+        });
+    }, []);
+
+    if (dataUrl) {
+        return (
+            <img
+                src={dataUrl}
+                width={PREVIEW_SIZE}
+                height={PREVIEW_SIZE}
+                style={{ display: 'block' }}
+                alt=""
+                aria-hidden
+            />
+        );
+    }
+
+    return (
+        <ScenePreview
+            ref={captureStage}
+            scene={scene}
+            stepIndex={stepIndex}
+            width={PREVIEW_SIZE}
+            height={PREVIEW_SIZE}
+            backgroundColor="transparent"
+            simple
+        />
+    );
+});
+
 const StepItem: React.FC<StepItemProps> = ({ ref, scene, step, className, ...props }) => {
     const classes = useStyles();
     const stepText = `Step ${getStepText(step.index)}`;
@@ -366,14 +411,7 @@ const StepItem: React.FC<StepItemProps> = ({ ref, scene, step, className, ...pro
     return (
         <div ref={ref} className={mergeClasses(classes.stepItem, className)} {...props}>
             <div className={classes.stepHeader}>{stepText}</div>
-            <ScenePreview
-                scene={scene}
-                stepIndex={step.index}
-                width={PREVIEW_SIZE}
-                height={PREVIEW_SIZE}
-                backgroundColor="transparent"
-                simple
-            />
+            <StepPreviewImage scene={scene} stepIndex={step.index} />
         </div>
     );
 };

@@ -38,13 +38,18 @@ export const SceneObjectsPanel: React.FC<SceneObjectsPanelProps> = ({ className 
         }
     }, [selection, setFilters]);
 
-    // Clear any filters that are no longer applicable to the current selection
+    // Clear any filters that are no longer applicable to the current selection.
+    // Return prev if values are unchanged to avoid a spurious context re-render.
     useEffect(() => {
-        setFilters((prev) => ({
-            trackId: prev.trackId && available.trackId,
-            properties: prev.properties && available.properties,
-            position: prev.position && available.position,
-        }));
+        setFilters((prev) => {
+            const trackId = prev.trackId && available.trackId;
+            const properties = prev.properties && available.properties;
+            const position = prev.position && available.position;
+            if (trackId === prev.trackId && properties === prev.properties && position === prev.position) {
+                return prev;
+            }
+            return { trackId, properties, position };
+        });
     }, [available, setFilters]);
 
     const similar = useSimilarObjects(filters, positionTolerance);
@@ -78,7 +83,7 @@ export const SceneObjectsPanel: React.FC<SceneObjectsPanelProps> = ({ className 
             {showFilters && (
                 <div className={classes.filterSection}>
                     <div className={classes.filterRow}>
-                        <Text className={classes.filterLabel}>Filter by:</Text>
+                        <Text className={classes.filterLabel}>Select by:</Text>
                         <div className={classes.pillRow}>
                             {available.trackId && (
                                 <ToggleButton

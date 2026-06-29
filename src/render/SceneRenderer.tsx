@@ -14,7 +14,7 @@ import { selectNewObjects, selectNone, useCrossStepSelection, useSelection } fro
 import { UndoContext } from '../undo/undoContext';
 import { useEditMode } from '../useEditMode';
 import { usePanelDrag } from '../usePanelDrag';
-import { useDisplayObjects } from '../playback/PlaybackContext';
+import { StaticPlaybackProvider, useDisplayObjects } from '../playback/PlaybackContext';
 import { ArenaRenderer } from './ArenaRenderer';
 import { DisplayObjectsContext } from './DisplayObjectsContext';
 import { DrawTarget } from './DrawTarget';
@@ -124,7 +124,9 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
                 <SceneContext value={sceneContext}>
                     <SelectionContext value={selectionContext}>
                         <SpotlightContext value={spotlightContext}>
-                            <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
+                            <StaticPlaybackProvider playbackTime={stepIndex ?? 0}>
+                                <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
+                            </StaticPlaybackProvider>
                         </SpotlightContext>
                     </SelectionContext>
                 </SceneContext>

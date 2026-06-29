@@ -18,10 +18,11 @@ import React, {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
-import { AnimationProps, Scene, SceneObject, SceneStep } from '../scene';
+import { Scene, SceneObject, SceneStep } from '../scene';
 import { interpolateStep } from './interpolate';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -33,12 +34,6 @@ export interface PlaybackState {
     playbackTime: number;
     /** Auto-advance speed in steps per second. */
     speed: number;
-    /**
-     * Continuously-advancing wall-clock time in seconds (mod 1000).
-     * Updated every animation frame — used by pulse/blink effects.
-     */
-    pulseTime: number;
-
 }
 
 export interface PlaybackContextValue {
@@ -53,9 +48,33 @@ export interface PlaybackContextValue {
     updateMaxStep: (maxStep: number) => void;
 }
 
+/**
+ * Stable callbacks and refs that never change identity during the provider's lifetime.
+ * Subscribe to this instead of PlaybackContext when you only need to dispatch actions
+ * (and don't want to re-render on every playbackTime/isPlaying change).
+ */
+export interface PlaybackDispatchValue {
+    setPlaybackTime: (t: number) => void;
+    togglePlay: () => void;
+    setSpeed: (speed: number) => void;
+    updateMaxStep: (maxStep: number) => void;
+    /** Always-current isPlaying flag. Read in event handlers; do NOT use as a render dep. */
+    isPlayingRef: React.RefObject<boolean>;
+    /** Always-current playbackTime. Read in event handlers; do NOT use as a render dep. */
+    playbackTimeRef: React.RefObject<number>;
+}
+
 // ─── Context ──────────────────────────────────────────────────────────────────
 
 const PlaybackContext = createContext<PlaybackContextValue | null>(null);
+const PlaybackDispatchContext = createContext<PlaybackDispatchValue | null>(null);
+
+/**
+ * Separate context for pulse time so that the 60fps pulse ticker does not
+ * cause all usePlayback() consumers to re-render. Only components that
+ * actually need per-frame pulse animation subscribe to this context.
+ */
+const PulseTimeContext = createContext<number>(0);
 
 export const PlaybackProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -65,6 +84,11 @@ export const PlaybackProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const maxStepRef = useRef(0);
     const lastTimeRef = useRef<number | null>(null);
+    // Always-current refs exposed via PlaybackDispatchContext for lazy reads in handlers.
+    const isPlayingRef = useRef(isPlaying);
+    isPlayingRef.current = isPlaying;
+    const playbackTimeRef = useRef(playbackTime);
+    playbackTimeRef.current = playbackTime;
 
     // ── Continuous pulse ticker (always running for pulse/blink effects) ──
     useEffect(() => {
@@ -121,15 +145,29 @@ export const PlaybackProvider: React.FC<PropsWithChildren> = ({ children }) => {
         };
     }, [isPlaying, speed]);
 
-    const value: PlaybackContextValue = {
-        state: { isPlaying, playbackTime, speed, pulseTime },
-        setPlaybackTime,
-        togglePlay,
-        setSpeed,
-        updateMaxStep,
-    };
+    // Memoize so consumers only re-render when actual state changes,
+    // not when pulseTime ticks (which causes PlaybackProvider itself to re-render at 60fps).
+    const value = useMemo<PlaybackContextValue>(
+        () => ({ state: { isPlaying, playbackTime, speed }, setPlaybackTime, togglePlay, setSpeed, updateMaxStep }),
+        [isPlaying, playbackTime, speed, setPlaybackTime, togglePlay, setSpeed, updateMaxStep],
+    );
 
-    return <PlaybackContext value={value}>{children}</PlaybackContext>;
+    // Stable dispatch context — identity never changes after mount.
+    // Components that only need callbacks (no state subscription) should use this.
+    const dispatchValue = useMemo<PlaybackDispatchValue>(
+        () => ({ setPlaybackTime, togglePlay, setSpeed, updateMaxStep, isPlayingRef, playbackTimeRef }),
+        // Callbacks are stable (useCallback). Refs are stable objects (useRef). Safe to omit from deps.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [setPlaybackTime, togglePlay, setSpeed, updateMaxStep],
+    );
+
+    return (
+        <PlaybackDispatchContext value={dispatchValue}>
+            <PulseTimeContext value={pulseTime}>
+                <PlaybackContext value={value}>{children}</PlaybackContext>
+            </PulseTimeContext>
+        </PlaybackDispatchContext>
+    );
 };
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
@@ -145,18 +183,31 @@ export const StaticPlaybackProvider: React.FC<PropsWithChildren<{ playbackTime: 
     pulseTime = 0,
 }) => {
     const value: PlaybackContextValue = {
-        state: { isPlaying: false, playbackTime, speed: 1, pulseTime },
+        state: { isPlaying: false, playbackTime, speed: 1 },
         setPlaybackTime: () => {},
         togglePlay: () => {},
         setSpeed: () => {},
         updateMaxStep: () => {},
     };
-    return <PlaybackContext value={value}>{children}</PlaybackContext>;
+    return (
+        <PulseTimeContext value={pulseTime}>
+            <PlaybackContext value={value}>{children}</PlaybackContext>
+        </PulseTimeContext>
+    );
 };
 
 /** Returns playback context, or null when used outside <PlaybackProvider>. */
 export function useOptionalPlayback(): PlaybackContextValue | null {
     return useContext(PlaybackContext);
+}
+
+/**
+ * Returns the current pulse time in seconds (mod 1000), updated at ~60fps.
+ * Only subscribe to this when you actually need per-frame pulse animation —
+ * it causes re-renders at browser framerate.
+ */
+export function usePulseTime(): number {
+    return useContext(PulseTimeContext);
 }
 
 /** Returns playback context. Must be used inside <PlaybackProvider>. */
@@ -169,6 +220,22 @@ export function usePlayback(): PlaybackContextValue {
 }
 
 /**
+ * Returns stable dispatch callbacks + refs without subscribing to state changes.
+ * Use this in components that only call setPlaybackTime/togglePlay and should NOT
+ * re-render when playbackTime advances during playback.
+ */
+export function usePlaybackDispatch(): PlaybackDispatchValue {
+    const ctx = useContext(PlaybackDispatchContext);
+    if (!ctx) throw new Error('usePlaybackDispatch must be used inside <PlaybackProvider>');
+    return ctx;
+}
+
+/** Returns stable dispatch context, or null when outside <PlaybackProvider>. */
+export function useOptionalPlaybackDispatch(): PlaybackDispatchValue | null {
+    return useContext(PlaybackDispatchContext);
+}
+
+/**
  * Returns the object list to display at the current playback position.
  *
  * When playbackTime is fractional (mid-step), returns interpolated objects so that
@@ -177,36 +244,16 @@ export function usePlayback(): PlaybackContextValue {
  * unchanged so the canvas stays fully interactive for editing.
  * Outside PlaybackProvider (e.g. ScenePreview): returns editModeObjects unchanged.
  */
-// ─── Pulse / blink effect ─────────────────────────────────────────────────────
-
-function applyPulseToObjects(objects: readonly SceneObject[], pulseTime: number): readonly SceneObject[] {
-    return objects.map((obj) => {
-        const pulse = (obj as { animation?: AnimationProps }).animation?.pulse ?? 'none';
-        if (pulse === 'none') return obj;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result: any = { ...obj };
-
-        if (pulse === 'pulse') {
-            // Sine wave opacity: 0.4–1.0, ~1 Hz
-            result.opacity = (obj.opacity ?? 100) * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(pulseTime * Math.PI * 2)));
-        } else if (pulse === 'blink') {
-            // Square wave opacity: fully on/off at ~1.5 Hz
-            result.opacity = (obj.opacity ?? 100) * ((pulseTime * 3) % 1 < 0.5 ? 1 : 0);
-        } else if (pulse === 'snapshot') {
-            // Subtle size pulse (~2.5 Hz, ±3%) — like a camera shutter click
-            result._pulseScale = 1 + 0.03 * Math.sin(pulseTime * Math.PI * 5);
-        } else if (pulse === 'highlight') {
-            // Faint pulsing glow (~1 Hz)
-            result._pulseGlow = 0.15 + 0.35 * (0.5 + 0.5 * Math.sin(pulseTime * Math.PI * 2));
-        }
-
-        return result as SceneObject;
-    });
-}
-
 // ─── Main hook ────────────────────────────────────────────────────────────────
 
+/**
+ * Returns the object list to display at the current playback position.
+ *
+ * Pulse animation (opacity oscillation, blink, scale, glow) is intentionally
+ * NOT applied here. It is handled per-object in ObjectRenderer via PulsingObjectGroup,
+ * which subscribes to PulseTimeContext independently. This prevents SceneContents from
+ * re-rendering at 60fps just because the pulse ticker ticked.
+ */
 export function useDisplayObjects(scene: Scene, editModeObjects: readonly SceneObject[]): readonly SceneObject[] {
     const playback = useOptionalPlayback();
 
@@ -214,19 +261,15 @@ export function useDisplayObjects(scene: Scene, editModeObjects: readonly SceneO
         return editModeObjects;
     }
 
-    const { playbackTime, pulseTime } = playback.state;
+    const { playbackTime } = playback.state;
     const maxStep = scene.steps.length - 1;
 
     const floorIdx = Math.min(Math.floor(playbackTime), maxStep);
     const ceilIdx = Math.min(Math.ceil(playbackTime), maxStep);
     const frac = playbackTime - floorIdx;
 
-    // On an exact step boundary: show that step's objects.
-    // Use scene.steps[floorIdx] directly so the display follows playbackTime,
-    // not stepIndex (they can differ — e.g. animation ends at step 3 while stepIndex is still 0).
     if (frac === 0 || floorIdx === ceilIdx) {
-        const baseObjects = scene.steps[floorIdx]?.objects ?? editModeObjects;
-        return applyPulseToObjects(baseObjects, pulseTime);
+        return scene.steps[floorIdx]?.objects ?? editModeObjects;
     }
 
     const stepA: SceneStep = scene.steps[floorIdx] ?? { objects: [] };
@@ -234,6 +277,5 @@ export function useDisplayObjects(scene: Scene, editModeObjects: readonly SceneO
     const stepPrev = scene.steps[floorIdx - 1] ?? null;
     const stepNext = scene.steps[ceilIdx + 1] ?? null;
 
-    const interpolated = interpolateStep(stepA, stepB, frac, stepPrev, stepNext);
-    return applyPulseToObjects(interpolated, pulseTime);
+    return interpolateStep(stepA, stepB, frac, stepPrev, stepNext);
 }

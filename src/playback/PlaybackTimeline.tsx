@@ -18,12 +18,12 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { ArrowResetRegular, PauseRegular, PlayRegular, TabDesktopMultipleRegular } from '@fluentui/react-icons';
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { CrossStepSelection } from '../CrossStepContext';
 import { useScene } from '../SceneProvider';
 import { AddStepButton, RemoveStepButton, ReorderStepsButton } from '../StepSelect';
 import { useCrossStepSelection, useSelection, useSimilarObjects } from '../selection';
-import { usePlayback } from './PlaybackContext';
+import { usePlayback, usePlaybackDispatch } from './PlaybackContext';
 
 interface PlaybackTimelineProps {
     classicMode: boolean;
@@ -38,12 +38,6 @@ export const PlaybackTimeline: React.FC<PlaybackTimelineProps> = ({ classicMode,
 
     const stepCount = scene.steps.length;
     const maxStep = stepCount - 1;
-
-    const { filters, positionTolerance, selection: crossStep, setSelection: setCrossStep } = useCrossStepSelection();
-    const similar = useSimilarObjects(filters, positionTolerance);
-    const [, setSelection] = useSelection();
-
-    // Active marker = floor of playbackTime (matches the editing context)
     const currentStepIndex = Math.min(Math.floor(playbackTime), maxStep);
 
     // Keep RAF loop aware of current maxStep
@@ -64,41 +58,6 @@ export const PlaybackTimeline: React.FC<PlaybackTimelineProps> = ({ classicMode,
         setSpeed(parseFloat(_.target.value));
     };
 
-    // Step marker click: navigation or cross-step toggle when Ctrl/Shift is held
-    const handleStepClick = (i: number, e: React.MouseEvent) => {
-        const isCtrl = e.ctrlKey || e.metaKey;
-        const isShift = e.shiftKey;
-
-        if ((isCtrl || isShift) && similar.has(i)) {
-            if (isCtrl) {
-                const next = new Map(crossStep);
-                if (next.has(i)) {
-                    next.delete(i);
-                } else {
-                    next.set(i, similar.get(i)!);
-                }
-                setCrossStep(next as CrossStepSelection);
-            } else {
-                const from = Math.min(currentStepIndex, i);
-                const to = Math.max(currentStepIndex, i);
-                const next = new Map(crossStep);
-                for (let j = from; j <= to; j++) {
-                    const ids = similar.get(j);
-                    if (ids) next.set(j, ids);
-                }
-                setCrossStep(next as CrossStepSelection);
-            }
-            return;
-        }
-
-        setPlaybackTime(i);
-        dispatch({ type: 'setStep', index: i });
-
-        const stepCrossSelection = crossStep.get(i);
-        if (stepCrossSelection) {
-            setSelection(stepCrossSelection);
-        }
-    };
     const stepLabel = `Step ${currentStepIndex + 1} / ${stepCount}`;
 
     return (
@@ -167,41 +126,101 @@ export const PlaybackTimeline: React.FC<PlaybackTimelineProps> = ({ classicMode,
                 />
             </div>
 
-            {/* Step markers */}
+            {/* Step markers — isolated component so that:
+                  - memo() skips re-renders when currentStepIndex doesn't change (most 60fps frames)
+                  - selection/similar changes don't re-render the slider/controls above */}
             {stepCount > 1 && (
-                <div className={classes.markers}>
-                    {scene.steps.map((_, i) => {
-                        const pct = maxStep > 0 ? (i / maxStep) * 100 : 0;
-                        const isActive = i === currentStepIndex;
-                        const hasSimilar = similar.has(i);
-                        const isInCrossStep = crossStep.has(i);
-                        const tooltip = isInCrossStep
-                            ? `Step ${i + 1} — in cross-page selection (Ctrl+click to remove)`
-                            : hasSimilar
-                              ? `Step ${i + 1} — has matching objects (Ctrl+click to add)`
-                              : `Step ${i + 1}`;
-                        return (
-                            <button
-                                key={i}
-                                className={mergeClasses(
-                                    classes.marker,
-                                    isActive && classes.markerActive,
-                                    hasSimilar && !isInCrossStep && classes.markerHasSimilar,
-                                    isInCrossStep && classes.markerInCrossStep,
-                                )}
-                                style={{ left: `${pct}%` }}
-                                onClick={(e) => handleStepClick(i, e)}
-                                title={tooltip}
-                            >
-                                {i + 1}
-                            </button>
-                        );
-                    })}
-                </div>
+                <PlaybackStepMarkers stepCount={stepCount} maxStep={maxStep} currentStepIndex={currentStepIndex} />
             )}
         </div>
     );
 };
+
+interface PlaybackStepMarkersProps {
+    stepCount: number;
+    maxStep: number;
+    currentStepIndex: number;
+}
+
+const PlaybackStepMarkers = memo(function PlaybackStepMarkers({
+    stepCount,
+    maxStep,
+    currentStepIndex,
+}: PlaybackStepMarkersProps) {
+    const classes = useStyles();
+    const { dispatch } = useScene();
+    const { setPlaybackTime } = usePlaybackDispatch();
+    const { filters, positionTolerance, selection: crossStep, setSelection: setCrossStep } = useCrossStepSelection();
+    const similar = useSimilarObjects(filters, positionTolerance);
+    const [, setSelection] = useSelection();
+
+    const handleStepClick = (i: number, e: React.MouseEvent) => {
+        const isCtrl = e.ctrlKey || e.metaKey;
+        const isShift = e.shiftKey;
+
+        if ((isCtrl || isShift) && similar.has(i)) {
+            if (isCtrl) {
+                const next = new Map(crossStep);
+                if (next.has(i)) {
+                    next.delete(i);
+                } else {
+                    next.set(i, similar.get(i)!);
+                }
+                setCrossStep(next as CrossStepSelection);
+            } else {
+                const from = Math.min(currentStepIndex, i);
+                const to = Math.max(currentStepIndex, i);
+                const next = new Map(crossStep);
+                for (let j = from; j <= to; j++) {
+                    const ids = similar.get(j);
+                    if (ids) next.set(j, ids);
+                }
+                setCrossStep(next as CrossStepSelection);
+            }
+            return;
+        }
+
+        setPlaybackTime(i);
+        dispatch({ type: 'setStep', index: i });
+
+        const stepCrossSelection = crossStep.get(i);
+        if (stepCrossSelection) {
+            setSelection(stepCrossSelection);
+        }
+    };
+
+    return (
+        <div className={classes.markers}>
+            {Array.from({ length: stepCount }, (_, i) => {
+                const pct = maxStep > 0 ? (i / maxStep) * 100 : 0;
+                const isActive = i === currentStepIndex;
+                const hasSimilar = similar.has(i);
+                const isInCrossStep = crossStep.has(i);
+                const tooltip = isInCrossStep
+                    ? `Step ${i + 1} — in cross-page selection (Ctrl+click to remove)`
+                    : hasSimilar
+                      ? `Step ${i + 1} — has matching objects (Ctrl+click to add)`
+                      : `Step ${i + 1}`;
+                return (
+                    <button
+                        key={i}
+                        className={mergeClasses(
+                            classes.marker,
+                            isActive && classes.markerActive,
+                            hasSimilar && !isInCrossStep && classes.markerHasSimilar,
+                            isInCrossStep && classes.markerInCrossStep,
+                        )}
+                        style={{ left: `${pct}%` }}
+                        onClick={(e) => handleStepClick(i, e)}
+                        title={tooltip}
+                    >
+                        {i + 1}
+                    </button>
+                );
+            })}
+        </div>
+    );
+});
 
 const useStyles = makeStyles({
     root: {
