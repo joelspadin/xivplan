@@ -494,23 +494,24 @@ function addObjects(
     };
 }
 
-function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
-    const currentStep = getCurrentStep(state);
+function removeObjectsFromStep(
+    scene: Readonly<Scene>,
+    step: Readonly<SceneStep>,
+    initialIds: ReadonlySet<number>,
+): SceneStep | null {
+    if (!step.objects.some((o) => initialIds.has(o.id))) return null;
 
-    // Also delete any object with the to-be-deleted objects as parent
-    const idsToDelete = new Set(ids);
-    let idsAdded = idsToDelete.size;
+    // Cascade: also delete positionally-attached children and tethers referencing deleted objects.
+    const idsToDelete = new Set(initialIds);
+    let idsAdded = 1;
     while (idsAdded > 0) {
         idsAdded = 0;
-        currentStep.objects.forEach((obj) => {
-            if (idsToDelete.has(obj.id)) {
-                return;
-            }
+        step.objects.forEach((obj) => {
+            if (idsToDelete.has(obj.id)) return;
             if (
                 isMoveable(obj) &&
                 obj.positionParentId !== undefined &&
                 idsToDelete.has(obj.positionParentId) &&
-                // Automatically delete positionally-attached objects that would attach automatically as well
                 getDefaultAttachmentSettings(obj).location != DefaultAttachPosition.DONT_ATTACH_BY_DEFAULT
             ) {
                 idsToDelete.add(obj.id);
@@ -523,30 +524,37 @@ function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): Ed
         });
     }
 
-    const objects = currentStep.objects
+    const objects = step.objects
         .filter((object) => !idsToDelete.has(object.id))
         .map((obj) =>
-            // Stabilize the rotation of any object that was facing a to-be-deleted object
             isRotateable(obj) && obj.facingId !== undefined && idsToDelete.has(obj.facingId)
-                ? {
-                      ...omit(obj, 'facingId'),
-                      rotation: isMoveable(obj) ? getAbsoluteRotation(state.scene, obj) : 0,
-                  }
+                ? { ...omit(obj, 'facingId'), rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0 }
                 : obj,
         )
         .map((obj) =>
-            // Stabilize the position of any object still linked to a to-be-deleted object
             isMoveable(obj) && obj.positionParentId !== undefined && idsToDelete.has(obj.positionParentId)
-                ? {
-                      ...omit(obj, 'positionParentId'),
-                      ...getAbsolutePosition(state.scene, obj),
-                      // Always unpin objects upon detaching them
-                      pinned: false,
-                  }
+                ? { ...omit(obj, 'positionParentId'), ...getAbsolutePosition(scene, obj), pinned: false }
                 : obj,
         );
 
-    return updateCurrentStep(state, { objects });
+    return { objects };
+}
+
+function removeObjects(state: Readonly<EditorState>, ids: readonly number[]): EditorState {
+    // Object IDs are globally unique across steps, so apply removal to every step that
+    // contains any of the given IDs — this enables cross-step deletion.
+    const idSet = new Set(ids);
+    let anyChange = false;
+
+    const newSteps = state.scene.steps.map((step) => {
+        const updated = removeObjectsFromStep(state.scene, step, idSet);
+        if (updated === null) return step;
+        anyChange = true;
+        return updated;
+    });
+
+    if (!anyChange) return state;
+    return { ...state, scene: { ...state.scene, steps: newSteps } };
 }
 
 function moveObject(state: Readonly<EditorState>, from: number, to: number): EditorState {
@@ -630,17 +638,21 @@ function moveGroupToBottom(state: Readonly<EditorState>, ids: readonly number[])
 }
 
 function updateObjects(state: Readonly<EditorState>, values: readonly SceneObject[]): EditorState {
-    const currentStep = getCurrentStep(state);
-    const objects = currentStep.objects.slice();
+    // Build a lookup of id → updated object. Since object IDs are globally unique
+    // across all steps, this update intentionally works across steps — enabling
+    // cross-step bulk editing when the caller passes objects from multiple steps.
+    const updateMap = new Map(values.map((v) => [v.id, v]));
+    let anyChange = false;
 
-    for (const update of asArray(values)) {
-        const index = objects.findIndex((o) => o.id === update.id);
-        if (index >= 0) {
-            objects[index] = update;
-        }
-    }
+    const newSteps = state.scene.steps.map((step) => {
+        const hasUpdate = step.objects.some((o) => updateMap.has(o.id));
+        if (!hasUpdate) return step;
+        anyChange = true;
+        return { ...step, objects: step.objects.map((o) => updateMap.get(o.id) ?? o) };
+    });
 
-    return updateCurrentStep(state, { objects });
+    if (!anyChange) return state;
+    return { ...state, scene: { ...state.scene, steps: newSteps } };
 }
 
 function updateArena(state: Readonly<EditorState>, arena: Arena): EditorState {

@@ -1,7 +1,7 @@
-import { Button, mergeClasses } from '@fluentui/react-components';
+import { Button, mergeClasses, Text } from '@fluentui/react-components';
 import React from 'react';
 import { ConnectionType } from '../EditModeContext';
-import { useCurrentStep } from '../SceneProvider';
+import { useCrossStepSelection, useEditableObjects } from '../selection';
 import { EditMode } from '../editMode';
 import {
     SceneObject,
@@ -32,7 +32,7 @@ import {
     supportsHollow,
     supportsStackCount,
 } from '../scene';
-import { getSelectedObjects, useSelection } from '../selection';
+import { useSelection } from '../selection';
 import { useConnectionSelection } from '../useConnectionSelection';
 import { useControlStyles } from '../useControlStyles';
 import { useEditMode } from '../useEditMode';
@@ -127,7 +127,8 @@ function getConnectionMessage(type: ConnectionType) {
 const Controls: React.FC = () => {
     const classes = useControlStyles();
     const [selection] = useSelection();
-    const step = useCurrentStep();
+    const { selection: crossStep } = useCrossStepSelection();
+    const objects = useEditableObjects();
     const [editMode] = useEditMode();
     const [{ connectionType }] = useConnectionSelection();
 
@@ -135,18 +136,23 @@ const Controls: React.FC = () => {
         return <ConnectionSelectionMessage type={connectionType} />;
     }
 
-    if (selection.size === 0) {
+    if (selection.size === 0 && crossStep.size === 0) {
         return <NoObjectsMessage />;
     }
-
-    const objects = getSelectedObjects(step, selection);
 
     if (objects.length === 0) {
         return <NoObjectsMessage />;
     }
 
+    const crossStepPageCount = crossStep.size;
+
     return (
         <>
+            {crossStepPageCount > 1 && (
+                <Text size={200} style={{ color: 'var(--colorBrandForeground1)', marginBottom: '4px' }}>
+                    Editing across {crossStepPageCount} pages
+                </Text>
+            )}
             <ControlCondition objects={objects} test={isNamed} control={NameControl} />
             <ControlCondition objects={objects} test={isImageObject} control={ImageControl} />
 

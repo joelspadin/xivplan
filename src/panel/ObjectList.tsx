@@ -32,13 +32,14 @@ export type MoveCallback = (from: number, to: number) => void;
 export interface ObjectListProps {
     objects: readonly SceneObject[];
     onMove: MoveCallback;
+    filterMatches?: ReadonlySet<number>;
 }
 
 function getObjectIndex(objects: readonly SceneObject[], id: number) {
     return objects.findIndex((o) => o.id === id);
 }
 
-export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
+export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove, filterMatches }) => {
     const classes = useStyles();
 
     // Objects are rendered with later objects on top, but it is more natural
@@ -80,7 +81,11 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
             >
                 <SortableContext items={objectsToDisplay} strategy={verticalListSortingStrategy}>
                     {objectsToDisplay.map((object) => (
-                        <SortableItem key={object.id} object={object} />
+                        <SortableItem
+                            key={object.id}
+                            object={object}
+                            isFilterMatch={filterMatches?.has(object.id) ?? false}
+                        />
                     ))}
                 </SortableContext>
             </DndContext>
@@ -90,9 +95,10 @@ export const ObjectList: React.FC<ObjectListProps> = ({ objects, onMove }) => {
 
 interface SortableItemProps {
     object: SceneObject;
+    isFilterMatch?: boolean;
 }
 
-const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
+const SortableItem: React.FC<SortableItemProps> = ({ object, isFilterMatch }) => {
     const classes = useStyles();
     const [selection, setSelection] = useSelection();
     const [spotlight, setSpotlight] = useSpotlight();
@@ -157,6 +163,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
             <div
                 className={mergeClasses(
                     classes.item,
+                    isFilterMatch && classes.filterMatch,
                     spotlight.has(object.id) && classes.spotlight,
                     isSelected && classes.selected,
                     isDragging && classes.dragging,
@@ -177,6 +184,10 @@ const SortableItem: React.FC<SortableItemProps> = ({ object }) => {
 const useStyles = makeStyles({
     spotlight: {
         background: tokens.colorNeutralBackground3Hover,
+    },
+
+    filterMatch: {
+        background: tokens.colorBrandBackground2,
     },
 
     list: {

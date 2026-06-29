@@ -14,7 +14,7 @@ import { moveObjectsBy } from './groupOperations';
 import { makeTethers } from './prefabs/TetherConfig';
 import { useStage } from './render/stage';
 import { MoveableObject, Scene, SceneObject, SceneStep, TetherType, isMoveable, isRotateable } from './scene';
-import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useSelection } from './selection';
+import { getSelectedObjects, selectAll, selectNewObjects, selectNone, useCrossStepSelection, useSelection } from './selection';
 import { useCancelConnectionSelection, useEditMode } from './useEditMode';
 import { useHotkeyHelp, useHotkeys } from './useHotkeys';
 import { useTetherConfig } from './useTetherConfig';
@@ -94,6 +94,7 @@ const SelectionActionHandler: React.FC = () => {
     const [tetherConfig, setTetherConfig] = useTetherConfig();
     const { scene, step, dispatch } = useScene();
     const stage = useStage();
+    const { selection: crossStep, setSelection: setCrossStep } = useCrossStepSelection();
 
     useHotkeys(
         'ctrl+a',
@@ -114,15 +115,16 @@ const SelectionActionHandler: React.FC = () => {
         (e) => {
             if (editMode == EditMode.SelectConnection) {
                 setEditMode(EditMode.Normal);
-            } else if (selection.size) {
+            } else if (selection.size || crossStep.size) {
                 setSelection(selectNone());
+                if (crossStep.size) setCrossStep(new Map());
             } else if (editMode !== EditMode.Normal) {
                 setEditMode(EditMode.Normal);
             }
 
             e.preventDefault();
         },
-        [selection, setSelection, editMode, setEditMode],
+        [selection, setSelection, crossStep, setCrossStep, editMode, setEditMode],
     );
 
     useHotkeys(
@@ -132,11 +134,16 @@ const SelectionActionHandler: React.FC = () => {
             if (!selection.size || editMode !== EditMode.Normal) {
                 return;
             }
-            dispatch({ type: 'remove', ids: [...selection] });
+            const allIds = new Set<number>(selection);
+            for (const ids of crossStep.values()) {
+                for (const id of ids) allIds.add(id);
+            }
+            dispatch({ type: 'remove', ids: [...allIds] });
             setSelection(selectNone());
+            if (crossStep.size) setCrossStep(new Map());
             e.preventDefault();
         },
-        [selection, setSelection, dispatch, editMode],
+        [selection, setSelection, crossStep, setCrossStep, dispatch, editMode],
     );
 
     useHotkeys(
@@ -159,13 +166,12 @@ const SelectionActionHandler: React.FC = () => {
                 return;
             }
             setClipboard(getSelectedObjects(step, selection));
-
             dispatch({ type: 'remove', ids: [...selection] });
             setSelection(selectNone());
-
+            if (crossStep.size) setCrossStep(new Map());
             e.preventDefault();
         },
-        [step, dispatch, setSelection, selection, editMode],
+        [step, dispatch, setSelection, selection, crossStep, setCrossStep, editMode],
     );
     useHotkeys(
         'ctrl+v',

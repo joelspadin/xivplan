@@ -31,8 +31,10 @@ import {
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
 import React, { HTMLAttributes, RefAttributes, useState } from 'react';
+import { CrossStepSelection } from './CrossStepContext';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
 import { useScene } from './SceneProvider';
+import { useCrossStepSelection, useSelection, useSimilarObjects } from './selection';
 import { useOptionalPlayback } from './playback/PlaybackContext';
 import { interpolateStep } from './playback/interpolate';
 import { ScenePreview } from './render/SceneRenderer';
@@ -47,11 +49,46 @@ export const StepSelect: React.FC = () => {
     const playback = useOptionalPlayback();
     const steps = scene.steps.map((_, i) => i);
 
+    const { filters, positionTolerance, selection: crossStep, setSelection: setCrossStep } = useCrossStepSelection();
+    const similar = useSimilarObjects(filters, positionTolerance);
+    const [, setSelection] = useSelection();
+
     const handleTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
-        cancelConnectionSelection();
         const index = data.value as number;
+        const isCtrl = ('ctrlKey' in event && event.ctrlKey) || ('metaKey' in event && event.metaKey);
+        const isShift = 'shiftKey' in event && event.shiftKey;
+
+        if ((isCtrl || isShift) && similar.has(index)) {
+            if (isCtrl) {
+                const next = new Map(crossStep);
+                if (next.has(index)) {
+                    next.delete(index);
+                } else {
+                    next.set(index, similar.get(index)!);
+                }
+                setCrossStep(next as CrossStepSelection);
+            } else {
+                const anchor = stepIndex;
+                const from = Math.min(anchor, index);
+                const to = Math.max(anchor, index);
+                const next = new Map(crossStep);
+                for (let i = from; i <= to; i++) {
+                    const ids = similar.get(i);
+                    if (ids) next.set(i, ids);
+                }
+                setCrossStep(next as CrossStepSelection);
+            }
+            return;
+        }
+
+        cancelConnectionSelection();
         dispatch({ type: 'setStep', index });
         playback?.setPlaybackTime(index);
+
+        const stepCrossSelection = crossStep.get(index);
+        if (stepCrossSelection) {
+            setSelection(stepCrossSelection);
+        }
     };
 
     const maxWidth = scene.arena.width + scene.arena.padding * 2;
@@ -67,7 +104,12 @@ export const StepSelect: React.FC = () => {
                     onTabSelect={handleTabSelect}
                 >
                     {steps.map((i) => (
-                        <StepButton key={i} index={i} />
+                        <StepButton
+                            key={i}
+                            index={i}
+                            hasSimilar={similar.has(i)}
+                            isInCrossStep={crossStep.has(i)}
+                        />
                     ))}
                 </TabList>
             </div>
@@ -83,16 +125,32 @@ function getStepText(index: number) {
 
 interface StepButtonProps {
     index: number;
+    hasSimilar?: boolean;
+    isInCrossStep?: boolean;
 }
 
-const StepButton: React.FC<StepButtonProps> = ({ index }) => {
+const StepButton: React.FC<StepButtonProps> = ({ index, hasSimilar, isInCrossStep }) => {
     const classes = useStyles();
     const stepText = getStepText(index);
 
+    const tooltipContent = isInCrossStep
+        ? `Step ${stepText} — in cross-page selection (Ctrl+click to remove)`
+        : hasSimilar
+          ? `Step ${stepText} — has matching objects (Ctrl+click to add)`
+          : `Step ${stepText}`;
+
     return (
-        <Tooltip content={`Step ${stepText}`} relationship="label" withArrow>
+        <Tooltip content={tooltipContent} relationship="label" withArrow>
             <Tab value={index}>
-                <div className={classes.tab}>{stepText}</div>
+                <div
+                    className={mergeClasses(
+                        classes.tab,
+                        hasSimilar && !isInCrossStep && classes.tabHasSimilar,
+                        isInCrossStep && classes.tabInCrossStep,
+                    )}
+                >
+                    {stepText}
+                </div>
             </Tab>
         </Tooltip>
     );
@@ -338,6 +396,19 @@ const useStyles = makeStyles({
     },
     tab: {
         minWidth: '16px',
+    },
+
+    tabHasSimilar: {
+        outline: `2px dashed ${tokens.colorBrandStroke2}`,
+        outlineOffset: '1px',
+        borderRadius: tokens.borderRadiusSmall,
+    },
+
+    tabInCrossStep: {
+        outline: `2px solid ${tokens.colorBrandStroke1}`,
+        outlineOffset: '1px',
+        borderRadius: tokens.borderRadiusSmall,
+        color: tokens.colorBrandForeground1,
     },
 
     dialogSurface: {

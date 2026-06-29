@@ -10,7 +10,7 @@ import { SelectionContext, SelectionState, SpotlightContext } from '../Selection
 import { getCanvasSize, getSceneCoord } from '../coord';
 import { EditMode } from '../editMode';
 import { Scene } from '../scene';
-import { selectNewObjects, selectNone, useSelection } from '../selection';
+import { selectNewObjects, selectNone, useCrossStepSelection, useSelection } from '../selection';
 import { UndoContext } from '../undo/undoContext';
 import { useEditMode } from '../useEditMode';
 import { usePanelDrag } from '../usePanelDrag';
@@ -26,6 +26,7 @@ import { LayerName } from './layers';
 export const SceneRenderer: React.FC = () => {
     const { scene } = useScene();
     const [, setSelection] = useContext(SelectionContext);
+    const { setSelection: setCrossStep } = useCrossStepSelection();
     const size = getCanvasSize(scene);
     const [stage, stageRef] = useState<Konva.Stage | null>(null);
     const [editMode] = useEditMode();
@@ -36,9 +37,10 @@ export const SceneRenderer: React.FC = () => {
         if (editMode === EditMode.SelectConnection) {
             return;
         }
-        // Clicking on nothing (with no modifier keys held) should cancel selection.
+        // Clicking on nothing (with no modifier keys held) should cancel all selections.
         if (!e.evt.ctrlKey && !e.evt.shiftKey) {
             setSelection(selectNone());
+            setCrossStep(new Map());
         }
     };
 
