@@ -62,6 +62,10 @@ export const SceneRenderer: React.FC = () => {
 export interface ScenePreviewProps extends RefAttributes<Konva.Stage> {
     scene: Scene;
     stepIndex?: number;
+    /** Fractional playback time (0 to steps.length-1). Overrides stepIndex for interpolated previews. */
+    playbackTime?: number;
+    /** Pulse time in seconds for pulse animations. Only relevant when playbackTime is provided. */
+    pulseTime?: number;
     width?: number;
     height?: number;
     backgroundColor?: string;
@@ -73,6 +77,8 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
     ref,
     scene,
     stepIndex,
+    playbackTime,
+    pulseTime,
     width,
     height,
     backgroundColor,
@@ -100,9 +106,12 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
         y = (height - size.height) / 2;
     }
 
+    const resolvedPlaybackTime = playbackTime ?? stepIndex ?? 0;
+    const currentStep = Math.min(Math.floor(resolvedPlaybackTime), scene.steps.length - 1);
+
     const present: EditorState = {
         scene,
-        currentStep: stepIndex ?? 0,
+        currentStep,
     };
 
     const sceneContext: UndoContext<EditorState, SceneAction> = [
@@ -124,7 +133,7 @@ export const ScenePreview: React.FC<ScenePreviewProps> = ({
                 <SceneContext value={sceneContext}>
                     <SelectionContext value={selectionContext}>
                         <SpotlightContext value={spotlightContext}>
-                            <StaticPlaybackProvider playbackTime={stepIndex ?? 0}>
+                            <StaticPlaybackProvider playbackTime={resolvedPlaybackTime} pulseTime={pulseTime}>
                                 <SceneContents listening={false} simple={simple} backgroundColor={backgroundColor} />
                             </StaticPlaybackProvider>
                         </SpotlightContext>

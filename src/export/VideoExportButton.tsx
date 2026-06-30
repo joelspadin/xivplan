@@ -37,7 +37,7 @@ import { getCanvasSize } from '../coord';
 import { downloadBlob } from '../file/blob';
 import { ObjectLoadingContext } from '../ObjectLoadingContext';
 import { ObjectLoadingProvider } from '../ObjectLoadingProvider';
-import { StaticPlaybackProvider, useOptionalPlayback } from '../playback/PlaybackContext';
+import { useOptionalPlayback } from '../playback/PlaybackContext';
 import { ScenePreview } from '../render/SceneRenderer';
 import { useScene } from '../SceneProvider';
 
@@ -276,9 +276,14 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
     const pulseTime = Math.max(0, frame / framerate) % 1000;
 
     return (
-        <StaticPlaybackProvider playbackTime={playbackTime} pulseTime={pulseTime}>
-            <ScenePreview ref={stageRef} scene={scene} width={size.width} height={size.height} />
-        </StaticPlaybackProvider>
+        <ScenePreview
+            ref={stageRef}
+            scene={scene}
+            width={size.width}
+            height={size.height}
+            playbackTime={playbackTime}
+            pulseTime={pulseTime}
+        />
     );
 };
 
