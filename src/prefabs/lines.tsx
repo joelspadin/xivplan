@@ -10,16 +10,12 @@ import { useIsDragging } from '../selection';
 import { CENTER_DOT_RADIUS } from '../theme';
 import { clampRotation, mod360, type Enum } from '../util';
 import { distance, getDistanceFromLine, VEC_ZERO, vecAtAngle } from '../vector';
-import {
-    CONTROL_POINT_BORDER_COLOR,
-    createControlPointManager,
-    HandleStyle,
-    type HandleFuncProps,
-} from './ControlPoint';
+import { createControlPointManager, type ControlledObjectStateBase } from './ControlPoint';
+import { CONTROL_POINT_BORDER_COLOR, HandleStyle, type HandleFuncProps } from './controlpoints';
 import { DraggableObject } from './DraggableObject';
 import { useShowResizer } from './highlight';
 
-interface LineState {
+interface LineState extends ControlledObjectStateBase {
     length: number;
     width: number;
     rotation: number;

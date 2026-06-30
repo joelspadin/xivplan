@@ -12,6 +12,7 @@ import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { ResizeableObjectContainer } from '../ResizeableObjectContainer';
+import { ModifierKeyBehavior } from '../controlpoints';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getZoneStyle } from './style';
 
@@ -66,32 +67,44 @@ const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) 
 const TriangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
-    const style = getZoneStyle(object.color, object.opacity, Math.min(object.width, object.height), object.hollow);
-
-    const highlightOffset = style.strokeWidth;
-    const highlightWidth = object.width + highlightOffset;
-    const highlightHeight = object.height + highlightOffset;
-
-    const offsetY = (object.height * 2) / 3;
 
     return (
-        <ResizeableObjectContainer object={object} transformerProps={{ centeredScaling: true }}>
-            {(groupProps) => (
-                <Group {...groupProps} offsetY={offsetY} {...overrideProps}>
-                    {highlightProps && (
-                        <EquilateralTriangle
-                            offsetX={highlightOffset / 2}
-                            offsetY={highlightOffset / 2}
-                            width={highlightWidth}
-                            height={highlightHeight}
-                            {...highlightProps}
-                        />
-                    )}
-                    <HideGroup>
-                        <EquilateralTriangle width={object.width} height={object.height} {...style} />
-                    </HideGroup>
-                </Group>
-            )}
+        <ResizeableObjectContainer
+            object={object}
+            transformationProps={{
+                centerScalingBehavior: ModifierKeyBehavior.ForceEnabled,
+                keepRatioBehavior: ModifierKeyBehavior.Inverted,
+            }}
+        >
+            {(state) => {
+                const style = getZoneStyle(
+                    object.color,
+                    object.opacity,
+                    Math.min(state.width, state.height),
+                    object.hollow,
+                );
+
+                const highlightOffset = style.strokeWidth;
+                const highlightWidth = state.width + highlightOffset;
+                const highlightHeight = state.height + highlightOffset;
+
+                return (
+                    <Group {...state} {...overrideProps}>
+                        {highlightProps && (
+                            <EquilateralTriangle
+                                offsetX={highlightOffset / 2}
+                                offsetY={highlightOffset / 2}
+                                width={highlightWidth}
+                                height={highlightHeight}
+                                {...highlightProps}
+                            />
+                        )}
+                        <HideGroup>
+                            <EquilateralTriangle width={state.width} height={state.height} {...style} />
+                        </HideGroup>
+                    </Group>
+                );
+            }}
         </ResizeableObjectContainer>
     );
 };

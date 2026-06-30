@@ -1,66 +1,47 @@
-import Konva from 'konva';
-import React, { useRef, useState } from 'react';
-import type { KonvaNodeEvents } from 'react-konva';
-import { getAbsoluteRotation } from '../coord';
-import { ActivePortal } from '../render/Portals';
+import React from 'react';
 import type { ResizeableObject, UnknownObject } from '../scene';
-import { useScene } from '../SceneProvider';
-import { useIsDragging } from '../selection';
-import { useKonvaCache } from '../useKonvaCache';
-import { DraggableObject } from './DraggableObject';
-import { Resizer, type ResizerProps } from './Resizer';
+import { Resizer, type ResizerControlPointProps, type ResizerProps } from './Resizer';
 
-export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
+/**
+ * Properties to apply to the enclosing Group of resizeable objects, and to use in drawing an
+ * accurate preview during transformations.
+ */
+export interface ResizeableGroupState {
+    readonly offsetX: number;
+    readonly offsetY: number;
+    readonly width: number;
+    readonly height: number;
+    readonly rotation: number;
+    readonly isDragging?: boolean;
+    readonly isResizing?: boolean;
+}
 
 export interface ResizeableObjectContainerProps {
     object: ResizeableObject & UnknownObject;
-    cache?: boolean;
-    cacheKey?: unknown;
     resizerProps?: Partial<ResizerProps>;
-    transformerProps?: Konva.TransformerConfig;
-    children: (groupProps: GroupProps) => React.ReactElement;
+    transformationProps?: Partial<ResizerControlPointProps>;
+    children: (state: ResizeableGroupState) => React.ReactElement;
 }
 
 export const ResizeableObjectContainer: React.FC<ResizeableObjectContainerProps> = ({
     object,
-    cache,
-    cacheKey,
     resizerProps,
-    transformerProps,
+    transformationProps,
     children,
 }) => {
-    const [resizing, setResizing] = useState(false);
-    const dragging = useIsDragging(object);
-    const { scene } = useScene();
-    const shapeRef = useRef<Konva.Group>(null);
-
-    useKonvaCache(shapeRef, { enabled: !!cache }, [cacheKey, object]);
-
     return (
-        <ActivePortal isActive={dragging || resizing}>
-            <DraggableObject object={object}>
-                <Resizer
-                    object={object}
-                    nodeRef={shapeRef}
-                    dragging={dragging}
-                    transformerProps={transformerProps}
-                    {...resizerProps}
-                >
-                    {(onTransformEnd) => {
-                        return children({
-                            ref: shapeRef,
-                            onTransformStart: () => setResizing(true),
-                            onTransformEnd: (e) => {
-                                onTransformEnd(e);
-                                setResizing(false);
-                            },
-                            offsetX: object.width / 2,
-                            offsetY: object.height / 2,
-                            rotation: getAbsoluteRotation(scene, object),
-                        });
-                    }}
-                </Resizer>
-            </DraggableObject>
-        </ActivePortal>
+        <Resizer object={object} {...resizerProps} transformationProps={transformationProps}>
+            {(objectState) => {
+                return children({
+                    offsetX: objectState.width / 2,
+                    offsetY: objectState.height / 2,
+                    rotation: objectState.rotation,
+                    width: objectState.width,
+                    height: objectState.height,
+                    isDragging: objectState.isDragging,
+                    isResizing: objectState.isResizing,
+                });
+            }}
+        </Resizer>
     );
 };
