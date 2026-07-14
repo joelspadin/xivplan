@@ -111,9 +111,12 @@ export interface IncrementStepAction {
     type: 'nextStep' | 'previousStep';
 }
 
+export type AddStepObjectMode = 'empty' | 'copy' | 'connect';
+
 export interface AddStepAction {
     type: 'addStep';
     after?: number;
+    mode?: AddStepObjectMode;
 }
 
 export interface RemoveStepAction {
@@ -341,11 +344,26 @@ function setStep(state: Readonly<EditorState>, index: number): EditorState {
     };
 }
 
-function addStep(state: Readonly<EditorState>, after: number): EditorState {
+function addStep(state: Readonly<EditorState>, after: number, mode: AddStepObjectMode): EditorState {
     const currentStep = getCurrentStep(state);
-    const { objects, nextId } = copyObjects(state.scene, undefined, currentStep.objects);
-
-    const newStep: SceneStep = { objects, customArena: currentStep.customArena };
+    let newStep: SceneStep;
+    let nextId: number;
+    switch (mode) {
+        case 'empty': {
+            newStep = { objects: [], customArena: currentStep.customArena };
+            nextId = state.scene.nextId;
+            break;
+        }
+        case 'connect':
+        case 'copy': {
+            const { objects, nextId: newNextId } = copyObjects(state.scene, undefined, currentStep.objects, {
+                linkPositionToOriginal: mode === 'connect',
+                keepAllConnections: true,
+            });
+            nextId = newNextId;
+            newStep = { objects, customArena: currentStep.customArena };
+        }
+    }
 
     const steps = state.scene.steps.slice();
     steps.splice(after + 1, 0, newStep);
@@ -704,7 +722,7 @@ function sceneReducer(state: Readonly<EditorState>, action: SceneAction): Editor
             return setStep(state, state.currentStep - 1);
 
         case 'addStep':
-            return addStep(state, action.after ?? state.currentStep);
+            return addStep(state, action.after ?? state.currentStep, action.mode ?? 'copy');
 
         case 'removeStep':
             return removeStep(state, action.index);
