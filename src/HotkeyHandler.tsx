@@ -75,7 +75,7 @@ function pasteObjects(
 
     const pointerPosition = stage.getRelativePointerPosition() ?? { x: 0, y: 0 };
     const newCenter = centerOnMouse ? getSceneCoord(scene, arena, pointerPosition) : undefined;
-    const { objects: newObjects } = copyObjects(scene, step, objects, newCenter);
+    const { objects: newObjects } = copyObjects(scene, step, objects, { newCenter });
 
     if (newObjects.length) {
         dispatch({ type: 'add', object: newObjects });

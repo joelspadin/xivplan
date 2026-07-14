@@ -64,6 +64,7 @@ function copyObject(
     object: Readonly<MoveableObject & UnknownObject>,
     offset: Vector2d,
     newIdsForCopiedObjects: Record<number, number>,
+    options?: { keepAllConnections?: boolean },
 ): SceneObject {
     let newObject: SceneObject | (SceneObject & RotateableObject) = { ...object };
     if (object.positionParentId !== undefined) {
@@ -71,7 +72,7 @@ function copyObject(
         // Otherwise make a detached copy.
         if (newIdsForCopiedObjects[object.positionParentId] !== undefined) {
             newObject = { ...newObject, positionParentId: newIdsForCopiedObjects[object.positionParentId] };
-        } else {
+        } else if (!options?.keepAllConnections) {
             newObject = { ...omit(object, 'positionParentId'), ...vecAdd(getAbsolutePosition(scene, object), offset) };
         }
     } else {
@@ -117,25 +118,51 @@ export function copyObjects(
     scene: Readonly<Scene>,
     targetStep: Readonly<SceneStep> | undefined,
     objects: readonly SceneObject[],
-    newCenter?: Vector2d,
+    options: {
+        newCenter?: Vector2d;
+        /**
+         * Whether connections should be copied unconditionally. If false, they are only
+         * copied if the connected object is also being copied.
+         */
+        keepAllConnections?: boolean;
+        /**
+         * Whether copied objects should be positionally linked to their original,
+         * if there is no connection to copy.
+         */
+        linkPositionToOriginal?: boolean;
+    },
 ): { objects: SceneObject[]; nextId: number } {
     let nextId = scene.nextId;
     const copyable = objects.slice().filter((o) => isCopyable(o, objects));
 
     const idMap: Record<number, number> = {};
+    const reverseIdMap: Record<number, number> = {};
 
-    const offset = getOffset(scene, copyable, newCenter);
+    const offset = getOffset(scene, copyable, options.newCenter);
 
     return {
         objects: objects
             .map((obj) => {
                 // Assign new IDs first so that ID references can be updated
                 idMap[obj.id] = nextId++;
+                reverseIdMap[nextId - 1] = obj.id;
                 return { ...obj, id: idMap[obj.id] } as SceneObject;
             })
             .map((obj) => {
                 if (isMoveable(obj)) {
-                    return copyObject(scene, targetStep, obj, offset, idMap);
+                    let newObj = copyObject(scene, targetStep, obj, offset, idMap, {
+                        keepAllConnections: options.keepAllConnections,
+                    });
+                    // do not link to the original step if it has been linked to something already
+                    if (options.linkPositionToOriginal && isMoveable(newObj) && newObj.positionParentId === undefined) {
+                        newObj = {
+                            ...newObj,
+                            x: 0,
+                            y: 0,
+                            positionParentId: reverseIdMap[newObj.id],
+                        } as MoveableObject & SceneObject;
+                    }
+                    return newObj;
                 }
 
                 if (isTether(obj)) {
