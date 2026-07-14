@@ -12,15 +12,21 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable } 
 import { CSS } from '@dnd-kit/utilities';
 import {
     Button,
-    type ButtonProps,
     Dialog,
     DialogActions,
     DialogContent,
     DialogSurface,
     DialogTitle,
     DialogTrigger,
+    Menu,
+    type MenuButtonProps,
+    MenuItem,
+    MenuList,
+    MenuPopover,
+    MenuTrigger,
     type SelectTabData,
     type SelectTabEvent,
+    type SplitButtonProps,
     Tab,
     TabList,
     Tooltip,
@@ -31,9 +37,11 @@ import {
     typographyStyles,
 } from '@fluentui/react-components';
 import { AddFilled, ArrowSwapRegular, DeleteFilled, DeleteRegular, bundleIcon } from '@fluentui/react-icons';
+import { AddLinkIcon, BorderDashIcon } from '@fluentui/react-icons-mdl2';
 import React, { type HTMLAttributes, type RefAttributes, useState } from 'react';
+import { CollapsableSplitButton } from './CollapsableToolbarButton';
 import { HotkeyBlockingDialogBody } from './HotkeyBlockingDialogBody';
-import { getObjectById, useScene } from './SceneProvider';
+import { type AddStepObjectMode, getObjectById, useScene } from './SceneProvider';
 import { ScenePreview } from './render/SceneRenderer';
 import { type Scene, getStepDisplayString, isMoveable } from './scene';
 import { useSelection, useSpotlight } from './selection';
@@ -140,19 +148,65 @@ const StepButton: React.FC<StepButtonProps> = ({ index }) => {
     );
 };
 
-const AddStepButton: React.FC<ButtonProps> = (props) => {
+const AddStepButton: React.FC<SplitButtonProps> = (props) => {
     const { dispatch } = useScene();
     const cancelConnectionSelection = useCancelConnectionSelection();
 
-    const handleAddStep = () => {
+    const handleAddStep = (mode: AddStepObjectMode) => {
         cancelConnectionSelection();
-        dispatch({ type: 'addStep' });
+        dispatch({ type: 'addStep', mode });
     };
 
     return (
-        <Tooltip content="Add new step" relationship="label" withArrow>
-            <Button icon={<AddFilled />} appearance="subtle" onClick={handleAddStep} {...props} />
-        </Tooltip>
+        <Menu positioning="below-start">
+            <MenuTrigger disableButtonEnhancement>
+                {(triggerProps: MenuButtonProps) => (
+                    <Tooltip content="Add new step" relationship="label" withArrow>
+                        <CollapsableSplitButton
+                            menuButton={triggerProps}
+                            icon={<AddFilled />}
+                            appearance="subtle"
+                            primaryActionButton={{ onClick: () => handleAddStep('copy') }}
+                            {...props}
+                        />
+                    </Tooltip>
+                )}
+            </MenuTrigger>
+            <MenuPopover>
+                <MenuList>
+                    <MenuItem icon={<BorderDashIcon />} onClick={() => handleAddStep('empty')}>
+                        <Tooltip
+                            relationship="description"
+                            positioning="after"
+                            content="Adds a new step with no objects but keeping any custom arena configuration of the current step."
+                            showDelay={500}
+                        >
+                            <div>Add empty step</div>
+                        </Tooltip>
+                    </MenuItem>
+                    <MenuItem icon={<AddFilled />} onClick={() => handleAddStep('copy')}>
+                        <Tooltip
+                            relationship="description"
+                            positioning="after"
+                            content="Add a new step that is a copy of the complete current step, including custom arena and object connections. This is the default behavior."
+                            showDelay={500}
+                        >
+                            <div>Add copy of current step</div>
+                        </Tooltip>
+                    </MenuItem>
+                    <MenuItem icon={<AddLinkIcon />} onClick={() => handleAddStep('connect')}>
+                        <Tooltip
+                            relationship="description"
+                            positioning="after"
+                            content="Copies the complete current step. Any object that is not already positionally linked will be linked to the original object."
+                            showDelay={500}
+                        >
+                            <div>Add linked step</div>
+                        </Tooltip>
+                    </MenuItem>
+                </MenuList>
+            </MenuPopover>
+        </Menu>
     );
 };
 
