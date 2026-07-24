@@ -158,6 +158,8 @@ export function createControlPointManager<T extends Vector2d, S extends Controll
             };
 
             const handleUpdatedModifier = (e: KeyboardEvent) => {
+                // Prevent browser UI triggering while dragging control points, especially Alt.
+                e.preventDefault();
                 setTransform({ ...transform, modifierKeys: e });
             };
 
