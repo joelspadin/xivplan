@@ -45,7 +45,7 @@ const INNER_STROKE_RATIO = 1 / 64;
 const SHADOW_BLUR_RATIO = 1 / 10;
 const SHADOW_BLUR_MIN = 2;
 
-function makeIcon(name: string, icon: EnemyIconStyle, radius: number, ring: EnemyRingStyle) {
+function makeIcon(name: string, icon: EnemyIconStyle, radius: number, ring: EnemyRingStyle, rotation?: number) {
     const Component: React.FC = () => {
         return (
             <PrefabIcon
@@ -55,7 +55,7 @@ function makeIcon(name: string, icon: EnemyIconStyle, radius: number, ring: Enem
                     type: ObjectType.Enemy,
                     icon,
                     radius,
-                    rotation: 0,
+                    rotation: rotation ?? 0,
                     ring,
                 }}
             />
@@ -411,4 +411,4 @@ export const EnemyUnremarkable = makeIcon(
 );
 export const EnemySmall = makeIcon('Small enemy', EnemyIconStyle.Small, SIZE_MEDIUM, EnemyRingStyle.Directional);
 export const EnemyMedium = makeIcon('Medium enemy', EnemyIconStyle.Medium, SIZE_LARGE, EnemyRingStyle.Directional);
-export const EnemyLarge = makeIcon('Large enemy', EnemyIconStyle.Large, SIZE_HUGE, EnemyRingStyle.Omnidirectional);
+export const EnemyLarge = makeIcon('Large enemy', EnemyIconStyle.Large, SIZE_HUGE, EnemyRingStyle.Omnidirectional, 180);
