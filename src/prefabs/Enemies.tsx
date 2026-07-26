@@ -86,8 +86,10 @@ interface RingProps extends ShapeConfig {
     name?: string;
     radius: number;
     color: string;
-    highlightProps?: ShapeConfig;
-    overrideProps?: ShapeConfig;
+
+    // These may be unused for plain-circle rings
+    rotation: number;
+    groupRef: RefObject<Konva.Group | null>;
 }
 
 interface EnemyLabelProps extends TextConfig {
@@ -163,39 +165,21 @@ function getShapeProps(color: string, radius: number, strokeRatio: number, minSt
     };
 }
 
-const CircleRing: React.FC<RingProps> = ({ radius, color, highlightProps, overrideProps, opacity, ...props }) => {
+const CircleRing: React.FC<RingProps> = ({ radius, color, opacity, ...props }) => {
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const innerRadius = getInnerRadius(radius);
     const outerRadius = getOuterRadius(radius, outerProps.strokeWidth);
 
     return (
-        <>
-            {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
-
-            <HideGroup opacity={opacity} {...props}>
-                <Circle {...outerProps} radius={outerRadius} />
-                <Circle {...innerProps} radius={innerRadius} />
-            </HideGroup>
-        </>
+        <HideGroup opacity={opacity} {...props}>
+            <Circle {...outerProps} radius={outerRadius} />
+            <Circle {...innerProps} radius={innerRadius} />
+        </HideGroup>
     );
 };
 
-interface DirectionalRingProps extends RingProps {
-    rotation: number;
-    groupRef: RefObject<Konva.Group | null>;
-}
-
-const DirectionalRing: React.FC<DirectionalRingProps> = ({
-    radius,
-    color,
-    opacity,
-    rotation,
-    highlightProps,
-    overrideProps,
-    groupRef,
-    ...props
-}) => {
+const DirectionalRing: React.FC<RingProps> = ({ radius, color, opacity, rotation, groupRef, ...props }) => {
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const innerRadius = getInnerRadius(radius);
@@ -206,55 +190,42 @@ const DirectionalRing: React.FC<DirectionalRingProps> = ({
     useKonvaCache(groupRef, [radius, color]);
 
     return (
-        <>
-            {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
-
-            <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
-                <Circle radius={radius} fill="transparent" />
-                <Arc
-                    {...outerProps}
-                    rotation={RING_ROTATION}
-                    angle={RING_ANGLE}
-                    innerRadius={outerRadius}
-                    outerRadius={outerRadius}
-                />
-                <Arc
-                    {...innerProps}
-                    rotation={RING_ROTATION}
-                    angle={RING_ANGLE}
-                    innerRadius={innerRadius}
-                    outerRadius={innerRadius}
-                />
-                <Path
-                    data="M0-41c-2 2-4 7-4 10 4 0 4 0 8 0 0-3-2-8-4-10"
-                    scaleX={arrowScale}
-                    scaleY={arrowScale}
-                    strokeEnabled={false}
-                    fill={color}
-                />
-                <SideArrows
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    innerStrokeWidth={innerProps.strokeWidth}
-                    outerStrokeWidth={outerProps.strokeWidth}
-                    color={color}
-                    {...innerProps}
-                />
-            </HideGroup>
-        </>
+        <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
+            <Circle radius={radius} fill="transparent" />
+            <Arc
+                {...outerProps}
+                rotation={RING_ROTATION}
+                angle={RING_ANGLE}
+                innerRadius={outerRadius}
+                outerRadius={outerRadius}
+            />
+            <Arc
+                {...innerProps}
+                rotation={RING_ROTATION}
+                angle={RING_ANGLE}
+                innerRadius={innerRadius}
+                outerRadius={innerRadius}
+            />
+            <Path
+                data="M0-41c-2 2-4 7-4 10 4 0 4 0 8 0 0-3-2-8-4-10"
+                scaleX={arrowScale}
+                scaleY={arrowScale}
+                strokeEnabled={false}
+                fill={color}
+            />
+            <SideArrows
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
+                innerStrokeWidth={innerProps.strokeWidth}
+                outerStrokeWidth={outerProps.strokeWidth}
+                color={color}
+                {...innerProps}
+            />
+        </HideGroup>
     );
 };
 
-const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
-    radius,
-    color,
-    opacity,
-    rotation,
-    highlightProps,
-    overrideProps,
-    groupRef,
-    ...props
-}) => {
+const OmnidirectionalRing: React.FC<RingProps> = ({ radius, color, opacity, rotation, groupRef, ...props }) => {
     const outerProps = getShapeProps(color, radius, OUTER_STROKE_RATIO, OUTER_STROKE_MIN);
     const innerProps = getShapeProps(color, radius, INNER_STROKE_RATIO, INNER_STROKE_MIN);
     const innerRadius = getInnerRadius(radius);
@@ -265,33 +236,29 @@ const OmnidirectionalRing: React.FC<DirectionalRingProps> = ({
     useKonvaCache(groupRef, [radius, color]);
 
     return (
-        <>
-            {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
+        <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
+            <Circle radius={radius} fill="transparent" />
 
-            <HideGroup opacity={opacity} ref={groupRef} rotation={rotation} {...props}>
-                <Circle radius={radius} fill="transparent" />
+            <Circle {...outerProps} radius={outerRadius} />
+            <Circle {...innerProps} radius={innerRadius} />
 
-                <Circle {...outerProps} radius={outerRadius} />
-                <Circle {...innerProps} radius={innerRadius} />
+            <Path
+                data="M0-40c-2 2-4 7-4 10l4-2L4-30c0-3-2-8-4-10"
+                scaleX={arrowScale}
+                scaleY={arrowScale}
+                strokeEnabled={false}
+                fill={color}
+            />
 
-                <Path
-                    data="M0-40c-2 2-4 7-4 10l4-2L4-30c0-3-2-8-4-10"
-                    scaleX={arrowScale}
-                    scaleY={arrowScale}
-                    strokeEnabled={false}
-                    fill={color}
-                />
-
-                <SideArrows
-                    {...innerProps}
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    innerStrokeWidth={innerProps.strokeWidth}
-                    outerStrokeWidth={outerProps.strokeWidth}
-                    color={color}
-                />
-            </HideGroup>
-        </>
+            <SideArrows
+                {...innerProps}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
+                innerStrokeWidth={innerProps.strokeWidth}
+                outerStrokeWidth={outerProps.strokeWidth}
+                color={color}
+            />
+        </HideGroup>
     );
 };
 
@@ -348,36 +315,23 @@ function renderRing(
     highlightProps?: ShapeConfig,
     overrideProps?: ShapeConfig,
 ) {
+    let RingType: React.FC<RingProps> | undefined;
     switch (object.ring) {
         case EnemyRingStyle.NoDirection:
-            return (
-                <CircleRing
-                    radius={radius}
-                    color={object.color}
-                    opacity={object.opacity / 100}
-                    highlightProps={highlightProps}
-                    overrideProps={overrideProps}
-                    {...overrideProps}
-                />
-            );
-
+            RingType = CircleRing;
+            break;
         case EnemyRingStyle.Directional:
-            return (
-                <DirectionalRing
-                    radius={radius}
-                    rotation={rotation}
-                    color={object.color}
-                    opacity={object.opacity / 100}
-                    highlightProps={highlightProps}
-                    overrideProps={overrideProps}
-                    groupRef={groupRef}
-                    {...overrideProps}
-                />
-            );
-
+            RingType = DirectionalRing;
+            break;
         case EnemyRingStyle.Omnidirectional:
-            return (
-                <OmnidirectionalRing
+            RingType = OmnidirectionalRing;
+            break;
+    }
+
+    return (
+        <>
+            {RingType && (
+                <RingType
                     radius={radius}
                     rotation={rotation}
                     color={object.color}
@@ -387,10 +341,10 @@ function renderRing(
                     groupRef={groupRef}
                     {...overrideProps}
                 />
-            );
-        case EnemyRingStyle.NoRing:
-            return null;
-    }
+            )}
+            {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
+        </>
+    );
 }
 
 const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation, groupRef, isDragging }) => {
@@ -408,7 +362,7 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
             </HideGroup>
 
             {object.icon !== EnemyIconStyle.NoIcon && (
-                <HideGroup opacity={object.opacity / 100}>
+                <HideGroup opacity={object.opacity / 100} {...overrideProps}>
                     <EnemyIcon icon={object.icon} radius={radius} rotation={object.rotateIcon ? rotation : 0} />
                 </HideGroup>
             )}
