@@ -3,6 +3,7 @@ import { getAbsoluteRotation, getBaseFacingRotation, rotateCoord } from '../coor
 import {
     type ArrowObject,
     type DrawObject,
+    EnemyIconStyle,
     type EnemyObject,
     EnemyRingStyle,
     type ExaflareZone,
@@ -104,11 +105,13 @@ function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
 // EnemyObject was changed from { rotation?: number }
 // to { rotation: number, omniDirection: boolean, opacity: number }, then
 // to { rotation: number, ring: EnemyRingStyle, opacity: number }
-type LegacyEnemyObject = Omit<EnemyObject, 'opacity' | 'rotation' | 'ring'> & {
+// The `icon: string` property (not configurable after creation) was also replaced with `icon: Enum`.
+type LegacyEnemyObject = Omit<EnemyObject, 'opacity' | 'rotation' | 'ring' | 'icon'> & {
     opacity?: number;
     rotation?: number;
     omniDirection?: boolean;
     ring?: EnemyRingStyle;
+    icon: string | EnemyIconStyle;
 };
 
 function getRingStyle<T extends LegacyEnemyObject>(object: T): EnemyRingStyle {
@@ -123,12 +126,27 @@ function getRingStyle<T extends LegacyEnemyObject>(object: T): EnemyRingStyle {
     return EnemyRingStyle.Directional;
 }
 
+function getEnemyIconStyle<T extends LegacyEnemyObject>(object: T): EnemyIconStyle {
+    switch (object.icon) {
+        case EnemyIconStyle.NoIcon:
+        case EnemyIconStyle.Small:
+        case EnemyIconStyle.Medium:
+        case EnemyIconStyle.Large:
+            return object.icon;
+        default:
+            // While we could guess based on the icon url or even radius,
+            // we should not randomly add extra elements to plans.
+            return EnemyIconStyle.NoIcon;
+    }
+}
+
 function upgradeEnemy(object: LegacyEnemyObject): EnemyObject {
     return {
         ...object,
         rotation: object.rotation ?? 0,
         ring: object.ring ?? getRingStyle(object),
         opacity: object.opacity ?? DEFAULT_ENEMY_OPACITY,
+        icon: getEnemyIconStyle(object),
     };
 }
 
