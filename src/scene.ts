@@ -445,6 +445,21 @@ export function isRotateable<T>(object: T): object is RotateableObject & T {
     return obj && typeof obj.rotation === 'number';
 }
 
+/**
+ * Some RotateableObjects are conditionally rotateable, e.g. if any enemy has no
+ * icon and the ring style can't be rotated, then there is no need to show
+ * rotation controls.
+ *
+ * @returns Whether a RotateableObject can currently be rotated.
+ */
+export function isRotateAllowed(object: UnknownObject & RotateableObject) {
+    if (isEnemy(object)) {
+        return object.icon !== EnemyIconStyle.NoIcon || object.ring !== EnemyRingStyle.NoDirection;
+    }
+
+    return true;
+}
+
 export function isResizable<T>(object: T): object is ResizeableObject & T {
     if (!isMoveable(object) || !isRotateable(object)) {
         return false;

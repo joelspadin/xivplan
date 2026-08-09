@@ -9,7 +9,14 @@ import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { EnemyIconStyle, type EnemyObject, EnemyRingStyle, getEnemyIconUrl, ObjectType } from '../scene';
+import {
+    EnemyIconStyle,
+    type EnemyObject,
+    EnemyRingStyle,
+    getEnemyIconUrl,
+    isRotateAllowed,
+    ObjectType,
+} from '../scene';
 import {
     CENTER_DOT_RADIUS,
     DEFAULT_ENEMY_COLOR,
@@ -373,11 +380,12 @@ const EnemyRenderer: React.FC<EnemyRendererProps> = ({ object, radius, rotation,
 
 const EnemyContainer: React.FC<RendererProps<EnemyObject>> = ({ object }) => {
     const groupRef = useRef<Konva.Group>(null);
+    const allowRotate = isRotateAllowed(object);
 
     return (
         <RadiusObjectContainer
             object={object}
-            allowRotate={object.rotation !== undefined}
+            allowRotate={allowRotate}
             onTransformEnd={() => {
                 groupRef.current?.clearCache();
             }}

@@ -3,7 +3,7 @@ import { LinkRegular } from '@fluentui/react-icons';
 import React from 'react';
 import { ConnectionType } from '../../EditModeContext';
 import { SpinButtonUnits } from '../../SpinButtonUnits';
-import { type EnemyObject, EnemyRingStyle, isEnemy, type RotateableObject } from '../../scene';
+import { type EnemyObject, isRotateAllowed, type RotateableObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
@@ -15,7 +15,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
     const update = useObjectUpdater(objects);
 
     const rotation = commonValue(objects, (obj) => obj.rotation);
-    const noDirection = commonValue(objects, (obj) => isEnemy(obj) && obj.ring == EnemyRingStyle.NoDirection);
+    const disabled = commonValue(objects, (obj) => !isRotateAllowed(obj));
     const currentlyLinked = commonValue(objects, (obj) => obj.facingId !== undefined) || false;
 
     const onRotationChanged = (rotation: number) => update({ props: { rotation } });
@@ -25,7 +25,7 @@ export const RotationControl: React.FC<PropertiesControlProps<RotateableObject |
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <Field label={<RotationLabel currentlyLinked={currentlyLinked} />} className={classes.cell}>
                     <SpinButtonUnits
-                        disabled={noDirection}
+                        disabled={disabled}
                         value={rotation}
                         onValueChange={onRotationChanged}
                         step={5}
