@@ -2,6 +2,13 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Aug 9, 2026
+
+- Added an option to display an icon in the center of enemy objects. There are three icon styles (taken from the strategy board image set).
+- Added an option to hide the enemy hitbox ring.
+- Updated some enemy ring styles to have flank arrows.
+- Fixed an issue where segmented controls (e.g. waymark shape, enemy ring style, etc.) would show the last-active value when selecting multiple objects with different values.
+
 ## July 23, 2026
 
 - Added modifier keys when adjusting line/cone control points:
