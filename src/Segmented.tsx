@@ -16,11 +16,16 @@ import { OptionalTooltip } from './OptionalTooltip';
 
 export type SegmentedGroupProps = RadioGroupProps;
 
-export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, ...props }) => {
+// RadioGroup reverts to uncontrolled when value=undefined, but we want it to
+// show no value selected instead. Make an object that definitely doesn't match
+// any item value to use instead and pretend it's a string.
+const NONE_VALUE = Symbol() as unknown as string;
+
+export const SegmentedGroup: React.FC<SegmentedGroupProps> = ({ children, value, ...props }) => {
     const classes = useStyles();
 
     return (
-        <RadioGroup layout="horizontal-stacked" {...props}>
+        <RadioGroup layout="horizontal-stacked" value={value ?? NONE_VALUE} {...props}>
             <div className={classes.track}>{children}</div>
         </RadioGroup>
     );
