@@ -8,16 +8,19 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type CircleZone, ObjectType } from '../../scene';
+import { ObjectType, ProximityStyle, type ProximityZone } from '../../scene';
 import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useHighlightProps, useOverrideProps } from '../highlight';
-import { getArrowStyle, getShadowColor } from './style';
+import { OffsetArc } from './shapes';
+import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
 const DEFAULT_RADIUS = 200;
+// (inner circle radius. outsets arcs add 5)
+const DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS = 25;
 
 export const ZoneProximity: React.FC = () => {
     return (
@@ -31,7 +34,7 @@ export const ZoneProximity: React.FC = () => {
     );
 };
 
-registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
+registerDropHandler<ProximityZone>(ObjectType.Proximity, (object, position) => {
     return {
         type: 'add',
         object: {
@@ -41,7 +44,7 @@ registerDropHandler<CircleZone>(ObjectType.Proximity, (object, position) => {
             radius: DEFAULT_RADIUS,
             ...object,
             ...position,
-        },
+        } as ProximityZone,
     };
 });
 
@@ -123,12 +126,12 @@ function getShadowOffset(i: number): ShapeConfig {
     }
 }
 
-interface ProximityRendererProps extends RendererProps<CircleZone> {
+interface ProximityRendererProps extends RendererProps<ProximityZone> {
     radius: number;
     isDragging?: boolean;
 }
 
-const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius, ...props }) => {
     const highlightProps = useHighlightProps(object);
     const overrideProps = useOverrideProps(object);
     const gradient: ShapeConfig = {
@@ -136,10 +139,6 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
         fillRadialGradientStartRadius: 0,
         fillRadialGradientEndRadius: radius,
     };
-    const arrow = getArrowStyle(object.color, object.opacity * 3);
-    const shadowColor = getShadowColor(object.color);
-
-    const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
 
     return (
         <>
@@ -148,31 +147,80 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius })
             <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...gradient} />
 
-                <Group scaleX={arrowScale} scaleY={arrowScale}>
-                    {CORNER_ANGLES.map((r, i) => (
-                        <Group key={i} rotation={r}>
-                            <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
-                            <FlareCorner
-                                scaleX={SCALE2}
-                                scaleY={SCALE2}
-                                {...arrow}
-                                shadowColor={shadowColor}
-                                {...getShadowOffset(i)}
-                            />
-                        </Group>
-                    ))}
-                    {ARROW_ANGLES.map((r, i) => (
-                        <Group key={i} rotation={r}>
-                            <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
-                        </Group>
-                    ))}
-                </Group>
+                {(object.proximityStyle === undefined || object.proximityStyle == ProximityStyle.Player) && (
+                    <PlayerProximityMarker object={object} radius={radius} {...props} />
+                )}
+
+                {object.proximityStyle == ProximityStyle.Ground && (
+                    <FloorProximityMarker object={object} radius={radius} {...props} />
+                )}
             </HideGroup>
         </>
     );
 };
 
-const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => {
+const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
+    const shadowColor = getShadowColor(object.color);
+
+    const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
+    return (
+        <Group scaleX={arrowScale} scaleY={arrowScale}>
+            {CORNER_ANGLES.map((r, i) => (
+                <Group key={i} rotation={r}>
+                    <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
+                    <FlareCorner
+                        scaleX={SCALE2}
+                        scaleY={SCALE2}
+                        {...arrow}
+                        shadowColor={shadowColor}
+                        {...getShadowOffset(i)}
+                    />
+                </Group>
+            ))}
+            {ARROW_ANGLES.map((r, i) => (
+                <Group key={i} rotation={r}>
+                    <FlareArrow offsetY={60} {...arrow} shadowColor={shadowColor} />
+                </Group>
+            ))}
+        </Group>
+    );
+};
+
+const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+    const floorCircleScale = Math.max(0.5, radius / DEFAULT_RADIUS);
+    const floorCircleStyle = getZoneStyle(
+        object.color,
+        1.15 * object.opacity,
+        DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS,
+        false,
+    );
+    const floorCircleArcStyle = getZoneStyle(
+        object.color,
+        2.5 * object.opacity,
+        DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS + 5,
+        false,
+    );
+    return (
+        <Group scaleX={floorCircleScale} scaleY={floorCircleScale}>
+            <Circle radius={DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS} {...floorCircleStyle} />
+            {CORNER_ANGLES.map((r, i) => (
+                <Group key={i} rotation={r - 30}>
+                    <OffsetArc
+                        angle={60}
+                        innerRadius={DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS + 2}
+                        outerRadius={DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS + 5}
+                        shapeOffset={0}
+                        {...floorCircleArcStyle}
+                        strokeWidth={0}
+                    />
+                </Group>
+            ))}
+        </Group>
+    );
+};
+
+const ProximityContainer: React.FC<RendererProps<ProximityZone>> = ({ object }) => {
     return (
         <RadiusObjectContainer object={object}>
             {(props) => <ProximityRenderer object={object} {...props} />}
@@ -180,9 +228,9 @@ const ProximityContainer: React.FC<RendererProps<CircleZone>> = ({ object }) => 
     );
 };
 
-registerRenderer<CircleZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
+registerRenderer<ProximityZone>(ObjectType.Proximity, LayerName.Ground, ProximityContainer);
 
-const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ...props }) => {
+const ProximityDetails: React.FC<ListComponentProps<ProximityZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
@@ -193,4 +241,4 @@ const ProximityDetails: React.FC<ListComponentProps<CircleZone>> = ({ object, ..
     );
 };
 
-registerListComponent<CircleZone>(ObjectType.Proximity, ProximityDetails);
+registerListComponent<ProximityZone>(ObjectType.Proximity, ProximityDetails);

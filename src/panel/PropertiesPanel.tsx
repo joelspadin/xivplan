@@ -23,6 +23,7 @@ import {
     isNamed,
     isParty,
     isPolygonZone,
+    isProximityZone,
     isRadiusObject,
     isResizable,
     isRotateable,
@@ -56,6 +57,7 @@ import { OpacityControl } from './properties/OpacityControl';
 import { PartyIconControl } from './properties/PartyControls';
 import { PolygonOrientationControl, PolygonSidesControl } from './properties/PolygonControls';
 import { PositionControl } from './properties/PositionControl';
+import { ProximityTypeControl } from './properties/ProximityControls';
 import { InnerRadiusControl, RadiusControl } from './properties/RadiusControl';
 import { RotationControl } from './properties/RotationControl';
 import { SizeControl } from './properties/SizeControl';
@@ -180,6 +182,7 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isInnerRadiusObject} control={InnerRadiusControl} />
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareLengthControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
+                <ControlCondition objects={objects} test={isProximityZone} control={ProximityTypeControl} />
             </div>
 
             <ControlCondition objects={objects} test={isRotateable} control={RotationControl} />
