@@ -296,7 +296,7 @@ export const ProximityStyle = {
 } as const;
 export type ProximityStyle = Enum<typeof ProximityStyle>;
 
-export interface ProximityZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface ProximityZone extends RadiusObject, ColoredObject, HollowObject, BaseObject, RotateableObject {
     readonly type: typeof ObjectType.Proximity;
     // default: Player
     readonly proximityStyle?: ProximityStyle;
