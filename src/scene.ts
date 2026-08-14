@@ -279,18 +279,29 @@ export function isActor(object: UnknownObject): object is Actor {
 export interface CircleZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type:
         | typeof ObjectType.Circle
-        | typeof ObjectType.Proximity
         | typeof ObjectType.Knockback
         | typeof ObjectType.RotateCW
         | typeof ObjectType.RotateCCW;
 }
 export const isCircleZone = makeObjectTest<CircleZone>(
     ObjectType.Circle,
-    ObjectType.Proximity,
     ObjectType.Knockback,
     ObjectType.RotateCW,
     ObjectType.RotateCCW,
 );
+
+export const ProximityStyle = {
+    Player: 'player',
+    Ground: 'ground',
+} as const;
+export type ProximityStyle = Enum<typeof ProximityStyle>;
+
+export interface ProximityZone extends RadiusObject, ColoredObject, HollowObject, BaseObject {
+    readonly type: typeof ObjectType.Proximity;
+    // default: Player
+    readonly proximityStyle?: ProximityStyle;
+}
+export const isProximityZone = makeObjectTest<ProximityZone>(ObjectType.Proximity);
 
 export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
     readonly type: typeof ObjectType.Stack;
@@ -375,27 +386,30 @@ export interface TowerZone extends RadiusObject, ColoredObject, StackCountObject
 export const isTowerZone = makeObjectTest<TowerZone>(ObjectType.Tower);
 
 export type Zone =
-    | CircleZone
-    | DonutZone
-    | ConeZone
     | ArcZone
-    | LineZone
-    | RectangleZone
+    | CircleZone
+    | ConeZone
+    | DonutZone
     | ExaflareZone
+    | LineZone
+    | PolygonZone
+    | ProximityZone
+    | RectangleZone
     | StarburstZone
     | TowerZone;
 export function isZone(object: UnknownObject): object is Zone {
     return (
-        isCircleZone(object) ||
-        isDonutZone(object) ||
-        isConeZone(object) ||
         isArcZone(object) ||
-        isLineZone(object) ||
-        isRectangleZone(object) ||
+        isCircleZone(object) ||
+        isConeZone(object) ||
+        isDonutZone(object) ||
         isExaflareZone(object) ||
+        isLineZone(object) ||
+        isPolygonZone(object) ||
+        isProximityZone(object) ||
+        isRectangleZone(object) ||
         isStarburstZone(object) ||
-        isTowerZone(object) ||
-        isPolygonZone(object)
+        isTowerZone(object)
     );
 }
 
