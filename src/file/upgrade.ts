@@ -16,6 +16,7 @@ import {
     type PartyObject,
     type PolygonOrientation,
     type PolygonZone,
+    type ProximityZone,
     type RectangleZone,
     type ResizeableObject,
     type RotateableObject,
@@ -35,6 +36,7 @@ import {
     isMarker,
     isParty,
     isPolygonZone,
+    isProximityZone,
     isStackZone,
     isText,
 } from '../scene';
@@ -103,6 +105,10 @@ function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
 
     if (isEye(object)) {
         object = upgradeEye(object);
+    }
+
+    if (isProximityZone(object)) {
+        object = updateProximityZone(object);
     }
 
     return object;
@@ -353,6 +359,18 @@ type LegacyEyeObject = Omit<EyeObject, 'rotation'> & {
 };
 
 function upgradeEye(object: LegacyEyeObject): EyeObject {
+    return {
+        rotation: 0,
+        ...object,
+    };
+}
+
+// ProximityZone was changed to be rotateable
+type LegacyProximityZone = Omit<ProximityZone, 'rotation'> & {
+    rotation?: number;
+};
+
+function updateProximityZone(object: LegacyProximityZone): ProximityZone {
     return {
         rotation: 0,
         ...object,

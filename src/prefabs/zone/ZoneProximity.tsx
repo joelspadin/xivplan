@@ -42,6 +42,7 @@ registerDropHandler<ProximityZone>(ObjectType.Proximity, (object, position) => {
             color: COLOR_BLUE_WHITE,
             opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
+            rotation: 0,
             ...object,
             ...position,
         } as ProximityZone,
@@ -128,6 +129,7 @@ function getShadowOffset(i: number): ShapeConfig {
 
 interface ProximityRendererProps extends RendererProps<ProximityZone> {
     radius: number;
+    rotation: number;
     isDragging?: boolean;
 }
 
@@ -159,13 +161,13 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius, .
     );
 };
 
-const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, rotation, radius }) => {
     const arrow = getArrowStyle(object.color, object.opacity * 3);
     const shadowColor = getShadowColor(object.color);
 
     const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
     return (
-        <Group scaleX={arrowScale} scaleY={arrowScale}>
+        <Group rotation={rotation} scaleX={arrowScale} scaleY={arrowScale}>
             {CORNER_ANGLES.map((r, i) => (
                 <Group key={i} rotation={r}>
                     <FlareCorner scaleX={SCALE1} scaleY={SCALE1} {...arrow} />
@@ -187,7 +189,7 @@ const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, radiu
     );
 };
 
-const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius }) => {
+const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, rotation, radius }) => {
     const floorCircleScale = Math.max(0.5, radius / DEFAULT_RADIUS);
     const floorCircleStyle = getZoneStyle(
         object.color,
@@ -202,7 +204,7 @@ const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius
         false,
     );
     return (
-        <Group scaleX={floorCircleScale} scaleY={floorCircleScale}>
+        <Group rotation={rotation} scaleX={floorCircleScale} scaleY={floorCircleScale}>
             <Circle radius={DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS} {...floorCircleStyle} />
             {CORNER_ANGLES.map((r, i) => (
                 <Group key={i} rotation={r - 30}>
@@ -222,7 +224,7 @@ const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, radius
 
 const ProximityContainer: React.FC<RendererProps<ProximityZone>> = ({ object }) => {
     return (
-        <RadiusObjectContainer object={object}>
+        <RadiusObjectContainer object={object} allowRotate>
             {(props) => <ProximityRenderer object={object} {...props} />}
         </RadiusObjectContainer>
     );
