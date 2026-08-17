@@ -2,6 +2,12 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Aug 17, 2026
+
+- Added a ground-targeted version of proximity AOEs.
+  - Also added support for rotating the center icon in preparation for importing strategy board links.
+- Look away/towards objects can now be rotated as well.
+
 ## Aug 9, 2026
 
 - Added an option to display an icon in the center of enemy objects. There are three icon styles (taken from the strategy board image set).
