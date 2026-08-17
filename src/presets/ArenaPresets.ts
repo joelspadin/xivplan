@@ -1,6 +1,7 @@
 import type { ArenaPreset } from '../scene';
 import { ARENA_PRESETS_CRITERION } from './Criterion';
 import { ARENA_PRESETS_GENERAL } from './General';
+import { ARENA_PRESETS_STGY } from './StrategyBoard';
 import { ARENA_PRESETS_TRIALS } from './Trials';
 import { ARENA_PRESETS_RAID_ARCADION } from './raid/Arcadion';
 import { ARENA_PRESETS_RAID_EDEN } from './raid/Eden';
@@ -16,6 +17,7 @@ import { ARENA_PRESETS_ULTIMATE_UWU } from './ultimate/UWU';
 export const ARENA_PRESETS: Record<string, Record<string, ArenaPreset[]>> = {
     '': {
         General: ARENA_PRESETS_GENERAL,
+        'Strategy Board': ARENA_PRESETS_STGY,
         Criterion: ARENA_PRESETS_CRITERION,
         Trials: ARENA_PRESETS_TRIALS,
     },
