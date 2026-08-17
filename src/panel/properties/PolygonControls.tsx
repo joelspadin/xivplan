@@ -45,8 +45,8 @@ export const PolygonOrientationControl: React.FC<PropertiesControlProps<PolygonZ
     return (
         <Field label="Orientation" className={controlClasses.cell}>
             <SegmentedGroup
-                name="player-count"
-                value={orient ?? ''}
+                name="orientation"
+                value={orient}
                 onChange={(ev, data) => handleChanged(data.value as PolygonOrientation)}
             >
                 <Segment value="point" icon={<Square className={classes.point} />} title="Point up" />
