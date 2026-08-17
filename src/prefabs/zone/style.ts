@@ -1,6 +1,6 @@
 import Color from 'colorjs.io';
 
-function getStrokeWidth(size: number) {
+export function getStrokeWidth(size: number) {
     return Math.max(2, Math.min(4, size / 100));
 }
 

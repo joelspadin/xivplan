@@ -2,6 +2,7 @@ import { use, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { jsonToScene, sceneToText, textToScene } from '../file';
 import type { Scene } from '../scene';
+import { interpretShareCode, SHARE_CODE_PREFIX } from './strategyBoardImport';
 
 export function getShareLink(scene: Scene): string {
     const data = sceneToText(scene);
@@ -34,6 +35,9 @@ export function parseSceneLink(hash: string | URL, searchParams?: URLSearchParam
 
     const data = getPlanData(hash, searchParams);
     if (data) {
+        if (data.startsWith(SHARE_CODE_PREFIX)) {
+            return interpretShareCode(data);
+        }
         return textToScene(data);
     }
 
@@ -43,6 +47,10 @@ export function parseSceneLink(hash: string | URL, searchParams?: URLSearchParam
 export async function fetchScene(url: string) {
     const response = await fetch(url);
     const data = await response.text();
+
+    if (data.startsWith(SHARE_CODE_PREFIX)) {
+        return interpretShareCode(data);
+    }
 
     return jsonToScene(data);
 }

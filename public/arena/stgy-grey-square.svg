@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="384"
+   viewBox="0 0 135.46667 101.6"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   sodipodi:docname="stgy-grey-square.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <style
+     id="style1">
+#g1 { 
+    fill:var(--xiv-colorGrid, #6f5a48);
+}
+</style>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="2.2930555"
+     inkscape:cx="278.44943"
+     inkscape:cy="156.12356"
+     inkscape:window-width="2880"
+     inkscape:window-height="1526"
+     inkscape:window-x="3829"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer4">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="0.26458334"
+       spacingy="0.26458333"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14902"
+       empspacing="32"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask2">
+      <rect
+         style="fill:#ffffff;stroke-width:0.265234"
+         id="rect3"
+         width="88.370834"
+         height="88.370834"
+         x="23.547916"
+         y="6.6145835" />
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask9">
+      <g
+         id="g10">
+        <rect
+           style="fill:#ffffff;stroke-width:0.260047"
+           id="rect9"
+           width="91.01667"
+           height="91.01667"
+           x="22.225"
+           y="5.2916665" />
+        <rect
+           style="fill:#000000;stroke-width:0.264583"
+           id="rect10"
+           width="88.370834"
+           height="88.370834"
+           x="23.547916"
+           y="6.6145835" />
+      </g>
+    </mask>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 2">
+    <rect
+       style="stroke-width:0.264583;fill:var(--xiv-colorArenaLight, #4c4034);"
+       id="rect11"
+       width="89.538475"
+       height="89.192314"
+       x="22.846155"
+       y="6.2307696" />
+    <rect
+       style="stroke-width:0.264583;fill:var(--xiv-colorBorder, #6f5a48);"
+       id="rect4"
+       width="92.604164"
+       height="92.604164"
+       x="21.43125"
+       y="4.4979167"
+       mask="url(#mask9)" />
+  </g>
+</svg>
