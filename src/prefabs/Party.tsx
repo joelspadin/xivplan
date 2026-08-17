@@ -157,3 +157,25 @@ export const PartyPictomancer = makeIcon(Job.Pictomancer);
 
 export const PartyBlueMage = makeIcon(Job.BlueMage);
 export const PartyBeastmaster = makeIcon(Job.Beastmaster);
+
+export const PartyGladiator = makeIcon(Job.Gladiator);
+export const PartyMarauder = makeIcon(Job.Marauder);
+export const PartyConjurer = makeIcon(Job.Conjurer);
+export const PartyPugilist = makeIcon(Job.Pugilist);
+export const PartyLancer = makeIcon(Job.Lancer);
+export const PartyRogue = makeIcon(Job.Rogue);
+export const PartyThaumaturge = makeIcon(Job.Thaumaturge);
+export const PartyArcanist = makeIcon(Job.Arcanist);
+export const PartyArcher = makeIcon(Job.Archer);
+
+export const PartyCarpenter = makeIcon(Job.Carpenter);
+export const PartyBlacksmith = makeIcon(Job.Blacksmith);
+export const PartyArmorer = makeIcon(Job.Armorer);
+export const PartyGoldsmith = makeIcon(Job.Goldsmith);
+export const PartyLeatherworker = makeIcon(Job.Leatherworker);
+export const PartyWeaver = makeIcon(Job.Weaver);
+export const PartyAlchemist = makeIcon(Job.Alchemist);
+export const PartyCulinarian = makeIcon(Job.Culinarian);
+export const PartyMiner = makeIcon(Job.Miner);
+export const PartyBotanist = makeIcon(Job.Botanist);
+export const PartyFisher = makeIcon(Job.Fisher);
