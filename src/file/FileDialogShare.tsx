@@ -15,6 +15,7 @@ import { useCloseDialog } from '../useCloseDialog';
 import { useIsDirty } from '../useIsDirty';
 import { useConfirmUnsavedChanges } from './confirm';
 import { parseSceneLink } from './share';
+import { interpretShareCode, SHARE_CODE_PREFIX } from './strategyBoardImport';
 
 export interface ImportFromStringProps {
     actions: HtmlPortalNode;
@@ -42,7 +43,11 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
 
         const scene = decodeScene(data);
         if (!scene) {
-            setError('Invalid link');
+            if (data.startsWith(SHARE_CODE_PREFIX)) {
+                setError('Invalid or unsupported Share Code');
+            } else {
+                setError('Invalid link');
+            }
             return;
         }
 
@@ -64,7 +69,11 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
 
     return (
         <>
-            <Field label="Enter plan link" validationState={error ? 'error' : 'none'} validationMessage={error}>
+            <Field
+                label="Enter plan link or Strategy Board Share Code"
+                validationState={error ? 'error' : 'none'}
+                validationMessage={error}
+            >
                 <Textarea rows={4} onChange={onChange} onKeyUp={onKeyUp} />
             </Field>
 
@@ -85,6 +94,10 @@ export const ImportFromString: React.FC<ImportFromStringProps> = ({ actions }) =
 };
 
 function decodeScene(text: string): Scene | undefined {
+    if (text.startsWith(SHARE_CODE_PREFIX)) {
+        return interpretShareCode(text);
+    }
+
     try {
         return parseSceneLink(new URL(text));
     } catch (ex) {

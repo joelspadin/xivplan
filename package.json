@@ -41,7 +41,8 @@
     "react-reverse-portal": "^2.3.0",
     "react-router-dom": "^7.17.0",
     "simplify-js": "^1.2.4",
-    "use-image": "^1.1.4"
+    "use-image": "^1.1.4",
+    "xiv-strat-board": "^0.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

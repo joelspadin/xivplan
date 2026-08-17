@@ -1,6 +1,12 @@
 import { useArrowNavigationGroup } from '@fluentui/react-components';
 import React from 'react';
 import {
+    ShapePlainCircle,
+    ShapePlainCross,
+    ShapePlainSquare,
+    ShapePlainTriangle,
+    ShapeRotateCCW,
+    ShapeRotateCW,
     StatusAttack1,
     StatusAttack2,
     StatusAttack3,
@@ -124,11 +130,19 @@ export const StatusMarkers: React.FC = () => {
                     <StatusEdenBlue />
                 </ObjectGroupGrid>
             </Section>
-            <Section header="Status effects">
+            <Section header="Other">
                 <ObjectGroupGrid size={40}>
+                    <ShapeRotateCCW />
+                    <ShapeRotateCW />
                     <StatusDice1 />
                     <StatusDice2 />
                     <StatusDice3 />
+                </ObjectGroupGrid>
+                <ObjectGroupGrid size={40}>
+                    <ShapePlainTriangle />
+                    <ShapePlainCircle />
+                    <ShapePlainCross />
+                    <ShapePlainSquare />
                 </ObjectGroupGrid>
             </Section>
         </div>
