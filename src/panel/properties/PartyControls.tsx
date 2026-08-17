@@ -29,6 +29,15 @@ const JOB_ICON_CHOICES = jobGrid([
     [Job.Beastmaster, Job.BlueMage],
 ]);
 
+const CLASS_ICON_CHOICES = jobGrid([
+    [Job.Gladiator, Job.Marauder, Job.Conjurer],
+    [Job.Pugilist, Job.Lancer, Job.Rogue],
+    [Job.Thaumaturge, Job.Arcanist, Job.Archer],
+    [Job.Carpenter, Job.Blacksmith, Job.Armorer, Job.Goldsmith],
+    [Job.Leatherworker, Job.Weaver, Job.Alchemist, Job.Culinarian],
+    [Job.Miner, Job.Botanist, Job.Fisher],
+]);
+
 type JobClickHandler = (name: string, image: string) => void;
 
 interface PartyIconListProps {
@@ -77,6 +86,7 @@ const PartyIconList: React.FC<PartyIconListProps> = ({ onClick }) => {
             >
                 <Tab value="roles">Roles</Tab>
                 <Tab value="jobs">Jobs</Tab>
+                <Tab value="classes">Classes</Tab>
             </TabList>
             <div className={classes.container}>
                 <TabActivity value="roles" activeTab={tab}>
@@ -84,6 +94,9 @@ const PartyIconList: React.FC<PartyIconListProps> = ({ onClick }) => {
                 </TabActivity>
                 <TabActivity value="jobs" activeTab={tab}>
                     <JobGrid jobs={JOB_ICON_CHOICES} onClick={onClick} />
+                </TabActivity>
+                <TabActivity value="classes" activeTab={tab}>
+                    <JobGrid jobs={CLASS_ICON_CHOICES} onClick={onClick} />
                 </TabActivity>
             </div>
         </div>

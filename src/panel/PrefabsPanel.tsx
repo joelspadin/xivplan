@@ -5,13 +5,22 @@ import { MarkerArrow } from '../prefabs/Arrow';
 import { EnemyLarge, EnemyMedium, EnemySmall, EnemyUnremarkable } from '../prefabs/Enemies';
 import { Waymark1, Waymark2, Waymark3, Waymark4, WaymarkA, WaymarkB, WaymarkC, WaymarkD } from '../prefabs/Markers';
 import {
+    PartyAlchemist,
     PartyAny,
+    PartyArcanist,
+    PartyArcher,
+    PartyArmorer,
     PartyAstrologian,
     PartyBard,
     PartyBarrierHealer,
     PartyBeastmaster,
     PartyBlackMage,
+    PartyBlacksmith,
     PartyBlueMage,
+    PartyBotanist,
+    PartyCarpenter,
+    PartyConjurer,
+    PartyCulinarian,
     PartyDancer,
     PartyDarkKnight,
     PartyDps,
@@ -20,26 +29,35 @@ import {
     PartyDps3,
     PartyDps4,
     PartyDragoon,
+    PartyFisher,
+    PartyGladiator,
+    PartyGoldsmith,
     PartyGunbreaker,
     PartyHealer,
     PartyHealer1,
     PartyHealer2,
+    PartyLancer,
+    PartyLeatherworker,
     PartyMachinist,
     PartyMagicRanged,
+    PartyMarauder,
     PartyMelee,
     PartyMelee1,
     PartyMelee2,
+    PartyMiner,
     PartyMonk,
     PartyNinja,
     PartyPaladin,
     PartyPhysicalRanged,
     PartyPictomancer,
+    PartyPugilist,
     PartyPureHealer,
     PartyRanged,
     PartyRanged1,
     PartyRanged2,
     PartyReaper,
     PartyRedMage,
+    PartyRogue,
     PartySage,
     PartySamurai,
     PartyScholar,
@@ -48,8 +66,10 @@ import {
     PartyTank,
     PartyTank1,
     PartyTank2,
+    PartyThaumaturge,
     PartyViper,
     PartyWarrior,
+    PartyWeaver,
     PartyWhiteMage,
 } from '../prefabs/Party';
 import {
@@ -149,6 +169,7 @@ export const PrefabsPanel: React.FC = () => {
                     >
                         <Tab value="roles">Roles</Tab>
                         <Tab value="jobs">Jobs</Tab>
+                        <Tab value="classes">Classes</Tab>
                     </TabList>
                 }
                 dividerClassName={controlClasses.dividerWithTabs}
@@ -234,6 +255,40 @@ export const PrefabsPanel: React.FC = () => {
                     <ObjectGroup>
                         <PartyBeastmaster />
                         <PartyBlueMage />
+                    </ObjectGroup>
+                </TabActivity>
+                <TabActivity value="classes" activeTab={tab}>
+                    <ObjectGroup>
+                        <PartyGladiator />
+                        <PartyMarauder />
+                        <PartyConjurer />
+                    </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyPugilist />
+                        <PartyLancer />
+                        <PartyRogue />
+                    </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyThaumaturge />
+                        <PartyArcanist />
+                        <PartyArcher />
+                    </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyCarpenter />
+                        <PartyBlacksmith />
+                        <PartyArmorer />
+                        <PartyGoldsmith />
+                    </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyLeatherworker />
+                        <PartyWeaver />
+                        <PartyAlchemist />
+                        <PartyCulinarian />
+                    </ObjectGroup>
+                    <ObjectGroup>
+                        <PartyMiner />
+                        <PartyBotanist />
+                        <PartyFisher />
                     </ObjectGroup>
                 </TabActivity>
             </Section>
