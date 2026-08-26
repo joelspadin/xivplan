@@ -18,7 +18,7 @@ import React from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker, type CompactColorPickerProps } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { OpacitySlider } from '../OpacitySlider';
+import { DiscreteSlider } from '../DiscreteSlider';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
 import { useColorSwatches } from '../theme';
@@ -84,7 +84,14 @@ export const DrawPanel: React.FC = () => {
                 selectedValue={config.color}
                 onSelectionChange={(ev, data) => setColor({ value: data.selectedSwatch, transient: false })}
             />
-            <OpacitySlider value={config.opacity} onChange={(ev, data) => setOpacity(data.value)} />
+            <DiscreteSlider
+                label="Opacity"
+                min={5}
+                step={5}
+                value={config.opacity}
+                showValue
+                onChange={(ev, data) => setOpacity(data.value)}
+            />
             <BrushSizeControl
                 value={config.brushSize}
                 color={config.color}

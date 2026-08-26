@@ -35,13 +35,11 @@ export function getArrowStyle(color: string, opacity: number): { fill: string } 
     return { fill: fillStr };
 }
 
-export function getShadowColor(color: string): string | undefined {
-    const c = new Color(color);
+export function getShadowColor(color: string, opacity?: number): string | undefined {
+    const c = new Color(color).to('hsv').set({ s: (s) => s - 10, v: 30 });
+    c.alpha = (opacity ?? 100) / 100;
 
-    return c
-        .to('hsv')
-        .set({ s: (s) => s - 10, v: 30 })
-        .display();
+    return c.display();
 }
 
 export function getSphericalGradientStops(color: string) {
