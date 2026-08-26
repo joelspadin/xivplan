@@ -61,6 +61,7 @@ export type ObjectType = Enum<typeof ObjectType>;
 
 export interface BaseObject {
     readonly id: number;
+    // A whole percentage (5-100)
     readonly opacity: number;
     readonly hide?: boolean;
 }
@@ -300,6 +301,9 @@ export interface ProximityZone extends RadiusObject, ColoredObject, HollowObject
     readonly type: typeof ObjectType.Proximity;
     // default: Player
     readonly proximityStyle?: ProximityStyle;
+    // A whole percentage, relative to the radius (5-50)
+    readonly iconProportion: number;
+    readonly hideGradient?: boolean;
 }
 export const isProximityZone = makeObjectTest<ProximityZone>(ObjectType.Proximity);
 

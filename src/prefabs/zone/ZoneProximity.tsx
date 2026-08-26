@@ -43,6 +43,7 @@ registerDropHandler<ProximityZone>(ObjectType.Proximity, (object, position) => {
             opacity: DEFAULT_AOE_OPACITY,
             radius: DEFAULT_RADIUS,
             rotation: 0,
+            iconProportion: 15,
             ...object,
             ...position,
         } as ProximityZone,
@@ -147,7 +148,7 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius, .
             {highlightProps && <Circle radius={radius} {...highlightProps} {...overrideProps} />}
 
             <HideGroup {...overrideProps}>
-                <Circle radius={radius} {...gradient} />
+                <Circle radius={radius} {...gradient} fill={object.hideGradient ? 'transparent' : undefined} />
 
                 {(object.proximityStyle === undefined || object.proximityStyle == ProximityStyle.Player) && (
                     <PlayerProximityMarker object={object} radius={radius} {...props} />
@@ -162,10 +163,12 @@ const ProximityRenderer: React.FC<ProximityRendererProps> = ({ object, radius, .
 };
 
 const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, rotation, radius }) => {
-    const arrow = getArrowStyle(object.color, object.opacity * 3);
-    const shadowColor = getShadowColor(object.color);
+    const targetSize = (object.iconProportion / 100) * radius;
+    // At max proportion (50%), the arrow tips should be on the edge of the circle
+    const arrowScale = targetSize / 30;
 
-    const arrowScale = Math.max(1, radius / DEFAULT_RADIUS);
+    const arrow = getArrowStyle(object.color, object.opacity * 3);
+    const shadowColor = getShadowColor(object.color, object.opacity * 5);
     return (
         <Group rotation={rotation} scaleX={arrowScale} scaleY={arrowScale}>
             {CORNER_ANGLES.map((r, i) => (
@@ -190,7 +193,9 @@ const PlayerProximityMarker: React.FC<ProximityRendererProps> = ({ object, rotat
 };
 
 const FloorProximityMarker: React.FC<ProximityRendererProps> = ({ object, rotation, radius }) => {
-    const floorCircleScale = Math.max(0.5, radius / DEFAULT_RADIUS);
+    const targetSize = (object.iconProportion / 100) * radius;
+    // resize based on the arc pieces rather than the inner circle.
+    const floorCircleScale = targetSize / (DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS + 5);
     const floorCircleStyle = getZoneStyle(
         object.color,
         1.15 * object.opacity,

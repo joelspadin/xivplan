@@ -16,6 +16,7 @@ import {
     type PartyObject,
     type PolygonOrientation,
     type PolygonZone,
+    ProximityStyle,
     type ProximityZone,
     type RectangleZone,
     type ResizeableObject,
@@ -365,14 +366,59 @@ function upgradeEye(object: LegacyEyeObject): EyeObject {
     };
 }
 
-// ProximityZone was changed to be rotateable
-type LegacyProximityZone = Omit<ProximityZone, 'rotation'> & {
+// ProximityZone was changed to be rotateable.
+// iconProportion was added
+type LegacyProximityZone = Omit<ProximityZone, 'rotation' | 'iconProportion'> & {
     rotation?: number;
+    iconProportion?: number;
 };
 
 function updateProximityZone(object: LegacyProximityZone): ProximityZone {
+    // Minimum target marker sizes for small zones were removed when adding the proportion setting.
+    // Increase the default proportion to better match the original visuals.
+    let defaultIconProportion = 15;
+    // If the radius was small enough that the original icon display size would not be allowed
+    // (since it would exceed the zone radius), prioritize rendering the icon at the original size
+    // and hide the gradient background.
+    let radiusOverride = object.radius;
+    let hideGradientOverride = object.hideGradient;
+    // If the proportion is already present, the changed visual effects at small sizes are already expected.
+    if (object.iconProportion === undefined) {
+        switch (object.proximityStyle ?? ProximityStyle.Player) {
+            case ProximityStyle.Ground:
+                // The floor marker radius reached its min radius 15 when the object radius was 100
+                // (and has 1:1 scaling)
+                if (object.radius < 100) {
+                    if (object.radius < 30) {
+                        radiusOverride = 30;
+                        hideGradientOverride = true;
+                        defaultIconProportion = 50;
+                    } else {
+                        defaultIconProportion = Math.min(50, Math.round((15 / object.radius) * 100));
+                    }
+                }
+                break;
+            case ProximityStyle.Player:
+                // The player marker radius reached its min radius 60 when the object radius was 200
+                // (but the effective radius of the rendered arrows is 2x that of the floor marker,
+                // so the reference radius is 30)
+                if (object.radius < 200) {
+                    if (object.radius < 60) {
+                        radiusOverride = 60;
+                        hideGradientOverride = true;
+                        defaultIconProportion = 50;
+                    } else {
+                        defaultIconProportion = Math.min(50, Math.round((30 / object.radius) * 100));
+                    }
+                }
+                break;
+        }
+    }
     return {
         rotation: 0,
+        iconProportion: defaultIconProportion,
         ...object,
+        radius: radiusOverride,
+        hideGradient: hideGradientOverride,
     };
 }
