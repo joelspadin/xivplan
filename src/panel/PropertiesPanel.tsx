@@ -31,6 +31,7 @@ import {
     isTether,
     isText,
     supportsHollow,
+    supportsMultiHit,
     supportsStackCount,
 } from '../scene';
 import { getSelectedObjects, useSelection } from '../selection';
@@ -61,7 +62,7 @@ import { ProximityScaleControl, ProximityTypeControl } from './properties/Proxim
 import { InnerRadiusControl, RadiusControl } from './properties/RadiusControl';
 import { RotationControl } from './properties/RotationControl';
 import { SizeControl } from './properties/SizeControl';
-import { StackCountControl } from './properties/StackCountControl';
+import { StackCountControl, StackMultiHitControl } from './properties/StackControls';
 import { StarburstSpokeCountControl, StarburstSpokeWidthControl } from './properties/StarburstControls';
 import { TetherTypeControl, TetherWidthControl } from './properties/TetherControls';
 import { TextLayoutControl, TextOutlineControl, TextValueControl } from './properties/TextControls';
@@ -210,6 +211,7 @@ const Controls: React.FC = () => {
             <ControlCondition objects={objects} test={isTether} control={TetherWidthControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={supportsStackCount} control={StackCountControl} />
+                <ControlCondition objects={objects} test={supportsMultiHit} control={StackMultiHitControl} />
             </div>
             <ControlCondition objects={objects} test={isText} control={TextValueControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>

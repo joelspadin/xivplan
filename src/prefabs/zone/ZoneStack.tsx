@@ -79,6 +79,12 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
 
             <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
+                {object.multiHit && (
+                    <>
+                        <Circle radius={radius * 0.85} {...ring} opacity={0.55} fill="transparent" />
+                        <Circle radius={radius * 0.7} {...ring} opacity={0.35} fill="transparent" />
+                    </>
+                )}
 
                 {object.count === 1 && (
                     <ChevronTail
@@ -88,6 +94,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                         thickness={chevronThickness * 0.6}
                         {...arrow}
                         listening={false}
+                        doubleChevron={object.multiHit}
                     />
                 )}
                 {showOrbs && <StackOrbs object={object} radius={radius} ring={ring} orb={arrow} />}
@@ -101,6 +108,7 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                         width={chevronWidth}
                         thickness={chevronThickness}
                         {...arrow}
+                        doubleChevron={object.multiHit}
                     />
                 ))}
             </HideGroup>

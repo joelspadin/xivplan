@@ -5,7 +5,7 @@ import { Group, Line, Shape } from 'react-konva';
 import { degtorad } from '../../util';
 
 export interface SingleChevronConfig extends ShapeConfig {
-    /** The angle between the two chevron arms, in radians. Defaults to 45. */
+    /** The angle between the two chevron arms, in degrees. Defaults to 45. */
     chevronAngle?: number;
     /** The thickness of the chevron arms (measured as the length of the vertical edges) */
     thickness: number;
@@ -18,6 +18,8 @@ export interface ChevronWithTailConfig extends SingleChevronConfig {
     tailGap?: number;
     /** Thickness of the chevron's tail. Defaults to `thickness * 1.5`. */
     tailThickness?: number;
+    /** If true, two thinner chevrons will be rendered instead of just one thicker chevron. */
+    doubleChevron?: boolean;
 }
 
 export const Chevron: React.FC<SingleChevronConfig> = ({ width, thickness, chevronAngle, ...props }) => {
@@ -40,16 +42,26 @@ export const Chevron: React.FC<SingleChevronConfig> = ({ width, thickness, chevr
 };
 
 export const ChevronTail: React.FC<ChevronWithTailConfig> = (props) => {
-    const { x, y, offsetX, offsetY, rotation, ...chevronProps } = props;
-    const opacity = (chevronProps.opacity as number) ?? 1;
+    const { x, y, offsetX, offsetY, rotation, doubleChevron, ...chevronProps } = props;
+    let thickness = chevronProps.thickness;
+    const tailThickness = chevronProps.tailThickness ?? thickness * 1.5;
+    const tailGap = chevronProps.tailGap ?? 0;
+    const opacity = chevronProps.opacity ?? 1;
+
+    if (doubleChevron) {
+        // split the main chevron in two equal parts, but keep the tail as-is.
+        thickness = thickness / 2;
+    }
+    const secondChevronOffset = doubleChevron ? thickness * 1.4 : 0;
 
     return (
         <Group x={x} y={y} offsetX={offsetX} offsetY={offsetY} rotation={rotation}>
-            <Chevron {...chevronProps} />
+            <Chevron {...chevronProps} thickness={thickness} />
+            {doubleChevron && <Chevron {...chevronProps} y={secondChevronOffset} thickness={thickness} />}
             <Chevron
                 {...chevronProps}
-                y={chevronProps.thickness + (chevronProps.tailGap ?? 0)}
-                thickness={chevronProps.tailThickness ?? chevronProps.thickness * 1.5}
+                y={secondChevronOffset + thickness + tailGap}
+                thickness={tailThickness}
                 opacity={opacity * 0.3}
                 strokeEnabled={false}
             />

@@ -9,6 +9,7 @@ import {
     type ExaflareZone,
     type EyeObject,
     type ImageObject,
+    type LineStackZone,
     type LineZone,
     type MarkerObject,
     type MoveableObject,
@@ -33,6 +34,7 @@ import {
     isExaflareZone,
     isEye,
     isImageObject,
+    isLineStackZone,
     isLineZone,
     isMarker,
     isParty,
@@ -96,7 +98,7 @@ function upgradeObject(scene: Scene, object: SceneObject): SceneObject {
         object = upgradeStackZone(object);
     }
 
-    if (isLineZone(object)) {
+    if (isLineZone(object) || isLineStackZone(object)) {
         object = upgradeLineZone(scene, object);
     }
 
@@ -288,13 +290,16 @@ function upgradeStackZone(object: LegacyStackZone): StackZone {
 
 // ObjectType.LineStack and ObjectType.LineKnockAway were changed from RectangleZone to LineZone
 // Added support for changing hollow property, with ObjectType.LineStack's original rendering appearing as hollow.
-type LegacyLineZone = Omit<RectangleZone, 'type'> & {
+type LegacyLineOrStackZone = Omit<RectangleZone, 'type'> & {
     type: typeof ObjectType.LineStack | typeof ObjectType.LineKnockAway;
 };
 
-function upgradeLineZone(scene: Scene, object: LineZone | LegacyLineZone): LineZone {
+function upgradeLineZone(
+    scene: Scene,
+    object: LineZone | LineStackZone | LegacyLineOrStackZone,
+): LineZone | LineStackZone {
     if (!('height' in object)) {
-        return object as LineZone;
+        return object as LineZone | LineStackZone;
     }
 
     const isHollow = object.type === ObjectType.LineStack;

@@ -1,7 +1,8 @@
 import { Field } from '@fluentui/react-components';
+import { ChevronDoubleDownRegular, ChevronDownRegular } from '@fluentui/react-icons';
 import React from 'react';
-import { Segment, SegmentedGroup } from '../../Segmented';
-import type { StackCountObject } from '../../scene';
+import { BooleanSegment, BooleanSegmentedGroup, Segment, SegmentedGroup } from '../../Segmented';
+import type { MultiHitObject, StackCountObject } from '../../scene';
 import { useControlStyles } from '../../useControlStyles';
 import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
@@ -43,5 +44,28 @@ const NUMBERS = ['One', 'Two', 'Three', 'Four'];
 function getItemTitle(count: number) {
     const number = NUMBERS[count - 1] ?? '';
 
-    return `${number} Player${count == 1 ? 's' : ''}`;
+    return `${number} Player${count != 1 ? 's' : ''}`;
 }
+
+export const StackMultiHitControl: React.FC<PropertiesControlProps<MultiHitObject>> = ({ objects }) => {
+    const classes = useControlStyles();
+    const update = useObjectUpdater(objects);
+
+    const isMultiHit = commonValue(objects, (obj) => obj.multiHit ?? false);
+
+    const valueChanged = (newValue: boolean) =>
+        newValue ? update({ props: { multiHit: true } }) : update({ omit: ['multiHit'] });
+
+    return (
+        <Field label="Multi-hit" className={classes.cell}>
+            <BooleanSegmentedGroup
+                name="multi-hit"
+                value={isMultiHit}
+                onChange={(ev, data) => valueChanged(data.value)}
+            >
+                <BooleanSegment value={false} icon={<ChevronDownRegular />} title="Single hit" />
+                <BooleanSegment value={true} icon={<ChevronDoubleDownRegular />} title="Multiple hits" />
+            </BooleanSegmentedGroup>
+        </Field>
+    );
+};
