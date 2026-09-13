@@ -18,7 +18,7 @@ import React from 'react';
 import { BrushSizeControl } from '../BrushSizeControl';
 import { CompactColorPicker, type CompactColorPickerProps } from '../CompactColorPicker';
 import { CompactSwatchColorPicker } from '../CompactSwatchColorPicker';
-import { DiscreteSlider } from '../DiscreteSlider';
+import { SliderField } from '../SliderField';
 import { EditMode } from '../editMode';
 import '../prefabs/DrawObjectRenderer';
 import { useColorSwatches } from '../theme';
@@ -84,7 +84,7 @@ export const DrawPanel: React.FC = () => {
                 selectedValue={config.color}
                 onSelectionChange={(ev, data) => setColor({ value: data.selectedSwatch, transient: false })}
             />
-            <DiscreteSlider
+            <SliderField
                 label="Opacity"
                 min={5}
                 step={5}

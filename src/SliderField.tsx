@@ -1,27 +1,27 @@
 import {
     Field,
     Label,
-    Slider,
-    type SliderOnChangeData,
-    type SliderProps,
     makeStyles,
     mergeClasses,
+    Slider,
     tokens,
+    type SliderOnChangeData,
+    type SliderProps,
 } from '@fluentui/react-components';
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
 
-export interface DiscreteSliderOnChangeData extends SliderOnChangeData {
+export interface SliderFieldOnChangeData extends SliderOnChangeData {
     transient: boolean;
 }
 
-export interface DiscreteSliderProps extends Omit<SliderProps, 'onChange'> {
+export interface SliderFieldProps extends Omit<SliderProps, 'onChange'> {
     label: string;
-    showValue?: boolean;
-    onChange?: (ev: React.ChangeEvent<HTMLInputElement>, data: DiscreteSliderOnChangeData) => void;
+    showValue?: boolean | ((value: number | undefined) => ReactNode);
+    onChange?: (ev: React.ChangeEvent<HTMLInputElement>, data: SliderFieldOnChangeData) => void;
     onCommit?: () => void;
 }
 
-export const DiscreteSlider: React.FC<DiscreteSliderProps> = ({
+export const SliderField: React.FC<SliderFieldProps> = ({
     label,
     showValue,
     disabled,
@@ -70,7 +70,7 @@ export const DiscreteSlider: React.FC<DiscreteSliderProps> = ({
                 />
                 {showValue && (
                     <Label aria-hidden className={mergeClasses(classes.valueLabel, disabled && classes.disabled)}>
-                        {valueText}
+                        {showValue === true ? valueText : showValue(value)}
                     </Label>
                 )}
             </div>

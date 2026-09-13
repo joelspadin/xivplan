@@ -1,8 +1,8 @@
 import { Field } from '@fluentui/react-components';
 import React from 'react';
 import { DeferredInput } from '../DeferredInput';
-import { DiscreteSlider } from '../DiscreteSlider';
 import { useScene } from '../SceneProvider';
+import { SliderField } from '../SliderField';
 
 export const ArenaBackgroundEdit: React.FC = () => {
     const { arena, dispatch } = useScene();
@@ -18,7 +18,7 @@ export const ArenaBackgroundEdit: React.FC = () => {
                 />
             </Field>
             {arena.backgroundImage && (
-                <DiscreteSlider
+                <SliderField
                     label="Background image opacity"
                     min={5}
                     step={5}

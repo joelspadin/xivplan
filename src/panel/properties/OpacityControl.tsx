@@ -1,7 +1,7 @@
 import React from 'react';
-import { DiscreteSlider } from '../../DiscreteSlider';
 import type { SceneObject } from '../../scene';
 import { useScene } from '../../SceneProvider';
+import { SliderField } from '../../SliderField';
 import { useObjectUpdater } from '../../useObjectUpdater';
 import { commonValue } from '../../util';
 import type { PropertiesControlProps } from '../PropertiesControl';
@@ -20,7 +20,7 @@ export const OpacityControl: React.FC<PropertiesControlProps<SceneObject>> = ({ 
     };
 
     return (
-        <DiscreteSlider
+        <SliderField
             label="Opacity"
             className={className}
             min={5}
