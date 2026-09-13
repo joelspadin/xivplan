@@ -11,6 +11,7 @@ import { registerRenderer } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
 import { type LineStackZone, ObjectType, type RectangleZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
+import { useObjectLoading } from '../../useObjectLoading';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
@@ -106,6 +107,7 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineStackZone>> = ({
 
     const arrowRef = useRef<Konva.Group>(null);
     const [pattern, setPattern] = useState<HTMLImageElement>();
+    useObjectLoading(pattern === undefined);
     const [cachedPatternWidth, setCachedPatternWidth] = useState<number>(patternWidth);
     const [cachedPatternHeight, setCachedPatternHeight] = useState<number>(patternHeight);
 
