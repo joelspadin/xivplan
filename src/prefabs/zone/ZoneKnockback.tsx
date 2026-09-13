@@ -56,10 +56,10 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, i
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 3);
 
-    const cx = radius;
-    const cw = radius * 0.24;
-    const ch = radius * 0.12;
-    const ca = 40;
+    const chevronOffset = radius;
+    const chevronWidth = radius * 0.24;
+    const chevronThickness = radius * 0.042;
+    const chevronAngle = 40;
 
     return (
         <>
@@ -75,10 +75,12 @@ const KnockbackRenderer: React.FC<KnockbackRendererProps> = ({ object, radius, i
                         {[0.25, 0.52, 0.85].map((s, j) => (
                             <ChevronTail
                                 key={j}
-                                offsetY={cx * s}
-                                chevronAngle={ca}
-                                width={cw * s}
-                                height={ch * s}
+                                offsetY={chevronOffset * s}
+                                chevronAngle={chevronAngle}
+                                width={chevronWidth * s}
+                                thickness={chevronThickness * s}
+                                tailGap={chevronThickness * s * 0.4}
+                                tailThickness={chevronThickness * s * 1.75}
                                 opacity={object.opacity / 100}
                                 {...arrow}
                             />

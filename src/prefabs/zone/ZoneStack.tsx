@@ -66,10 +66,10 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 2);
 
-    const cx = radius * 0.6;
-    const cw = radius * 0.5;
-    const ch = radius * 0.325;
-    const ca = 40;
+    const outerChevronOffset = radius * 0.6;
+    const chevronWidth = radius * 0.5;
+    const chevronThickness = radius * 0.165;
+    const chevronAngle = 40;
 
     const showOrbs = !object.hide && object.count > 1;
 
@@ -83,9 +83,9 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                 {object.count === 1 && (
                     <ChevronTail
                         rotation={180}
-                        chevronAngle={ca}
-                        width={cw * 0.6}
-                        height={ch * 0.6}
+                        chevronAngle={chevronAngle}
+                        width={chevronWidth * 0.6}
+                        thickness={chevronThickness * 0.6}
                         {...arrow}
                         listening={false}
                     />
@@ -95,11 +95,11 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                 {CHEVRON_ANGLES.map((r, i) => (
                     <ChevronTail
                         key={i}
-                        offsetY={-cx}
+                        offsetY={-outerChevronOffset}
                         rotation={r}
-                        chevronAngle={ca}
-                        width={cw}
-                        height={ch}
+                        chevronAngle={chevronAngle}
+                        width={chevronWidth}
+                        thickness={chevronThickness}
                         {...arrow}
                     />
                 ))}

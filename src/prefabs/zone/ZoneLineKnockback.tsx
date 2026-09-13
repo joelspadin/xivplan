@@ -55,7 +55,7 @@ const OFFSCREEN_Y = -10000;
 const PATTERN_W = 50;
 const PATTERN_H = 50;
 const ARROW_W = 25;
-const ARROW_H = 15;
+const ARROW_T = 7.5;
 
 const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);
@@ -121,10 +121,12 @@ const LineKnockbackRenderer: React.FC<RendererProps<RectangleZone>> = ({ object 
                 <Rect width={PATTERN_W} height={PATTERN_H} fill={fill} />
                 <ChevronTail
                     width={ARROW_W}
-                    height={ARROW_H}
+                    thickness={ARROW_T}
+                    tailGap={ARROW_T * 0.1}
+                    tailThickness={ARROW_T * 1.4}
                     chevronAngle={40}
                     x={PATTERN_W / 2}
-                    y={PATTERN_H / 2 + ARROW_H}
+                    y={PATTERN_H / 2 + ARROW_T * 2}
                     rotation={180}
                     opacity={(object.opacity * 2) / 100}
                     {...arrow}

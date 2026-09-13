@@ -52,7 +52,7 @@ registerDropHandler<ExaflareZone>(ObjectType.Exaflare, (object, position) => {
 });
 
 const ARROW_W_FRAC = 0.8;
-const ARROW_H_FRAC = 0.5;
+const ARROW_T_FRAC = 0.225;
 
 function getTrailPositions(radius: number, length: number, spacing: number): Vector2d[] {
     return Array.from({ length }).map((_, i) => ({
@@ -104,9 +104,10 @@ const ExaflareRenderer: React.FC<ExaflareRendererProps> = ({ object, radius, rot
                 <HideGroup>
                     <Circle radius={radius} {...style} />
                     <ChevronTail
-                        y={-radius * ARROW_H_FRAC * 0.9}
+                        y={-radius * ARROW_T_FRAC * 2}
                         width={radius * ARROW_W_FRAC}
-                        height={radius * ARROW_H_FRAC}
+                        thickness={radius * ARROW_T_FRAC}
+                        tailGap={radius * ARROW_T_FRAC * 0.15}
                         {...arrow}
                     />
 

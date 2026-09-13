@@ -16,7 +16,7 @@ import { PrefabIcon } from '../PrefabIcon';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { createLineShapeContainer, type LineShapeRendererProps } from '../lines';
-import { type ChevronConfig, ChevronTail } from './shapes';
+import { ChevronTail, type ChevronWithTailConfig } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
 const DEFAULT_WIDTH = 100;
@@ -56,7 +56,7 @@ const MIN_REDRAW_MS = 20;
 const MAX_REDRAW_MS = 250;
 
 const ARROW_SIZE_FRAC = 0.3;
-const ARROW_HEIGHT_FRAC = 3 / 5;
+const ARROW_THICKNESS_FRAC = 0.28;
 const ARROW_PAD = 0.08;
 
 const LineKnockAwayRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
@@ -80,13 +80,14 @@ const LineKnockAwayRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
     const patternHeight = Math.round(width / 2);
 
     const arrowWidth = patternWidth * ARROW_SIZE_FRAC;
-    const arrowHeight = arrowWidth * ARROW_HEIGHT_FRAC;
+    const arrowThickness = arrowWidth * ARROW_THICKNESS_FRAC;
 
-    const arrow: ChevronConfig = {
+    const arrow: ChevronWithTailConfig = {
         ...getArrowStyle(object.color, object.opacity * 3),
         opacity: (object.opacity * 2) / 100,
         width: arrowWidth,
-        height: arrowHeight,
+        thickness: arrowThickness,
+        tailGap: arrowThickness * 0.1,
         y: patternHeight / 2,
         chevronAngle: 40,
     };

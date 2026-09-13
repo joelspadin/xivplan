@@ -16,7 +16,7 @@ import { PrefabIcon } from '../PrefabIcon';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { createLineShapeContainer, type LineShapeRendererProps } from '../lines';
-import { type ChevronConfig, ChevronTail } from './shapes';
+import { ChevronTail, type ChevronWithTailConfig } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
 const NAME = 'Line stack';
@@ -60,7 +60,7 @@ const MAX_REDRAW_MS = 250;
 const CHEVRON_ANGLE = 40;
 
 const ARROW_SIZE_FRAC = 0.3;
-const ARROW_HEIGHT_FRAC = 3 / 5;
+const ARROW_THICKNESS_FRAC = 0.28;
 const ARROW_PAD = 0.32;
 
 const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
@@ -84,17 +84,18 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
     const patternHeight = Math.round(width / 2);
 
     const arrowWidth = patternWidth * ARROW_SIZE_FRAC;
-    const arrowHeight = arrowWidth * ARROW_HEIGHT_FRAC;
+    const arrowThickness = arrowWidth * ARROW_THICKNESS_FRAC;
 
-    const arrowProps: ChevronConfig = {
+    const arrowProps: Omit<ChevronWithTailConfig, 'thickness'> = {
         ...getArrowStyle(object.color, object.opacity * 3),
         opacity: (object.opacity * 2) / 100,
     };
 
-    const sideArrowProps: ChevronConfig = {
+    const sideArrowProps: ChevronWithTailConfig = {
         ...arrowProps,
         width: arrowWidth,
-        height: arrowHeight,
+        thickness: arrowThickness,
+        tailGap: arrowThickness * 0.1,
         y: patternHeight / 2,
         chevronAngle: CHEVRON_ANGLE,
     };
@@ -160,7 +161,7 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
                         x={0}
                         y={-length / 2}
                         width={width * 0.2}
-                        height={width * 0.13}
+                        thickness={width * 0.065}
                         offsetY={width * 0.1}
                         {...arrowProps}
                     />
