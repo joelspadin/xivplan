@@ -1,5 +1,6 @@
 import { Field, Image, makeStyles, mergeClasses, ToggleButton, Tooltip } from '@fluentui/react-components';
 import {
+    ArrowClockwiseDashesRegular,
     ArrowSyncOffRegular,
     ArrowSyncRegular,
     bundleIcon,
@@ -29,7 +30,6 @@ const DirectionalIcon: React.FC = () => {
 
 export const EnemyControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ objects }) => {
     const classes = useControlStyles();
-    const localClasses = useStyles();
     const update = useObjectUpdater(objects);
 
     const ring = commonValue(objects, (obj) => obj.ring);
@@ -41,8 +41,8 @@ export const EnemyControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ ob
     const handleToggleRotateIcon = () =>
         update(rotateIcon ? { omit: ['rotateIcon'] } : { props: { rotateIcon: true } });
 
-    const rotationTooltip = rotateIcon ? 'The icon will rotate' : 'The icon will stay upright';
-    const rotationIcon = rotateIcon ? <ArrowSyncRegular /> : <ArrowSyncOffRegular />;
+    const rotationTooltip = getRotationTooltip(rotateIcon);
+    const rotationIcon = getRotationIcon(rotateIcon);
     const allowNoIcon = objects.every((obj) => obj.ring != EnemyRingStyle.NoRing);
     const allowNoRing = objects.every((obj) => obj.icon != EnemyIconStyle.NoIcon);
 
@@ -75,36 +75,10 @@ export const EnemyControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ ob
                         value={icon}
                         onChange={(ev, data) => onIconChanged(data.value as EnemyIconStyle)}
                     >
-                        <Segment
-                            value={EnemyIconStyle.Small}
-                            icon={
-                                <Image
-                                    src={getEnemyIconUrl(EnemyIconStyle.Small)}
-                                    className={localClasses.imageSegment}
-                                />
-                            }
-                        />
-                        <Segment
-                            value={EnemyIconStyle.Medium}
-                            icon={
-                                <Image
-                                    src={getEnemyIconUrl(EnemyIconStyle.Medium)}
-                                    className={localClasses.imageSegment}
-                                />
-                            }
-                        />
-                        <Segment
-                            value={EnemyIconStyle.Large}
-                            icon={
-                                <Image
-                                    src={getEnemyIconUrl(EnemyIconStyle.Large)}
-                                    className={localClasses.imageSegment}
-                                />
-                            }
-                        />
-                        {allowNoIcon && (
-                            <Segment value={EnemyIconStyle.NoIcon} icon={<StatusCircleBlockIcon />} title="No icon" />
-                        )}
+                        <EnemySegment value={EnemyIconStyle.Small} />
+                        <EnemySegment value={EnemyIconStyle.Medium} />
+                        <EnemySegment value={EnemyIconStyle.Large} />
+                        {allowNoIcon && <EnemySegment value={EnemyIconStyle.NoIcon} />}
                     </SegmentedGroup>
                 </Field>
                 {icon !== EnemyIconStyle.NoIcon && (
@@ -116,6 +90,56 @@ export const EnemyControl: React.FC<PropertiesControlProps<EnemyObject>> = ({ ob
         </>
     );
 };
+
+function getRotationTooltip(rotateIcon: boolean | undefined) {
+    if (rotateIcon === undefined) {
+        return 'Multiple rotation states';
+    }
+
+    return rotateIcon ? 'The icon will rotate' : 'The icon will stay upright';
+}
+
+function getRotationIcon(rotateIcon: boolean | undefined) {
+    if (rotateIcon === undefined) {
+        return <ArrowClockwiseDashesRegular />;
+    }
+
+    return rotateIcon ? <ArrowSyncRegular /> : <ArrowSyncOffRegular />;
+}
+
+interface EnemySegmentProps {
+    value: EnemyIconStyle;
+}
+
+const EnemySegment: React.FC<EnemySegmentProps> = ({ value }) => {
+    const icon = useEnemySegmentIcon(value);
+    const tooltip = getEnemySegmentTooltip(value);
+
+    return <Segment value={value} icon={icon} title={tooltip} />;
+};
+
+function useEnemySegmentIcon(value: EnemyIconStyle) {
+    const classes = useStyles();
+
+    if (value === EnemyIconStyle.NoIcon) {
+        return <StatusCircleBlockIcon />;
+    }
+
+    return <Image className={classes.imageSegment} src={getEnemyIconUrl(value)} />;
+}
+
+function getEnemySegmentTooltip(value: EnemyIconStyle): string {
+    switch (value) {
+        case EnemyIconStyle.Small:
+            return 'Small icon';
+        case EnemyIconStyle.Medium:
+            return 'Medium icon';
+        case EnemyIconStyle.Large:
+            return 'Large icon';
+        case EnemyIconStyle.NoIcon:
+            return 'No icon';
+    }
+}
 
 const useStyles = makeStyles({
     directional: {

@@ -24,7 +24,7 @@ const DEFAULT_COLOR = '#ff0000';
 export const ZoneEye: React.FC = () => {
     return (
         <PrefabIcon
-            name="Look away"
+            name="Gaze"
             icon={<Icon />}
             object={{
                 type: ObjectType.Eye,

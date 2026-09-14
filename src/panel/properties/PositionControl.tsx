@@ -24,8 +24,8 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
     const onXChanged = (x: number) => update({ props: { x } });
     const onYChanged = (y: number) => update({ props: { y } });
 
-    const icon = pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
-    const tooltip = pinned ? 'Unlock position' : 'Lock position';
+    const pinnedIcon = getPinnedIcon(pinned);
+    const pinnedTooltip = getPinnedTooltip(pinned);
 
     return (
         <>
@@ -36,8 +36,8 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
                 <Field label={<PositionLabel coordinate="Y" currentlyLinked={currentlyLinked} />}>
                     <SpinButton value={y} onValueChange={onYChanged} step={1} />
                 </Field>
-                <Tooltip content={tooltip} relationship="label" withArrow>
-                    <ToggleButton checked={pinned || false} onClick={onTogglePinned} icon={icon} />
+                <Tooltip content={pinnedTooltip} relationship="label" withArrow>
+                    <ToggleButton checked={pinned || false} onClick={onTogglePinned} icon={pinnedIcon} />
                 </Tooltip>
             </div>
             <div className={classes.row}>
@@ -46,6 +46,14 @@ export const PositionControl: React.FC<PropertiesControlProps<MoveableObject>> =
         </>
     );
 };
+
+function getPinnedTooltip(pinned: boolean | undefined) {
+    return pinned === undefined ? 'Multiple lock states' : pinned ? 'Position locked' : 'Position unlocked';
+}
+
+function getPinnedIcon(pinned: boolean | undefined) {
+    return pinned === undefined ? <LockMultipleRegular /> : pinned ? <LockClosedRegular /> : <LockOpenRegular />;
+}
 
 interface PositionLabelProps {
     readonly coordinate: string;

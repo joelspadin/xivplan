@@ -183,6 +183,7 @@ const Controls: React.FC = () => {
                 <ControlCondition objects={objects} test={isExaflareZone} control={ExaflareLengthControl} />
                 <ControlCondition objects={objects} test={isStarburstZone} control={StarburstSpokeWidthControl} />
                 <ControlCondition objects={objects} test={isProximityZone} control={ProximityTypeControl} />
+                <ControlCondition objects={objects} test={isEye} control={EyeInvertControl} />
             </div>
             <ControlCondition objects={objects} test={isProximityZone} control={ProximityScaleControl} />
 
@@ -210,7 +211,6 @@ const Controls: React.FC = () => {
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={supportsStackCount} control={StackCountControl} />
             </div>
-            <ControlCondition objects={objects} test={isEye} control={EyeInvertControl} />
             <ControlCondition objects={objects} test={isText} control={TextValueControl} />
             <div className={mergeClasses(classes.row, classes.rightGap)}>
                 <ControlCondition objects={objects} test={isIcon} control={IconStacksControl} />

@@ -1,5 +1,11 @@
 import { Field, mergeClasses, ToggleButton, Tooltip } from '@fluentui/react-components';
-import { CircleHighlightRegular, CircleRegular, PersonRegular, TargetRegular } from '@fluentui/react-icons';
+import {
+    CircleHalfFillRegular,
+    CircleHighlightRegular,
+    CircleRegular,
+    PersonRegular,
+    TargetRegular,
+} from '@fluentui/react-icons';
 import { ProximityStyle, type ProximityZone } from '../../scene';
 import { useScene } from '../../SceneProvider';
 import { Segment, SegmentedGroup } from '../../Segmented';
@@ -14,14 +20,17 @@ export const ProximityTypeControl: React.FC<PropertiesControlProps<ProximityZone
     const update = useObjectUpdater(objects);
 
     const proximityStyle = commonValue(objects, (obj) => obj.proximityStyle ?? ProximityStyle.Player);
-    const hideGradient = commonValue(objects, (obj) => obj.hideGradient ?? false);
+    const hide = commonValue(objects, (obj) => !!obj.hideGradient);
+
+    const icon = hide === undefined ? <CircleHalfFillRegular /> : hide ? <CircleRegular /> : <CircleHighlightRegular />;
+    const tooltip = hide === undefined ? 'Multiple backgrounds' : hide ? 'No background' : 'Gradient background';
 
     const onTypeChanged = (newStyle: ProximityStyle) =>
         newStyle == ProximityStyle.Player
             ? update({ omit: ['proximityStyle'] })
             : update({ props: { proximityStyle: newStyle } });
     const onHideGradientChanged = () =>
-        hideGradient ? update({ omit: ['hideGradient'] }) : update({ props: { hideGradient: true } });
+        hide ? update({ omit: ['hideGradient'] }) : update({ props: { hideGradient: true } });
 
     return (
         <Field label="Proximity Type" className={classes.cell}>
@@ -34,12 +43,8 @@ export const ProximityTypeControl: React.FC<PropertiesControlProps<ProximityZone
                     <Segment value={ProximityStyle.Player} icon={<PersonRegular />} title="Player-targeted" />
                     <Segment value={ProximityStyle.Ground} icon={<TargetRegular />} title="Ground-targeted" />
                 </SegmentedGroup>
-                <Tooltip content="Show or hide the gradient area" relationship="label" withArrow>
-                    <ToggleButton
-                        checked={!hideGradient}
-                        onClick={onHideGradientChanged}
-                        icon={hideGradient ? <CircleRegular /> : <CircleHighlightRegular />}
-                    />
+                <Tooltip content={tooltip} relationship="label" withArrow>
+                    <ToggleButton checked={!hide} onClick={onHideGradientChanged} icon={icon} />
                 </Tooltip>
             </div>
         </Field>

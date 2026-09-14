@@ -10,11 +10,10 @@ export const HideControl: React.FC<PropertiesControlProps<BaseObject>> = ({ obje
     const update = useObjectUpdater(objects);
 
     const show = commonValue(objects, (obj) => !obj.hide);
+    const icon = getIcon(show);
+    const tooltip = getTooltip(show);
 
     const handleToggle = () => update(setOrOmitAction<BaseObject>('hide', !!show));
-
-    const icon = show === undefined ? <EyeLinesRegular /> : show ? <EyeRegular /> : <EyeOffRegular />;
-    const tooltip = show ? 'Hide' : 'Show';
 
     return (
         <>
@@ -24,3 +23,11 @@ export const HideControl: React.FC<PropertiesControlProps<BaseObject>> = ({ obje
         </>
     );
 };
+
+function getIcon(show: boolean | undefined) {
+    return show === undefined ? <EyeLinesRegular /> : show ? <EyeRegular /> : <EyeOffRegular />;
+}
+
+function getTooltip(show: boolean | undefined) {
+    return show === undefined ? 'Multiple visibilities' : show ? 'Shown' : 'Hidden';
+}

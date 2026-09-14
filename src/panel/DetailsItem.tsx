@@ -99,7 +99,7 @@ const DetailsItemHideButton: React.FC<DetailsItemHideButtonProps> = ({ objectId,
     };
 
     const Icon = isHidden ? EyeOffIcon : EyeIcon;
-    const tooltip = isHidden ? 'Show' : 'Hide';
+    const tooltip = isHidden ? 'Hidden' : 'Shown';
 
     // TODO: When trying to activate this button with the keyboard, the parent drag-and-drop wrapper steals the event.
     return (
