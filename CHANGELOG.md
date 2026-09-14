@@ -2,6 +2,15 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Sep 13, 2026
+
+- Added support for adjusting the size of the indicator in the center of a proximity AOE.
+- Updated various toggle button controls for improved consistency.
+
+## Aug 29, 2026
+
+- Added class icons for party objects.
+
 ## Aug 17, 2026
 
 - Added a ground-targeted version of proximity AOEs.
