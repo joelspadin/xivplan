@@ -23,7 +23,7 @@ const DEFAULT_COUNT = 1;
 export const ZoneTower: React.FC = () => {
     return (
         <PrefabIcon
-            name="Meteor/tower"
+            name="Tower"
             icon={<Icon />}
             object={{
                 type: ObjectType.Tower,
@@ -104,7 +104,7 @@ const TowerDetails: React.FC<ListComponentProps<TowerZone>> = ({ object, ...prop
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
-            name="Meteor/tower"
+            name="Tower"
             object={object}
             {...props}
         />
