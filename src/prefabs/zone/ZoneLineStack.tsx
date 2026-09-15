@@ -9,14 +9,15 @@ import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type LineZone, ObjectType, type RectangleZone } from '../../scene';
+import { type LineStackZone, ObjectType, type RectangleZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
+import { useObjectLoading } from '../../useObjectLoading';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { createLineShapeContainer, type LineShapeRendererProps } from '../lines';
-import { type ChevronConfig, ChevronTail } from './shapes';
+import { ChevronTail, type ChevronWithTailConfig } from './shapes';
 import { getArrowStyle, getZoneStyle } from './style';
 
 const NAME = 'Line stack';
@@ -40,7 +41,7 @@ registerDropHandler<RectangleZone>(ObjectType.LineStack, (object, position) => {
     return {
         type: 'add',
         object: {
-            type: ObjectType.Rect,
+            type: ObjectType.LineStack,
             width: DEFAULT_WIDTH,
             length: DEFAULT_LENGTH,
             color: DEFAULT_AOE_COLOR,
@@ -60,10 +61,10 @@ const MAX_REDRAW_MS = 250;
 const CHEVRON_ANGLE = 40;
 
 const ARROW_SIZE_FRAC = 0.3;
-const ARROW_HEIGHT_FRAC = 3 / 5;
+const ARROW_THICKNESS_FRAC = 0.28;
 const ARROW_PAD = 0.32;
 
-const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
+const LineStackRenderer: React.FC<LineShapeRendererProps<LineStackZone>> = ({
     object,
     length,
     width,
@@ -84,17 +85,18 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
     const patternHeight = Math.round(width / 2);
 
     const arrowWidth = patternWidth * ARROW_SIZE_FRAC;
-    const arrowHeight = arrowWidth * ARROW_HEIGHT_FRAC;
+    const arrowThickness = arrowWidth * ARROW_THICKNESS_FRAC;
 
-    const arrowProps: ChevronConfig = {
+    const arrowProps: Omit<ChevronWithTailConfig, 'thickness'> = {
         ...getArrowStyle(object.color, object.opacity * 3),
         opacity: (object.opacity * 2) / 100,
     };
 
-    const sideArrowProps: ChevronConfig = {
+    const sideArrowProps: ChevronWithTailConfig = {
         ...arrowProps,
         width: arrowWidth,
-        height: arrowHeight,
+        thickness: arrowThickness,
+        tailGap: arrowThickness * 0.1,
         y: patternHeight / 2,
         chevronAngle: CHEVRON_ANGLE,
     };
@@ -105,6 +107,7 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
 
     const arrowRef = useRef<Konva.Group>(null);
     const [pattern, setPattern] = useState<HTMLImageElement>();
+    useObjectLoading(pattern === undefined);
     const [cachedPatternWidth, setCachedPatternWidth] = useState<number>(patternWidth);
     const [cachedPatternHeight, setCachedPatternHeight] = useState<number>(patternHeight);
 
@@ -118,7 +121,7 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
                 },
             });
         },
-        [patternWidth, patternHeight, object.color, object.opacity, arrowRef],
+        [patternWidth, patternHeight, object.color, object.opacity, arrowRef, object.multiHit],
         MIN_REDRAW_MS,
         MAX_REDRAW_MS,
     );
@@ -160,9 +163,10 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
                         x={0}
                         y={-length / 2}
                         width={width * 0.2}
-                        height={width * 0.13}
+                        thickness={width * 0.065}
                         offsetY={width * 0.1}
                         {...arrowProps}
+                        doubleChevron={object.multiHit}
                     />
 
                     {isDragging && <Circle radius={CENTER_DOT_RADIUS} fill={object.color} />}
@@ -172,8 +176,8 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
             {/* Offscreen group to create the fill pattern */}
             <Group ref={arrowRef} x={OFFSCREEN_X} y={OFFSCREEN_Y}>
                 <Rect width={patternWidth} height={patternHeight} />
-                <ChevronTail x={sideArrowX1} rotation={90} {...sideArrowProps} />
-                <ChevronTail x={sideArrowX2} rotation={-90} {...sideArrowProps} />
+                <ChevronTail x={sideArrowX1} rotation={90} {...sideArrowProps} doubleChevron={object.multiHit} />
+                <ChevronTail x={sideArrowX2} rotation={-90} {...sideArrowProps} doubleChevron={object.multiHit} />
             </Group>
         </>
     );
@@ -181,9 +185,9 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineZone>> = ({
 
 const LineStackContainer = createLineShapeContainer(LineStackRenderer, MIN_LINE_WIDTH, MIN_LINE_LENGTH);
 
-registerRenderer<LineZone>(ObjectType.LineStack, LayerName.Ground, LineStackContainer);
+registerRenderer<LineStackZone>(ObjectType.LineStack, LayerName.Ground, LineStackContainer);
 
-const LineStackDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {
+const LineStackDetails: React.FC<ListComponentProps<LineStackZone>> = ({ object, ...props }) => {
     return (
         <DetailsItem
             icon={<Icon width="100%" height="100%" style={{ [panelVars.colorZoneOrange]: object.color }} />}
@@ -194,4 +198,4 @@ const LineStackDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...p
     );
 };
 
-registerListComponent<LineZone>(ObjectType.LineStack, LineStackDetails);
+registerListComponent<LineStackZone>(ObjectType.LineStack, LineStackDetails);

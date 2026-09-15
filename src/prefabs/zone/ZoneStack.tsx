@@ -66,10 +66,10 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
     const ring = getZoneStyle(object.color, object.opacity, radius * 2);
     const arrow = getArrowStyle(object.color, object.opacity * 2);
 
-    const cx = radius * 0.6;
-    const cw = radius * 0.5;
-    const ch = radius * 0.325;
-    const ca = 40;
+    const outerChevronOffset = radius * 0.6;
+    const chevronWidth = radius * 0.5;
+    const chevronThickness = radius * 0.165;
+    const chevronAngle = 40;
 
     const showOrbs = !object.hide && object.count > 1;
 
@@ -79,15 +79,22 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
 
             <HideGroup {...overrideProps}>
                 <Circle radius={radius} {...ring} opacity={0.75} fill="transparent" />
+                {object.multiHit && (
+                    <>
+                        <Circle radius={radius * 0.85} {...ring} opacity={0.55} fill="transparent" />
+                        <Circle radius={radius * 0.7} {...ring} opacity={0.35} fill="transparent" />
+                    </>
+                )}
 
                 {object.count === 1 && (
                     <ChevronTail
                         rotation={180}
-                        chevronAngle={ca}
-                        width={cw * 0.6}
-                        height={ch * 0.6}
+                        chevronAngle={chevronAngle}
+                        width={chevronWidth * 0.6}
+                        thickness={chevronThickness * 0.6}
                         {...arrow}
                         listening={false}
+                        doubleChevron={object.multiHit}
                     />
                 )}
                 {showOrbs && <StackOrbs object={object} radius={radius} ring={ring} orb={arrow} />}
@@ -95,12 +102,13 @@ const StackRenderer: React.FC<StackRendererProps> = ({ object, radius }) => {
                 {CHEVRON_ANGLES.map((r, i) => (
                     <ChevronTail
                         key={i}
-                        offsetY={-cx}
+                        offsetY={-outerChevronOffset}
                         rotation={r}
-                        chevronAngle={ca}
-                        width={cw}
-                        height={ch}
+                        chevronAngle={chevronAngle}
+                        width={chevronWidth}
+                        thickness={chevronThickness}
                         {...arrow}
+                        doubleChevron={object.multiHit}
                     />
                 ))}
             </HideGroup>

@@ -307,7 +307,12 @@ export interface ProximityZone extends RadiusObject, ColoredObject, HollowObject
 }
 export const isProximityZone = makeObjectTest<ProximityZone>(ObjectType.Proximity);
 
-export interface StackZone extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject {
+export interface MultiHitObject {
+    readonly multiHit?: boolean;
+}
+
+export interface StackZone
+    extends StackCountObject, RadiusObject, ColoredObject, HollowObject, BaseObject, MultiHitObject {
     readonly type: typeof ObjectType.Stack;
 }
 export const isStackZone = makeObjectTest<StackZone>(ObjectType.Stack);
@@ -329,9 +334,14 @@ export interface LineProps extends MoveableObject, ColoredObject, HollowObject, 
 }
 
 export interface LineZone extends LineProps, BaseObject {
-    readonly type: typeof ObjectType.Line | typeof ObjectType.LineStack | typeof ObjectType.LineKnockAway;
+    readonly type: typeof ObjectType.Line | typeof ObjectType.LineKnockAway;
 }
 export const isLineZone = makeObjectTest<LineZone>(ObjectType.Line, ObjectType.LineStack, ObjectType.LineKnockAway);
+
+export interface LineStackZone extends LineProps, BaseObject, MultiHitObject {
+    readonly type: typeof ObjectType.LineStack;
+}
+export const isLineStackZone = makeObjectTest<LineStackZone>(ObjectType.LineStack);
 
 export interface ConeProps extends RadiusObject, ColoredObject, HollowObject, RotateableObject {
     readonly coneAngle: number;
@@ -396,6 +406,7 @@ export type Zone =
     | DonutZone
     | ExaflareZone
     | LineZone
+    | LineStackZone
     | PolygonZone
     | ProximityZone
     | RectangleZone
@@ -409,6 +420,7 @@ export function isZone(object: UnknownObject): object is Zone {
         isDonutZone(object) ||
         isExaflareZone(object) ||
         isLineZone(object) ||
+        isLineStackZone(object) ||
         isPolygonZone(object) ||
         isProximityZone(object) ||
         isRectangleZone(object) ||
@@ -535,6 +547,9 @@ export function supportsStackCount<T>(object: T): object is StackCountObject & T
     const obj = object as StackCountObject & T;
     return obj && typeof obj.count === 'number';
 }
+
+// We can't use field type checks since the multi-hit argument is optional
+export const supportsMultiHit = makeObjectTest<MultiHitObject & UnknownObject>(ObjectType.Stack, ObjectType.LineStack);
 
 export type SceneObject = UnknownObject | Zone | Marker | Actor | IconObject | Tether;
 
