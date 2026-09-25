@@ -86,10 +86,10 @@ export function selectNewObjects(scene: Scene, newObjectCount: number): SceneSel
 }
 
 /**
- * Gets a new selection from the given selection with a new ID added.
+ * Gets a new selection from the given selection with a new ID added. Removes any selected ID not part of the current step.
  */
-export function addSelection(selection: SceneSelection, id: number): SceneSelection {
-    return new Set(selection).add(id);
+export function addSelection(currentStep: SceneStep, selection: SceneSelection, id: number): SceneSelection {
+    return new Set(currentStep.objects.filter((o) => selection.has(o.id)).map((o) => o.id)).add(id);
 }
 
 /**
@@ -104,12 +104,12 @@ export function removeSelection(selection: SceneSelection, id: number): SceneSel
 
 /**
  * Gets a new selection from the given selection with an ID added if it was not
- * in the selection or removed if it was.
+ * in the selection or removed if it was. Removes any selected ID not part of the current step.
  */
-export function toggleSelection(selection: SceneSelection, id: number): SceneSelection {
+export function toggleSelection(currentStep: SceneStep, selection: SceneSelection, id: number): SceneSelection {
     if (selection.has(id)) {
         return removeSelection(selection, id);
     } else {
-        return addSelection(selection, id);
+        return addSelection(currentStep, selection, id);
     }
 }

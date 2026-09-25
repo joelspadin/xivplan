@@ -1,17 +1,17 @@
-import { SplitButton, tokens, Tooltip } from '@fluentui/react-components';
-import { bundleIcon, DismissFilled, DismissRegular, LinkRegular } from '@fluentui/react-icons';
+import { Button, SplitButton, tokens, Tooltip } from '@fluentui/react-components';
+import { bundleIcon, DismissFilled, DismissRegular, LinkRegular, TabDesktopLinkRegular } from '@fluentui/react-icons';
 import React from 'react';
-import { getConnectionIdFuncs } from '../../connections';
-import { getAbsolutePosition, getAbsoluteRotation } from '../../coord';
+import { getConnectionIdFuncs, unlinkAction } from '../../connections';
 import { EditMode } from '../../editMode';
 import { ConnectionType } from '../../EditModeContext';
-import { isMoveable, isRotateable, type SceneObject } from '../../scene';
-import { getObjectById, useScene, type SceneAction } from '../../SceneProvider';
-import { selectNone, selectSingle, useSpotlight } from '../../selection';
+import { getStepDisplayString, type SceneObject } from '../../scene';
+import { getObjectById, getStepIndexForId, useScene } from '../../SceneProvider';
+import { selectNone, selectSingle, useSelection, useSpotlight } from '../../selection';
 import { useConnectionSelection } from '../../useConnectionSelection';
+import { CONTROLS_ICON_COLUMN_WIDTH } from '../../useControlStyles';
 import { useEditMode } from '../../useEditMode';
 import { useObjectIds } from '../../useObjectIds';
-import { commonValue, omit } from '../../util';
+import { commonValue } from '../../util';
 import { getListComponent } from '../ListComponentRegistry';
 
 export interface ConnectedObjectSelectorProps {
@@ -20,17 +20,19 @@ export interface ConnectedObjectSelectorProps {
 }
 
 export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = ({ connectionType, objects }) => {
-    const { scene, step, dispatch } = useScene();
+    const { scene, stepIndex, dispatch } = useScene();
     const [, setSpotlight] = useSpotlight();
     const [, setEditMode] = useEditMode();
     const [, setConnectionSelection] = useConnectionSelection();
+    const [, setSelection] = useSelection();
     const objectIds = useObjectIds(objects);
 
     const [getConnectionId, getAllowedConnectionIds] = getConnectionIdFuncs(connectionType);
     const commonConnectionId = commonValue(objects, getConnectionId);
+    const commonConnectionStepIndex = commonValue(objects, (obj) => getStepIndexForId(scene, getConnectionId(obj)));
     const haveSharedLink = commonConnectionId !== undefined;
     const haveAnyLink = objects.find((obj) => getConnectionId(obj) !== undefined) !== undefined;
-    const allowedConnectionIds = getAllowedConnectionIds(step, objects);
+    const allowedConnectionIds = getAllowedConnectionIds(scene, objects);
 
     const connectedObject = haveSharedLink && getObjectById(scene, commonConnectionId);
     const ConnectionDisplayComponent = connectedObject && getListComponent(connectedObject);
@@ -60,68 +62,120 @@ export const ConnectedObjectSelector: React.FC<ConnectedObjectSelectorProps> = (
             dispatch(unlinkAction(connectionType, objectIds));
         }
     }
+    function onClickConnectionStep(): void {
+        if (commonConnectionStepIndex !== undefined) {
+            dispatch({ type: 'setStep', index: commonConnectionStepIndex });
+            if (haveSharedLink) {
+                setSelection(selectSingle(commonConnectionId));
+            }
+        }
+    }
 
     const linkTexts = getLinkTexts({
         connectionType,
         haveAnyLink,
+        haveSharedLink,
         hasAllowedConnections: allowedConnectionIds.size > 0,
+        commonConnectionStepIndex,
     });
 
     return (
-        <SplitButton
-            icon={
-                <Tooltip content={linkTexts.tooltip} relationship="description">
-                    <LinkRegular />
+        <>
+            <SplitButton
+                icon={
+                    <Tooltip content={linkTexts.tooltip} relationship="description">
+                        <LinkRegular />
+                    </Tooltip>
+                }
+                menuIcon={<UnlinkButton />}
+                appearance="subtle"
+                primaryActionButton={{
+                    onClick: onClickConnection,
+                    onMouseEnter: onMouseEnterConnection,
+                    onMouseLeave: onMouseLeaveConnection,
+                    disabled: !haveAnyLink && allowedConnectionIds.size == 0,
+                    style: {
+                        paddingLeft: tokens.spacingHorizontalXS,
+                        fontWeight: 'normal',
+                        fontSize: tokens.fontSizeBase200,
+                        justifyContent: 'left',
+                    },
+                }}
+                menuButton={{ onClick: onClickUnlink, disabled: !haveAnyLink }}
+                // Leave room for the cross-step button
+                style={{ maxWidth: `calc(100% - ${CONTROLS_ICON_COLUMN_WIDTH}px)` }}
+            >
+                {haveSharedLink && ConnectionDisplayComponent && (
+                    // https://github.com/facebook/react/issues/34794
+                    // eslint-disable-next-line react-hooks/static-components
+                    <ConnectionDisplayComponent size="field" showControls={false} object={connectedObject} />
+                )}
+                {haveSharedLink && !ConnectionDisplayComponent && 'Unknown object'}
+                {!haveSharedLink && haveAnyLink && (
+                    <Tooltip
+                        content={'The selection is connected to two or more different objects'}
+                        relationship="description"
+                        withArrow
+                    >
+                        <div>Multiple objects</div>
+                    </Tooltip>
+                )}
+                {!haveSharedLink && !haveAnyLink && (
+                    <Tooltip content={linkTexts.tooltip} relationship="description" withArrow>
+                        <div>{linkTexts.newLink}</div>
+                    </Tooltip>
+                )}
+            </SplitButton>
+            {/* Only show the cross-step button if the connection is actually cross-step */}
+            {commonConnectionStepIndex !== undefined && commonConnectionStepIndex != stepIndex && (
+                <Tooltip content={linkTexts.stepTooltip} relationship="description" withArrow>
+                    <Button
+                        onClick={onClickConnectionStep}
+                        style={{
+                            minWidth: 0,
+                            paddingLeft: tokens.spacingHorizontalXS,
+                            paddingRight: tokens.spacingHorizontalXS,
+                        }}
+                    >
+                        <span
+                            style={{
+                                fontWeight: 'normal',
+                                fontSize: tokens.fontSizeBase400,
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <TabDesktopLinkRegular />
+                            {getStepDisplayString(commonConnectionStepIndex)}
+                        </span>
+                    </Button>
                 </Tooltip>
-            }
-            menuIcon={<UnlinkButton />}
-            appearance="subtle"
-            primaryActionButton={{
-                onClick: onClickConnection,
-                onMouseEnter: onMouseEnterConnection,
-                onMouseLeave: onMouseLeaveConnection,
-                disabled: !haveAnyLink && allowedConnectionIds.size == 0,
-                style: {
-                    paddingLeft: tokens.spacingHorizontalXS,
-                },
-            }}
-            menuButton={{ onClick: onClickUnlink, disabled: !haveAnyLink }}
-        >
-            {haveSharedLink && ConnectionDisplayComponent && (
-                // https://github.com/facebook/react/issues/34794
-                // eslint-disable-next-line react-hooks/static-components
-                <ConnectionDisplayComponent size="field" showControls={false} object={connectedObject} />
             )}
-            {haveSharedLink && !ConnectionDisplayComponent && 'Unknown object'}
-            {!haveSharedLink && haveAnyLink && (
-                <Tooltip
-                    content={'The selection is connected to two or more different objects'}
-                    relationship="description"
-                >
-                    <div>Multiple objects</div>
-                </Tooltip>
-            )}
-            {!haveSharedLink && !haveAnyLink && (
-                <Tooltip content={linkTexts.tooltip} relationship="description">
-                    <div>{linkTexts.newLink}</div>
-                </Tooltip>
-            )}
-        </SplitButton>
+        </>
     );
 };
 
 interface LinkTexts {
     newLink: string;
     tooltip: string;
+    stepTooltip: string;
 }
 
 interface GetLinkTextsArgs {
     connectionType: ConnectionType;
     haveAnyLink: boolean;
+    haveSharedLink: boolean;
     hasAllowedConnections: boolean;
+    commonConnectionStepIndex: number | undefined;
 }
 
-function getLinkTexts({ connectionType, haveAnyLink, hasAllowedConnections }: GetLinkTextsArgs): LinkTexts {
+function getLinkTexts({
+    connectionType,
+    haveAnyLink,
+    haveSharedLink,
+    hasAllowedConnections,
+    commonConnectionStepIndex,
+}: GetLinkTextsArgs): LinkTexts {
     let newLinkText = '';
     let tooltip = '';
     switch (connectionType) {
@@ -146,7 +200,13 @@ function getLinkTexts({ connectionType, haveAnyLink, hasAllowedConnections }: Ge
             }
             break;
     }
-    return { newLink: newLinkText, tooltip };
+    return {
+        newLink: newLinkText,
+        tooltip,
+        stepTooltip: haveSharedLink
+            ? `The connection is between objects on different steps. Click to select and view the connected object on step ${getStepDisplayString(commonConnectionStepIndex || 0)}.`
+            : `The connection is between objects on different steps. Click to go to step ${getStepDisplayString(commonConnectionStepIndex || 0)} containing all connected objects.`,
+    };
 }
 
 const UnlinkIcon = bundleIcon(DismissFilled, DismissRegular);
@@ -154,39 +214,3 @@ const UnlinkIcon = bundleIcon(DismissFilled, DismissRegular);
 const UnlinkButton: React.FC = () => {
     return <UnlinkIcon />;
 };
-
-function unlinkAction(connectionType: ConnectionType, objectIds: readonly number[]): SceneAction {
-    switch (connectionType) {
-        case ConnectionType.POSITION:
-            return {
-                type: 'transform',
-                ids: objectIds,
-                transformFn: (obj, scene) => {
-                    if (!isMoveable(obj)) {
-                        return obj;
-                    }
-                    const absolutePos = getAbsolutePosition(scene, obj);
-                    return {
-                        ...omit(obj, 'positionParentId'),
-                        // Always unpin objects upon detaching them
-                        pinned: false,
-                        ...absolutePos,
-                    };
-                },
-            };
-        case ConnectionType.ROTATION:
-            return {
-                type: 'transform',
-                ids: objectIds,
-                transformFn: (obj, scene) => {
-                    if (!isRotateable(obj)) {
-                        return obj;
-                    }
-                    return {
-                        ...omit(obj, 'facingId'),
-                        rotation: isMoveable(obj) ? getAbsoluteRotation(scene, obj) : 0,
-                    };
-                },
-            };
-    }
-}
