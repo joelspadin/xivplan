@@ -2,6 +2,15 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Sep 26, 2026
+
+- When dragging an object from the left panel onto the scene, the drag preview will now match the object to be created instead of the icon from the panel.
+
+## Sep 20, 2026
+
+- Added support for indicating that a stack AOE hits multiple times.
+- Fixed an issue where arrow patterns in stack and knockback zones did not always appear in screenshots.
+
 ## Sep 13, 2026
 
 - Added support for adjusting the size of the indicator in the center of a proximity AOE.
