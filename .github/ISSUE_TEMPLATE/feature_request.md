@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea such as a new object type
 title: ''
-labels: ''
+labels: 'enhancement'
 assignees: ''
 ---
 
