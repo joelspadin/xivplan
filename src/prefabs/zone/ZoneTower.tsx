@@ -28,7 +28,7 @@ export const ZoneTower: React.FC = () => {
         count: DEFAULT_COUNT,
     };
 
-    return <PrefabIcon name="Tower" icon={<Icon />} object={object} />;
+    return <PrefabIcon name="Tower" icon={<Icon />} object={object} renderDrag />;
 };
 
 const CountZone: React.FC<CircleConfig> = (props) => {

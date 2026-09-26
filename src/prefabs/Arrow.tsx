@@ -1,7 +1,6 @@
 import { ArrowUpRegular } from '@fluentui/react-icons';
 import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { Arrow, Group, Rect } from 'react-konva';
-import { getDragOffset } from '../DropHandler';
 import { getArrowPointerDimensions } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
@@ -12,7 +11,6 @@ import { COLOR_WHITE } from '../theme';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
 import { PrefabIcon } from './PrefabIcon';
-import { PREFAB_ICON_SIZE } from './PrefabIconStyles';
 import { useHighlightProps, useOverrideProps } from './highlight';
 import { createLineShapeContainer, type LineShapeRendererProps } from './lines';
 
@@ -40,20 +38,7 @@ export const MarkerArrow: React.FC = () => {
         rotation: 0,
     };
 
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={object}
-            getOffset={(e) => {
-                const offset = getDragOffset(e);
-                return {
-                    x: offset.x,
-                    y: offset.y - PREFAB_ICON_SIZE / 2,
-                };
-            }}
-        />
-    );
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const ArrowRenderer: React.FC<LineShapeRendererProps<ArrowObject>> = ({ object, length, width, rotation }) => {

@@ -1,6 +1,5 @@
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
-import { getDragOffset } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
@@ -19,8 +18,6 @@ const NAME = 'Line';
 const DEFAULT_WIDTH = 100;
 const DEFAULT_LENGTH = 250;
 
-const ICON_SIZE = 32;
-
 export const ZoneLine: React.FC = () => {
     const object: ObjectPrototype<LineZone> = {
         type: ObjectType.Line,
@@ -31,20 +28,7 @@ export const ZoneLine: React.FC = () => {
         rotation: 0,
     };
 
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={object}
-            getOffset={(e) => {
-                const offset = getDragOffset(e);
-                return {
-                    x: offset.x,
-                    y: offset.y - ICON_SIZE / 2,
-                };
-            }}
-        />
-    );
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const LineDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {

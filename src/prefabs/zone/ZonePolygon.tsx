@@ -20,7 +20,7 @@ import { getZoneStyle } from './style';
 
 const NAME = 'Regular Polygon';
 
-const DEFAULT_RADIUS = 50;
+const DEFAULT_RADIUS = 75;
 const DEFAULT_SIDES = 6;
 
 export const ZonePolygon: React.FC = () => {
@@ -34,7 +34,7 @@ export const ZonePolygon: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<HexagonIcon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<HexagonIcon />} object={object} renderDrag />;
 };
 
 interface PolygonRendererProps extends RendererProps<PolygonZone> {

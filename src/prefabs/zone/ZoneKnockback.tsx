@@ -24,7 +24,7 @@ export const ZoneKnockback: React.FC = () => {
         radius: DEFAULT_RADIUS,
     };
 
-    return <PrefabIcon name="Circular knockback" icon={<Icon />} object={object} />;
+    return <PrefabIcon name="Circular knockback" icon={<Icon />} object={object} renderDrag />;
 };
 
 const CHEVRON_ANGLES = Array.from({ length: 16 }).map((_, i) => (i * 360) / 16);

@@ -17,7 +17,7 @@ import { RadiusObjectContainer } from '../RadiusObjectContainer';
 import { useHighlightProps, useOverrideProps } from '../highlight';
 import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 
-const DEFAULT_RADIUS = 25;
+const DEFAULT_RADIUS = 50;
 const DEFAULT_OPACITY = 50;
 const CLOCKWISE_COLOR = '#fc972b';
 const COUNTER_CLOCKWISE_COLOR = '#0066ff';
@@ -30,7 +30,7 @@ export const ZoneRotateClockwise: React.FC = () => {
         radius: DEFAULT_RADIUS,
     };
 
-    return <PrefabIcon name="Rotating clockwise" icon={<ClockwiseIcon />} object={object} />;
+    return <PrefabIcon name="Rotating clockwise" icon={<ClockwiseIcon />} object={object} renderDrag />;
 };
 
 export const ZoneRotateCounterClockwise: React.FC = () => {
@@ -41,7 +41,7 @@ export const ZoneRotateCounterClockwise: React.FC = () => {
         radius: DEFAULT_RADIUS,
     };
 
-    return <PrefabIcon name="Rotating counter-clockwise" icon={<CounterClockwiseIcon />} object={object} />;
+    return <PrefabIcon name="Rotating counter-clockwise" icon={<CounterClockwiseIcon />} object={object} renderDrag />;
 };
 
 const Arrow: React.FC<ShapeConfig> = (props) => {

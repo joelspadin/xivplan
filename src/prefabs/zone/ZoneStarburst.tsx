@@ -33,7 +33,7 @@ export const ZoneStarburst: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 interface StarburstConfig extends CircleConfig {

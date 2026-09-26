@@ -17,7 +17,7 @@ import { getZoneStyle } from './style';
 
 const NAME = 'Triangle';
 
-const DEFAULT_TRIANGLE_WIDTH = 100;
+const DEFAULT_TRIANGLE_WIDTH = 150;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
 export const ZoneTriangle: React.FC = () => {
@@ -30,7 +30,7 @@ export const ZoneTriangle: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {

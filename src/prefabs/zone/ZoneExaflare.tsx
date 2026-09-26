@@ -32,7 +32,7 @@ export const ZoneExaflare: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const ARROW_W_FRAC = 0.8;

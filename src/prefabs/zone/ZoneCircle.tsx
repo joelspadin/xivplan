@@ -15,7 +15,7 @@ import { getZoneStyle } from './style';
 
 const NAME = 'Circle';
 
-const DEFAULT_RADIUS = 50;
+const DEFAULT_RADIUS = 75;
 
 export const ZoneCircle: React.FC = () => {
     const object: ObjectPrototype<CircleZone> = {
@@ -25,7 +25,7 @@ export const ZoneCircle: React.FC = () => {
         radius: DEFAULT_RADIUS,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 interface CircleRendererProps extends RendererProps<CircleZone> {

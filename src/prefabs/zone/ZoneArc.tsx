@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Arc, Circle, Group } from 'react-konva';
-import { getDragOffset } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/arc.svg?react';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../../coord';
@@ -38,8 +37,6 @@ const DEFAULT_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 75;
 const DEFAULT_ANGLE = 90;
 
-const ICON_SIZE = 32;
-
 export const ZoneArc: React.FC = () => {
     const object: ObjectPrototype<ArcZone> = {
         type: ObjectType.Arc,
@@ -51,20 +48,7 @@ export const ZoneArc: React.FC = () => {
         rotation: 0,
     };
 
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={object}
-            getOffset={(e) => {
-                const offset = getDragOffset(e);
-                return {
-                    x: offset.x,
-                    y: offset.y - ICON_SIZE / 2,
-                };
-            }}
-        />
-    );
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 interface ArcRendererProps extends RendererProps<ArcZone> {

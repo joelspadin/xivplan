@@ -27,7 +27,7 @@ export const ZoneDonut: React.FC = () => {
         radius: DEFAULT_OUTER_RADIUS,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 interface DonutRendererProps extends RendererProps<DonutZone> {

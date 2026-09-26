@@ -63,7 +63,7 @@ function makeIcon(name: string, icon: EnemyIconStyle, radius: number, ring: Enem
             opacity: DEFAULT_ENEMY_OPACITY,
         };
 
-        return <PrefabIcon name={name} icon={getEnemyIconUrl(icon)} object={object} />;
+        return <PrefabIcon name={name} icon={getEnemyIconUrl(icon)} object={object} renderDrag />;
     };
     Component.displayName = makeDisplayName(name);
     return Component;

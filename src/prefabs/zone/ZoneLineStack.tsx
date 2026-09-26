@@ -34,7 +34,7 @@ export const ZoneLineStack: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const OFFSCREEN_X = -10000;

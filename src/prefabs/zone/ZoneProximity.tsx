@@ -32,7 +32,7 @@ export const ZoneProximity: React.FC = () => {
         iconProportion: DEFAULT_ICON_PROPORTION,
     };
 
-    return <PrefabIcon name="Proximity AOE" icon={<Icon />} object={object} />;
+    return <PrefabIcon name="Proximity AOE" icon={<Icon />} object={object} renderDrag />;
 };
 
 const FlareCorner: React.FC<ShapeConfig> = ({ ...props }) => {

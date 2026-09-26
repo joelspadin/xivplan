@@ -44,7 +44,7 @@ export const TextLabel: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name="Text" icon={<Icon />} object={object} />;
+    return <PrefabIcon name="Text" icon={<Icon />} object={object} renderDrag />;
 };
 
 const LINE_HEIGHT = 1.2;

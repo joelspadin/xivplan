@@ -45,7 +45,7 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
             rotation: 0,
         };
 
-        return <PrefabIcon name={name} icon={iconUrl} object={object} />;
+        return <PrefabIcon name={name} icon={iconUrl} object={object} renderDrag />;
     };
     Component.displayName = makeDisplayName(name);
     return Component;

@@ -29,7 +29,7 @@ export const ZoneEye: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name="Gaze" icon={<Icon />} object={object} />;
+    return <PrefabIcon name="Gaze" icon={<Icon />} object={object} renderDrag />;
 };
 
 function getIrisGradient(color: string) {

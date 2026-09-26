@@ -27,7 +27,7 @@ export const ZoneSquare: React.FC = () => {
         rotation: 0,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const RectangleRenderer: React.FC<RendererProps<RectangleZone>> = ({ object }) => {

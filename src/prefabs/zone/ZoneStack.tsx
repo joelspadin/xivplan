@@ -35,7 +35,7 @@ export const ZoneStack: React.FC = () => {
         count: 1,
     };
 
-    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} renderDrag />;
 };
 
 const CHEVRON_ANGLES = [45, 135, 225, 315];
