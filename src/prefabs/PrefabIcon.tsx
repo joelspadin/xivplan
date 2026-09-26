@@ -112,6 +112,7 @@ export const PrefabIcon: React.FC<PrefabIconProps> = ({ object, className, rende
                     // so we need to replace the drag image with an empty image and create a
                     // separate element that we move with the pointer.
                     e.dataTransfer.setDragImage(EMPTY_IMAGE, 0, 0);
+                    e.dataTransfer.effectAllowed = 'copy';
 
                     const container = createDragContainer();
                     const root = createRoot(container);
