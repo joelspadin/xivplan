@@ -1,12 +1,11 @@
 import React from 'react';
 import { Circle, Group } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/knockback.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type CircleZone, ObjectType } from '../../scene';
+import { type CircleZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -18,30 +17,15 @@ import { getArrowStyle, getZoneStyle } from './style';
 const DEFAULT_RADIUS = 150;
 
 export const ZoneKnockback: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Circular knockback"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Knockback,
-            }}
-        />
-    );
-};
-
-registerDropHandler<CircleZone>(ObjectType.Knockback, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Knockback,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<CircleZone> = {
+        type: ObjectType.Knockback,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
     };
-});
+
+    return <PrefabIcon name="Circular knockback" icon={<Icon />} object={object} />;
+};
 
 const CHEVRON_ANGLES = Array.from({ length: 16 }).map((_, i) => (i * 360) / 16);
 

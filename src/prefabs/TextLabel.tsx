@@ -3,7 +3,6 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Group, type KonvaNodeEvents, Text, Transformer } from 'react-konva';
-import { registerDropHandler } from '../DropHandler';
 import { useScene } from '../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
@@ -11,7 +10,7 @@ import { type ListComponentProps, registerListComponent } from '../panel/ListCom
 import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { ActivePortal } from '../render/Portals';
 import { LayerName } from '../render/layers';
-import { ObjectType, type TextObject } from '../scene';
+import { type ObjectPrototype, ObjectType, type TextObject } from '../scene';
 import { useIsDragging } from '../selection';
 import { useSceneTheme } from '../theme';
 import { useKonvaCache } from '../useKonvaCache';
@@ -33,35 +32,20 @@ const Icon = DrawTextRegular;
 export const TextLabel: React.FC = () => {
     const theme = useSceneTheme();
 
-    return (
-        <PrefabIcon
-            name="Text"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Text,
-                text: DEFAULT_TEXT,
-                stroke: theme.colorArena,
-            }}
-        />
-    );
-};
-
-registerDropHandler<TextObject>(ObjectType.Text, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Text,
-            align: DEFAULT_TEXT_ALIGN,
-            fontSize: DEFAULT_FONT_SIZE,
-            color: DEFAULT_TEXT_COLOR,
-            opacity: DEFAULT_TEXT_OPACITY,
-            style: 'outline',
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<TextObject> = {
+        type: ObjectType.Text,
+        stroke: theme.colorArena,
+        text: DEFAULT_TEXT,
+        align: DEFAULT_TEXT_ALIGN,
+        fontSize: DEFAULT_FONT_SIZE,
+        color: DEFAULT_TEXT_COLOR,
+        opacity: DEFAULT_TEXT_OPACITY,
+        style: 'outline',
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name="Text" icon={<Icon />} object={object} />;
+};
 
 const LINE_HEIGHT = 1.2;
 

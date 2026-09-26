@@ -2,12 +2,11 @@ import type { Vector2d } from 'konva/lib/types';
 import React from 'react';
 import { Circle, Group } from 'react-konva';
 import Icon from '../../assets/zone/exaflare.svg?react';
-import { registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
-import { type ExaflareZone, ObjectType } from '../../scene';
+import { type ExaflareZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { useHighlightProps, useOverrideProps } from '../highlight';
@@ -23,33 +22,18 @@ const DEFAULT_RADIUS = 50;
 const DEFAULT_LENGTH = 6;
 
 export const ZoneExaflare: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Exaflare,
-            }}
-        />
-    );
-};
-
-registerDropHandler<ExaflareZone>(ObjectType.Exaflare, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Exaflare,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            length: DEFAULT_LENGTH,
-            spacing: EXAFLARE_SPACING_DEFAULT,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<ExaflareZone> = {
+        type: ObjectType.Exaflare,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        length: DEFAULT_LENGTH,
+        spacing: EXAFLARE_SPACING_DEFAULT,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 const ARROW_W_FRAC = 0.8;
 const ARROW_T_FRAC = 0.225;

@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { Group, Image, Rect } from 'react-konva';
-import { registerDropHandler } from '../DropHandler';
 import { getJob, getJobIconUrl, Job } from '../jobs';
 import { DetailsItem } from '../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../panel/ListComponentRegistry';
 import { LayerName } from '../render/layers';
 import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
-import { ObjectType, type PartyObject } from '../scene';
+import { ObjectType, type ObjectPrototype, type PartyObject } from '../scene';
 import { DEFAULT_PARTY_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { makeDisplayName } from '../util';
@@ -26,40 +25,21 @@ function makeIcon(job: Job) {
 
     const Component: React.FC = () => {
         const iconUrl = getJobIconUrl(icon);
-
-        return (
-            <PrefabIcon
-                name={name}
-                icon={iconUrl}
-                object={{
-                    type: ObjectType.Party,
-                    image: iconUrl,
-                    name,
-                }}
-            />
-        );
-    };
-    Component.displayName = makeDisplayName(name);
-    return Component;
-}
-
-registerDropHandler<PartyObject>(ObjectType.Party, (object, position) => {
-    return {
-        type: 'add',
-        object: {
+        const object: ObjectPrototype<PartyObject> = {
             type: ObjectType.Party,
-            image: '',
-            name: '',
-            status: [],
+            name,
+            image: iconUrl,
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             opacity: DEFAULT_PARTY_OPACITY,
             rotation: 0,
-            ...object,
-            ...position,
-        },
+        };
+
+        return <PrefabIcon name={name} icon={iconUrl} object={object} />;
     };
-});
+    Component.displayName = makeDisplayName(name);
+    return Component;
+}
 
 const PartyRenderer: React.FC<RendererProps<PartyObject>> = ({ object }) => {
     const highlightProps = useHighlightProps(object);

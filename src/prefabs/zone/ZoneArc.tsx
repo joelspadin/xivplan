@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Arc, Circle, Group } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { getDragOffset } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/arc.svg?react';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../../coord';
@@ -10,7 +10,7 @@ import { type ListComponentProps, registerListComponent } from '../../panel/List
 import { type RendererProps, registerRenderer } from '../../render/ObjectRegistry';
 import { ActivePortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { type ArcZone, ObjectType, type Scene } from '../../scene';
+import { type ArcZone, type ObjectPrototype, ObjectType, type Scene } from '../../scene';
 import { useIsDragging } from '../../selection';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { type Enum, clampRotation, degtorad, mod360 } from '../../util';
@@ -41,13 +41,21 @@ const DEFAULT_ANGLE = 90;
 const ICON_SIZE = 32;
 
 export const ZoneArc: React.FC = () => {
+    const object: ObjectPrototype<ArcZone> = {
+        type: ObjectType.Arc,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        innerRadius: DEFAULT_INNER_RADIUS,
+        coneAngle: DEFAULT_ANGLE,
+        rotation: 0,
+    };
+
     return (
         <PrefabIcon
             name={NAME}
             icon={<Icon />}
-            object={{
-                type: ObjectType.Arc,
-            }}
+            object={object}
             getOffset={(e) => {
                 const offset = getDragOffset(e);
                 return {
@@ -58,23 +66,6 @@ export const ZoneArc: React.FC = () => {
         />
     );
 };
-
-registerDropHandler<ArcZone>(ObjectType.Arc, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Arc,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            innerRadius: DEFAULT_INNER_RADIUS,
-            coneAngle: DEFAULT_ANGLE,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
-    };
-});
 
 interface ArcRendererProps extends RendererProps<ArcZone> {
     outerRadius: number;

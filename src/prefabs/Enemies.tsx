@@ -4,7 +4,6 @@ import type { TextConfig } from 'konva/lib/shapes/Text';
 import * as React from 'react';
 import { type RefObject, useRef } from 'react';
 import { Arc, Circle, Group, Image, Line, Path, Text } from 'react-konva';
-import { registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../render/ObjectRegistry';
@@ -15,6 +14,7 @@ import {
     EnemyRingStyle,
     getEnemyIconUrl,
     isRotateAllowed,
+    type ObjectPrototype,
     ObjectType,
 } from '../scene';
 import {
@@ -35,8 +35,6 @@ import { useHighlightProps, useOverrideProps } from './highlight';
 // https://github.com/ArnaudBarre/eslint-plugin-react-refresh/issues/103
 /* eslint-disable react-refresh/only-export-components */
 
-const DEFAULT_SIZE = 32;
-
 const SIZE_SMALL = 20;
 const SIZE_MEDIUM = 50;
 const SIZE_LARGE = 80;
@@ -54,40 +52,22 @@ const SHADOW_BLUR_MIN = 2;
 
 function makeIcon(name: string, icon: EnemyIconStyle, radius: number, ring: EnemyRingStyle, rotation?: number) {
     const Component: React.FC = () => {
-        return (
-            <PrefabIcon
-                name={name}
-                icon={getEnemyIconUrl(icon)}
-                object={{
-                    type: ObjectType.Enemy,
-                    icon,
-                    radius,
-                    rotation: rotation ?? 0,
-                    ring,
-                }}
-            />
-        );
+        const object: ObjectPrototype<EnemyObject> = {
+            type: ObjectType.Enemy,
+            icon,
+            radius,
+            ring,
+            name: '',
+            rotation: rotation ?? 0,
+            color: DEFAULT_ENEMY_COLOR,
+            opacity: DEFAULT_ENEMY_OPACITY,
+        };
+
+        return <PrefabIcon name={name} icon={getEnemyIconUrl(icon)} object={object} />;
     };
     Component.displayName = makeDisplayName(name);
     return Component;
 }
-
-registerDropHandler<EnemyObject>(ObjectType.Enemy, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Enemy,
-            icon: EnemyIconStyle.NoIcon,
-            name: '',
-            color: DEFAULT_ENEMY_COLOR,
-            opacity: DEFAULT_ENEMY_OPACITY,
-            radius: DEFAULT_SIZE,
-            status: [],
-            ...object,
-            ...position,
-        },
-    };
-});
 
 interface RingProps extends ShapeConfig {
     name?: string;

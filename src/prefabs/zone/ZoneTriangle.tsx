@@ -1,13 +1,12 @@
 import type { RectConfig } from 'konva/lib/shapes/Rect';
 import React from 'react';
 import { Group, Line } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/triangle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type RectangleZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -22,34 +21,17 @@ const DEFAULT_TRIANGLE_WIDTH = 100;
 const DEFAULT_TRIANGLE_HEIGHT = Math.floor((DEFAULT_TRIANGLE_WIDTH * Math.sqrt(3)) / 2);
 
 export const ZoneTriangle: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Triangle,
-                width: DEFAULT_TRIANGLE_WIDTH,
-                height: DEFAULT_TRIANGLE_HEIGHT,
-            }}
-        />
-    );
-};
-
-registerDropHandler<RectangleZone>(ObjectType.Triangle, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Triangle,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_TRIANGLE_WIDTH,
-            height: DEFAULT_TRIANGLE_HEIGHT,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<RectangleZone> = {
+        type: ObjectType.Triangle,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        width: DEFAULT_TRIANGLE_WIDTH,
+        height: DEFAULT_TRIANGLE_HEIGHT,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 const EquilateralTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
     const w = width ?? 0;

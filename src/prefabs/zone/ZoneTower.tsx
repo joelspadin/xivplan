@@ -1,13 +1,12 @@
 import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/meteor_tower.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type TowerZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type TowerZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -21,31 +20,16 @@ const DEFAULT_RADIUS = 40;
 const DEFAULT_COUNT = 1;
 
 export const ZoneTower: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Tower"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Tower,
-            }}
-        />
-    );
-};
-
-registerDropHandler<TowerZone>(ObjectType.Tower, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Tower,
-            color: DEFAULT_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            count: DEFAULT_COUNT,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<TowerZone> = {
+        type: ObjectType.Tower,
+        color: DEFAULT_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        count: DEFAULT_COUNT,
     };
-});
+
+    return <PrefabIcon name="Tower" icon={<Icon />} object={object} />;
+};
 
 const CountZone: React.FC<CircleConfig> = (props) => {
     const offset = (props.radius ?? 0) * 0.15;

@@ -2,13 +2,12 @@ import type { ShapeConfig } from 'konva/lib/Shape';
 import type { EllipseConfig } from 'konva/lib/shapes/Ellipse';
 import * as React from 'react';
 import { Ellipse, Group, Image, Rect } from 'react-konva';
-import { registerDropHandler } from '../DropHandler';
 import { ALIGN_TO_PIXEL } from '../coord';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { type MarkerObject, ObjectType } from '../scene';
+import { type MarkerObject, type ObjectPrototype, ObjectType } from '../scene';
 import {
     COLOR_MARKER_BLUE,
     COLOR_MARKER_PURPLE,
@@ -34,42 +33,23 @@ function makeIcon(name: string, icon: string, shape: 'circle' | 'square', color:
     const Component: React.FC = () => {
         const iconUrl = `/marker/${icon}`;
 
-        return (
-            <PrefabIcon
-                name={name}
-                icon={iconUrl}
-                object={{
-                    type: ObjectType.Marker,
-                    image: iconUrl,
-                    name,
-                    color,
-                    shape,
-                }}
-            />
-        );
-    };
-    Component.displayName = makeDisplayName(name);
-    return Component;
-}
-
-registerDropHandler<MarkerObject>(ObjectType.Marker, (object, position) => {
-    return {
-        type: 'add',
-        object: {
+        const object: ObjectPrototype<MarkerObject> = {
             type: ObjectType.Marker,
-            name: '',
-            image: '',
-            shape: 'square',
-            color: COLOR_MARKER_RED,
+            image: iconUrl,
+            name,
+            shape,
+            color,
             opacity: DEFAULT_MARKER_OPACITY,
             width: DEFAULT_SIZE,
             height: DEFAULT_SIZE,
             rotation: 0,
-            ...object,
-            ...position,
-        },
+        };
+
+        return <PrefabIcon name={name} icon={iconUrl} object={object} />;
     };
-});
+    Component.displayName = makeDisplayName(name);
+    return Component;
+}
 
 function getDashSize(object: MarkerObject, state: ResizeableGroupState) {
     switch (object.shape) {

@@ -1,12 +1,11 @@
 import React from 'react';
 import { Circle } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/circle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type CircleZone, ObjectType } from '../../scene';
+import { type CircleZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -19,30 +18,15 @@ const NAME = 'Circle';
 const DEFAULT_RADIUS = 50;
 
 export const ZoneCircle: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Circle,
-            }}
-        />
-    );
-};
-
-registerDropHandler<CircleZone>(ObjectType.Circle, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Circle,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<CircleZone> = {
+        type: ObjectType.Circle,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 interface CircleRendererProps extends RendererProps<CircleZone> {
     radius: number;

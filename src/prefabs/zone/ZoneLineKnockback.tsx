@@ -2,13 +2,12 @@ import Konva from 'konva';
 import type { RectConfig } from 'konva/lib/shapes/Rect';
 import React, { useEffect, useRef, useState } from 'react';
 import { Group, Rect } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knockback.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type RectangleZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -20,34 +19,17 @@ import { getArrowStyle, getZoneStyle } from './style';
 const DEFAULT_SIZE = 150;
 
 export const ZoneLineKnockback: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Line knockback"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.LineKnockback,
-                width: DEFAULT_SIZE,
-                height: DEFAULT_SIZE,
-            }}
-        />
-    );
-};
-
-registerDropHandler<RectangleZone>(ObjectType.LineKnockback, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Rect,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_SIZE,
-            height: DEFAULT_SIZE,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<RectangleZone> = {
+        type: ObjectType.LineKnockback,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        width: DEFAULT_SIZE,
+        height: DEFAULT_SIZE,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name="Line knockback" icon={<Icon />} object={object} />;
+};
 
 const OFFSCREEN_X = -10000;
 const OFFSCREEN_Y = -10000;

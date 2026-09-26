@@ -2,16 +2,15 @@ import Konva from 'konva';
 import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import React, { useRef } from 'react';
 import { Circle, Group } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import { useScene } from '../../SceneProvider';
 import Icon from '../../assets/zone/stack.svg?react';
 import { getCanvasCoord } from '../../coord';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { ForegroundPortal } from '../../render/Portals';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type StackZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type StackZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { HideGroup } from '../HideGroup';
@@ -28,31 +27,16 @@ const NAME = 'Stack';
 const DEFAULT_RADIUS = 75;
 
 export const ZoneStack: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Stack,
-            }}
-        />
-    );
-};
-
-registerDropHandler<StackZone>(ObjectType.Stack, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Stack,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            count: 1,
-            ...object,
-            ...position,
-        } as StackZone,
+    const object: ObjectPrototype<StackZone> = {
+        type: ObjectType.Stack,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        count: 1,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 const CHEVRON_ANGLES = [45, 135, 225, 315];
 

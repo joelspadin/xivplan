@@ -2,12 +2,11 @@ import Konva from 'konva';
 import React, { useLayoutEffect, useState } from 'react';
 import { Group, Image as KonvaImage, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
-import { registerDropHandler } from '../DropHandler';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { type RendererProps, registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { type IconObject, ObjectType } from '../scene';
+import { type IconObject, type ObjectPrototype, ObjectType } from '../scene';
 import { DEFAULT_IMAGE_OPACITY } from '../theme';
 import { useImageTracked } from '../useObjectLoading';
 import { HideGroup } from './HideGroup';
@@ -17,22 +16,6 @@ import { ModifierKeyBehavior } from './controlpoints';
 import { useHighlightProps, useOverrideProps } from './highlight';
 
 const DEFAULT_SIZE = 32;
-
-registerDropHandler<IconObject>(ObjectType.Icon, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Icon,
-            image: '',
-            width: DEFAULT_SIZE,
-            height: DEFAULT_SIZE,
-            rotation: 0,
-            opacity: DEFAULT_IMAGE_OPACITY,
-            ...object,
-            ...position,
-        } as IconObject,
-    };
-});
 
 interface IconTimerProps {
     time: number;
@@ -149,6 +132,18 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxS
         height /= scale;
     }
 
+    const object: ObjectPrototype<IconObject> = {
+        type: ObjectType.Icon,
+        image: icon,
+        name,
+        width: width ?? DEFAULT_SIZE,
+        height: height ?? DEFAULT_SIZE,
+        iconId,
+        maxStacks,
+        rotation: 0,
+        opacity: DEFAULT_IMAGE_OPACITY,
+    };
+
     return (
         <PrefabIcon
             name={name}
@@ -156,15 +151,7 @@ export const StatusIcon: React.FC<StatusIconProps> = ({ name, icon, iconId, maxS
             icon={icon}
             width={width}
             height={height}
-            object={{
-                type: ObjectType.Icon,
-                image: icon,
-                name,
-                width,
-                height,
-                iconId,
-                maxStacks,
-            }}
+            object={object}
         />
     );
 };

@@ -555,6 +555,14 @@ export type SceneObject = UnknownObject | Zone | Marker | Actor | IconObject | T
 
 export type SceneObjectWithoutId = Omit<SceneObject, 'id'> & { id?: number };
 
+/**
+ * The properties needed to define an object for a DropHandler: everything except
+ * the ID and position.
+ */
+export type ObjectPrototype<T extends SceneObject> = Omit<T, 'id' | 'x' | 'y'>;
+
+export type SceneObjectPrototype = ObjectPrototype<SceneObject>;
+
 export interface SceneStep {
     readonly objects: readonly SceneObject[];
     readonly customArena?: Arena;

@@ -1,13 +1,12 @@
 import type { RectConfig } from 'konva/lib/shapes/Rect';
 import React from 'react';
 import { Group, Line } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/right_triangle.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type RectangleZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type RectangleZone } from '../../scene';
 import { DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -20,34 +19,17 @@ const NAME = 'Right triangle';
 const DEFAULT_RIGHT_TRIANGLE_SIZE = 150;
 
 export const ZoneRightTriangle: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.RightTriangle,
-                width: DEFAULT_RIGHT_TRIANGLE_SIZE,
-                height: DEFAULT_RIGHT_TRIANGLE_SIZE,
-            }}
-        />
-    );
-};
-
-registerDropHandler<RectangleZone>(ObjectType.RightTriangle, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.RightTriangle,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_RIGHT_TRIANGLE_SIZE,
-            height: DEFAULT_RIGHT_TRIANGLE_SIZE,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<RectangleZone> = {
+        type: ObjectType.RightTriangle,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        width: DEFAULT_RIGHT_TRIANGLE_SIZE,
+        height: DEFAULT_RIGHT_TRIANGLE_SIZE,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 const RightTriangle: React.FC<RectConfig> = ({ width, height, ...props }) => {
     const w = width ?? 0;

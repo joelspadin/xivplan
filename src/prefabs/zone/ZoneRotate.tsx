@@ -2,14 +2,13 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type CSSProperties, type RefObject, useRef } from 'react';
 import { Circle, Path } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import CounterClockwiseIcon from '../../assets/zone/rotate_ccw.svg?react';
 import ClockwiseIcon from '../../assets/zone/rotate_cw.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type CircleZone, ObjectType } from '../../scene';
+import { type CircleZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { HideGroup } from '../HideGroup';
@@ -24,44 +23,26 @@ const CLOCKWISE_COLOR = '#fc972b';
 const COUNTER_CLOCKWISE_COLOR = '#0066ff';
 
 export const ZoneRotateClockwise: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Rotating clockwise"
-            icon={<ClockwiseIcon />}
-            object={{
-                type: ObjectType.RotateCW,
-                color: CLOCKWISE_COLOR,
-            }}
-        />
-    );
+    const object: ObjectPrototype<CircleZone> = {
+        type: ObjectType.RotateCW,
+        color: CLOCKWISE_COLOR,
+        opacity: DEFAULT_OPACITY,
+        radius: DEFAULT_RADIUS,
+    };
+
+    return <PrefabIcon name="Rotating clockwise" icon={<ClockwiseIcon />} object={object} />;
 };
 
 export const ZoneRotateCounterClockwise: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Rotating counter-clockwise"
-            icon={<CounterClockwiseIcon />}
-            object={{
-                type: ObjectType.RotateCCW,
-                color: COUNTER_CLOCKWISE_COLOR,
-            }}
-        />
-    );
-};
-
-registerDropHandler<CircleZone>([ObjectType.RotateCW, ObjectType.RotateCCW], (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.RotateCW,
-            color: CLOCKWISE_COLOR,
-            opacity: DEFAULT_OPACITY,
-            radius: DEFAULT_RADIUS,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<CircleZone> = {
+        type: ObjectType.RotateCCW,
+        color: COUNTER_CLOCKWISE_COLOR,
+        opacity: DEFAULT_OPACITY,
+        radius: DEFAULT_RADIUS,
     };
-});
+
+    return <PrefabIcon name="Rotating counter-clockwise" icon={<CounterClockwiseIcon />} object={object} />;
+};
 
 const Arrow: React.FC<ShapeConfig> = (props) => {
     return <Path data="M0-4-7 3-6 4-3 4 0 1 3 4 6 4 7 3Z" lineJoin="round" {...props} />;

@@ -2,13 +2,12 @@ import Color from 'colorjs.io';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React from 'react';
 import { Circle, Group, Line, Path, Wedge } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/falloff.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, ProximityStyle, type ProximityZone } from '../../scene';
+import { ObjectType, ProximityStyle, type ObjectPrototype, type ProximityZone } from '../../scene';
 import { COLOR_BLUE_WHITE, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { degtorad } from '../../util';
 import { HideGroup } from '../HideGroup';
@@ -21,34 +20,20 @@ import { getArrowStyle, getShadowColor, getZoneStyle } from './style';
 const DEFAULT_RADIUS = 200;
 // (inner circle radius. outsets arcs add 5)
 const DEFAULT_FLOOR_PROXIMITY_CIRCLE_RADIUS = 25;
+const DEFAULT_ICON_PROPORTION = 15;
 
 export const ZoneProximity: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Proximity AOE"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Proximity,
-            }}
-        />
-    );
-};
-
-registerDropHandler<ProximityZone>(ObjectType.Proximity, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Proximity,
-            color: COLOR_BLUE_WHITE,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            rotation: 0,
-            iconProportion: 15,
-            ...object,
-            ...position,
-        } as ProximityZone,
+    const object: ObjectPrototype<ProximityZone> = {
+        type: ObjectType.Proximity,
+        color: COLOR_BLUE_WHITE,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        rotation: 0,
+        iconProportion: DEFAULT_ICON_PROPORTION,
     };
-});
+
+    return <PrefabIcon name="Proximity AOE" icon={<Icon />} object={object} />;
+};
 
 const FlareCorner: React.FC<ShapeConfig> = ({ ...props }) => {
     return <Path data="M4-6H6V-4H7V-7H4" {...props} listening={false} />;

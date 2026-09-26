@@ -2,13 +2,12 @@ import type { ShapeConfig } from 'konva/lib/Shape';
 import type { CircleConfig } from 'konva/lib/shapes/Circle';
 import React from 'react';
 import { Circle, Group, Rect } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/starburst.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
-import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
+import { registerListComponent, type ListComponentProps } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { ObjectType, type StarburstZone } from '../../scene';
+import { ObjectType, type ObjectPrototype, type StarburstZone } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { PrefabIcon } from '../PrefabIcon';
@@ -24,33 +23,18 @@ const DEFAULT_SPOKE_WIDTH = 40;
 const DEFAULT_SPOKE_COUNT = 8;
 
 export const ZoneStarburst: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Starburst,
-            }}
-        />
-    );
-};
-
-registerDropHandler<StarburstZone>(ObjectType.Starburst, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Starburst,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            radius: DEFAULT_RADIUS,
-            spokes: DEFAULT_SPOKE_COUNT,
-            spokeWidth: DEFAULT_SPOKE_WIDTH,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<StarburstZone> = {
+        type: ObjectType.Starburst,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        radius: DEFAULT_RADIUS,
+        spokes: DEFAULT_SPOKE_COUNT,
+        spokeWidth: DEFAULT_SPOKE_WIDTH,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 interface StarburstConfig extends CircleConfig {
     radius: number;

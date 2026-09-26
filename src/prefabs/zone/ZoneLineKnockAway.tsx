@@ -3,13 +3,12 @@ import Konva from 'konva';
 import type { RectConfig } from 'konva/lib/shapes/Rect';
 import React, { useRef, useState } from 'react';
 import { Circle, Group, Rect } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/line_knock_away.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type LineZone, ObjectType } from '../../scene';
+import { type LineZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { useObjectLoading } from '../../useObjectLoading';
 import { HideGroup } from '../HideGroup';
@@ -24,32 +23,17 @@ const DEFAULT_WIDTH = 100;
 const DEFAULT_LENGTH = 250;
 
 export const ZoneLineKnockAway: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Line knock away"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.LineKnockAway,
-            }}
-        />
-    );
-};
-
-registerDropHandler<LineZone>(ObjectType.LineKnockAway, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.LineKnockAway,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_WIDTH,
-            length: DEFAULT_LENGTH,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<LineZone> = {
+        type: ObjectType.LineKnockAway,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        width: DEFAULT_WIDTH,
+        length: DEFAULT_LENGTH,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name="Line knock away" icon={<Icon />} object={object} />;
+};
 
 const OFFSCREEN_X = -10000;
 const OFFSCREEN_Y = -10000;

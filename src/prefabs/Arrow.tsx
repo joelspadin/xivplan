@@ -1,13 +1,13 @@
 import { ArrowUpRegular } from '@fluentui/react-icons';
 import type { ArrowConfig } from 'konva/lib/shapes/Arrow';
 import { Arrow, Group, Rect } from 'react-konva';
-import { getDragOffset, registerDropHandler } from '../DropHandler';
+import { getDragOffset } from '../DropHandler';
 import { getArrowPointerDimensions } from '../arrowUtil';
 import { DetailsItem } from '../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../panel/ListComponentRegistry';
 import { registerRenderer } from '../render/ObjectRegistry';
 import { LayerName } from '../render/layers';
-import { type ArrowObject, ObjectType } from '../scene';
+import { type ArrowObject, type ObjectPrototype, ObjectType } from '../scene';
 import { COLOR_WHITE } from '../theme';
 import { CompositeReplaceGroup } from './CompositeReplaceGroup';
 import { HideCutoutGroup } from './HideGroup';
@@ -30,13 +30,21 @@ const ARROW_SHAFT_WIDTH_FRACTION = 0.2;
 const Icon = ArrowUpRegular;
 
 export const MarkerArrow: React.FC = () => {
+    const object: ObjectPrototype<ArrowObject> = {
+        type: ObjectType.Arrow,
+        color: DEFAULT_ARROW_COLOR,
+        opacity: DEFAULT_ARROW_OPACITY,
+        width: DEFAULT_ARROW_WIDTH,
+        length: DEFAULT_ARROW_LENGTH,
+        arrowEnd: true,
+        rotation: 0,
+    };
+
     return (
         <PrefabIcon
             name={NAME}
             icon={<Icon />}
-            object={{
-                type: ObjectType.Arrow,
-            }}
+            object={object}
             getOffset={(e) => {
                 const offset = getDragOffset(e);
                 return {
@@ -47,23 +55,6 @@ export const MarkerArrow: React.FC = () => {
         />
     );
 };
-
-registerDropHandler<ArrowObject>(ObjectType.Arrow, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Arrow,
-            color: DEFAULT_ARROW_COLOR,
-            opacity: DEFAULT_ARROW_OPACITY,
-            width: DEFAULT_ARROW_WIDTH,
-            length: DEFAULT_ARROW_LENGTH,
-            arrowEnd: true,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
-    };
-});
 
 const ArrowRenderer: React.FC<LineShapeRendererProps<ArrowObject>> = ({ object, length, width, rotation }) => {
     const highlightProps = useHighlightProps(object);

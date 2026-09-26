@@ -3,13 +3,12 @@ import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
 import React, { type RefObject, useRef } from 'react';
 import { Circle, Group, Line, Path } from 'react-konva';
-import { registerDropHandler } from '../../DropHandler';
 import Icon from '../../assets/zone/eye.svg?react';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
 import { LayerName } from '../../render/layers';
-import { type EyeObject, ObjectType } from '../../scene';
+import { type EyeObject, type ObjectPrototype, ObjectType } from '../../scene';
 import { panelVars } from '../../theme';
 import { useKonvaCache } from '../../useKonvaCache';
 import { HideGroup } from '../HideGroup';
@@ -22,31 +21,16 @@ const DEFAULT_OPACITY = 100;
 const DEFAULT_COLOR = '#ff0000';
 
 export const ZoneEye: React.FC = () => {
-    return (
-        <PrefabIcon
-            name="Gaze"
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Eye,
-            }}
-        />
-    );
-};
-
-registerDropHandler<EyeObject>(ObjectType.Eye, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Eye,
-            color: DEFAULT_COLOR,
-            opacity: DEFAULT_OPACITY,
-            radius: DEFAULT_RADIUS,
-            rotation: 0,
-            ...object,
-            ...position,
-        } as EyeObject,
+    const object: ObjectPrototype<EyeObject> = {
+        type: ObjectType.Eye,
+        color: DEFAULT_COLOR,
+        opacity: DEFAULT_OPACITY,
+        radius: DEFAULT_RADIUS,
+        rotation: 0,
     };
-});
+
+    return <PrefabIcon name="Gaze" icon={<Icon />} object={object} />;
+};
 
 function getIrisGradient(color: string) {
     const c = new Color(color);

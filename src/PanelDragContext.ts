@@ -1,9 +1,9 @@
 import type { Vector2d } from 'konva/lib/types';
 import { createContext, type Dispatch } from 'react';
-import type { SceneObject } from './scene';
+import type { SceneObjectPrototype } from './scene';
 
 export interface PanelDragObject {
-    object: Partial<SceneObject>;
+    object: SceneObjectPrototype;
     offset: Vector2d;
 }
 

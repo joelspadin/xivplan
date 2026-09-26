@@ -1,12 +1,11 @@
 import React from 'react';
 import { Circle, Ring } from 'react-konva';
 import Icon from '../../assets/zone/donut.svg?react';
-import { registerDropHandler } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer, type RendererProps } from '../../render/ObjectRegistry';
-import { type DonutZone, ObjectType } from '../../scene';
+import { type DonutZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { HideGroup } from '../HideGroup';
 import { useHighlightProps, useOverrideProps } from '../highlight';
@@ -20,31 +19,16 @@ const DEFAULT_OUTER_RADIUS = 150;
 const DEFAULT_INNER_RADIUS = 50;
 
 export const ZoneDonut: React.FC = () => {
-    return (
-        <PrefabIcon
-            name={NAME}
-            icon={<Icon />}
-            object={{
-                type: ObjectType.Donut,
-            }}
-        />
-    );
-};
-
-registerDropHandler<DonutZone>(ObjectType.Donut, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Donut,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            innerRadius: DEFAULT_INNER_RADIUS,
-            radius: DEFAULT_OUTER_RADIUS,
-            ...object,
-            ...position,
-        },
+    const object: ObjectPrototype<DonutZone> = {
+        type: ObjectType.Donut,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        innerRadius: DEFAULT_INNER_RADIUS,
+        radius: DEFAULT_OUTER_RADIUS,
     };
-});
+
+    return <PrefabIcon name={NAME} icon={<Icon />} object={object} />;
+};
 
 interface DonutRendererProps extends RendererProps<DonutZone> {
     radius: number;

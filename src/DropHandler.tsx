@@ -2,28 +2,13 @@ import type { Vector2d } from 'konva/lib/types';
 import React from 'react';
 import type { PanelDragObject } from './PanelDragContext';
 import type { SceneAction } from './SceneProvider';
-import type { SceneObject } from './scene';
-import { asArray, round } from './util';
-
-export type DropHandler<T extends SceneObject> = (object: Partial<T>, position: Vector2d) => SceneAction;
-const dropHandlers: Record<string, DropHandler<SceneObject>> = {};
-
-export function registerDropHandler<T extends SceneObject>(types: string | string[], handler: DropHandler<T>): void {
-    for (const type of asArray(types)) {
-        dropHandlers[type] = handler as DropHandler<SceneObject>;
-    }
-}
+import { round } from './util';
 
 export function getDropAction(object: PanelDragObject, position: Vector2d): SceneAction | undefined {
-    if (!object.object.type) {
-        throw new Error('Drag object is missing type');
-    }
-
-    const handler = dropHandlers[object.object.type];
-    if (handler) {
-        return handler(object.object as SceneObject, position);
-    }
-    return undefined;
+    return {
+        type: 'add',
+        object: { ...object.object, ...position },
+    };
 }
 
 export function getDragOffset(e: React.MouseEvent<HTMLElement>): Vector2d {

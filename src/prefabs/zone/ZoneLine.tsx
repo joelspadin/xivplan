@@ -1,11 +1,11 @@
 import { Circle, Group, Rect } from 'react-konva';
 import Icon from '../../assets/zone/line.svg?react';
-import { getDragOffset, registerDropHandler } from '../../DropHandler';
+import { getDragOffset } from '../../DropHandler';
 import { DetailsItem } from '../../panel/DetailsItem';
 import { type ListComponentProps, registerListComponent } from '../../panel/ListComponentRegistry';
 import { LayerName } from '../../render/layers';
 import { registerRenderer } from '../../render/ObjectRegistry';
-import { type LineZone, ObjectType } from '../../scene';
+import { type LineZone, type ObjectPrototype, ObjectType } from '../../scene';
 import { CENTER_DOT_RADIUS, DEFAULT_AOE_COLOR, DEFAULT_AOE_OPACITY, panelVars } from '../../theme';
 import { MIN_LINE_LENGTH, MIN_LINE_WIDTH } from '../bounds';
 import { HideGroup } from '../HideGroup';
@@ -22,13 +22,20 @@ const DEFAULT_LENGTH = 250;
 const ICON_SIZE = 32;
 
 export const ZoneLine: React.FC = () => {
+    const object: ObjectPrototype<LineZone> = {
+        type: ObjectType.Line,
+        color: DEFAULT_AOE_COLOR,
+        opacity: DEFAULT_AOE_OPACITY,
+        width: DEFAULT_WIDTH,
+        length: DEFAULT_LENGTH,
+        rotation: 0,
+    };
+
     return (
         <PrefabIcon
             name={NAME}
             icon={<Icon />}
-            object={{
-                type: ObjectType.Line,
-            }}
+            object={object}
             getOffset={(e) => {
                 const offset = getDragOffset(e);
                 return {
@@ -39,22 +46,6 @@ export const ZoneLine: React.FC = () => {
         />
     );
 };
-
-registerDropHandler<LineZone>(ObjectType.Line, (object, position) => {
-    return {
-        type: 'add',
-        object: {
-            type: ObjectType.Line,
-            color: DEFAULT_AOE_COLOR,
-            opacity: DEFAULT_AOE_OPACITY,
-            width: DEFAULT_WIDTH,
-            length: DEFAULT_LENGTH,
-            rotation: 0,
-            ...object,
-            ...position,
-        },
-    };
-});
 
 const LineDetails: React.FC<ListComponentProps<LineZone>> = ({ object, ...props }) => {
     return (

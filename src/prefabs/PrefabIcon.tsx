@@ -2,7 +2,7 @@ import { Image, makeStyles, mergeClasses, type ImageProps } from '@fluentui/reac
 import type { Vector2d } from 'konva/lib/types';
 import React, { useRef, type CSSProperties, type ReactNode, type Ref } from 'react';
 import { getDragOffset, getDropAction } from '../DropHandler';
-import type { SceneObject } from '../scene';
+import type { SceneObjectPrototype } from '../scene';
 import { useScene } from '../SceneProvider';
 import { selectNewObjects, useSelection } from '../selection';
 import { usePanelDrag } from '../usePanelDrag';
@@ -23,9 +23,9 @@ export interface PrefabIconProps extends Omit<
     'draggable' | 'onDragStart' | 'onDoubleClick' | 'onKeyDown'
 > {
     /**
-     * Gets the properties of an object to create on the scene. At minimum, the
-     * object type must be set. The rest will be filled in by the drag handler
-     * for that object type.
+     * Gets the properties of an object to create on the scene. All properties
+     * except for the ID and position must be set. The ID and position will be
+     * filled in when the object is created.
      *
      * The getOffset() callback is used to get the offset of the created object
      * from the mouse position when dragging and dropping. If omitted, this
@@ -34,7 +34,7 @@ export interface PrefabIconProps extends Omit<
      * If the button is activated by double clicking or pressing Enter, the
      * object is created in the center of the scene.
      */
-    object: Partial<SceneObject>;
+    object: SceneObjectPrototype;
     getOffset?: (e: React.MouseEvent<HTMLElement>) => Vector2d;
 }
 
