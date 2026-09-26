@@ -17,7 +17,7 @@ You may discuss the following content:
 - ✅ Dawntrail extreme trials
 - ✅ Arcadion normal and savage
 - ✅ The Final Verse (Quantum)
-- ✅ Forked Tower
+- ✅ Forked Tower: Blood
 - ✅ The Merchant's Tale normal and advanced only
 
 Please do not discuss the following content:
