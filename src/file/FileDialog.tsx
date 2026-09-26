@@ -42,7 +42,7 @@ export const OpenDialog: React.FC<OpenDialogProps> = (props) => {
                         >
                             {supportsFs && <Tab value="file">Local file</Tab>}
                             <Tab value="localStorage">Browser storage</Tab>
-                            <Tab value="import">Import plan link</Tab>
+                            <Tab value="import">Import plan link or Share Code</Tab>
                             {!supportsFs && <Tab value="fileUnsupported">Local file</Tab>}
                         </TabList>
                         <TabActivity value="file" activeTab={tab}>

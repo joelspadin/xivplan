@@ -61,3 +61,10 @@ export const StatusUltimateCircle = makeIcon('Circle', 'shape_circle.png', 2);
 export const StatusUltimateCross = makeIcon('Cross', 'shape_cross.png', 2);
 export const StatusUltimateSquare = makeIcon('Square', 'shape_square.png', 2);
 export const StatusUltimateTriangle = makeIcon('Triangle', 'shape_triangle.png', 2);
+
+export const ShapePlainCircle = makeIcon('Plain Circle', 'plain_circle.png', 2);
+export const ShapePlainCross = makeIcon('Plain Cross', 'plain_cross.png', 2);
+export const ShapePlainSquare = makeIcon('Plain Square', 'plain_square.png', 2);
+export const ShapePlainTriangle = makeIcon('Plain Triangle', 'plain_triangle.png', 2);
+export const ShapeRotateCCW = makeIcon('Rotate Counterclockwise', 'plain_rotate_ccw.png', 2);
+export const ShapeRotateCW = makeIcon('Rotate Clockwise', 'plain_rotate_cw.png', 2);
