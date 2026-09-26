@@ -2,7 +2,7 @@
 name: Bug report
 about: Report an issue with the app
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 ---
 
@@ -25,5 +25,5 @@ A clear and concise description of what you expected to happen.
 **Please complete the following information:**
 
 - OS: [e.g. iOS]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
+- Browser: [e.g. chrome, safari]
+- Version: [e.g. 22]
