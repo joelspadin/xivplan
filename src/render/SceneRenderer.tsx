@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import React, { type PropsWithChildren, type RefAttributes, use, useState } from 'react';
-import { Layer, Stage } from 'react-konva';
+import { Group, Layer, Stage } from 'react-konva';
 import { DefaultCursorProvider } from '../DefaultCursorProvider';
 import { getDropAction } from '../DropHandler';
 import { SceneHotkeyHandler } from '../HotkeyHandler';
@@ -147,22 +147,30 @@ const SceneContents: React.FC<SceneContentsProps> = ({ listening, simple, backgr
         <>
             {listening && <SceneHotkeyHandler />}
 
-            <Layer name={LayerName.Ground} listening={listening}>
+            {/* The arena rarely changes, so it gets its own canvas. */}
+            <Layer listening={listening}>
                 <ArenaRenderer backgroundColor={backgroundColor} simple={simple} />
-                <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
             </Layer>
-            <Layer name={LayerName.Default} listening={listening}>
-                <ObjectRenderer objects={step.objects} layer={LayerName.Default} />
+            {/* The main canvas for objects. */}
+            <Layer listening={listening}>
+                <Group name={LayerName.Ground}>
+                    <ObjectRenderer objects={step.objects} layer={LayerName.Ground} />
+                </Group>
+                <Group name={LayerName.Default}>
+                    <ObjectRenderer objects={step.objects} layer={LayerName.Default} />
+                </Group>
+                <Group name={LayerName.Foreground}>
+                    <ObjectRenderer objects={step.objects} layer={LayerName.Foreground} />
+                </Group>
             </Layer>
-            <Layer name={LayerName.Foreground} listening={listening}>
-                <ObjectRenderer objects={step.objects} layer={LayerName.Foreground} />
-
+            {/* Active objects and any other live updates get another layer to avoid redrawing
+                everything else repeatedly. Things that need to always be on top also go here. */}
+            <Layer listening={listening}>
                 <TetherEditRenderer />
-            </Layer>
-            <Layer name={LayerName.Active} listening={listening}>
                 <DrawTarget />
+                <Group name={LayerName.Active} />
+                <Group name={LayerName.Controls} />
             </Layer>
-            <Layer name={LayerName.Controls} listening={listening} />
         </>
     );
 };
