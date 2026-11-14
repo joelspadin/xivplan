@@ -2,6 +2,10 @@
 
 This page tracks notable changes made to XIVPlan. Not every change will be listed here.
 
+## Nov 13, 2026
+
+- Added support for importing strategy board share codes. Things won't look exactly as they do in game, but they will be as close an approximation as possible with the objects XIVPlan supports.
+
 ## Sep 26, 2026
 
 - When dragging an object from the left panel onto the scene, the drag preview will now match the object to be created instead of the icon from the panel.

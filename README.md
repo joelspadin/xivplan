@@ -28,6 +28,14 @@ If you are using a Chromium-based browser and you install the site as an app, th
 
 You can also self-host plans. XIVPlan can fetch an .xivplan file from any public URL if you navigate to `https://xivplan.netlify.app/?url=` followed by the link to the plan. Make sure that you are serving the raw JSON file or it will fail to load.
 
+#### Strategy Board Share Codes
+
+XIVPlan can import FFXIV strategy boards from share codes. There are three ways to do this:
+
+- Go to **Open > Import plan link or Share Code** and paste a share code.
+- Create a link to `https://xivplan.netlify.app/#/plan/` followed by a share code.
+- Create a link to `https://xivplan.netlify.app/?url=` followed by a public URL to a text file that contains a share code.
+
 ### Background Images
 
 When loading an SVG file as the arena background image, XIVPlan will inject the following CSS variables:
