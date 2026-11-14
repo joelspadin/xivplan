@@ -27,7 +27,10 @@ const TetherEditLayer: React.FC = () => {
 
     // https://github.com/reactwg/react-compiler/discussions/18
     const onMouseMove = useCallback(
-        () => setCursor(getPointerPosition(scene, arena, stage)),
+        (ev: MouseEvent) => {
+            stage?.setPointersPositions(ev);
+            setCursor(getPointerPosition(scene, arena, stage));
+        },
         [setCursor, scene, arena, stage],
     );
 
