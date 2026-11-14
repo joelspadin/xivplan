@@ -162,51 +162,20 @@ export async function showPlanFolderPicker() {
     }
 }
 
-export async function getRecentFiles(): Promise<FileSystemHandle[]> {
-    const db = await getDatabase();
-
-    const store = db.transaction('recent').objectStore('recent');
-    const entries = await store.getAll();
-
-    return entries.sort((a, b) => a.lastModified - b.lastModified).map<FileSystemHandle>((f) => f.file);
-}
-
-export async function addRecentFile(handle: FileSystemFileHandle) {
-    const db = await getDatabase();
-
-    const file = await handle.getFile();
-    const entry: RecentFileEntry = {
-        file: handle,
-        lastModified: file.lastModified,
-    };
-
-    // TODO: don't add if already present. Can I create an index on file handles?
-
-    await db.put('recent', entry);
-
-    // TODO: remove the oldest entries if there are too many
-}
-
-interface RecentFileEntry {
-    file: FileSystemFileHandle;
-    lastModified: number;
-}
-
 interface Schema extends DBSchema {
-    recent: {
-        key: number;
-        value: RecentFileEntry;
-        indexes: {
-            date: number;
-        };
-    };
     folders: {
         key: 'plans';
         value: FileSystemDirectoryHandle;
     };
+
+    // Deprecated.
+    recent: {
+        key: number;
+        value: never;
+    };
 }
 
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 const db = openDB<Schema>('xivplan-files', CURRENT_VERSION, {
     upgrade(db, oldVersion, newVersion) {
@@ -217,10 +186,12 @@ const db = openDB<Schema>('xivplan-files', CURRENT_VERSION, {
         }
 
         if (oldVersion < 1) {
-            const recentStore = db.createObjectStore('recent', { autoIncrement: true });
-            recentStore.createIndex('date', 'lastModified', { unique: false });
-
             db.createObjectStore('folders');
+        }
+
+        // Recent files list was stored but never used. Removed it in v2.
+        if (oldVersion < 2) {
+            db.deleteObjectStore('recent');
         }
     },
 });

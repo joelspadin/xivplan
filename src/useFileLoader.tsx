@@ -16,8 +16,6 @@ export function useFileLoader() {
 
         const scene = await openFile(source);
 
-        // TODO: add to recent files list
-
         loadScene(scene, source);
     };
 }

@@ -9,7 +9,7 @@ import { useIsDirty, useSetSavedState } from '../useIsDirty';
 import { DownloadButton } from './DownloadButton';
 import { FileBrowser } from './FileBrowser';
 import { useConfirmUnsavedChanges } from './confirm';
-import { addRecentFile, getFileSource, showSavePlanPicker } from './filesystem';
+import { getFileSource, showSavePlanPicker } from './filesystem';
 
 export interface OpenFileSystemProps {
     actions: HtmlPortalNode;
@@ -76,7 +76,6 @@ export const SaveFileSystem: React.FC<SaveFileSystemProps> = ({ actions }) => {
 
         const source = getFileSource(handle);
         await saveFile(canonicalScene, source);
-        await addRecentFile(handle);
 
         setSource(source);
         setSavedState(canonicalScene);
