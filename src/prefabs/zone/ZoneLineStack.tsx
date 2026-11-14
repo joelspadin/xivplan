@@ -126,7 +126,6 @@ const LineStackRenderer: React.FC<LineShapeRendererProps<LineStackZone>> = ({
                 )}
                 <HideGroup>
                     <Rect x={x} y={y} width={width} height={length} {...style} {...backgroundProps} />
-                    {/* TODO: fillPatternImage color is washed out compared to offscreen shape for some reason */}
                     <Rect
                         x={x}
                         y={y}
