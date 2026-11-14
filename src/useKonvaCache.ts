@@ -35,7 +35,7 @@ export function useKonvaCache(
 
     useLayoutEffect(() => {
         if (enabled) {
-            ref.current?.cache(config);
+            tryCache(ref.current, config);
         } else {
             ref.current?.clearCache();
         }
@@ -53,4 +53,12 @@ function getOptions(
     }
 
     return [true, undefined, optionsOrDeps];
+}
+
+function tryCache(node: Node | null, config: CacheConfig | undefined) {
+    try {
+        node?.cache(config);
+    } catch {
+        // Konva may fail to cache if the size is 0. Ignore that.
+    }
 }
