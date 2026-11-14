@@ -1,7 +1,7 @@
 import { DrawTextRegular } from '@fluentui/react-icons';
 import Konva from 'konva';
 import type { ShapeConfig } from 'konva/lib/Shape';
-import React, { type RefObject, useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Group, type KonvaNodeEvents, Text, Transformer } from 'react-konva';
 import { useScene } from '../SceneProvider';
 import { getAbsoluteRotation, getBaseFacingRotation } from '../coord';
@@ -62,32 +62,35 @@ function measureText(
     return { width, height };
 }
 
-interface TextResizerProps {
-    object: TextObject;
-    nodeRef: RefObject<Konva.Group | null>;
-    dragging?: boolean;
-    children: (onTransformEnd: (evt: Konva.KonvaEventObject<Event>) => void) => React.ReactElement;
-}
-
 const SNAP_ANGLE = 45;
 const ROTATION_SNAPS = Array.from({ length: 360 / SNAP_ANGLE }).map((_, i) => i * SNAP_ANGLE);
 
-const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, children }) => {
-    const { dispatch, scene } = useScene();
+export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
+
+interface TextContainerProps {
+    object: TextObject;
+    cacheKey?: unknown;
+    children: (groupProps: GroupProps) => React.ReactElement;
+}
+
+const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, children }) => {
+    const [resizing, setResizing] = useState(false);
+    const dragging = useIsDragging(object);
     const showResizer = useShowResizer(object);
+    const shapeRef = useRef<Konva.Group>(null);
     const trRef = useRef<Konva.Transformer>(null);
+    const { dispatch, scene } = useScene();
+
+    useKonvaCache(shapeRef, [cacheKey, object]);
 
     useLayoutEffect(() => {
-        if (showResizer && trRef.current && nodeRef.current) {
-            trRef.current.nodes([nodeRef.current]);
+        if (showResizer && trRef.current && shapeRef.current) {
+            trRef.current.nodes([shapeRef.current]);
             trRef.current.getLayer()?.batchDraw();
         }
-    }, [showResizer, nodeRef, trRef]);
+    }, [showResizer, shapeRef, trRef]);
 
-    // Manual memoization because React Compiler thinks handleTransformEnd being passed to
-    // children() means it is used during render, and it uses a ref's .current property.
-    const handleTransformEnd = useCallback(() => {
-        const node = nodeRef.current;
+    const handleTransformEnd = (node: Konva.Group | null) => {
         if (!node) {
             return;
         }
@@ -101,61 +104,32 @@ const TextResizer: React.FC<TextResizerProps> = ({ object, nodeRef, dragging, ch
         }
 
         dispatch({ type: 'update', value: { ...object, ...newProps } });
-    }, [dispatch, nodeRef, object, scene]);
-
-    return (
-        <>
-            {
-                // eslint-disable-next-line react-hooks/refs -- callback is only used in event handler
-                children(handleTransformEnd)
-            }
-            {showResizer && (
-                <ActivePortal isActive>
-                    <Transformer
-                        ref={trRef}
-                        visible={!dragging}
-                        centeredScaling
-                        resizeEnabled={false}
-                        rotationSnaps={ROTATION_SNAPS}
-                    />
-                </ActivePortal>
-            )}
-        </>
-    );
-};
-
-export type GroupProps = Konva.NodeConfig & KonvaNodeEvents;
-
-interface TextContainerProps {
-    object: TextObject;
-    cacheKey?: unknown;
-    children: (groupProps: GroupProps) => React.ReactElement;
-}
-
-const TextContainer: React.FC<TextContainerProps> = ({ object, cacheKey, children }) => {
-    const [resizing, setResizing] = useState(false);
-    const dragging = useIsDragging(object);
-    const shapeRef = useRef<Konva.Group>(null);
-    const { scene } = useScene();
-
-    useKonvaCache(shapeRef, [cacheKey, object]);
+    };
 
     return (
         <ActivePortal isActive={dragging || resizing}>
             <DraggableObject object={object}>
-                <TextResizer object={object} nodeRef={shapeRef} dragging={dragging}>
-                    {(onTransformEnd) => {
-                        return children({
-                            ref: shapeRef,
-                            onTransformStart: () => setResizing(true),
-                            onTransformEnd: (e) => {
-                                onTransformEnd(e);
-                                setResizing(false);
-                            },
-                            rotation: getAbsoluteRotation(scene, object),
-                        });
-                    }}
-                </TextResizer>
+                {children({
+                    ref: shapeRef,
+                    onTransformStart: () => setResizing(true),
+                    onTransformEnd: () => {
+                        handleTransformEnd(shapeRef.current);
+                        setResizing(false);
+                    },
+                    rotation: getAbsoluteRotation(scene, object),
+                })}
+
+                {showResizer && (
+                    <ActivePortal isActive>
+                        <Transformer
+                            ref={trRef}
+                            visible={!dragging}
+                            centeredScaling
+                            resizeEnabled={false}
+                            rotationSnaps={ROTATION_SNAPS}
+                        />
+                    </ActivePortal>
+                )}
             </DraggableObject>
         </ActivePortal>
     );
