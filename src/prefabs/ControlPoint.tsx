@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import type { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Group } from 'react-konva';
 import { getCanvasCoord, rotateCoord } from '../coord';
 import { ControlsPortal } from '../render/Portals';
@@ -147,20 +147,35 @@ export function createControlPointManager<T extends Vector2d, S extends Controll
             };
         };
 
-        useLayoutEffect(() => {
-            if (!transform) {
+        // Mirror transform to a ref so handleEnd() in the the following useEffect block doesn't
+        // change every time a control point is moved and cause the effect to be re-evaluated,
+        // resulting in the event handlers being repeatedly unregistered and re-registered.
+        const transformRef = useRef(transform);
+        useEffect(() => {
+            transformRef.current = transform;
+        }, [transform]);
+
+        // We only want to re-evaluate the effect when starting or ending a transform, so make
+        // it depend on whether the transform is defined, not its actual value.
+        const isTransforming = transform !== undefined;
+
+        // As long as we are transforming, handle mouse and keyboard events on the whole screen.
+        // Capture mouse up events so we can prevent other Konva nodes from handling
+        // them and preventing the transform from ever ending.
+        useEffect(() => {
+            if (!isTransforming) {
                 return;
             }
 
             const handleMove = (e: MouseEvent | TouchEvent) => {
                 const pointerPos = getPointerPos();
-                setTransform({ ...transform, pointerPos, modifierKeys: e });
+                setTransform((transform) => (transform ? { ...transform, pointerPos, modifierKeys: e } : undefined));
             };
 
             const handleUpdatedModifier = (e: KeyboardEvent) => {
                 // Prevent browser UI triggering while dragging control points, especially Alt.
                 e.preventDefault();
-                setTransform({ ...transform, modifierKeys: e });
+                setTransform((transform) => (transform ? { ...transform, modifierKeys: e } : undefined));
             };
 
             const handleEnd = (e: MouseEvent | TouchEvent) => {
@@ -169,17 +184,20 @@ export function createControlPointManager<T extends Vector2d, S extends Controll
                 onActive?.(false);
                 setTransform(undefined);
 
-                const pointerPos = getHandleCenter({ ...transform, pointerPos: getPointerPos() });
+                if (transformRef.current === undefined) {
+                    throw new Error('transformRef is undefined');
+                }
 
-                const activeHandleId = transform?.handleId ?? 0;
-                const handleProps: HandleFuncProps = { pointerPos, activeHandleId, modifierKeys: e };
-                const state = config.stateFunc(scene, object, handleProps, props);
+                const pointerPos = getHandleCenter({ ...transformRef.current, pointerPos: getPointerPos() });
+                const state = config.stateFunc(
+                    scene,
+                    object,
+                    { pointerPos, activeHandleId: transformRef.current.handleId, modifierKeys: e },
+                    props,
+                );
                 onTransformEnd?.(state);
             };
 
-            // As long as we are transforming, handle mouse and keyboard events on the whole screen.
-            // Capture mouse up events so we can prevent other Konva nodes from handling
-            // them and preventing the transform from ever ending.
             window.addEventListener('mousemove', handleMove);
             window.addEventListener('touchmove', handleMove);
             window.addEventListener('keydown', handleUpdatedModifier);
@@ -195,7 +213,7 @@ export function createControlPointManager<T extends Vector2d, S extends Controll
                 window.removeEventListener('mouseup', handleEnd, true);
                 window.removeEventListener('touchend', handleEnd, true);
             };
-        }, [scene, transform, object, onActive, setTransform, onTransformEnd, getPointerPos, props]);
+        }, [getPointerPos, isTransforming, object, onActive, onTransformEnd, props, scene]);
 
         const setCursor = (cursor: string) => {
             if (stage) {
@@ -206,15 +224,11 @@ export function createControlPointManager<T extends Vector2d, S extends Controll
         const center = getCanvasCoord(scene, arena, object);
 
         // Make sure to render everything relative to any updated object position
-        const offset = { x: 0, y: 0 };
-        if (state.x !== undefined) {
-            offset.x = object.x - state.x;
-        }
-        if (state.y !== undefined) {
-            offset.y = object.y - state.y;
-        }
         // (state and object position is not in canvas coordinates, which has the Y axis flipped)
-        offset.y *= -1;
+        const offset = {
+            x: state.x === undefined ? 0 : object.x - state.x,
+            y: state.y === undefined ? 0 : -object.y + state.y,
+        };
 
         return (
             <>
